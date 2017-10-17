@@ -1,4 +1,4 @@
-# Dot-World-Maker
+# Dot World Maker
 Online web role playing game (RPG) engine let you build your own game directly from your browser.
 
 ## Requirements
@@ -24,7 +24,7 @@ Default user: admin password: admin
 [Try the demo](https://www.dotworldmaker.com/play.html?game=Demo&demo=true)
 
 ## Tutorials
-[Complete tutorial](https://www.dotworldmaker.com/Help/create_a_simple_game.html)
-[Get started (video)](https://youtu.be/nFm6rc4WsT8)
-[Code editor (video)](https://youtu.be/2sz4LMLjQAs)
-[Upload your own map art (video)](https://youtu.be/MCDd7sRQddQ)
+* [Complete tutorial](https://www.dotworldmaker.com/Help/create_a_simple_game.html)
+* [Get started (video)](https://youtu.be/nFm6rc4WsT8)
+* [Code editor (video)](https://youtu.be/2sz4LMLjQAs)
+* [Upload your own map art (video)](https://youtu.be/MCDd7sRQddQ)
