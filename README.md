@@ -16,11 +16,11 @@ Online web role playing game (RPG) engine let you build your own game directly f
 * Start the server: node server.js
 * Using your browser connect to http://127.0.0.1:1337 or the port specified in the package.json
 
+Default user: admin password: admin
+
 ## To edit the client or the server Code
 * Edit the *.ts* files never the resulting *.js* as they will be overwitten when you compile the engine
 * Use gulp with the task compile to compile once or the default task will watch the changes and compile when needed
-
-Default user: admin password: admin
 
 ## How to create your grame
 [Online documentation](https://www.dotworldmaker.com/Help/welcome.html)
