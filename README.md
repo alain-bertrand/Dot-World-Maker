@@ -10,10 +10,15 @@ Online web role playing game (RPG) engine let you build your own game directly f
 * Create a database on your MySQL or MariaDB and create a DB user for the engine
 * Import the SQL statements from tables.txt into your database
 * Edit the package.json file (config section)
+* install the needed packages: "npm install ."
 
 ## Running it
 * Start the server: node server.js
 * Using your browser connect to http://127.0.0.1:1337 or the port specified in the package.json
+
+## To edit the client or the server Code
+* Edit the *.ts* files never the resulting *.js* as they will be overwitten when you compile the engine
+* Use gulp with the task compile to compile once or the default task will watch the changes and compile when needed
 
 Default user: admin password: admin
 
