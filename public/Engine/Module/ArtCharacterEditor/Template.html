@@ -1,0 +1,146 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div id="characterList" class="imageList"></div>
+    <div class="imageActions">
+        <div class="button" onclick="ArtCharacterEditor.Clone()">Clone</div>
+        <div class="button" onclick="ArtCharacterEditor.ShowUpload()" id="uploadButton">Upload</div>
+        <div class="button" onclick="ArtCharacterEditor.ShowCreate()">New</div>
+        <div class="button" onclick="ArtCharacterEditor.Delete()">Delete</div>
+    </div>
+    <div class="imageParameters" style="right: 215px;">
+        <table>
+            <tr>
+                <td>Name:</td>
+                <td><input type="text" id="name" onkeyup="ArtCharacterEditor.Rename()" disabled /></td>
+            </tr>
+            <tr>
+                <td>Frames:</td>
+                <td><input type="text" id="frames" onkeyup="ArtCharacterEditor.ChangeParameter('frames', 'frames');" disabled /></td>
+                <td>Frames divider:</td>
+                <td><input type="text" id="imageFrameDivider" onkeyup="ArtCharacterEditor.ChangeParameter('imageFrameDivider', 'imageFrameDivider');" disabled /></td>
+            </tr>
+            <tr>
+                <td>Animation type:</td>
+                <td>
+                    <select id="animationCycle" onchange="ArtCharacterEditor.ChangeParameter('animationCycle', 'animationCycle');" disabled>
+                        <option value="walkCycle">Walk Cycle</option>
+                        <option value="simple">Simple</option>
+                    </select>
+                </td>
+            </tr>
+            <!--<tr>
+                <td>Directions:</td>
+                <td><input type="text" id="directions" onkeyup="ArtCharacterEditor.ChangeParameter('directions', 'directions');" /></td>
+            </tr>-->
+            <tr>
+                <td><a href="#" onclick="ArtCharacterEditor.GroundSelection(); return false;">Ground</a> X:</td>
+                <td><input type="text" id="groundX" onkeyup="ArtCharacterEditor.ChangeParameter('groundX', 'groundX');" disabled /></td>
+                <td>Y:</td>
+                <td><input type="text" id="groundY" onkeyup="ArtCharacterEditor.ChangeParameter('groundY', 'groundY');" disabled /></td>
+            </tr>
+            <tr>
+                <td>Collision Size:</td>
+                <td><input type="text" id="collision" onkeyup="ArtCharacterEditor.ChangeCollision();" disabled /></td>
+            </tr>
+            <tr>
+                <td>Row 1:</td>
+                <td id="row_direction_0" colspan="3">
+                    <div class='button' onclick="ArtCharacterEditor.ChangeRow('n',0)" id='row_0_n'>N</div>
+                    <div class='button' onclick="ArtCharacterEditor.ChangeRow('w', 0)" id='row_0_w'>W</div>
+                    <div class='button' onclick="ArtCharacterEditor.ChangeRow('e', 0)" id='row_0_e'>E</div>
+                    <div class='button selectedButton' onclick="ArtCharacterEditor.ChangeRow('s', 0)" id='row_0_s'>S</div>
+                </td>
+            </tr>
+            <tr>
+                <td>Row 2:</td>
+                <td id="row_direction_1" colspan="3">
+                    <div class='button' onclick="ArtCharacterEditor.ChangeRow('n', 1)" id='row_1_n'>N</div>
+                    <div class='button selectedButton' onclick="ArtCharacterEditor.ChangeRow('w', 1)" id='row_1_w'>W</div>
+                    <div class='button' onclick="ArtCharacterEditor.ChangeRow('e',1)" id='row_1_e'>E</div>
+                    <div class='button' onclick="ArtCharacterEditor.ChangeRow('s',1)" id='row_1_s'>S</div>
+                </td>
+            </tr>
+            <tr>
+                <td>Row 3:</td>
+                <td id="row_direction_2" colspan="3">
+                    <div class='button' onclick="ArtCharacterEditor.ChangeRow('n',2)" id='row_2_n'>N</div>
+                    <div class='button' onclick="ArtCharacterEditor.ChangeRow('w',2)" id='row_2_w'>W</div>
+                    <div class='button selectedButton' onclick="ArtCharacterEditor.ChangeRow('e', 2)" id='row_2_e'>E</div>
+                    <div class='button' onclick="ArtCharacterEditor.ChangeRow('s', 2)" id='row_2_s'>S</div>
+                </td>
+            </tr>
+            <tr>
+                <td>Row 4:</td>
+                <td id="row_direction_3" colspan="3">
+                    <div class='button selectedButton' onclick="ArtCharacterEditor.ChangeRow('n', 3)" id='row_3_n'>N</div>
+                    <div class='button' onclick="ArtCharacterEditor.ChangeRow('w',3)" id='row_3_w'>W</div>
+                    <div class='button' onclick="ArtCharacterEditor.ChangeRow('e',3)" id='row_3_e'>E</div>
+                    <div class='button' onclick="ArtCharacterEditor.ChangeRow('s',3)" id='row_3_s'>S</div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="characterPreviewPanel">
+        <canvas id="characterPreview" width="155" height="155"></canvas>
+        <div class='button' onclick="artCharacterEditor.previewDirection = 3;">N</div>
+        <div class='button' onclick="artCharacterEditor.previewDirection = 1;">W</div>
+        <div class='button' onclick="artCharacterEditor.previewDirection = 2;">E</div>
+        <div class='button' onclick="artCharacterEditor.previewDirection = 0;">S</div>
+    </div>
+    <div id="characterDisplayContainer" class="imageDisplayContainer">
+        <canvas id="characterDisplay" width="500" height="500"></canvas>
+    </div>
+    <div class="imageCommands">
+        <div class="button" onclick="ArtCharacterEditor.ApplyRowChange()">Apply row change</div>
+        <div class="button" onclick="world.Save()">Save</div>
+        <div class="button" onclick="ArtCharacterEditor.EditImage()">Edit Image</div>
+    </div>
+    <div id="uploadArtObject">
+        <form method="post" enctype="multipart/form-data" id="artObjectUploadForm" target="artObjectIframe"
+              action="/upload/Art">
+            <input type="hidden" name="returnClass" value="ArtCharacterEditor" />
+            <input type="hidden" name="game" id="uploadGameId" />
+            <input type="hidden" name="token" id="uploadToken" />
+            <input type="file" name="fileUpload" id="fileUpload">
+            <div class="button" onclick="ArtCharacterEditor.Upload()">Upload</div><div class="button" onclick="ArtCharacterEditor.CloseUpload()">Cancel</div>
+        </form>
+    </div>
+
+    <iframe id="artObjectIframe" name="artObjectIframe"></iframe>
+
+    <a href="/Help/character_editor.html" id="helpLink" target="engineHelp">?</a>
+
+    <div id="artObjectEditorMouseOverlay"></div>
+
+    <div id="newArtCharcterDialog">
+        <h1>Create new character</h1>
+        <table>
+            <tr><td>Name:</td><td><input type="text" id="newCharName" /></td></tr>
+            <tr>
+                <td>Frames:</td>
+                <td>
+                    <select id="newCharFrames">
+                        <option>1</option>
+                        <option>2</option>
+                        <option selected>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                        <option>6</option>
+                        <option>7</option>
+                        <option>8</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+        <center>
+            <div class="button" onclick="ArtCharacterEditor.Create()">Create</div>
+            <div class="button" onclick="ArtCharacterEditor.CloseCreate()">Cancel</div>
+        </center>
+    </div>
+</body>
+</html>

@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div id="listNPC"></div>
+
+    <div id="mainCommands">
+        <div class="button" onclick="NPCEditor.OnMap()">On Map</div>
+        <div class="button" onclick="NPCEditor.NewNPC()">New</div>
+        <div class="button" onclick="NPCEditor.CloneNPC()">Clone</div>
+        <div class="button" onclick="world.Save();">Save</div>
+        <div class="button" onclick="NPCEditor.DeleteNPC()">Delete</div>
+    </div>
+
+    <div id="npcDialogSection">
+        <div id="npcDetails">
+            <table>
+                <tr><td><a href="#" onclick="NPCEditor.GenerateName(); return false;">Name:</a></td><td><input type="text" id="npcName" onkeyup="NPCEditor.NameChanged()" /></td></tr>
+                <tr><td>Look:</td><td><select id="npcLook" onchange="NPCEditor.ChangeLook()"></select></td></tr>
+            </table>
+        </div>
+        <textarea id="dialog" onkeyup="NPCEditor.DialogChanged()"></textarea>
+        <div id="dialogJumpTo">
+            <table>
+                <tr>
+                    <td>Jump to:</td>
+                    <td id="jumpToContainer"><select id="jumpTo"></select></td>
+                </tr>
+            </table>
+        </div>
+        <div id="actionsAndConditions"></div>
+        <div id="dialogTitle">Dialogs:</div>
+        <div id="listDialogs"></div>
+        <div id="commandDialogs">
+            <div class="button" onclick="NPCEditor.AddDialog()">Add</div>
+            <div class="button" onclick="NPCEditor.RemoveDialog()">Remove</div>
+        </div>
+        <div id="answerTitle">Answers:</div>
+        <div id="listAnswers"></div>
+        <div id="commandAnswers">
+            <div class="button" onclick="NPCEditor.ToTopAnswer()">To Top</div>
+            <div class="button" onclick="NPCEditor.ToBottomAnswer()">To Bottom</div>
+            <div class="button" onclick="NPCEditor.AddAnswer()">Add</div>
+            <div class="button" onclick="NPCEditor.RemoveAnswer()">Remove</div>
+        </div>
+
+        <div id="npcShowShop" class="button" onclick="NPCShopEditor.ShowEditor()">NPC Shop</div>
+    </div>
+
+    <div id="npcShopSection">
+        <div id="npcShopList"></div>
+        <select id="npcAddShopItem" onchange="NPCShopEditor.AddItem()"></select>
+        <div id="npcShowDialog" class="button" onclick="NPCEditor.ShowEditor()">NPC Dialog</div>
+    </div>
+
+    <a href="/Help/npc_editor.html" id="helpLink" target="engineHelp">?</a>
+</body>
+</html>

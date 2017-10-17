@@ -1,0 +1,210 @@
+﻿@import (reference) "../../../Less/engine.less";
+
+@menubarBackground: #343434;
+@menubarLine: #A0A0A0;
+@menubarItemColor: #E0E0E0;
+@menubarItemSeparator: #717171;
+@menubarItemColorHover: #ffbb00;
+@menubarItemSize: 16px;
+@menubarHoverBar: #d42525;
+
+#hideMenu
+{
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    background-color: transparent;
+    z-index: 100000;
+    display: none;
+}
+
+.shortcut
+{
+    float: right;
+    display: block !important;
+    visibility: visible !important;
+    font-size: 9px;
+}
+
+#menubar
+{
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    height: 32px;
+    background-color: @menubarBackground;
+    padding-left: 20px;
+    padding-top: 3px;
+    border-bottom: solid 2px @menubarLine;
+    box-sizing: border-box;
+    z-index: 100001;
+    line-height: 32px;
+    vertical-align: top;
+    .noselect;
+}
+
+#menubar > div, #menubar > a
+{
+    margin-left: 28px;
+    color: @menubarItemColor;
+    font-size: @menubarItemSize;
+    display: inline-block;
+    font-weight: bold;
+    line-height: 20px;
+    cursor: pointer;
+    width: 80px;
+    padding-left: 10px;
+    padding-right: 5px;
+    border-right: solid 1px @menubarItemSeparator;
+    text-decoration: none;
+    position: relative;
+    .noselect;
+}
+
+#menubar > :last-child
+{
+    border-right: none;
+}
+
+#menubar > div:hover, #menubar > a:hover
+{
+    color: @menubarItemColorHover;
+}
+
+#menubar > div:hover:after, #menubar > a:hover:after
+{
+    content: "";
+    display: block;
+    background-color: @menubarHoverBar;
+    height: 3px;
+    width: 95px;
+    position: fixed;
+    margin-top: 2px;
+    margin-left: -10px;
+}
+
+#menubar > div > div
+{
+    color: @menubarItemColor;
+    display: none;
+    position: fixed;
+    min-width: 95px;
+    background-color: @menubarBackground;
+    margin-left: -41px;
+    padding-left: 27px;
+    font-size: 12px;
+    padding-top: 5px;
+    padding-right: 5px;
+    padding-bottom: 5px;
+    box-shadow: rgba(0,0,0,0.5) 3px 3px 5px;
+}
+
+#menubar > div > div a
+{
+    color: @menubarItemColor;
+    text-decoration: none;
+    display: block;
+    .noselect;
+}
+
+#menubar > div > div div:hover
+{
+    color: @menubarItemColorHover;
+}
+
+#menubar > div > div a:hover
+{
+    color: @menubarItemColorHover;
+}
+
+#menubar > div > div > div:after
+{
+    .arrowRight;
+    float: right;
+    padding-right: 5px;
+    padding-left: 5px;
+}
+
+#menubar > div > div > div > div
+{
+    display: none;
+    margin-left: 100px !important;
+    margin-top: -20px !important;
+    position: fixed;
+    min-width: 95px;
+    background-color: @menubarBackground;
+    margin-left: -15px;
+    font-size: 12px;
+    padding-top: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.menuIcon
+{
+    content: " ";
+    display: block;
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    margin-left: -32px;
+    margin-top: -4px;
+    background-image: url('/images/interface_icons.png');
+}
+
+#menu_Game:before
+{
+    .menuIcon;
+    background-position-x: 0px;
+}
+
+#menu_Art:before
+{
+    .menuIcon;
+    background-position-x: -24px;
+}
+
+#game_Editors:before
+{
+    .menuIcon;
+    background-position-x: -48px;
+}
+
+#game_Admin:before
+{
+    .menuIcon;
+    background-position-x: -120px;
+}
+
+
+#game_Help:before
+{
+    .menuIcon;
+    background-position-x: -72px;
+}
+
+#game_Search
+{
+    position: absolute;
+    top: 7px;
+    right: 5px;
+    cursor: pointer;
+    .menuIcon;
+    background-position-x: -144px;
+
+    &:hover
+    {
+        opacity: 0.5;
+    }
+}
+
+@media print
+{
+    #menubar
+    {
+        display: none;
+    }
+}

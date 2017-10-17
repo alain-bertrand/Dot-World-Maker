@@ -1,0 +1,45 @@
+﻿@import (reference) "../../../Less/engine.less";
+
+#tableList
+{
+    position: absolute;
+    top: 35px;
+    left: 5px;
+    right: 50px;
+    bottom: 5px;
+    overflow-y: auto;
+
+    & table
+    {
+        width: 100%;
+        border: solid 1px black;
+        border-collapse: collapse;
+    }
+
+    & thead tr
+    {
+        background-color: #000000;
+        color: white;
+        font-weight: bold;
+    }
+
+    & tbody > tr:nth-child(2n+1)
+    {
+        background-color: #E0E0E0;
+    }
+}
+
+#tableList a.listItem
+{
+    font-weight: bold;
+    cursor: pointer;
+    padding: 3px;
+    text-decoration: none;
+    color: black;
+    display: block;
+}
+
+#tableList a:hover
+{
+    background-color: @rowHover;
+}

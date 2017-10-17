@@ -1,0 +1,32 @@
+﻿@import (reference) "../../../Less/engine.less";
+
+#monsterParameters
+{
+    bottom: ~"calc(50% + 7px)";
+
+    & table
+    {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    & table > thead > tr
+    {
+        background-color: @titleLineBackground;
+    }
+
+    & table > thead > tr > td
+    {
+        color: @titleLineColor;
+        font-weight: bold;
+    }
+}
+
+#monsterParamCommands
+{
+    position: absolute;
+    top: ~"calc(50% - 7px)";
+    left: 155px;
+    right: 30px;
+    text-align: center;
+}

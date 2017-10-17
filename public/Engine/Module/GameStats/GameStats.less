@@ -1,0 +1,71 @@
+﻿@import (reference) "../../../Less/engine.less";
+
+#statOverview
+{
+    position: absolute;
+    border: solid 1px @panelBorder;
+    border-radius: @panelRadius;
+    box-shadow: @panelInset;
+    right: 5px;
+    width: 300px;
+    bottom: 5px;
+    top: 65px;
+    overflow-y: auto;
+
+    & table
+    {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 16px;
+    }
+
+    & table tr > td:first-child
+    {
+        font-weight: bold;
+        width: 1%;
+    }
+
+    & table tr > td:nth-child(2)
+    {
+        font-weight: bold;
+        width: 1%;
+    }
+
+    & table tr:nth-child(odd)
+    {
+        background-color: #E0E0E0;
+    }
+
+    & h1
+    {
+    }
+}
+
+.weekendDays
+{
+    background-color: #FFA0A0 !important;
+}
+
+#statType
+{
+    position: absolute;
+    top: 35px;
+    left: 5px;
+    right: 5px;
+    width: ~"calc(100% - 10px)";
+}
+
+#graphContainer
+{
+    position: absolute;
+    left: 5px;
+    right: 310px;
+    bottom: 5px;
+    top: 65px;
+
+    & canvas
+    {
+        width: 100%;
+        height: 100%;
+    }
+}

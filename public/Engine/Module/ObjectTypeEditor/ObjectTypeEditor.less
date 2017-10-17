@@ -1,0 +1,51 @@
+﻿@import (reference) "../../../Less/engine.less";
+
+#listObjectType
+{
+    position: absolute;
+    left: 5px;
+    width: 150px;
+    top: @menubarHeight;
+    bottom: 30px;
+}
+
+#objectTypeDetails
+{
+    position: absolute;
+    left: 160px;
+    right: 5px;
+    top: @menubarHeight;
+    bottom: 30px;
+    border: solid 1px @panelBorder;
+    overflow-y: scroll;
+    border-radius: @panelRadius;
+
+    & table
+    {
+        width: 100%;
+    }
+
+    & table tr
+    {
+        vertical-align: top;
+    }
+
+    & table tr > td:nth-child(1)
+    {
+        width: 1%;
+        white-space: nowrap;
+        font-weight: bold;
+    }
+
+    & table tr > td:nth-child(3)
+    {
+        width: 1%;
+        white-space: nowrap;
+    }
+
+    input, select, textarea
+    {
+        width: 100%;
+        resize: none;
+    }
+}

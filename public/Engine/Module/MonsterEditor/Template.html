@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div id="monsterList" class="elementList"></div>
+    <div id="monsterListCommands" class="elementListCommands">
+        <div class="button" onclick="MonsterEditor.Add();">Add</div>
+        <div class="button" onclick="MonsterEditor.Clone();">Clone</div>
+        <div class="button" onclick="MonsterEditor.Delete();">Delete</div>
+    </div>
+    <div id="monsterParameters" class="elementParameters"></div>
+    <div id="monsterParamCommands">
+        <div class="button" onclick="MonsterEditor.AddParam();">Add Parameter</div>
+        <div class="button" onclick="MonsterEditor.AddStat();">Add Stat Drop</div>
+        <div class="button" onclick="MonsterEditor.AddItem();">Add Item Drop</div>
+    </div>
+    <div id="codeContainer" class="elementCode">
+        <textarea id="baseCode" spellcheck="false" onkeyup="MonsterEditor.ChangeCode()"></textarea>
+    </div>
+    <div id="monsterCommands" class="elementCommands">
+        <div class="button" onclick="world.Save();">Save</div>
+    </div>
+
+    <a href="/Help/monster_editor.html" id="helpLink" target="engineHelp">?</a>
+</body>
+</html>

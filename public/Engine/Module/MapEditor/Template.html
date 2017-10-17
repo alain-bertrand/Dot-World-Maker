@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div id="mapEditorPalette">
+        <b>Zone:</b><br />
+        <select id="mapZone" onchange="MapEditor.ChangeZone()"><option>Ground</option></select><br />
+        <br />
+        <span onclick="MapEditor.SelectAction('Tile');" id="Tile" class="button">Background Tile</span>
+        <span onclick="MapEditor.SelectAction('SmartTile');" id="SmartTile" class="button selectedButton">Smart Tile</span>
+        <span onclick="MapEditor.SelectAction('Path');" id="Path" class="button">Paths</span>
+        <span onclick="MapEditor.SelectAction('Object');" id="Object" class="button">Objects</span>
+        <span onclick="MapEditor.SelectAction('Monster');" id="Monster" class="button">Monsters</span>
+        <span onclick="MapEditor.SelectAction('NPC');" id="NPC" class="button">NPCs</span>
+        <span onclick="MapEditor.SelectAction('House');" id="House" class="button">Houses</span>
+        <span onclick="MapEditor.SelectAction('MapAction');" id="MapAction" class="button">Map Actions</span>
+        <span onclick="MapEditor.SelectAction('Chest');" id="Chest" class="button">Chest</span>
+        <span onclick="MapEditor.ShowFragments()" id="Fragment" class="button">Fragments</span>
+        <div id="tilePreview"></div>
+    </div>
+    <div id="mapEditorToolbar">
+        <span id="mapEditorSave" onclick="world.SaveMapChanges()">Save</span>
+        <span id="mapEditorGrid" onclick="MapEditor.ChangeGrid()">Grid</span>
+        <span id="mapEditorMinimap" onclick="MapEditor.ChangeToolbarOption('mapEditorMinimap', 'minimap')">Minimap</span>
+        <div id="mapEditorAdditionalTools"></div>
+        <!--Show grid <input type="checkbox" checked id="mapEditorGrid" value="on"  onchange="MapEditor.ChangeGrid()"/>-->
+        <div id="currentPosition" onclick="mapEditor.showCoordinates = !mapEditor.showCoordinates;"></div>
+    </div>
+    <div id="mapEditorContainer"><canvas id="gameCanvas" oncontextmenu="return false;"></canvas></div>
+    <div id="mapEditorActions">Map actions</div>
+    <div id="mapEditorSelectTile">
+        <div id="tileList"></div>
+        <div class="panelButtons"><span onclick="MapEditor.CloseSelection();">Close</span></div>
+    </div>
+
+    <a href="/Help/simple_map_editing.html" id="helpLink" target="engineHelp">?</a>
+</body>
+</html>

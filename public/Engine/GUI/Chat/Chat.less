@@ -1,0 +1,160 @@
+﻿@import (reference) "../../../Less/engine.less";
+
+#chatContainer
+{
+    position: absolute;
+    right: 0px;
+    height: ~"calc(50% - 20px)";
+    display: none;
+    z-index: 1000;
+    top: 27px;
+
+    & .gamePanelContent
+    {
+        overflow-y: hidden;
+    }
+}
+
+#chatTitle
+{
+    cursor: pointer;
+}
+
+#chatUserList
+{
+    overflow-y: scroll;
+    height: ~"calc(100% - 44px)";
+    box-sizing: border-box;    
+    display: inline-block;
+    float: left;
+    width: 120px;
+}
+
+#chatScroll
+{
+    overflow-y: scroll;
+    padding: 3px;
+    height: ~"calc(100% - 44px)";
+    width: ~"calc(100% - 120px)";
+    box-sizing: border-box;
+    display: inline-block;
+
+    & > div
+    {
+        color: white;
+        border-bottom: dashed 1px rgb(122, 126, 173);
+    }
+
+    & > div > div:first-child
+    {
+        width: 60px;
+        overflow: hidden;
+        float: left;
+        cursor: pointer;
+    }
+
+    & > div > div:nth-child(2)
+    {
+        width: ~"calc(100% - 75px)";
+        margin-left: 60px;
+    }
+
+    & .chatSystemMessage
+    {
+        color: #00E000;
+    }
+}
+
+.fullChatScroll
+{
+    height: ~"calc(100% - 22px)" !important;
+}
+
+#chatLine
+{
+    width: 100%;
+    background-color: transparent;
+    outline: none;
+    border: solid 1px black;
+    color: white;
+}
+
+#chatCollapsed
+{
+    width: 40px;
+    height: 150px;
+    position: absolute;
+    right: -10px;
+    bottom: 150px;
+    cursor: pointer;
+    display: none;
+    z-index: 1000;
+
+    & .gamePanelContentNoHeader > div
+    {
+        -ms-transform: rotate(-90deg);
+        transform: rotate(-90deg);
+        height: 20px;
+        width: 130px;
+        position: absolute;
+        right: -45px;
+        bottom: 65px;
+        text-align: center;
+        font-weight: bold;
+    }
+}
+
+#chatChannels span
+{
+    font-weight: bold;
+}
+
+#chatChannels div
+{
+    display: inline-block;
+    padding: 2px;
+    margin-left: 3px;
+    cursor: pointer;
+}
+
+.channelNewMessage
+{
+    font-weight: bold;
+}
+
+.channelNewMessage:after
+{
+    content: "*";
+}
+
+#chatEntry
+{
+    position: absolute;
+    right: 5px;
+    display: none;
+
+    & input
+    {
+        width: 100%;
+        border-radius: 0px;
+    }
+}
+
+@media (min-width: 800px)
+{
+    /*#chatEntry
+    {
+        bottom: 5px;
+    }*/
+
+    #chatContainer
+    {
+        top: auto;
+        bottom: 40px;
+    }
+
+/*    .openPanelIcon
+    {
+        left: ~"calc(50% - 17px) !important";
+    }*/
+}

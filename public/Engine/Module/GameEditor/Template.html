@@ -1,0 +1,118 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div id="gameInfo">
+        <table>
+            <tr class="hideForStandalone hideForSelfHosted">
+                <td>Game name:</td>
+                <td id="gameName"></td>
+            </tr>
+            <tr class="hideForStandalone hideForSelfHosted">
+                <td>Edition:</td>
+                <td id="gameEdition"></td>
+            </tr>
+            <tr class="hideForStandalone hideForSelfHosted">
+                <td>Direct URL:</td>
+                <td id="gameURL"></td>
+            </tr>
+            <tr>
+                <td>Description:</td>
+                <td><textarea rows="5" id="gameDescription" onkeyup="GameEditor.UpdateField('Description','gameDescription');"></textarea></td>
+            </tr>
+            <tr class="hideForStandalone hideForSelfHosted">
+                <td>Public View:</td>
+                <td><select id="publicView" onchange="GameEditor.UpdateField('PublicView', 'publicView');"><option value="Yes">Yes</option><option value="No">No</option></select></td>
+            </tr>
+            <tr>
+                <td>Display FPS:</td>
+                <td><select id="gameFPS" onchange="GameEditor.UpdateField('ShowFPS', 'gameFPS');"><option value="Yes">Yes</option><option value="No">No</option></select></td>
+            </tr>
+            <tr>
+                <td>Display Inventory Panel:</td>
+                <td><select id="showInventory" onchange="GameEditor.UpdateField('ShowInventory', 'showInventory');"><option value="Yes">Yes</option><option value="No">No</option></select></td>
+            </tr>
+            <tr>
+                <td>Display Stats Panel:</td>
+                <td><select id="showStats" onchange="GameEditor.UpdateField('ShowStats', 'showStats');"><option value="Yes">Yes</option><option value="No">No</option></select></td>
+            </tr>
+            <tr>
+                <td>Display Journal Panel:</td>
+                <td><select id="showJournal" onchange="GameEditor.UpdateField('ShowJournal', 'showJournal');"><option value="Yes">Yes</option><option value="No">No</option></select></td>
+            </tr>
+            <tr class="hideForStandalone">
+                <td>Display Message Panel:</td>
+                <td><select id="showMessage" onchange="GameEditor.UpdateField('ShowMessage', 'showMessage');"><option value="Yes">Yes</option><option value="No">No</option></select></td>
+            </tr>
+            <tr>
+                <td>Start player look:</td>
+                <td><select id="startLook" onchange="GameEditor.UpdateField('StartLook', 'startLook');"></select></td>
+            </tr>
+            <tr>
+                <td>Small bag (monster drop) look:</td>
+                <td><select id="smallBagObject" onchange="GameEditor.UpdateField('SmallBagObject', 'smallBagObject');"></select></td>
+            </tr>
+            <tr>
+                <td>Spawn point:</td>
+                <td>
+                    <table>
+                        <tr>
+                            <td>X:</td>
+                            <td><input type="text" id="spawnX" onkeyup="GameEditor.UpdateSpawn('X','spawnX')" /></td>
+                            <td>Y:</td>
+                            <td><input type="text" id="spawnY" onkeyup="GameEditor.UpdateSpawn('Y','spawnY')" /></td>
+                            <td>Zone:</td>
+                            <td><select id="spawnZone" onchange="GameEditor.UpdateSpawn('Zone', 'spawnZone')"></select></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr class="hideForStandalone">
+                <td>Chat enabled:</td>
+                <td><select id="chatEnabled" onchange="GameEditor.UpdateField('ChatEnabled', 'chatEnabled');"><option value="Yes">Yes</option><option value="No">No</option></select></td>
+            </tr>
+            <tr class="hideForStandalone">
+                <td>Chat smilies:</td>
+                <td><select id="chatSmilies" onchange="GameEditor.UpdateField('ChatSmilies', 'chatSmilies');"><option value="Yes">Yes</option><option value="No">No</option></select></td>
+            </tr>
+            <tr class="hideForStandalone">
+                <td>Chat automatic links:</td>
+                <td><select id="chatLink" onchange="GameEditor.UpdateField('ChatLink', 'chatLink');"><option value="Yes">Yes</option><option value="No">No</option></select></td>
+            </tr>
+            <tr>
+                <td>Simplified object logic:</td>
+                <td><select id="simpleObjectLogic" onchange="GameEditor.UpdateField('SimplifiedObjectLogic', 'simpleObjectLogic');"><option value="Yes">Yes</option><option value="No">No</option></select></td>
+            </tr>
+            <tr>
+                <td>Initialize actions:</td>
+                <td id="initializeSteps">
+            </tr>
+            <tr class="hideForStandalone">
+                <td>Splash screen:</td>
+                <td>
+                    <form method="post" enctype="multipart/form-data" id="gameSplashUploadForm" target="gameSplashIframe"
+                          action="/upload/Art">
+                        <input type="hidden" name="returnClass" value="GameEditor" />
+                        <input type="hidden" name="game" id="uploadGameId" />
+                        <input type="hidden" name="token" id="uploadToken" />
+                        <input type="file" name="fileUpload" id="fileUpload" style="width: calc(100% - 160px);">
+                        <div class="button" onclick="GameEditor.UploadSplash()">Upload</div>
+                        <div class="button" onclick="GameEditor.RemoveSplash()">Remove</div>
+                    </form>
+                </td>
+            </tr>
+        </table>
+        <div style="width: 100%; text-align: center;">
+            <div class="button" onclick="world.Save();">Save</div>
+            <div class="button" onclick="GameEditor.Delete();" id="buttonDeleteGame">Delete Game</div>
+        </div>
+    </div>
+
+    <iframe id="gameSplashIframe" name="gameSplashIframe" style="display:none;"></iframe>
+
+    <a href="/Help/game_editor.html" id="helpLink" target="engineHelp">?</a>
+</body>
+</html>

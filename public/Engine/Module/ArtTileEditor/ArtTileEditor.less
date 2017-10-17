@@ -1,0 +1,326 @@
+﻿@import (reference) "../../../Less/engine.less";
+
+#tilesPropertiesTitle
+{
+    position: absolute;
+    left: 0px;
+    width: 250px;
+    top: @menubarHeight;
+    font-weight: bold;
+}
+
+#mainType
+{
+    width: 100%;
+}
+
+#tilesProperties
+{
+    position: absolute;
+    left: 0px;
+    width: 250px;
+    bottom: ~"calc(80% + 3px)";
+    top: 50px;
+    border: solid 1px @panelBorder;
+    overflow-y: scroll;
+    box-sizing: border-box;
+    border-radius: @panelRadius;
+
+    & table
+    {
+        width: ~"calc(100% - 3px)";
+    }
+
+    & table tr > td:first-child
+    {
+        width: 1%;
+        .fieldLabel;
+    }
+
+    & input, .button
+    {
+        width: 100%;
+    }
+}
+
+#tileProposeType
+{
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: @menubarHeight;
+    bottom: 0px;
+    background-color: @panelBackground;
+    overflow-y: scroll;
+    display: none;
+}
+
+#listTypeTitle
+{
+    position: absolute;
+    left: 0px;
+    width: 250px;
+    top: 20%;
+    font-weight: bold;
+}
+
+#listTypes
+{
+    position: absolute;
+    left: 0px;
+    width: 250px;
+    top: ~"calc(20% + 20px)";
+    bottom: ~"calc(60% + 20px)";
+}
+
+#typesCommands
+{
+    position: absolute;
+    left: 0px;
+    width: 250px;
+    bottom: ~"calc(60% - 10px)";
+    text-align: center;
+}
+
+#tileTransitionsTitle
+{
+    position: absolute;
+    left: 0px;
+    width: 250px;
+    top: ~"calc(40% + 10px)";
+    font-weight: bold;
+}
+
+#listTransitions
+{
+    position: absolute;
+    left: 0px;
+    width: 250px;
+    top: ~"calc(40% + 30px)";
+    bottom: ~"calc(40% + 20px)";
+}
+
+#transitionsCommands
+{
+    position: absolute;
+    left: 0px;
+    width: 250px;
+    bottom: ~"calc(40% - 10px)";
+    text-align: center;
+}
+
+#tilePathTitle
+{
+    position: absolute;
+    left: 0px;
+    width: 250px;
+    top: ~"calc(60% + 10px)";
+    font-weight: bold;
+}
+
+#listPaths
+{
+    position: absolute;
+    left: 0px;
+    width: 250px;
+    top: ~"calc(60% + 30px)";
+    bottom: ~"calc(20% + 20px)";
+}
+
+#pathsCommands
+{
+    position: absolute;
+    left: 0px;
+    width: 250px;
+    bottom: ~"calc(20% - 10px)";
+    text-align: center;
+}
+
+#tileWalkable, #tileInType, #tileTransition, #tilePath
+{
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: @menubarHeight;
+    bottom: 0px;
+    background-color: @panelBackground;
+    display: none;
+}
+
+.tilePanelButtons
+{
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    text-align: center;
+}
+
+#listTileWalkable
+{
+    overflow-y: scroll;
+    position: absolute;
+    left: 5px;
+    top: 5px;
+    right: 5px;
+    bottom: 30px;
+    border: solid 1px @panelBorder;
+
+    & > div
+    {
+        border: solid 3px #00E000;
+        display: inline-block;
+        cursor: pointer;
+    }
+}
+
+.nonWalkable
+{
+    border: solid 3px #E00000 !important;
+}
+
+#tileInTypeProperties
+{
+    width: ~"calc(100% - 30px)";
+
+    & tr > td:first-child
+    {
+        width: 1%;
+        .fieldLabel;
+    }
+
+    & input
+    {
+        width: 100%;
+    }
+}
+
+#listTileInType
+{
+    overflow-y: scroll;
+    position: absolute;
+    left: 5px;
+    top: 35px;
+    right: 30px;
+    bottom: 30px;
+    border: solid 1px @panelBorder;
+    border-radius: @panelRadius;
+
+    & > div
+    {
+        border: solid 3px transparent;
+        display: inline-block;
+        cursor: pointer;
+    }
+}
+
+.tileInTypeSelected
+{
+    border: solid 3px #00E000 !important;
+}
+
+#tileEditorLoading
+{
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    top: @menubarHeight;
+    background-color: @panelBackground;
+    padding: 10px;
+    font-size: 20px;
+}
+
+#listPossibleTransitionTiles
+{
+    position: absolute;
+    left: 0px;
+    right: 30px;
+    top: 170px;
+    bottom: 30px;
+    border: solid 1px @panelBorder;
+    overflow-y: scroll;
+    border-radius: @panelRadius;
+
+    & div
+    {
+        cursor: pointer;
+        display: inline-block;
+        margin: 2px;
+    }
+}
+
+#tileTransitionProperties
+{
+    width: ~"calc(100% - 30px)";
+
+    & input, select
+    {
+        width: 100%;
+    }
+
+    & tr > td:first-child
+    {
+        width: 50px;
+        .fieldLabel;
+        border-bottom: red 5px solid;
+    }
+
+    & tr > td:nth-child(3)
+    {
+        width: 50px;
+        .fieldLabel;
+        border-bottom: blue 5px solid;
+    }
+
+    & tr > td:nth-child(5)
+    {
+        .fieldLabel;
+        width: 50px;
+    }
+}
+
+#listCurrentTiles
+{
+    position: absolute;
+    left: 252px;
+    top: 50px;
+    bottom: 30px;
+    right: 30px;
+    border: solid 1px @panelBorder;
+    overflow-y: scroll;
+    border-radius: @panelRadius;
+
+    & div
+    {
+        display: inline-block;
+    }
+}
+
+#tilesCommands
+{
+    position: absolute;
+    left: 252px;
+    bottom: 3px;
+    right: 2px;
+    text-align: center;
+}
+
+#listPossiblePathTiles
+{
+    position: absolute;
+    left: 0px;
+    right: 30px;
+    top: 150px;
+    bottom: 30px;
+    border: solid 1px @panelBorder;
+    overflow-y: scroll;
+    border-radius: @panelRadius;
+
+    & div
+    {
+        cursor: pointer;
+        display: inline-block;
+        margin: 2px;
+    }
+}

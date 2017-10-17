@@ -1,0 +1,123 @@
+﻿@import (reference) "../../../Less/engine.less";
+
+.elementCodeWarning
+{
+    position: absolute;
+    left: 152px;
+    right: 0px;
+    width: ~"calc(100% - 152px)";
+    top: ~"calc(50% + 24px)";
+    font-weight: bold;
+    background-color: #ffd800;
+    text-align: center;
+    display: none;
+}
+
+.elementCode
+{
+    position: absolute;
+    left: 152px;
+    right: 30px;
+    top: ~"calc(50% + 40px)";
+    bottom: 30px;
+    box-sizing: border-box;
+    resize: none;
+}
+
+.elementParameters
+{
+    position: absolute;
+    left: 152px;
+    right: 30px;
+    top: @menubarHeight;
+    bottom: ~"calc(50% - 22px)";
+    overflow-y: scroll;
+    border: solid 1px @panelBorder;
+    border-radius: @panelRadius;
+
+    & table
+    {
+        width: 100%;
+    }
+
+    & table tr > td:first-child
+    {
+        width: 1%;
+        .fieldLabel;
+        padding-right: 30px;
+    }
+
+    & table tr
+    {
+        vertical-align: top;
+    }
+
+    & input, select
+    {
+        width: 100%;
+    }
+
+    & .dialogBlockDelete
+    {
+        margin-right: -30px;
+    }
+}
+
+.elementList
+{
+    position: absolute;
+    left: 0px;
+    top: @menubarHeight;
+    width: 150px;
+    bottom: 30px;
+}
+
+.elementListCommands
+{
+    position: absolute;
+    left: 0px;
+    width: 150px;
+    bottom: 0px;
+    text-align: center;
+}
+
+.elementCommands
+{
+    position: absolute;
+    left: 150px;
+    right: 0px;
+    bottom: 0px;
+    text-align: center;
+}
+
+
+#skillParameters
+{
+    bottom: ~"calc(50% + 7px)";
+
+    & table
+    {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    & table > thead > tr
+    {
+        background-color: @titleLineBackground;
+    }
+
+    & table > thead > tr > td
+    {
+        color: @titleLineColor;
+        font-weight: bold;
+    }
+}
+
+#skillParamCommands
+{
+    position: absolute;
+    top: ~"calc(50% - 7px)";
+    left: 155px;
+    right: 30px;
+    text-align: center;
+}

@@ -1,0 +1,148 @@
+﻿@import (reference) "../../../Less/engine.less";
+
+#messageIcon div.gamePanelContentNoHeader > div
+{
+    background-color: #ffd800;
+    font-weight: bold;
+    color: black;
+    font-size: 16px;
+    position: absolute;
+    top: 10px;
+    left: 40px;
+    height: 30px;
+    width: 30px;
+    border-radius: 15px;
+    line-height: 30px;
+    text-align: center;
+    border: solid 2px black;
+}
+
+.messageHeader
+{
+    width: 100%;
+    border-collapse: collapse;
+
+    & tr > td:nth-child(1)
+    {
+        width: 120px;
+    }
+
+    & tr > td:nth-child(2)
+    {
+        width: 140px;
+    }
+
+    & tr > td:nth-child(3)
+    {
+        width: ~"calc(100% - 260px)";
+    }
+}
+
+#messageList
+{
+    height: 150px;
+    overflow-y: scroll;
+}
+
+#messageList table
+{
+    width: 100%;
+    border-collapse: collapse;
+
+    & tr
+    {
+        cursor: pointer;
+    }
+
+    & tr > td:nth-child(1)
+    {
+        width: 120px;
+    }
+
+    & tr > td:nth-child(2)
+    {
+        width: 140px;
+    }
+
+    & tr > td:nth-child(3)
+    {
+        width: ~"calc(100% - 260px)";
+    }
+}
+
+.newMessage
+{
+    & td
+    {
+        font-weight: bold;
+    }
+
+    & td:nth-child(1):before
+    {
+        content: "*";
+    }
+}
+
+#messageDetails
+{
+    margin-top: 5px;
+    height: ~"calc(100vh - 330px);";
+    overflow-y: scroll;
+
+    & table
+    {
+        width: 100%;
+    }
+
+    & table tr
+    {
+        vertical-align: top;
+    }
+
+    & table tr > td:first-child
+    {
+        width: 1px;
+        font-weight: bold;
+        white-space: nowrap;
+    }
+
+    & input, select
+    {
+        width: 100%;
+    }
+
+    & textarea
+    {
+        width: 100%;
+        resize: none;
+        height: 180px;
+    }
+
+    & table tr > td:nth-child(3)
+    {
+        width: 40px;
+        white-space: nowrap;
+    }
+
+    & table tr > td
+    {
+        vertical-align: baseline;
+    }
+}
+
+.removeAttachement
+{
+    //float: right;
+    margin-right: 10px;
+    display: inline-block;
+    background-color: #E00000;
+    color: white;
+    width: 15px;
+    height: 15px;
+    border-radius: 7px;
+    padding-left: 3px;
+    box-sizing: border-box;
+    padding-top: 1px;
+    font-weight: bold;
+    cursor: pointer;
+}

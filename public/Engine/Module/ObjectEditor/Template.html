@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div id="listObject"></div>
+    <div id="objectDetails"></div>
+
+    <div id="mainCommands">
+        <div class="button" onclick="ObjectEditor.New()">New</div>
+        <div class="button" onclick="world.Save();">Save</div>
+        <div class="button" onclick="ObjectEditor.Delete()">Delete</div>
+    </div>
+
+    <a href="/Help/object_editor.html" id="helpLink" target="engineHelp">?</a>
+
+    <div id="uploadArtObject">
+        <form method="post" enctype="multipart/form-data" id="artObjectUploadForm" target="artObjectIframe"
+              action="/upload/Art">
+            <input type="hidden" name="returnClass" value="ObjectEditor" />
+            <input type="hidden" name="game" id="uploadGameId" />
+            <input type="hidden" name="token" id="uploadToken" />
+            <input type="file" name="fileUpload" id="fileUpload">
+            <div class="button" onclick="ObjectEditor.Upload()">Upload</div><div class="button" onclick="ObjectEditor.CloseUpload()">Cancel</div>
+        </form>
+    </div>
+    <iframe id="artObjectIframe" name="artObjectIframe"></iframe>
+</body>
+</html>

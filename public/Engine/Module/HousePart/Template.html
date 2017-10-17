@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div id="listHouseParts"></div>
+    <div id="housePartContainer">
+        <table id="houseDetails">
+            <tr>
+                <td>Name:</td>
+                <td colspan="3"><input type="text" id="housePartName" onkeyup="HousePart.ChangeName();" /></td>
+            </tr>
+            <tr>
+                <td>Position X:</td>
+                <td><input type="text" id="housePartX" onkeyup="HousePart.ChangeValue('x', 'housePartX');" /></td>
+                <td>Y:</td>
+                <td><input type="text" id="housePartY" onkeyup="HousePart.ChangeValue('y', 'housePartY');" /></td>
+            </tr>
+            <tr>
+                <td>Width:</td>
+                <td><input type="text" id="housePartWidth" onkeyup="HousePart.ChangeValue('width', 'housePartWidth');" /></td>
+                <td>Height:</td>
+                <td><input type="text" id="housePartHeight" onkeyup="HousePart.ChangeValue('height', 'housePartHeight');" /></td>
+            </tr>
+        </table>
+        <div id="housePartEditorContainer">
+            <canvas id="housePartEditor" width="500" height="500"></canvas>
+        </div>
+        <div id="houseEditorCommands">
+            <div class="button" onclick="HousePart.Clone()">Clone</div>
+            <div class="button" onclick="HousePart.ShowUpload()" id="buttonUpload">Upload</div>
+            <div class="button" onclick="HousePart.Delete()">Delete</div>
+            <div class="button" onclick="world.Save()">Save</div>
+        </div>
+        <div id="houseEditorMouseOverlay"></div>
+    </div>
+
+    <div id="uploadHousePart">
+        <form method="post" enctype="multipart/form-data" id="artHousePartUploadForm" target="artHousePartIframe"
+              action="/upload/Art">
+            <input type="hidden" name="returnClass" value="HousePart" />
+            <input type="hidden" name="game" id="uploadGameId" />
+            <input type="hidden" name="token" id="uploadToken" />
+            <input type="file" name="fileUpload" id="fileUpload">
+            <div class="button" onclick="HousePart.Upload()">Upload</div><div class="button" onclick="HousePart.CloseUpload()">Cancel</div>
+        </form>
+
+    </div>
+
+    <iframe id="artHousePartIframe" name="artHousePartIframe"></iframe>
+
+    <a href="/Help/house_part_editor.html" id="helpLink" target="engineHelp">?</a>
+</body>
+</html>

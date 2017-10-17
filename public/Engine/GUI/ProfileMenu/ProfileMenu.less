@@ -1,0 +1,72 @@
+﻿@import (reference) "../../../Less/engine.less";
+
+#gameMenuPanel
+{
+    position: absolute;
+    left: -10px;
+    top: 50px;
+    bottom: 60px;
+    right: 64px;
+    display: none;
+    width: 500px;
+    max-width: ~"calc(100% - 64px)";
+
+    & #gameMenuPanelContent
+    {
+        margin-left: 10px;
+    }
+}
+
+.openPanelIcon
+{
+    left: ~"calc(100% - 84px) !important";
+}
+
+.profileList
+{
+    width: 100%;
+
+    & thead td
+    {
+        font-weight: bold;
+    }
+
+    & tr > td:nth-child(2), & tr > td:nth-child(3)
+    {
+        width: 1%;
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    & tr > td:nth-child(4)
+    {
+        width: 1%;
+        white-space: nowrap;
+    }
+}
+
+#profileIcon div.gamePanelContentNoHeader > div
+{
+    background-color: #ffd800;
+    font-weight: bold;
+    color: black;
+    font-size: 32px;
+    position: absolute;
+    top: 30px;
+    left: 45px;
+    height: 30px;
+    width: 30px;
+    border-radius: 15px;
+    line-height: 30px;
+    text-align: center;
+    border: solid 2px black;
+}
+
+
+@media (min-width: 564px)
+{
+    .openPanelIcon
+    {
+        left: 480px !important;
+    }
+}

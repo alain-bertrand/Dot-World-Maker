@@ -1,0 +1,69 @@
+﻿@import (reference) "../../../Less/engine.less";
+
+#questDetails
+{
+    position: absolute;
+    top: 35px;
+    left: 155px;
+    right: 35px;
+    height: 200px;
+    border: solid 1px @panelBorder;
+    box-shadow: @panelInset;
+    border-radius: @panelRadius;
+
+    & table
+    {
+        width: 100%;
+    }
+
+    & table tr
+    {
+        vertical-align: top;
+    }
+
+    & table tr > td:first-child
+    {
+        width: 1px;
+        font-weight: bold;
+        white-space: nowrap;
+    }
+
+    & input
+    {
+        width: 100%;
+    }
+
+    & textarea
+    {
+        width: 100%;
+        resize: none;
+    }
+}
+
+#questJournalEntries
+{
+    position: absolute;
+    top: 240px;
+    left: 155px;
+    right: 35px;
+    bottom: 30px;
+    border: solid 1px @panelBorder;
+    box-shadow: @panelInset;
+    border-radius: @panelRadius;
+    overflow-y: scroll;
+
+    & textarea
+    {
+        width: 100%;
+        resize: none;
+    }
+}
+
+#questJournalCommands
+{
+    position: absolute;
+    left: 155px;
+    right: 35px;
+    bottom: 0px;
+    text-align: center;
+}

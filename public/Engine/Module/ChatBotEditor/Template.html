@@ -1,0 +1,24 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div id="listChatBot"></div>
+    <div id="chatBotCommands">
+        <div class="button" onclick="ChatBotEditor.NewBot()">New Bot</div>
+        <div class="button" onclick="ChatBotEditor.DeleteBot()">Delete Bot</div>
+    </div>
+    <div id="mainCommands">
+        <div class="button" onclick="ChatBotEditor.NewSentence()">New Sentence</div>
+        <div class="button" onclick="ChatBotEditor.DeleteSentence()">Delete Sentence</div>
+        <div class="button" onclick="world.Save();">Save</div>
+    </div>
+    <div id="listBotSentences"></div>
+    <div id="chatBotDetails"></div>
+
+    <a href="/Help/chat_bot_editor.html" id="helpLink" target="engineHelp">?</a>    
+</body>
+</html>

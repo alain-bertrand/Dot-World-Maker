@@ -1,0 +1,197 @@
+﻿@import (reference) "../../../Less/engine.less";
+
+#codeNameProperty {
+    position: absolute;
+    left: 210px;
+    right: 30px;
+    top: 35px;
+
+    & table {
+        width: 100%;
+    }
+
+    & table tr > td:first-child {
+        font-weight: bold;
+        white-space: nowrap;
+        width: 1px;
+    }
+
+    & input {
+        width: 100%;
+    }
+}
+
+#genericCodeContainer {
+    position: absolute;
+    left: 210px;
+    right: 30px;
+    top: 90px;
+    bottom: 30px;
+    box-sizing: border-box;
+    resize: none;
+}
+
+#genericCodeParameters {
+    position: absolute;
+    left: 210px;
+    right: 30px;
+    top: 90px;
+    bottom: 30px;
+    box-sizing: border-box;
+    border: solid 1px @panelBorder;
+    border-radius: @panelRadius;
+    overflow-y: scroll;
+    display: none;
+
+    & table {
+        width: 100%;
+    }
+
+    & input {
+        width: 100%;
+    }
+
+    & select {
+        width: 100%;
+    }
+
+    & table tr > td:first-child {
+        width: 1%;
+        white-space: nowrap;
+        font-weight: bold;
+    }
+
+    & .dialogBlockDelete {
+        float: none;
+        display: inline-block;
+        margin-right: 5px;
+    }
+
+    & table:nth-child(2) tr > td:nth-child(4) {
+        width: 1%;
+    }
+}
+
+#genericCodeDescription {
+    position: absolute;
+    left: 210px;
+    right: 30px;
+    top: 90px;
+    bottom: 30px;
+    display: none;
+    overflow-y: auto;
+
+    & table {
+        width: 100%;
+    }
+
+    & tr > td:first-child {
+        width: 1%;
+        font-weight: bold;
+        white-space: nowrap;
+    }
+
+    & textarea {
+        width: 100%;
+        height: ~"calc(100vh - 250px)";
+        resize: none;
+    }
+
+    & select {
+        width: 100%;
+    }
+}
+
+
+#genericCodeIncludes {
+    position: absolute;
+    left: 210px;
+    right: 30px;
+    top: 90px;
+    bottom: 30px;
+    display: none;
+}
+
+#titleAvailableIncludes {
+    font-weight: bold;
+    position: absolute;
+    top: 0px;
+    left: 5px;
+}
+
+#titleIncluded {
+    font-weight: bold;
+    position: absolute;
+    top: 0px;
+    left: ~"calc(50% + 5px)";
+}
+
+#listAvailableIncludes {
+    position: absolute;
+    left: 0px;
+    top: 20px;
+    bottom: 0px;
+    width: ~"calc(50% - 5px)";
+    box-shadow: @panelInset;
+    border-radius: @panelRadius;
+    border: solid 1px @panelBorder;
+    overflow-y: scroll;
+    padding: 3px;
+    box-sizing: border-box;
+
+    & span {
+        display: block;
+        margin-top: 5px;
+        font-weight: bold;
+    }
+
+    & div {
+        padding: 3px;
+        cursor: pointer;
+    }
+    /*& div:hover
+    {
+        background-color: @rowHover;
+    }*/
+}
+
+#listIncluded {
+    position: absolute;
+    right: 0px;
+    top: 20px;
+    bottom: 0px;
+    width: ~"calc(50% - 5px)";
+    box-shadow: @panelInset;
+    border-radius: @panelRadius;
+    border: solid 1px @panelBorder;
+    overflow-y: scroll;
+    padding: 3px;
+    box-sizing: border-box;
+
+    & span {
+        display: block;
+        margin-top: 5px;
+        font-weight: bold;
+    }
+
+    & div {
+        padding: 3px;
+        cursor: pointer;
+    }
+    /*& div:hover
+    {
+        background-color: @rowHover;
+    }*/
+}
+
+#genericCodeIncludeIncludesButton {
+    position: absolute;
+    left: ~"calc(50% - 10px)";
+    top: 50%;
+}
+
+#genericCodeRemoveIncludesButton {
+    position: absolute;
+    left: ~"calc(50% - 10px)";
+    top: ~"calc(50% + 30px)";
+}

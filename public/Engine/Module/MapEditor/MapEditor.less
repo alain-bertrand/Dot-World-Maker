@@ -1,0 +1,295 @@
+﻿@import (reference) "../../../Less/engine.less";
+
+#mapEditorContainer
+{
+    position: absolute;
+    left: 210px;
+    right: 0px;
+    top: calc(@menubarHeight + 30);
+    bottom: 0px;
+}
+
+.mapWithSubPanel
+{
+    bottom: 50% !important;
+}
+
+.mapWithSmallSubPanel
+{
+    bottom: 38px !important;
+}
+
+.mapSmallSubPanel
+{
+    top: auto !important;
+    height: 30px;
+
+    & table
+    {
+        width: 100%;
+    }
+
+    & table tr > td:first-child
+    {
+        width: 1px;
+        font-weight: bold;
+        white-space: nowrap;
+    }
+
+    & table input
+    {
+        width: 100%;
+    }
+}
+
+#mapEditorActions
+{
+    position: absolute;
+    border: solid 1px @panelBorder;
+    top: 50%;
+    left: 210px;
+    right: 0px;
+    bottom: 0px;
+    display: none;
+    padding: 3px;
+    overflow-y: scroll;
+
+    & select
+    {
+        width: 100%;
+    }
+}
+
+#mapEditorContainer > canvas
+{
+    cursor: crosshair;
+    width: 100%;
+    height: 100%;
+}
+
+#mapEditorPalette
+{
+    background-color: @panelBackground;
+    position: absolute;
+    left: 0px;
+    top: @menubarHeight;
+    padding-top: 2px;
+    bottom: 0px;
+    width: 210px;
+    box-sizing: border-box;
+    border-right: solid 2px @panelBorder;
+
+    & > span
+    {
+        width: ~"calc(100% - 4px)";
+        margin: 2px;
+        padding: 2px;
+        display: block;
+        box-sizing: border-box;
+        border: solid 1px @buttonBorder;
+        cursor: pointer;
+    }
+
+    & select
+    {
+        width: 100%;
+    }
+}
+
+.toolSelected
+{
+    background-color: @selectedBackground;
+}
+
+#tilePreview
+{
+    margin: 2px;
+    padding: 2px;
+    display: block;
+    position: absolute;
+    left: 0px;
+    bottom: 0px;
+    top: 282px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    border: solid 1px @buttonBorder;
+    box-sizing: border-box;
+    width: 204px;
+    box-shadow: @panelInset;
+    border-radius: @panelRadius;
+}
+
+#tilePreview > span
+{
+    display: block;
+    cursor: pointer;
+    padding: 3px;
+}
+
+#mapEditorSelectTile
+{
+    position: absolute;
+    left: 210px;
+    right: 0px;
+    top: 28px;
+    bottom: 0px;
+    background-color: @panelBackground;
+    display: none;
+}
+
+#tileList
+{
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 15px;
+    padding: 3px;
+    overflow-y: scroll;
+}
+
+#tileList div, #tilePreview div
+{
+    margin: 0px;
+    //padding: 2px;
+    cursor: pointer;
+    display: inline-block;
+    border: solid 2px transparent;
+    line-height: 0px;
+}
+
+#tileList div.toolSelected, #tilePreview div.toolSelected
+{
+    //border: solid 2px darken(@selectedBackground,20%) !important;
+    border: solid 2px red !important;
+}
+
+#tileList table, #tilePreview table
+{
+    width: 100%;
+    border-spacing: 0px;
+    border-collapse: collapse;
+}
+
+#tileList tr, #tilePreview tr
+{
+    cursor: pointer;
+
+    &:hover
+    {
+        background-color: @rowHover;
+    }
+}
+
+#tileList tr > td:first-child, #tilePreview tr > td:first-child
+{
+    width: 1px;
+}
+
+#currentPosition
+{
+    /*position: absolute;
+    top: 272px;
+    left: 2px;
+    width: 202px;
+        */
+    height: 24px;
+    border: solid 1px @buttonBorder;
+    overflow: hidden;
+    background-color: @backgroundColor;
+    padding: 5px;
+    box-shadow: @panelInset;
+    border-radius: @panelRadius;
+    box-sizing: border-box;
+    position: absolute;
+    right: 5px;
+    top: 3px;
+    width: 200px;
+}
+
+.smallSearch:after
+{
+    .searchIcon;
+}
+
+.smallSearch:hover
+{
+    color: #b00000;
+}
+
+#mapEditorToolbar
+{
+    position: absolute;
+    top: calc(@menubarHeight - 2px);
+    left: 210px;
+    right: 0px;
+    height: 30px;
+    padding-left: 10px;
+    background-color: @menubarBackground;
+
+    & span
+    {
+        height: 20px;
+        width: 70px;
+        background-color: #E0E0E0;
+        display: inline-block;
+        line-height: 20px;
+        margin-top: 5px;
+        padding-left: 3px;
+        padding-right: 3px;
+        border: solid 1px #808080;
+        cursor: pointer;
+        border-radius: 2px;
+        margin-right: 5px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    & span:hover
+    {
+        background-color: antiquewhite;
+    }
+}
+
+#mapEditorAdditionalTools
+{
+    display: inline-block;
+    color: white;
+
+    & span
+    {
+        color: black;
+    }
+
+    & input
+    {
+        width: 32px;
+    }
+}
+
+.activeToolbarIcon
+{
+    background-color: aquamarine !important;
+}
+
+#mapEditorSave:before
+{
+    .saveIcon;
+    margin-right: 5px;
+    font-weight: normal;
+}
+
+
+#mapEditorGrid:before
+{
+    .gridIcon;
+    margin-right: 5px;
+    font-weight: normal;
+}
+
+#mapEditorMinimap:before
+{
+    .minimapIcon;
+    margin-right: 5px;
+    font-weight: normal;
+}

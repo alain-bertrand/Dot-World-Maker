@@ -1,0 +1,209 @@
+create table if not exists users(
+id int primary key auto_increment,
+name varchar(30) not null unique,
+password varchar(256),
+email varchar(128),
+editor_version char(1) default 's', -- f = Free, s = standard
+rented_space int default 20480,
+rented_space_till datetime default null,
+random_reset_key varchar(256),
+reset_valid_till datetime default '2200-01-01 12:00:00',
+credits int default 0);
+
+create table if not exists games(
+id int primary key auto_increment,
+name varchar(80) not null unique,
+public char(1) default 'y',
+description text,
+main_owner int,
+data longtext);
+
+create table if not exists game_access_rights(
+id int primary key auto_increment,
+game_id int,
+user_id int,
+access_right_id int);
+
+create table if not exists game_access_right_types(
+id int primary key,
+name varchar(40));
+
+replace into game_access_right_types(id,name) values(10, 'Chat Moderator');
+replace into game_access_right_types(id,name) values(100, 'Game Admin');
+replace into game_access_right_types(id,name) values(1000, 'Engine Admin');
+
+create table if not exists game_maps(
+game_id int,
+area_x int,
+area_y int,
+zone varchar(80),
+data longtext,
+primary key (game_id, area_x, area_y, zone));
+
+insert into users(name,password) values('admin','*admin');
+insert into game_access_rights(user_id,access_right_id) select id,1000 from users where name='admin';
+insert into games(name,main_owner) select 'Demo',id from users where name='admin';
+insert into game_access_rights(game_id,access_right_id) select id,100 from games where name='Demo';
+update game_access_rights set user_id = (select id from users where name='admin') where game_id in (select id from games where name='Demo');
+
+create table if not exists game_player(
+user_id int not null,
+game_id int not null,
+x int,
+y int,
+zone varchar(80),
+data longtext,
+primary key(user_id,game_id));
+
+create table if not exists game_news(
+id int primary key auto_increment,
+user_id int,
+game_id int,
+posted_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+news text);
+
+create table if not exists game_stat(
+id int not null,
+name varchar(40) unique);
+
+replace into game_stat(id,name) values(1,'Player Join');
+replace into game_stat(id,name) values(2,'Player Login');
+replace into game_stat(id,name) values(100,'Monster Kill');
+replace into game_stat(id,name) values(101,'Level Up');
+replace into game_stat(id,name) values(102,'Player Kill');
+
+create table if not exists game_stat_year(
+game_id int not null,
+stat_id int not null,
+year int not null,
+m1 int default 0,
+m2 int default 0,
+m3 int default 0,
+m4 int default 0,
+m5 int default 0,
+m6 int default 0,
+m7 int default 0,
+m8 int default 0,
+m9 int default 0,
+m10 int default 0,
+m11 int default 0,
+m12 int default 0,
+primary key(game_id, stat_id, year));
+
+create table if not exists game_stat_month(
+game_id int not null,
+stat_id int not null,
+year int not null,
+month int not null,
+d1 int default 0,
+d2 int default 0,
+d3 int default 0,
+d4 int default 0,
+d5 int default 0,
+d6 int default 0,
+d7 int default 0,
+d8 int default 0,
+d9 int default 0,
+d10 int default 0,
+d11 int default 0,
+d12 int default 0,
+d13 int default 0,
+d14 int default 0,
+d15 int default 0,
+d16 int default 0,
+d17 int default 0,
+d18 int default 0,
+d19 int default 0,
+d20 int default 0,
+d21 int default 0,
+d22 int default 0,
+d23 int default 0,
+d24 int default 0,
+d25 int default 0,
+d26 int default 0,
+d27 int default 0,
+d28 int default 0,
+d29 int default 0,
+d30 int default 0,
+d31 int default 0,
+primary key(game_id, stat_id, year, month));
+
+create table if not exists game_stat_day(
+game_id int not null,
+stat_id int not null,
+year int not null,
+month int not null,
+day int not null,
+h0 int default 0,
+h1 int default 0,
+h2 int default 0,
+h3 int default 0,
+h4 int default 0,
+h5 int default 0,
+h6 int default 0,
+h7 int default 0,
+h8 int default 0,
+h9 int default 0,
+h10 int default 0,
+h11 int default 0,
+h12 int default 0,
+h13 int default 0,
+h14 int default 0,
+h15 int default 0,
+h16 int default 0,
+h17 int default 0,
+h18 int default 0,
+h19 int default 0,
+h20 int default 0,
+h21 int default 0,
+h22 int default 0,
+h23 int default 0,
+primary key(game_id, stat_id, year, month, day));
+
+create table if not exists game_player_messages(
+id int primary key auto_increment,
+game_id int not null,
+inbox int not null,
+new_message char(1) default 'y',
+from_user int not null,
+to_user varchar(255) not null,
+sent timestamp,
+subject varchar(255),
+message text,
+attachments text
+);
+
+create table if not exists paypal_transactions(
+id varchar(32) primary key not null,
+data text,
+payer_email varchar(256),
+mc_gross double,
+mc_fee double);
+
+create table if not exists credits_log(
+id int primary key auto_increment,
+entry_on timestamp,
+from_user int,
+to_user int,
+quantity int default 0,
+reason varchar(255));
+
+create table if not exists storage_table(
+id int primary key auto_increment,
+game_id int,
+table_name varchar(32));
+
+create table if not exists storage_table_column(
+id int primary key auto_increment,
+table_id int,
+column_name varchar(32));
+
+create table if not exists storage_entry(
+id int primary key auto_increment,
+table_id int);
+
+create table if not exists storage_value(
+row_id int,
+column_id int,
+value varchar(1024),
+primary key (row_id, column_id));

@@ -1,0 +1,47 @@
+﻿@import (reference) "../../../Less/engine.less";
+
+#fileList
+{
+    position: absolute;
+    left: 5px;
+    right: 35px;
+    bottom: 5px;
+    top: 85px;
+    overflow-y: scroll;
+    border: solid 1px @panelBorder;
+    box-shadow: @panelInset;
+    border-radius: @panelRadius;
+
+    & table
+    {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    & thead tr
+    {
+        background-color: #000000;
+        color: white;
+        font-weight: bold;
+    }
+
+    & tbody > tr:nth-child(2n+1)
+    {
+        background-color: #E0E0E0;
+    }
+}
+
+#fileUsage
+{
+    position: absolute;
+    left: 5px;
+    right: 35px;
+    top: 35px;
+    height: 45px;
+    border: solid 1px @panelBorder;
+    box-shadow: @panelInset;
+    border-radius: @panelRadius;
+    text-align: center;
+    font-size: 12px;
+    line-height: 20px;
+}

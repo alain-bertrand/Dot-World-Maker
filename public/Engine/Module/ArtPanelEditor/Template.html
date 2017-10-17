@@ -1,0 +1,180 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div id="panelDetails">
+        <table>
+            <tr>
+                <td>Current style:</td>
+                <td><canvas id="panelStyle"></canvas>To change a panel style, simply upload a relatively small image containing all the panel (borders, corners, header, and content area). After the upload adjust the different sizes to match your panel and the look of the game will be updated. You don't need to cut the image in smaller pieces.</td>
+            </tr>
+            <tr>
+                <td>Left Border:</td>
+                <td><input type="text" id="leftBorder" onkeyup="ArtPanelEditor.ChangeParam('leftBorder', 'leftBorder');" /></td>
+            </tr>
+            <tr>
+                <td>Right Border:</td>
+                <td><input type="text" id="rightBorder" onkeyup="ArtPanelEditor.ChangeParam('rightBorder', 'rightBorder');" /></td>
+            </tr>
+            <tr>
+                <td>Top Border:</td>
+                <td><input type="text" id="topBorder" onkeyup="ArtPanelEditor.ChangeParam('topBorder', 'topBorder');" /></td>
+            </tr>
+            <tr>
+                <td>Bottom Border:</td>
+                <td><input type="text" id="bottomBorder" onkeyup="ArtPanelEditor.ChangeParam('bottomBorder', 'bottomBorder');" /></td>
+            </tr>
+            <tr>
+                <td>Window Header Height:</td>
+                <td><input type="text" id="headerHeight" onkeyup="ArtPanelEditor.ChangeParam('headerHeight', 'header');" /></td>
+            </tr>
+            <tr>
+                <td>Window Header Text Color:</td>
+                <td><input type="text" id="headerColor" onkeyup="ArtPanelEditor.ChangeParam('headerColor', 'headerColor');" /></td>
+            </tr>
+            <tr>
+                <td colspan="2"><h2>Content</h2></td>
+            </tr>
+            <tr>
+                <td>Content Color:</td>
+                <td><input type="text" id="contentColor" onkeyup="ArtPanelEditor.ChangeParam('contentColor', 'contentColor');" /></td>
+            </tr>
+            <tr>
+                <td>Content table header background:</td>
+                <td><input type="text" id="contentHeaderBackgroundColor" onkeyup="ArtPanelEditor.ChangeParam('contentHeaderBackgroundColor', 'contentHeaderBackgroundColor');" /></td>
+            </tr>
+            <tr>
+                <td>Content table header text:</td>
+                <td><input type="text" id="contentHeaderColor" onkeyup="ArtPanelEditor.ChangeParam('contentHeaderColor', 'contentHeaderColor');" /></td>
+            </tr>
+            <tr>
+                <td>Selected line background:</td>
+                <td><input type="text" id="contentSelectedColor" onkeyup="ArtPanelEditor.ChangeParam('contentSelectedColor', 'contentSelectedColor');" /></td>
+            </tr>
+            <tr>
+                <td colspan="2"><h2>Buttons</h2></td>
+            </tr>
+            <tr>
+                <td>Button Border:</td>
+                <td><input type="text" id="buttonBorder" onkeyup="ArtPanelEditor.ChangeParam('buttonBorder', 'buttonBorder');" /></td>
+            </tr>
+            <tr>
+                <td>Button background:</td>
+                <td><input type="text" id="buttonBackground" onkeyup="ArtPanelEditor.ChangeParam('buttonBackground', 'buttonBackground');" /></td>
+            </tr>
+            <tr>
+                <td>Button background mouse hover:</td>
+                <td><input type="text" id="buttonBackgroundHover" onkeyup="ArtPanelEditor.ChangeParam('buttonBackgroundHover', 'buttonBackgroundHover');" /></td>
+            </tr>
+            <tr>
+                <td colspan="2"><h2>Chat</h2></td>
+            </tr>
+            <tr>
+                <td>Placeholder color:</td>
+                <td><input type="text" id="chatPlaceholderColor" onkeyup="ArtPanelEditor.ChangeParam('chatPlaceholderColor', 'chatPlaceholderColor');" /></td>
+            </tr>
+            <tr>
+                <td>Normal line color:</td>
+                <td><input type="text" id="chatNormalColor" onkeyup="ArtPanelEditor.ChangeParam('chatNormalColor', 'chatNormalColor');" /></td>
+            </tr>
+            <tr>
+                <td>Separator line color:</td>
+                <td><input type="text" id="chatSeparatorColor" onkeyup="ArtPanelEditor.ChangeParam('chatSeparatorColor', 'chatSeparatorColor');" /></td>
+            </tr>
+            <tr>
+                <td>System message:</td>
+                <td><input type="text" id="chatSystemMessageColor" onkeyup="ArtPanelEditor.ChangeParam('chatSystemMessageColor', 'chatSystemMessageColor');" /></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <center>
+                        <div class="button" onclick="ArtPanelEditor.ShowUpload()" id="buttonUpload">Upload</div>
+                        <div class="button" onclick="world.Save()">Save</div>
+                    </center>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="testPanel" class="gamePanel">
+        <div class="gamePanelTopBorder"></div>
+        <div id="testPanelHeader" class="gamePanelHeader">Test Panel</div>
+        <div id="testPanelContent" class="gamePanelContent">
+            <div style="display: inline-block; width: calc(50% - 5px); text-align: justify; vertical-align: top;">
+                <div class="gameButton">Test Button</div><br />
+
+                Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
+                Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit
+                amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo. Quisque sit
+                amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, commodo vitae,
+                ornare sit amet, wisi. Aenean fermentum, elit eget tincidunt condimentum, eros ipsum rutrum orci,
+                sagittis tempus lacus enim ac dui. Donec non enim in turpis pulvinar facilisis. Ut felis. Praesent
+                dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat.
+                Aliquam erat volutpat. Nam dui mi, tincidunt quis, accumsan porttitor, facilisis luctus, metus
+                Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
+                Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero
+                sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo. Quisque
+                sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, commodo vitae,
+                ornare sit amet, wisi. Aenean fermentum, elit eget tincidunt condimentum, eros ipsum rutrum orci,
+                sagittis tempus lacus enim ac dui. Donec non enim in turpis pulvinar facilisis. Ut felis. Praesent
+                dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat.
+                Aliquam erat volutpat. Nam dui mi, tincidunt quis, accumsan porttitor, facilisis luctus, metus
+                Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
+                Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero
+                sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo.
+                Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed,
+                commodo vitae, ornare sit amet, wisi. Aenean fermentum, elit eget tincidunt condimentum, eros
+                ipsum rutrum orci, sagittis tempus lacus enim ac dui. Donec non enim in turpis pulvinar facilisis.
+                Ut felis. Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna
+                eros eu erat. Aliquam erat volutpat. Nam dui mi, tincidunt quis, accumsan porttitor, facilisis luctus,
+                metus Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
+                Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet
+                quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo. Quisque sit amet est
+                et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, commodo vitae, ornare sit amet,
+                wisi. Aenean fermentum, elit eget tincidunt condimentum, eros ipsum rutrum orci, sagittis tempus lacus
+                enim ac dui. Donec non enim in turpis pulvinar facilisis. Ut felis. Praesent dapibus, neque id cursus
+                faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. Aliquam erat volutpat. Nam dui mi,
+                tincidunt quis, accumsan porttitor, facilisis luctus, metus Pellentesque habitant morbi tristique senectus
+                et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget,
+                tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est.
+                Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat
+                wisi, condimentum sed, commodo vitae, ornare sit amet, wisi. Aenean fermentum, elit eget tincidunt
+                condimentum, eros ipsum rutrum orci, sagittis tempus lacus enim ac dui. Donec non enim in turpis
+            </div>
+            <div style="display: inline-block; width: calc(50% - 5px); vertical-align: top; margin-left: 5px;">
+                <table class='panelContentTableWithHeader'>
+                    <thead>
+                        <tr><td>Col 1</td><td>Col 2</td><td>Col 3</td></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Line Col 1</td><td>Line Col 2</td><td>Line Col 3</td></tr>
+                        <tr><td>Line Col 1</td><td>Line Col 2</td><td>Line Col 3</td></tr>
+                        <tr class='panelContentSelected'><td>Line Col 1</td><td>Line Col 2</td><td>Line Col 3</td></tr>
+                        <tr><td>Line Col 1</td><td>Line Col 2</td><td>Line Col 3</td></tr>
+                        <tr><td>Line Col 1</td><td>Line Col 2</td><td>Line Col 3</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="gamePanelBottomBorder"></div>
+    </div>
+
+    <div id="uploadArtObject">
+        <form method="post" enctype="multipart/form-data" id="artObjectUploadForm" target="artObjectIframe"
+              action="/upload/Art">
+            <input type="hidden" name="returnClass" value="ArtPanelEditor" />
+            <input type="hidden" name="game" id="uploadGameId" />
+            <input type="hidden" name="token" id="uploadToken" />
+            <input type="file" name="fileUpload" id="fileUpload">
+            <div class="button" onclick="ArtPanelEditor.Upload()">Upload</div><div class="button" onclick="ArtPanelEditor.CloseUpload()">Cancel</div>
+        </form>
+    </div>
+
+    <a href="/Help/panel_style_editor.html" id="helpLink" target="engineHelp">?</a>
+
+    <iframe id="artObjectIframe" name="artObjectIframe"></iframe>
+</body>
+</html>

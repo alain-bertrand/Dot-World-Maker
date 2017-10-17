@@ -1,0 +1,46 @@
+﻿@import (reference) "../../../Less/engine.less";
+
+#listHouseParts
+{
+    position: absolute;
+    left: 0px;
+    top: @menubarHeight;
+    bottom: 25px;
+    width: 150px;
+}
+
+#housePartContainer
+{
+    position: absolute;
+    left: 152px;
+    right: 0px;
+    top: @menubarHeight;
+    bottom: 0px;
+}
+
+#housePartEditorContainer
+{
+    position: absolute;
+    left: 0px;
+    right: 30px;
+    bottom: 25px;
+    top: calc(97px + @menubarHeight);
+    border: solid 1px @panelBorder;
+    overflow: scroll;
+}
+
+#uploadHousePart
+{
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    top: @menubarHeight;
+    display: none;
+    background-color: @panelBackground;
+}
+
+#artHousePartIframe
+{
+    display: none;
+}

@@ -1,0 +1,34 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div id="questList" class="elementList"></div>
+    <div class="elementListCommands">
+        <div class="button" onclick="QuestEditor.AddQuest();">Add</div>
+        <div class="button" onclick="QuestEditor.CloneQuest();">Clone</div>
+        <div class="button" onclick="QuestEditor.DeleteQuest();">Delete</div>
+    </div>
+
+    <div id="questDetails">
+        <table>
+            <tr><td>Name:</td><td><input type="text" id="questName" onkeyup="QuestEditor.ChangeName()"/></td></tr>
+            <tr><td>Description:</td><td><textarea id="questDescription" rows="10" onkeyup="QuestEditor.ChangeDescription()"></textarea></td></tr>
+        </table>
+    </div>
+
+    <div id="questJournalEntries">
+
+    </div>
+    <div id="questJournalCommands">
+        <div class="button" onclick="QuestEditor.AddJournalEntry()">Add Journal Entry</div>
+        <div class="button" onclick="QuestEditor.DeleteJournalEntry()">Delete Journal Entry</div>
+        <div class="button" onclick="world.Save()">Save</div>
+    </div>
+
+    <a href="/Help/quest_editor.html" id="helpLink" target="engineHelp">?</a>
+</body>
+</html>

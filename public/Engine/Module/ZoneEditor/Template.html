@@ -1,0 +1,26 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div id="zoneList" class="elementList"></div>
+    <div class="elementListCommands">
+        <div class="button" onclick="ZoneEditor.Add();">Add</div>
+        <div class="button" onclick="ZoneEditor.Clone();">Clone</div>
+        <div class="button" onclick="ZoneEditor.Delete();">Delete</div>
+    </div>
+    <div id="zoneParameters"></div>
+    <div class="elementCommands">
+        <div class="button" onclick="world.Save();">Save</div>
+        <div class="button" onclick="ZoneEditor.DeleteStoredMap();">Delete Stored Map</div>
+    </div>
+    <div id="zonePreviewTitle"><b>Preview:</b> (shows just what the map generator creates, not your modifications)</div>
+    <div id="zonePreview">
+        <canvas id="zonePreviewMap" width="500" height="500"></canvas>
+    </div>
+
+    <a href="/Help/zones.html" id="helpLink" target="engineHelp">?</a>
+</body>
+</html>

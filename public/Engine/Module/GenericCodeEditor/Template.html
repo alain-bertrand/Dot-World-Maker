@@ -1,0 +1,75 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div id="objectList" class="imageList"></div>
+    <div class="imageActions">
+        <div class="button" onclick="GenericCodeEditor.New()">New</div>
+        <div class="button" onclick="GenericCodeEditor.Delete()">Delete</div>
+    </div>
+    <div id="codeNameProperty"><table><tr><td>Name:</td><td><input type="text" id="codeName" onkeyup="GenericCodeEditor.Rename()" /></td></tr></table></div>
+    <div id="genericCodeContainer">
+        <textarea id="baseCode" spellcheck="false" onkeyup="GenericCodeEditor.ChangeCode()"></textarea>
+    </div>
+
+    <div id="genericCodeParameters"></div>
+
+    <div id="genericCodeDescription">
+        <table>
+            <tr><td>Enabled:</td><td><select id="extEnabled" onchange="GenericCodeEditor.ChangeField('extEnabled', 'Enabled');"><option>Yes</option><option>No</option></select></td></tr>
+            <tr><td>Description:</td></tr>
+            <tr>
+                <td colspan="2">
+                    <textarea id="genericCodeDescriptionText" onkeyup="GenericCodeEditor.ChangeDescription()"></textarea>
+                </td>
+            </tr>
+            <tr><td>Price:</td><td><input type="text" id="extCodePrice" onchange="GenericCodeEditor.ChangeField('extCodePrice', 'Price');"></td></tr>
+            <tr><td>Version:</td><td><input type="text" id="extCodeVersion" onchange="GenericCodeEditor.ChangeField('extCodeVersion', 'Version');"></td></tr>
+            <tr><td>Allow Code Browsing:</td><td><select id="extCodeBrowsing" onchange="GenericCodeEditor.ChangeField('extCodeBrowsing', 'CodeBrowsing');"><option>Yes</option><option>No</option></select></td></tr>
+            <tr><td>Allow Editing:</td><td><select id="extAllowEdit" onchange="GenericCodeEditor.ChangeField('extAllowEdit', 'AllowEditing');"><option>Yes</option><option>No</option></select></td></tr>
+        </table>
+    </div>
+
+    <div id="genericCodeIncludes">
+        <div id="titleAvailableIncludes">Available To Include</div>
+        <div id="listAvailableIncludes"></div>
+        <!--
+        <div id="genericCodeIncludeIncludesButton" class="button">&gt;</div>
+        <div id="genericCodeRemoveIncludesButton" class="button">&lt;</div>
+            -->
+        <div id="titleIncluded">Included</div>
+        <div id="listIncluded"></div>
+    </div>
+
+    <div class="imageCommands">
+        <div class="button" onclick="GenericCodeEditor.ShowDescription()">Options</div>
+        <div class="button" onclick="GenericCodeEditor.ShowCode()" id="extCodeEditorButton">Code</div>
+        <div class="button" onclick="GenericCodeEditor.ShowParameters()">Parameters</div>
+        <div class="button" onclick="GenericCodeEditor.ShowIncludes()">Includes</div>
+        <div class="button" onclick="GenericCodeEditor.Install()">Install</div>
+        <div class="button" onclick="GenericCodeEditor.ShowUpload()">Import</div>
+        <div class="button" onclick="GenericCodeEditor.Export()" id="extExport">Export</div>
+        <div class="button" onclick="world.Save()">Save</div>
+        <!--<div class="button" onclick="GenericCodeEditor.UploadModule()" id="saveAsUpload">Submit Module</div>-->
+    </div>
+
+    <div id="uploadArtObject">
+        <form method="post" enctype="multipart/form-data" id="artObjectUploadForm" target="artObjectIframe"
+              action="/upload/AndGet">
+            <input type="hidden" name="returnClass" value="GenericCodeEditor" />
+            <input type="hidden" name="game" id="uploadGameId" />
+            <input type="hidden" name="token" id="uploadToken" />
+            <input type="file" name="fileUpload" id="fileUpload">
+            <div class="button" onclick="GenericCodeEditor.Upload()">Upload</div><div class="button" onclick="GenericCodeEditor.CloseUpload()">Cancel</div>
+        </form>
+    </div>
+
+    <iframe id="artObjectIframe" name="artObjectIframe"></iframe>
+
+    <a href="/Help/generic_code_editor.html" id="helpLink" target="engineHelp">?</a>
+</body>
+</html>

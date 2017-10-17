@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div id="panelDetails" style="bottom: auto;">
+        <table>
+            <tr>
+                <td>Current style:</td>
+                <td><canvas id="panelStyle"></canvas>The stat bar is a single image. 3 bars must be present, the first empty, the second full of life, the 3rd full of energy.</td>
+            </tr>
+            <tr>
+                <td>Top Border:</td>
+                <td><input type="text" id="topBorder" onkeyup="ArtStartBarEditor.ChangeParam('topBorder', 'topBorder');" /></td>
+            </tr>
+            <tr>
+                <td>Bottom Border:</td>
+                <td><input type="text" id="bottomBorder" onkeyup="ArtStartBarEditor.ChangeParam('bottomBorder', 'bottomBorder');" /></td>
+            </tr>
+            <tr>
+                <td>Show bars:</td>
+                <td>
+                    <select onchange="ArtStartBarEditor.ChangeParam('barsToDisplay', 'barsToDisplay');" id="barsToDisplay" style="width: 100%;">
+                        <option value="2">Health and Energy</option>
+                        <option value="1">Health</option>
+                        <option value="0">None</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <center>
+                        <div class="button" onclick="ArtStartBarEditor.ShowUpload()" id="buttonUpload">Upload</div>
+                        <div class="button" onclick="world.Save()">Save</div>
+                    </center>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="uploadArtObject">
+        <form method="post" enctype="multipart/form-data" id="artObjectUploadForm" target="artObjectIframe"
+              action="/upload/Art">
+            <input type="hidden" name="returnClass" value="ArtStartBarEditor" />
+            <input type="hidden" name="game" id="uploadGameId" />
+            <input type="hidden" name="token" id="uploadToken" />
+            <input type="file" name="fileUpload" id="fileUpload">
+            <div class="button" onclick="ArtStartBarEditor.Upload()">Upload</div><div class="button" onclick="ArtStartBarEditor.CloseUpload()">Cancel</div>
+        </form>
+    </div>
+
+    <iframe id="artObjectIframe" name="artObjectIframe"></iframe>
+
+    <a href="/Help/statbars_editor.html" id="helpLink" target="engineHelp">?</a>
+</body>
+</html>

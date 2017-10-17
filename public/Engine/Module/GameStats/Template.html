@@ -1,0 +1,23 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <select id="statType" onchange="GameStats.LoadStat()">
+        <option value="1">Player Join</option>
+        <option value="2" selected>Player Login</option>
+        <option value="100">Monster Kill</option>
+        <option value="101">Level Up</option>
+        <option value="102">Player Kill</option>
+    </select>
+    <div id="graphContainer">
+        <canvas id="statGraph"></canvas>
+    </div>
+    <div id="statOverview"></div>
+
+    <a href="/Help/game_stats.html" id="helpLink" target="engineHelp">?</a>
+</body>
+</html>

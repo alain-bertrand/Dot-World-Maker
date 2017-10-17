@@ -1,0 +1,377 @@
+﻿@import (reference) "../../../Less/engine.less";
+
+.codeGraphArea
+{
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    bottom: 16px;
+    right: 200px;
+    border: solid 1px @panelBorder;
+    border-radius: @panelRadius;
+    overflow: scroll;
+    box-sizing: border-box;
+    padding: 5px;
+}
+
+.codeGraphTextContainer
+{
+    position: absolute;
+    top: 20px;
+    right: 0px;
+    left: 0px;
+    bottom: 17px;
+    border: solid 1px @panelBorder;
+    border-radius: @panelRadius;
+}
+
+.codeGraphTabs
+{
+    position: absolute;
+    bottom: 0px;
+    left: 5px;
+
+    & span
+    {
+        background-color: #202020;
+        color: white;
+        font-weight: bold;
+        padding: 3px;
+        margin-right: 2px;
+        line-height: 12px;
+        border-bottom-left-radius: 4px;
+        border-bottom-right-radius: 4px;
+        cursor: pointer;
+    }
+}
+
+.codeGraphSearchNodes
+{
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 197px !important;
+    box-sizing: border-box;
+}
+
+.codeGraphSelector
+{
+    position: absolute;
+    top: 30px;
+    bottom: 216px;
+    right: 0px;
+    width: 197px;
+    border: solid 1px @panelBorder;
+    border-radius: @panelRadius;
+    box-sizing: border-box;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    white-space: nowrap;
+}
+
+.codeGraphNodeHelp
+{
+    position: absolute;
+    bottom: 16px;
+    height: 195px;
+    right: 0px;
+    width: 197px;
+    border: solid 1px @panelBorder;
+    border-radius: @panelRadius;
+    box-sizing: border-box;
+    padding: 3px;
+    font-size: 14px;
+    overflow: hidden;
+
+    & .codeExample
+    {
+        display: block;
+        background-color: #E0E0E0;
+        border: solid 1px #808080;
+        margin: 2px;
+        padding: 3px;
+        width: 100%;
+        box-sizing: border-box;
+        margin-bottom: 5px;
+    }
+}
+
+.codeGroup
+{
+    padding-left: 10px;
+    margin-bottom: 10px;
+}
+
+.codeGroup > span
+{
+    background-color: #202020;
+    font-weight: bold;
+    color: white;
+    display: block;
+    margin-left: -10px;
+    padding: 3px;
+    margin-bottom: 5px;
+    font-size: 16px;
+}
+
+.codeGroup > p
+{
+    //background-color: #808080;
+    margin-bottom: 3px;
+    color: black;
+    border-bottom: 1px dashed #316bc7;
+    //color: white;
+    cursor: pointer;
+    padding: 2px;
+    display: block;
+    margin-top: 0px;
+
+    &:hover
+    {
+        background-color: @rowHover;
+        color: black;
+    }
+}
+
+
+.codeBlock
+{
+    border-left: 4px solid #316bc7;
+    margin: 2px;
+    font-family: sans-serif;
+    border-radius: 5px;
+    border-bottom-right-radius: 0px;
+    border-top-right-radius: 0px;
+    margin-top: 5px;
+    margin-bottom: 3px;
+    cursor: pointer;
+    width: 200px;
+    box-shadow: #000080 -2px 2px 2px;
+}
+
+.codeBlockSeparator
+{
+    height: 10px;
+}
+
+.overBlock
+{
+    border-left: 4px solid #31c7ab !important;
+    box-shadow: #196c5d -2px 2px 2px !important;
+}
+
+.blockOnError
+{
+    border-left: 4px solid #ff9400;
+    box-shadow: #794600 -2px 2px 2px;
+}
+
+.emptyBlock
+{
+    background-color: #d5d8dd;
+    margin: 2px;
+    font-family: sans-serif;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    margin-top: 5px;
+    margin-bottom: 3px;
+    display: block;
+    height: 30px;
+    width: 200px;
+    color: #7e7e7e;
+    box-shadow: #808080 -2px 2px 2px;
+    line-height: 30px;
+    text-align: center;
+
+    &:hover
+    {
+        background-color: #90ceb1;
+    }
+}
+
+.simpleBlockType
+{
+    display: block;
+    font-weight: bold;
+    background-color: #316bc7;
+    color: white;
+    margin-top: -2px;
+    margin-left: -2px;
+    margin-right: -2px;
+    padding: 3px;
+    width: 200px;
+    box-sizing: border-box;
+}
+
+.blockType
+{
+    .simpleBlockType;
+}
+
+.blockType:before
+{
+    .triangleDown;
+    margin-right: 10px;
+}
+
+.blockOnError > .blockType
+{
+    background-color: #ff9400;
+}
+
+.collapsedBlock > .blockType:before
+{
+    .triangleUp;
+}
+
+.collapsedBlock > div
+{
+    display: none;
+}
+
+.overBlock > .blockType, .overBlock > .simpleBlockType
+{
+    background-color: #31c7ab !important;
+}
+
+.overBlock > div > .blockLabel
+{
+    background-color: #31c7ab !important;
+}
+
+.overBlock > .endBlock
+{
+    background-color: #31c7ab !important;
+}
+
+.blockLabel
+{
+    display: block;
+    box-sizing: border-box;
+    background-color: #316bc7;
+    color: white;
+    width: 198px;
+}
+
+.blockOnError > div > .blockLabel
+{
+    background-color: #ff9400;
+}
+
+
+.endBlock
+{
+    display: block;
+    box-sizing: border-box;
+    background-color: #316bc7;
+    width: 198px;
+    height: 10px;
+}
+
+.blockOnError > .endBlock
+{
+    background-color: #ff9400;
+}
+
+.subBlock
+{
+    display: block;
+    margin-top: 6px;
+    margin-left: 5px;
+}
+
+.blockValue
+{
+    width: 198px;
+    display: block;
+    box-sizing: border-box;
+    background-color: #316bc7;
+}
+
+.blockValue input
+{
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.codeHelp
+{
+    position: fixed;
+    top: 5px;
+    left: 220px;
+    z-index: 10;
+    height: 100px;
+    width: 300px;
+    border: solid 1px black;
+    background-color: white;
+    padding: 3px;
+    display: none;
+    overflow-x: hidden;
+    overflow-y: scroll;
+
+    & .codeExample
+    {
+        display: block;
+        white-space: pre;
+        font-family: 'Courier New';
+        background-color: #E0E0E0;
+        border: solid 1px #808080;
+        margin: 2px;
+        padding: 3px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    & .selectedInsertion
+    {
+        background-color: #FFE000;
+    }
+}
+
+#codeGraphEditorHelp
+{
+    position: fixed;
+    left: ~"calc(50% - 200px)";
+    top: ~"calc(50% - 100px)";
+    width: 400px;
+    height: 200px;
+    z-index: 100000000000000000;
+    .infoPanel;
+}
+
+.codeGraphActiveTab
+{
+    color: @menubarItemColorHover !important;
+}
+
+.blockArrayEntry
+{
+    width: ~"calc(100% - 30px) !important";
+}
+
+.blockDeleteArrayEntry
+{
+    background-color: #E00000;
+    color: white;
+    width: 15px;
+    height: 15px;
+    border-radius: 7px;
+    box-sizing: border-box;
+    font-weight: bold;
+    cursor: pointer;
+    display: inline-block;
+    line-height: 15px;
+    margin-left: 5px;
+    text-align: center;
+
+    &:hover
+    {
+        background-color: #980000;
+    }
+}
+
+.blockAddArrayEntry
+{
+    width: ~"calc(100% - 4px)";
+    box-sizing: border-box;
+}

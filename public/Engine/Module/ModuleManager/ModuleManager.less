@@ -1,0 +1,92 @@
+﻿@import (reference) "../../../Less/engine.less";
+
+#searchModulesTable
+{
+    position: absolute;
+    top: @menubarHeight;
+    left: 5px;
+    right: 35px;
+    width: ~"calc(100% - 40px)";
+
+    & td:first-child
+    {
+        font-weight: bold;
+        white-space: nowrap;
+        width: 1px;
+    }
+
+    & input
+    {
+        width: 100%;
+    }
+}
+
+#modulesList
+{
+    position: absolute;
+    top: calc(@menubarHeight + 35px);
+    left: 5px;
+    right: 35px;
+    bottom: 40px;
+    overflow-y: scroll;
+    border: solid 1px black;
+
+    & table
+    {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    & table thead tr
+    {
+        background-color: @titleLineBackground;
+        color: @titleLineColor;
+        font-weight: bold;
+    }
+
+    & table tr
+    {
+        vertical-align: top;
+    }
+
+    & table tbody > tr:nth-child(2n+1)
+    {
+        background-color: #E0E0E0;
+    }
+
+    & table tr > td:first-child
+    {
+        width: 1%;
+    }
+
+    & table td
+    {
+        padding-right: 10px;
+    }
+}
+
+#createYourOwnModuleButton
+{
+    font-size: 20px;
+}
+
+#modulesListCommands
+{
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    text-align: center;
+}
+
+#showCreateModule
+{
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    overflow-y: scroll;
+    display: none;
+    background: @backgroundColor;
+}

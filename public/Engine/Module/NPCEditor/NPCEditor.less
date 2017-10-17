@@ -1,0 +1,287 @@
+﻿@import (reference) "../../../Less/engine.less";
+
+#listNPC
+{
+    position: absolute;
+    left: 5px;
+    width: 150px;
+    top: @menubarHeight;
+    bottom: 30px;
+}
+
+#npcDetails
+{
+    position: absolute;
+    left: 0px;
+    right: 244px;
+    top: 0px;
+
+    & table
+    {
+        width: 100%;
+    }
+
+    & table tr > td:first-child
+    {
+        .fieldLabel;
+        width: 1%;
+    }
+
+    & input, select
+    {
+        width: 100%;
+        outline: none;
+        border: solid 1px @panelBorder;
+    }
+}
+
+#actionsAndConditions
+{
+    position: absolute;
+    left: 0px;
+    width: ~"calc(100% - 248px)";
+    top: ~"calc(50% + 5px)";
+    height: ~"calc(50% - 37px)";
+    border: solid 1px @panelBorder;
+    padding: 5px;
+    box-sizing: border-box;
+    overflow-y: scroll;
+    display: none;
+
+    & select
+    {
+        width: 100%;
+    }
+}
+
+#dialog
+{
+    position: absolute;
+    left: 0px;
+    right: 200px;
+    top: 65px;
+    bottom: 0px;
+    width: ~"calc(100% - 248px)";
+    height: ~"calc(100% - 95px)";
+    box-sizing: border-box;
+    border: solid 1px @panelBorder;
+    resize: none;
+    overflow-y: scroll;
+    outline: none;
+}
+
+.dialogAnswer
+{
+    height: ~"calc(50% - 110px) !important";
+}
+
+#dialogJumpTo
+{
+    position: absolute;
+    left: 0px;
+    width: ~"calc(100% - 248px)";
+    top: ~"calc(50% - 30px) !important";
+    display: none;
+
+    & table
+    {
+        width: 100%;
+    }
+
+    & table tr > td:first-child
+    {
+        width: 1%;
+        font-weight: bold;
+        white-space: nowrap;
+    }
+
+    & select
+    {
+        width: 100%;
+    }
+}
+
+#listDialogs
+{
+    position: absolute;
+    right: 0px;
+    width: 245px;
+    border: solid 1px @panelBorder;
+    top: 15px;
+    bottom: ~"calc(50% + 70px)";
+    box-sizing: border-box;
+    border-radius: @panelRadius;
+    box-shadow: @panelInset;
+    overflow-y: scroll;
+    overflow-x: hidden;
+
+    & > div
+    {
+        white-space: nowrap;
+        cursor: pointer;
+    }
+}
+
+#commandDialogs
+{
+    position: absolute;
+    top: ~"calc(50% - 68px)";
+    right: 0px;
+    width: 247px;
+}
+
+#answerTitle
+{
+    position: absolute;
+    right: 0px;
+    width: 245px;
+    top: ~"calc(50% - 41px)";
+    font-weight: bold;
+}
+
+#listAnswers
+{
+    position: absolute;
+    right: 0px;
+    width: 245px;
+    border: solid 1px @panelBorder;
+    bottom: 30px;
+    top: ~"calc(50% - 23px)";
+    box-sizing: border-box;
+    border-radius: @panelRadius;
+    box-shadow: @panelInset;
+    overflow-y: scroll;
+    overflow-x: hidden;
+
+    & > div
+    {
+        white-space: nowrap;
+        cursor: pointer;
+    }
+}
+
+#commandAnswers
+{
+    position: absolute;
+    right: 0px;
+    width: 245px;
+    bottom: 5px;
+}
+
+#mainCommands
+{
+    position: absolute;
+    left: 3px;
+    bottom: 5px;
+}
+
+.dialogParamLabel
+{
+    display: inline-block;
+    width: ~"calc(40% - 20px)";
+    font-weight: bold;
+}
+
+.dialogParam
+{
+    display: inline-block;
+    width: 60%;
+
+    & input, & select
+    {
+        width: 100%;
+    }
+}
+
+.dialogBlock
+{
+    border: solid 1px @panelBorder;
+    margin: 2px;
+    padding: 3px;
+    width: ~"calc(100% - 6px)";
+    box-sizing: border-box;
+    display: block;
+}
+
+.dialogBlockDelete
+{
+    float: right;
+    background-color: #E00000;
+    color: white;
+    width: 15px;
+    height: 15px;
+    border-radius: 7px;
+    padding-left: 3px;
+    box-sizing: border-box;
+    padding-top: 1px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#npcDialogSection, #npcShopSection
+{
+    position: absolute;
+    top: @menubarHeight;
+    left: 160px;
+    right: 30px;
+    bottom: 30px;
+}
+
+#dialogTitle
+{
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 245px;
+    font-weight: bold;
+}
+
+#npcShowShop, #npcShowDialog
+{
+    position: absolute;
+    bottom: 5px;
+    left: 150px;
+}
+
+#npcShopList
+{
+    border: solid 1px @panelBorder;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    left: 0px;
+    bottom: 60px;
+    overflow-y: scroll;
+    border-radius: @panelRadius;
+
+    & table
+    {
+        width: 100%;
+        border-spacing: 0px;
+        border-collapse: collapse;
+    }
+
+    & table thead tr
+    {
+        background-color: @titleLineBackground;
+    }
+
+    & table thead td
+    {
+        font-weight: bold;
+        color: @titleLineColor;
+    }
+
+    & input
+    {
+        width: 100%;
+    }
+}
+
+#npcAddShopItem
+{
+    position: absolute;
+    left: 0px;
+    bottom: 30px;
+    width: 100%;
+}

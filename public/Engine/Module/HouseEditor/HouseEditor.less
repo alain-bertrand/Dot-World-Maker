@@ -1,0 +1,96 @@
+﻿@import (reference) "../../../Less/engine.less";
+
+#houseDetails
+{
+    position: absolute;
+    top: @menubarHeight;
+    left: 0px;
+    right: 5px;
+    width: ~"calc(100% - 157px)";
+
+    & tr > td:first-child, tr > td:nth-child(3)
+    {
+        width: 1%;
+        .fieldLabel;
+    }
+
+    & input
+    {
+        width: 100%;
+    }
+}
+
+#listHouses
+{
+    position: absolute;
+    top: @menubarHeight;
+    left: 0px;
+    width: 150px;
+    height: ~"calc(50% - 60px)";
+}
+
+#houseActions
+{
+    position: absolute;
+    top: ~"calc(50% - 25px)";
+    left: 0px;
+}
+
+#houseParts
+{
+    position: absolute;
+    bottom: 25px;
+    left: 0px;
+    width: 150px;
+    height: ~"calc(50% - 25px)";
+}
+
+#housePartCommands
+{
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    width: 150px;
+    text-align: center;
+}
+
+#houseDetailsContainer
+{
+    position: absolute;
+    left: 152px;
+    right: 0px;
+    top: @menubarHeight;
+    bottom: 0px;
+}
+
+#houseEditorContainer
+{
+    position: absolute;
+    left: 0px;
+    right: 30px;
+    top: calc(100px + @menubarHeight);
+    bottom: 25px;
+    overflow: scroll;
+    border: solid 1px @panelBorder;
+}
+
+#houseEditorMouseOverlay
+{
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    background-color: transparent;
+    display: none;
+    cursor: default;
+}
+
+#houseEditorCommands
+{
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    text-align: center;
+}

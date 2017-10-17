@@ -1,0 +1,138 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div id="tilesPropertiesTitle">General properties:</div>
+    <div id="tilesProperties">
+        <table>
+            <tr>
+                <td>Tile Width:</td>
+                <td><input type="text" id="width" onkeyup="ArtTileEditor.ChangeArtProperty('width','width')" /></td>
+            </tr>
+            <tr>
+                <td>Height:</td>
+                <td><input type="text" id="height" onkeyup="ArtTileEditor.ChangeArtProperty('height', 'height')" /></td>
+            </tr>
+            <tr>
+                <td>Main type:</td>
+                <td><select id="mainType" onchange="ArtTileEditor.ChangeMainType()"></select></td>
+            </tr>
+            <tr>
+                <td>Walkable:</td>
+                <td><div class="button" onclick="ArtTileEditor.ShowWalkable()">Edit</div></td>
+            </tr>
+        </table>
+    </div>
+    <div id="listTypeTitle">Tile Types:</div>
+    <div id="listTypes"></div>
+    <div id="typesCommands">
+        <div class="button" onclick="ArtTileEditor.CreateType()">Create</div>
+    </div>
+
+    <div id="tileTransitionsTitle">Tile Transitions:</div>
+    <div id="listTransitions"></div>
+    <div id="transitionsCommands">
+        <div class="button" onclick="ArtTileEditor.CreateTransition()">Create</div>
+    </div>
+
+    <div id="tilePathTitle">Paths:</div>
+    <div id="listPaths"></div>
+    <div id="pathsCommands">
+        <div class="button" onclick="ArtTileEditor.CreatePath()">Create</div>
+    </div>
+
+    <div id="listCurrentTiles"></div>
+    <div id="tilesCommands">
+        <div class="button" onclick="ArtTileEditor.ShowUpload();" id="buttonUpload">Upload</div>
+        <div class="button" onclick="world.Save();">Save</div>
+        <div class="button" onclick="ArtTileEditor.EditImage();">Edit Image</div>
+    </div>
+
+    <div id="tileProposeType"></div>
+
+    <div id="tileWalkable">
+        <div id="listTileWalkable"></div>
+        <div class="tilePanelButtons">
+            <div class="button" onclick="ArtTileEditor.CloseWalkable()">Close</div>
+        </div>
+    </div>
+
+    <div id="tileInType">
+        <table id="tileInTypeProperties">
+            <tr><td>Name:</td><td><input type="text" id="tileTypeName" onkeyup="ArtTileEditor.RenameTileType()" /></td></tr>
+        </table>
+        <div id="listTileInType"></div>
+        <div class="tilePanelButtons">
+            <div class="button" onclick="ArtTileEditor.DeleteType()">Delete</div>
+            <div class="button" onclick="ArtTileEditor.CloseTileInType()">Close</div>
+        </div>
+    </div>
+
+    <div id="tileTransition">
+        <table id="tileTransitionProperties">
+            <tr>
+                <td>From:</td>
+                <td><select id="transitionFrom" onchange="ArtTileEditor.ChangeTransition('from')"></select></td>
+                <td>To:</td>
+                <td><select id="transitionTo" onchange="ArtTileEditor.ChangeTransition('to')"></select></td>
+                <td>NB Tiles:</td>
+                <td>
+                    <select id="transitionSize" onchange="ArtTileEditor.ChangeTransition('size')">
+                        <option value="12">12</option>
+                        <option value="4">4</option>
+                    </select>
+                </td>
+                <td style="width: 1px;"><div class="button" onclick="ArtTileEditor.ReverseTransition()">Reverse</div></td>
+            </tr>
+        </table>
+        <table id="transitionTiles"></table>
+        Transitions are automatically used by the engine while smart painting a map or during map generation.<br />
+        Transition are in both way but only one way needs to be define. The top row of the transition is the example.<br />
+        <br />
+        To change the tiles, choose one tile in the second row and then select the corresponding tile in the list of all tiles under.
+        <div id="listPossibleTransitionTiles"></div>
+        <div class="tilePanelButtons">
+            <div class="button" onclick="ArtTileEditor.DeleteTransition()">Delete</div>
+            <div class="button" onclick="ArtTileEditor.CloseTransition()">Close</div>
+        </div>
+    </div>
+
+    <div id="tilePath">
+        <table id="tilePathProperties">
+            <tr>
+                <td>Name:</td>
+                <td><input type="text" id="pathName" onkeyup="ArtTileEditor.ChangePathName()" /></td>
+            </tr>
+        </table>
+        <table id="pathTiles"></table>
+        Paths are used by the map editor to draw paths, small roads or rivers.<br />
+        <br />
+        To change the tiles, choose one tile in the second row and then select the corresponding tile in the list of all tiles under.
+        <div id="listPossiblePathTiles"></div>
+        <div class="tilePanelButtons">
+            <div class="button" onclick="ArtTileEditor.DeletePath()">Delete</div>
+            <div class="button" onclick="ArtTileEditor.ClosePath()">Close</div>
+        </div>
+    </div>
+
+    <div id="uploadArtObject">
+        <form method="post" enctype="multipart/form-data" id="artObjectUploadForm" target="artObjectIframe"
+              action="/upload/Art">
+            <input type="hidden" name="returnClass" value="ArtTileEditor" />
+            <input type="hidden" name="game" id="uploadGameId" />
+            <input type="hidden" name="token" id="uploadToken" />
+            <input type="file" name="fileUpload" id="fileUpload">
+            <div class="button" onclick="ArtTileEditor.Upload()">Upload</div><div class="button" onclick="ArtTileEditor.CloseUpload()">Cancel</div>
+        </form>
+    </div>
+
+    <iframe id="artObjectIframe" name="artObjectIframe"></iframe>
+
+    <a href="/Help/art_tiles.html" id="helpLink" target="engineHelp">?</a>
+
+    <div id="tileEditorLoading">Loading...</div>
+</body>
+</html>

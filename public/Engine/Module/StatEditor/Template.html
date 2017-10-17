@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div id="statList" class="elementList"></div>
+    <div class="elementListCommands">
+        <div class="button" onclick="StatEditor.Add();">Add</div>
+        <div class="button" onclick="StatEditor.Clone();">Clone</div>
+        <div class="button" onclick="StatEditor.Delete();">Delete</div>
+    </div>
+    <div id="statParameters" class="elementParameters" style="bottom: calc(50% + 7px);"></div>
+    <div id="skillParamCommands">
+        <div class="button" onclick="StatEditor.AddParam();">Add Parameter</div>
+    </div>
+
+    <div id="codeContainer" class="elementCode">
+        <textarea id="baseCode" spellcheck="false" onkeyup="StatEditor.ChangeCode()"></textarea>
+    </div>
+    <div class="elementCommands">
+        <div class="button" onclick="world.Save();">Save</div>
+    </div>
+
+    <a href="/Help/stats_editor.html" id="helpLink" target="engineHelp">?</a>
+</body>
+</html>

@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div id="pixelEditorPalette" unselectable="on" onselectstart="return false;">
+        <span class="button" onclick="PixelEditor.Save();">Save</span>
+        <span class="button" onclick="PixelEditor.Preview();">Preview</span>
+        <table>
+            <tr>
+                <td>Zoom:</td>
+                <td style="text-align: center;">
+                    <span id="pixelEditorCurrentZoom" style="width: 30px; display: inline-block;">10</span>
+                    <div class="button" onclick="PixelEditor.Zoom(1); return false;" ondblclick="return false;">+</div>
+                    <div class="button" onclick="PixelEditor.Zoom(-1); return false;" ondblclick="return false;">-</div>
+                </td>
+            </tr>
+            <tr>
+                <td>Brush size:</td>
+                <td style="text-align: center;">
+                    <span id="pixelEditorCurrentBrushSize" style="width: 30px; display: inline-block;">1</span>
+                    <div class="button" onclick="PixelEditor.BrushSize(1); return false;" ondblclick="return false;">+</div>
+                    <div class="button" onclick="PixelEditor.BrushSize(-1); return false;" ondblclick=" return false;">-</div>
+                </td>
+            </tr>
+        </table>
+        <span class="button" onclick="PixelEditorActions.Undo();" style="width: 81px;">Undo</span>
+        <span class="button" onclick="PixelEditorActions.Redo();" style="width: 81px;">Redo</span>
+        <span class="button selectedButton" id="BlockPaint" onclick="PixelEditorActions.SelectAction('BlockPaint');">Block paint</span>
+        <span class="button" id="Eraser" onclick="PixelEditorActions.SelectAction('Eraser');">Eraser</span>
+        <span class="button" id="Picker" onclick="PixelEditorActions.SelectAction('Picker');">Color Picker</span>
+        <span class="button" id="Selection" onclick="PixelEditorActions.SelectAction('Selection');">Select</span>
+        <span class="button" id="MagicWand" onclick="PixelEditorActions.SelectAction('MagicWand');">Magic Wand</span>
+        <span class="button" id="Translate" onclick="PixelEditorActions.SelectAction('Translate');">Translate</span>
+        <span class="button" onclick="PixelEditorActions.Fill();">Fill</span>
+        <b>Flip:</b> <span class="button" onclick="PixelEditorActions.FlipHorizontal();" style="width: 68px;">Horizontal</span>
+        <span class="button" onclick="PixelEditorActions.FlipVertical();" style="width: 68px;">Vertical</span>
+        <b>Rotate:</b> <span class="button" onclick="PixelEditorActions.RotateClockwise();" style="width: 59px;">90 CW</span>
+        <span class="button" onclick="PixelEditorActions.RotateCounterClockwise();" style="width: 59px;">90 CCW</span>
+        <b>Mirror:</b> <span class="button" onclick="PixelEditorActions.MirrorHorizontal();" style="width: 60px;">Horiz.</span>
+        <span class="button" onclick="PixelEditorActions.MirrorVertical();" style="width: 60px;">Vert.</span>
+        <span class="button" id="resizeButton" onclick="PixelEditorActions.ChangeSize();">Change Sprite Size</span>
+        <span class="button" onclick="PixelEditorActions.HueSaturation();">Hue &amp; Saturation</span>
+        <span class="button" onclick="PixelEditorActions.BrightnessContrast();">Brightness &amp; Contrast</span>
+        <span class="button" onclick="PixelEditor.ShowAddImage();" id="addFromFile">Add sprite from file</span>
+        <span class="button" onclick="PixelEditor.Export();">Export</span>
+        <span class="button" onclick="PixelEditor.ShowUpload();">Import</span>
+    </div>
+    <div id="pixelEditorColorPicker">
+        Color: <input type="text" id="pixelEditorFieldCurrentColor" onkeyup="PixelEditorColorChooser.ChangeColorField();" onfocus="play.inField=true;" onblur="play.inField=false;" />
+        <div id="pixelEditorColorPreview"></div>
+
+        <table id="colorShades">
+            <tr>
+                <td onclick='PixelEditorColorChooser.ChooseShade(0)'>&nbsp;</td>
+                <td onclick='PixelEditorColorChooser.ChooseShade(1)'>&nbsp;</td>
+                <td onclick='PixelEditorColorChooser.ChooseShade(2)'>&nbsp;</td>
+                <td onclick='PixelEditorColorChooser.ChooseShade(3)'>&nbsp;</td>
+                <td onclick='PixelEditorColorChooser.ChooseShade(4)'>&nbsp;</td>
+                <td onclick='PixelEditorColorChooser.ChooseShade(5)'>&nbsp;</td>
+                <td onclick='PixelEditorColorChooser.ChooseShade(6)'>&nbsp;</td>
+                <td onclick='PixelEditorColorChooser.ChooseShade(7)'>&nbsp;</td>
+                <td onclick='PixelEditorColorChooser.ChooseShade(8)'>&nbsp;</td>
+                <td onclick='PixelEditorColorChooser.ChooseShade(9)'>&nbsp;</td>
+            </tr>
+        </table>
+        <div id="pixelEditorColorSelection"></div>
+        <div id="pixelEditorColorSelection2">
+            <div id="pixelEditorCurrentColor"></div>
+        </div>
+        <div id="pixelEditorHueSelection"></div>
+        <div id="pixelEditorCurrentHue"></div>
+        <div id="pixelEditorColorMouseSelector" onmousedown="PixelEditorColorChooser.ColorPickerMouseDown(event); return false;"></div>
+    </div>
+    <div id="pixelEditorCanvasContainer">
+        <canvas id="pixelEditorCanvas" width="500" height="500" onmousedown="PixelEditor.CanvasMouseDown(event); return false;" oncontextmenu="return false;"></canvas>
+    </div>
+    <div id="pixelEditorLayers"></div>
+    <div id="pixelEditorLayerActions">
+        <div class="button" onclick="PixelEditorLayers.NewLayer()">New</div>
+        <div class="button" onclick="PixelEditorLayers.DeleteLayer()">Del.</div>
+        <div class="button" onclick="PixelEditorLayers.LayerUp()">Up</div>
+        <div class="button" onclick="PixelEditorLayers.LayerDown()">Down</div>
+        <div class="button" onclick="PixelEditorLayers.MergeDown()">Merge Down</div>
+        <div class="button" onclick="PixelEditorActions.Copy()">Copy</div>
+        <div class="button" onclick="PixelEditorActions.Cut()">Cut</div>
+        <div class="button" onclick="PixelEditorActions.Paste()">Paste</div>
+    </div>
+    <div id="pixelEditorSpriteList"></div>
+
+    <div id="uploadArtObject">
+        <form method="post" enctype="multipart/form-data" id="artObjectUploadForm" target="artObjectIframe"
+              action="/upload/AndGet">
+            <input type="hidden" name="returnClass" value="PixelEditor" />
+            <input type="file" name="fileUpload" id="fileUpload">
+            <div class="button" onclick="GenericCodeEditor.Upload()">Upload</div><div class="button" onclick="GenericCodeEditor.CloseUpload()">Cancel</div>
+        </form>
+    </div>
+
+    <div id="addImageFromFile">
+        <input type="file" id="imageAddLoader" name="imageAddLoader" />
+        <div class="button" onclick="PixelEditor.AddImage()">Add</div><div class="button" onclick="PixelEditor.CancelAddImage()">Cancel</div>
+    </div>
+
+    <iframe id="artObjectIframe" name="artObjectIframe"></iframe>
+
+    <a href="/Help/pixel_editing.html" id="helpLink" target="engineHelp">?</a>
+
+    <div id="pixelEditorPreview" onclick="$('#pixelEditorPreview').hide()">
+        <img id="pixelEditorPreviewImage" onclick="$('#pixelEditorPreview').hide()" />
+        <div class="button" id="pixelEditorPreviewClose" onclick="$('#pixelEditorPreview').hide()">Close</div>
+    </div>
+</body>
+</html>

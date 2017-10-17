@@ -1,0 +1,44 @@
+﻿@import (reference) "../../../Less/engine.less";
+
+.listSelector
+{
+}
+
+.listSelector input
+{
+    width: 100%;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+.listSelector div
+{
+    border: solid 1px @panelBorder;
+    position: absolute;
+    top: 30px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    overflow-y: scroll;
+    box-shadow: @panelInset;
+    border-bottom-left-radius: @panelRadius;
+    border-bottom-right-radius: @panelRadius;
+}
+
+.listSelector table
+{
+    width: 100%;
+    border-spacing: 0px;
+    border-collapse: collapse;
+}
+
+.listSelector table tr
+{
+    cursor: pointer;
+
+}
+
+.listSelectorSelectedRow
+{
+    background-color: @rowSelected !important;
+}

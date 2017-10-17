@@ -1,0 +1,31 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <table id="searchGameTable">
+        <tr>
+            <td>Search:</td>
+            <td><input type="text" id="searchGame" placeholder="Type here to search existing games..." onkeyup="GameList.Search()"/></td>
+        </tr>
+    </table>
+    <div id="gameList"></div>
+    <div id="gameListCommands"><div class="button" onclick="GameList.ShowCreateGame()" id="createYourOwnGameButton">Create Your Own Game!</div></div>
+    <div id="showCreateGame">
+        <h1>Create your own game</h1>
+        <div id="result"></div>
+        <table>
+            <tr>
+                <td>Game name:</td>
+                <td><input type="text" id="newGameName" /></td>
+            </tr>
+        </table>
+        <center>
+            <div class="button" onclick="GameList.CreateGame()">Create</div>
+            <div class="button" onclick="GameList.HideCreateGame()">Cancel</div>
+        </center>
+    </div>
+</body>
+</html>

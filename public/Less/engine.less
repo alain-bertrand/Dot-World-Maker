@@ -1,0 +1,521 @@
+﻿//@panelBackground: #eef7f8;
+@panelBackground: #FFFFFF;
+//@panelBorder: #404c4e;
+@panelBorder: #c0c0c0;
+@panelInset: inset 0px 0px 9px 0px rgba(0,0,0,0.14);
+@selectedBackground: #b5e5ea;
+@buttonBorder: #808080;
+@button: #617e81;
+@buttonHover: #d9aeae;
+@selectedButton: #80FF80;
+@rowHover: #ffd7d7;
+@rowSelected: #ffd800;
+@backgroundColor: #FFFFFF;
+@shadow: #A0A0A0;
+@titleLineBackground: #444444;
+@titleLineColor: #FFFFFF;
+@panelRadius: 4px;
+@menubarHeight: 35px;
+
+body
+{
+    overflow: hidden;
+    margin: 0px;
+    padding: 0px;
+    font-family: sans-serif;
+    font-size: 12px;
+    color: black;
+    height: 100vh;
+    .noselect;
+    cursor: default;
+}
+
+.fieldLabel
+{
+    white-space: nowrap;
+    font-weight: bold;
+    color: #606060;
+}
+
+.panelButtons
+{
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    text-align: center;
+}
+
+.button
+{
+    margin: 2px;
+    padding: 2px;
+    padding-left: 4px;
+    padding-right: 4px;
+    display: inline-block;
+    box-sizing: border-box;
+    border: solid 1px @buttonBorder;
+    cursor: pointer;
+    background-color: @button;
+    background: linear-gradient(#94bbbf, #617e81);
+    border-radius: 3px;
+    font-weight: bold;
+    color: white;
+    text-shadow: black 1px 1px 2px;
+    text-decoration: none;
+    .noselect;
+
+    &:hover
+    {
+        background-color: @buttonHover;
+        background: linear-gradient(#7facb1, #3c5658);
+    }
+}
+
+.disabledButton
+{
+    margin: 2px;
+    padding: 2px;
+    padding-left: 4px;
+    padding-right: 4px;
+    display: inline-block;
+    box-sizing: border-box;
+    border: solid 1px @buttonBorder;
+    cursor: not-allowed;
+    background-color: @button;
+    background: linear-gradient(#c8dcde, #b9d5d8);
+    border-radius: 3px;
+    font-weight: bold;
+    color: #c5e0e4;
+    text-shadow: black 1px 1px 2px;
+    text-decoration: none;
+}
+
+.selectedButton
+{
+    background-color: @selectedButton !important;
+    background: linear-gradient(#80FF80, #2e752e);
+}
+
+.selectedButton:hover
+{
+    background-color: @selectedButton !important;
+    background: linear-gradient(#63c363, #153415);
+}
+
+.panelButtons > span
+{
+    .button;
+}
+
+.engineInput
+{
+    border: solid 1px @panelBorder;
+    box-sizing: border-box;
+    padding: 2px;
+
+    &:focus
+    {
+        outline: none;
+    }
+}
+
+select
+{
+    .engineInput;
+    padding: 4px;
+    border-radius: @panelRadius;
+    box-shadow: @panelInset;
+}
+
+input, textarea
+{
+    .engineInput;
+    border-radius: @panelRadius;
+    box-shadow: @panelInset;
+    padding: 5px;
+}
+
+h1
+{
+    margin: 0px;
+    text-align: center;
+}
+
+#confirmDialog
+{
+    width: 300px;
+    position: absolute;
+    left: ~"calc(50% - 150px)";
+    border: solid 2px @panelBorder;
+    box-shadow: 2px 2px 3pc @shadow;
+    padding: 5px;
+    box-sizing: border-box;
+    top: ~"calc(50vh - 50px)";
+    background-color: @backgroundColor;
+    display: none;
+    z-index: 100000;
+}
+
+#confirmLabel
+{
+    font-weight: bold;
+}
+
+#confirmButtons
+{
+    margin-top: 5px;
+    text-align: center;
+}
+
+#displayMessage
+{
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+    display: none;
+    font-size: 20px;
+}
+
+.displayMessageVisible
+{
+    opacity: 1;
+    animation-name: displayIn;
+    animation-duration: 0.5s;
+}
+
+.displayMessageHidden
+{
+    opacity: 0;
+    animation-name: displayOut;
+    animation-duration: 0.5s;
+}
+
+#loginBackground
+{
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    background-color: rgba(255,255,255, 0.7);
+    z-index: 200001;
+}
+
+#loginForm
+{
+    position: absolute;
+    width: 400px;
+    height: 135px;
+    left: ~"calc(50% - 200px)";
+    top: ~"calc(50% - 50px)";
+    z-index: 200002;
+
+    & table
+    {
+        width: 100%;
+    }
+
+    & table tr > td:nth-child(1)
+    {
+        width: 1%;
+        white-space: nowrap;
+        font-weight: bold;
+    }
+
+    & input
+    {
+        width: 100%;
+    }
+
+    & h3
+    {
+        font-size: 16px;
+        font-weight: bold;
+        text-align: center;
+    }
+}
+
+#promptField
+{
+    width: 100%;
+}
+
+#backgroundConfirm
+{
+    background-color: transparent;
+    position: fixed;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    display: none;
+    z-index: 5000;
+}
+
+.CodeMirror
+{
+    height: auto;
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+}
+
+.line-error
+{
+    //background-color: #edd8d8 !important;
+    background-color: rgba(255,0,0,0.2) !important;
+    font-weight: bold;
+}
+
+#errorWindow
+{
+    position: absolute;
+    background-color: #d9aeae;
+    color: black;
+    border: solid 2px #FF0000;
+    width: 400px;
+    height: 300px;
+    bottom: 0px;
+    right: 0px;
+    z-index: 200000;
+    display: none;
+
+    & > div:nth-child(1)
+    {
+        text-align: center;
+        font-weight: bold;
+        background-color: #FF0000;
+        padding: 2px;
+    }
+
+    & > div:nth-child(2)
+    {
+        padding: 3px;
+        overflow-y: scroll;
+        height: 255px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    & > div:nth-child(3)
+    {
+        text-align: center;
+    }
+}
+
+#branding
+{
+    position: absolute;
+    left: 5px;
+    bottom: 5px;
+    z-index: 200001;
+    text-align: center;
+
+    & img
+    {
+        display: block;
+        margin-left: 20px;
+        width: 85px;
+        height: 67px;
+    }
+
+    & a
+    {
+        text-decoration: none;
+        color: black;
+        text-shadow: 0px 0px 2px white;
+        font-weight: bold;
+        font-size: 16px;
+    }
+}
+
+#gameNewsDisplay
+{
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    bottom: 5px;
+    width: 280px;
+    z-index: 200001;
+}
+
+#helpLink
+{
+    position: fixed;
+    bottom: -28px;
+    right: -28px;
+    background-color: #0000F0;
+    color: white;
+    font-weight: bold;
+    display: block;
+    font-size: 26px;
+    text-decoration: none;
+    height: 60px;
+    width: 60px;
+    border-radius: 30px;
+    padding-left: 12px;
+    padding-top: 3px;
+    box-sizing: border-box;
+    border: solid 3px #7979ae;
+
+    &:hover
+    {
+        background-color: #6200f0;
+    }
+}
+
+.infoPanel
+{
+    border: solid 2px black;
+    background-color: #ffe28e;
+    font-size: 14px;
+    //font-weight: bold;
+    padding: 5px;
+    text-align: justify;
+}
+
+.noselect
+{
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+@-moz-keyframes displayIn
+{
+    from
+    {
+        opacity: 0;
+        bottom: -20px;
+    }
+
+    to
+    {
+        opacity: 1;
+        bottom: 5px;
+    }
+}
+
+@-webkit-keyframes displayIn
+{
+    from
+    {
+        opacity: 0;
+        bottom: -20px;
+    }
+
+    to
+    {
+        opacity: 1;
+        bottom: 5px;
+    }
+}
+
+@keyframes displayIn
+{
+    from
+    {
+        opacity: 0;
+        bottom: -20px;
+    }
+
+    to
+    {
+        opacity: 1;
+        bottom: 5px;
+    }
+}
+
+@-moz-keyframes displayOut
+{
+    from
+    {
+        opacity: 1;
+        bottom: 5px;
+    }
+
+    to
+    {
+        opacity: 0;
+        bottom: -20px;
+    }
+}
+
+@-webkit-keyframes displayOut
+{
+    from
+    {
+        opacity: 1;
+        bottom: 5px;
+    }
+
+    to
+    {
+        opacity: 0;
+        bottom: -20px;
+    }
+}
+
+@keyframes displayOut
+{
+    from
+    {
+        o   pacity: 1;
+        bottom: 5px;
+    }
+
+    to
+    {
+        opacity: 0;
+        bottom: -20px;
+    }
+}
+
+@import "icons";
+
+// GUI Components
+@import "../Engine/GUI/Chat/Chat";
+@import "../Engine/GUI/CodeGraphEditor/CodeGraphEditor";
+@import "../Engine/GUI/InventoryMenu/InventoryMenu";
+@import "../Engine/GUI/MenuBar/MenuBar";
+@import "../Engine/GUI/ListSelector/ListSelector";
+@import "../Engine/GUI/MessageMenu/MessageMenu";
+@import "../Engine/GUI/ProfileMenu/ProfileMenu";
+@import "../Engine/GUI/SearchPanel/SearchPanel";
+
+// Modules
+@import "../Engine/Module/ArtCharacterEditor/ArtCharacterEditor";
+@import "../Engine/Module/ArtObjectEditor/ArtObjectEditor";
+@import "../Engine/Module/ArtPanelEditor/ArtPanelEditor";
+@import "../Engine/Module/ArtSoundEditor/ArtSoundEditor";
+@import "../Engine/Module/ArtTileEditor/ArtTileEditor";
+@import "../Engine/Module/ChatBotEditor/ChatBotEditor";
+@import "../Engine/Module/FileExplorer/FileExplorer";
+@import "../Engine/Module/GameEditor/GameEditor";
+@import "../Engine/Module/GameList/GameList";
+@import "../Engine/Module/GameStats/GameStats";
+@import "../Engine/Module/GameReset/GameReset";
+@import "../Engine/Module/GenericCodeEditor/GenericCodeEditor";
+@import "../Engine/Module/HouseEditor/HouseEditor";
+@import "../Engine/Module/HousePart/HousePart";
+@import "../Engine/Module/ImportExport/ImportExport";
+@import "../Engine/Module/InventorySlotEditor/InventorySlotEditor";
+@import "../Engine/Module/MapEditor/MapEditor";
+@import "../Engine/Module/MonsterEditor/MonsterEditor";
+@import "../Engine/Module/ModuleManager/ModuleManager";
+@import "../Engine/Module/NPCEditor/NPCEditor";
+@import "../Engine/Module/ObjectEditor/ObjectEditor";
+@import "../Engine/Module/ObjectTypeEditor/ObjectTypeEditor";
+@import "../Engine/Module/PixelEditor/PixelEditor";
+@import "../Engine/Module/Play/Play";
+@import "../Engine/Module/ParticleEditor/ParticleEditor";
+@import "../Engine/Module/QuestEditor/QuestEditor";
+@import "../Engine/Module/TemporaryEffectEditor/TemporaryEffectEditor";
+@import "../Engine/Module/TilesetExplorer/TilesetExplorer";
+@import "../Engine/Module/SkillEditor/SkillEditor";
+@import "../Engine/Module/StorageExplorer/StorageExplorer";
+@import "../Engine/Module/ZoneEditor/ZoneEditor";

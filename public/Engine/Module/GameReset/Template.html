@@ -1,0 +1,88 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div id="resetActions">
+        <div>
+            <div class="button" onclick="GameReset.DefaultGame()">Reset to default game</div>
+            <span>Reset the whole content and import the default game (with maps, quest and more). Can be a good start for learning.</span>
+        </div>
+
+        <div>
+            <div class="button" onclick="GameReset.Art()">Reset Art</div>
+            <select id="artsetSelection"></select>
+            <span>Reset the game art (background tiles, characters and objects)</span>
+        </div>
+
+        <div>
+            <div class="button" onclick="GameReset.Panel()">Reset Panel</div>
+            <span>Reset the panel style</span>
+        </div>
+
+        <div class="hideStandalone">
+            <div class="button" onclick="GameReset.Content()">Reset Content without maps</div>
+            <span>Reset the game content beside the maps</span>
+        </div>
+
+        <div class="hideStandalone">
+            <div class="button" onclick="GameReset.FullContent()">Reset Content</div>
+            <span>Reset the game content including all the maps</span>
+        </div>
+
+        <div class="hideStandalone">
+            <div class="button" onclick="GameReset.Map()">Reset Maps</div>
+            <span>Reset all the maps</span>
+        </div>
+
+        <div>
+            <div class="button" onclick="GameReset.ObjectTypes()">Reset Object Types</div>
+            <span>Reset object types (it will reset the objects as well)</span>
+        </div>
+
+        <div>
+            <div class="button" onclick="GameReset.Stats()">Reset Stats</div>
+            <span>Reset stats (warning: may affect all your logic)</span>
+        </div>
+
+        <div>
+            <div class="button" onclick="GameReset.Skills()">Reset Skills</div>
+            <span>Reset skills (warning: may affect all your logic)</span>
+        </div>
+
+        <div>
+            <div class="button" onclick="GameReset.Skills()">Reset Skills</div>
+            <span>Reset skills (warning: may affect all your logic)</span>
+        </div>
+
+        <div>
+            <div class="button" onclick="GameReset.DefaultMonster()">Reset Default Monster</div>
+            <span>Reset default monster (warning: may affect all your monster AI)</span>
+        </div>
+
+        <div>
+            <div class="button" onclick="GameReset.AllMonster()">Reset All Monster</div>
+            <span>Reset all monsters</span>
+        </div>
+
+        <div>
+            <div class="button" onclick="GameReset.ResetPlayer()">Reset Current Player</div>
+            <span>Reset current player</span>
+        </div>
+
+        <div class="hideStandalone">
+            <div class="button" onclick="GameReset.ResetAllPlayers()">Reset ALL Players</div>
+            <span>Reset ALL players</span>
+        </div>
+
+        <div>
+            <div class="button" onclick="GameReset.ResetSounds()">Reset Sounds</div>
+            <span>Reset sounds &amp; and musics</span>
+        </div>
+
+        <center><div class="button" onclick="world.Save();" style="width: 100px;">Save</div></center>
+    </div>
+</body>
+</html>

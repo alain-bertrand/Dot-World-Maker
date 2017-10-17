@@ -1,0 +1,117 @@
+﻿@import (reference) "../../../Less/engine.less";
+
+.imageList
+{
+    position: absolute;
+    left: 5px;
+    top: @menubarHeight;
+    width: 200px;
+    bottom: 30px;
+}
+
+.imageActions
+{
+    position: absolute;
+    left: 5px;
+    bottom: 5px;
+    width: 200px;
+    text-align: center;
+}
+
+.imageParameters
+{
+    position: absolute;
+    top: @menubarHeight;
+    right: 30px;
+    left: 207px;
+    border: solid 1px @panelBorder;
+    border-radius: @panelRadius;
+    overflow-y: scroll;
+    height: 185px;
+
+    & table
+    {
+        width: 100%;
+    }
+
+    & table tr > td:first-child, table tr > td:nth-child(3)
+    {
+        width: 1%;
+        .fieldLabel;
+    }
+
+    & input, select
+    {
+        width: 100%;
+    }
+}
+
+.imageDisplayContainer
+{
+    position: absolute;
+    top: calc(192px + @menubarHeight);
+    right: 30px;
+    bottom: 30px;
+    left: 207px;
+    border: solid 1px @panelBorder;
+    overflow: scroll;
+    border-radius: @panelRadius;
+}
+
+#artObjectEditorMouseOverlay
+{
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    top: 0px;
+    background-color: transparent;
+    display: none;
+    cursor: pointer;
+}
+
+#uploadArtObject
+{
+    position: absolute;
+    left: 0px;
+    top: @menubarHeight;
+    right: 0px;
+    bottom: 0px;
+    background-color: @panelBackground;
+    display: none;
+    z-index: 1000;
+}
+
+#artObjectIframe
+{
+    display: none;
+}
+
+.imageCommands
+{
+    position: absolute;
+    left: 202px;
+    right: 0px;
+    bottom: 5px;
+    text-align: center;
+}
+
+#detectingWindow
+{
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    background-color: @backgroundColor;
+    display: none;
+
+    & > div
+    {
+        font-weight: bold;
+        font-size: 20px;
+        margin-top: 100px;
+        width: 100%;
+        text-align: center;
+    }
+}

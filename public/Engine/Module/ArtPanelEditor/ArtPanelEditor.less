@@ -1,0 +1,55 @@
+﻿@import (reference) "../../../Less/engine.less";
+
+#panelStyle
+{
+    float: left;
+    margin-right: 5px;
+}
+
+#panelDetails
+{
+    position: absolute;
+    top: @menubarHeight;
+    left: 5px;
+    right: 30px;
+    bottom: 30%;
+    overflow-y: scroll;
+    border: solid 1px @panelBorder;
+    border-radius: @panelRadius;
+
+    & table
+    {
+        width: 100%;
+    }
+
+    & tr
+    {
+        vertical-align: top;
+    }
+
+    & tr > td:first-child
+    {
+        width: 1%;
+        .fieldLabel;
+    }
+
+    & input
+    {
+        width: 100%;
+    }
+
+    & select
+    {
+        width: 100%;
+    }
+}
+
+#testPanel
+{
+    position: absolute;
+    top: ~"calc(70% + 5px)";
+    left: 10px;
+    right: 30px;
+    bottom: 5px;
+    overflow: hidden;
+}

@@ -1,0 +1,55 @@
+﻿@import (reference) "../../../Less/engine.less";
+
+#gameResetOptions
+{
+    margin-top: @menubarHeight;
+    width: ~"calc(100% - 10px)";
+
+    & tr > td:nth-child(2)
+    {
+        width: 1%;
+    }
+
+    & .button
+    {
+        white-space: nowrap;
+        width: 100%;
+    }
+}
+
+#resetActions
+{
+    margin-top: @menubarHeight;
+    padding: 5px;
+    text-align: center;
+
+    & > div
+    {
+        border: solid 1px @panelBorder;
+        box-shadow: @panelInset;
+        padding: 5px;
+        width: 200px;
+        display: inline-block;
+        border-radius: @panelRadius;
+        min-height: 80px;
+        vertical-align: top;
+        margin: 3px;
+    }
+
+    & .button
+    {
+        width: 100%;
+    }
+
+    & select
+    {
+        width: 100%;
+    }
+
+    & div span
+    {
+        margin-top: 5px;
+        display: block;
+        text-align: justify;
+    }
+}

@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div id="gameMapContainer">
+        <canvas id="gameCanvas" oncontextmenu="return false;"></canvas>
+
+        <div id="inventoryIcon" class="gamePanel" onclick="InventoryMenu.Toggle();">
+            <div class="gamePanelTopBorder"></div>
+            <div class="gamePanelContentNoHeader"></div>
+            <div class="gamePanelBottomBorder"></div>
+        </div>
+        <div id="profileIcon" class="gamePanel" onclick="ProfileMenu.Toggle();">
+            <div class="gamePanelTopBorder"></div>
+            <div class="gamePanelContentNoHeader"></div>
+            <div class="gamePanelBottomBorder"></div>
+        </div>
+        <div id="journalIcon" class="gamePanel" onclick="JournalMenu.Toggle();">
+            <div class="gamePanelTopBorder"></div>
+            <div class="gamePanelContentNoHeader"></div>
+            <div class="gamePanelBottomBorder"></div>
+        </div>
+        <div id="messageIcon" class="gamePanel" onclick="MessageMenu.Toggle();">
+            <div class="gamePanelTopBorder"></div>
+            <div class="gamePanelContentNoHeader"></div>
+            <div class="gamePanelBottomBorder"></div>
+        </div>
+        <div id="quickslotBar"></div>
+
+        <div id="gameMenuPanel" class="gamePanel">
+            <div class="gamePanelTopBorder"></div>
+            <div class="gamePanelContentNoHeader">
+                <div id="gameMenuPanelContent">
+                    Some test content
+                </div>
+            </div>
+            <div class="gamePanelBottomBorder"></div>
+        </div>
+    </div>
+
+    <div id="npcDialog" class="gamePanel">
+        <div class="gamePanelTopBorder"></div>
+        <div class="gamePanelHeader">Dialog</div>
+        <div class="gamePanelContent">
+            <div id="dialogSentence"></div>
+            <div id="dialogAnswers">
+                <div></div>
+            </div>
+        </div>
+        <div class="gamePanelBottomBorder"></div>
+    </div>
+
+    <div id="mapMessage">
+        <div class="gamePanelTopBorder"></div>
+        <div class="gamePanelContentNoHeader">Some message</div>
+        <div class="gamePanelBottomBorder"></div>
+    </div>
+
+    <div id="cheatDetected">
+        Developer tools open == Nothing will be saved!<br />
+        If you want to play, close the developer tools and reload!
+    </div>
+
+    <div id="releaseGameMessage">Your game is still not publicly visible. If you want to do it,
+    you can change the setting in the "Editors" =&gt; "Game" panel and set the "Public View"
+    to true. Or you can simply click this button: <span class="button" onclick="world.PublicView = true; world.Save(); $('#releaseGameMessage').hide();">Make the game public.</span><br />
+    <br />
+        <center><span class="button" onclick="$('#releaseGameMessage').hide();">Close</span></center></div>
+
+    <div id="mapLoadingPage">
+        <div>Loading the map...</div>
+    </div>
+    <div id="sounds"></div>
+</body>
+</html>

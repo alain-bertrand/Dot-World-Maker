@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div id="listHouses"></div>
+    <div id="houseActions">
+        <div class="button" onclick="HouseEditor.NewHouse()">New</div>
+        <div class="button" onclick="HouseEditor.CloneHouse()">Clone</div>
+        <div class="button" onclick="HouseEditor.DeleteHouse()">Delete</div>
+    </div>
+    <div id="houseParts"></div>
+    <div id="houseDetailsContainer">
+        <h1 id="houseTitle">Test</h1>
+        <table id="houseDetails">
+            <tr>
+                <td>Name:</td>
+                <td colspan="3"><input type="text" id="houseName" onkeyup="HouseEditor.ChangeName();" /></td>
+            </tr>
+            <tr>
+                <td><a href="#" onclick="HouseEditor.CollisionSelection(); return false;">Collision</a> X:</td>
+                <td><input type="text" id="houseCollisionX" onkeyup="HouseEditor.ChangeCollisionX();" /></td>
+                <td>Y:</td>
+                <td><input type="text" id="houseCollisionY" onkeyup="HouseEditor.ChangeCollisionY();" /></td>
+            </tr>
+            <tr>
+                <td>Collision Width:</td>
+                <td><input type="text" id="houseCollisionWidth" onkeyup="HouseEditor.ChangeCollisionWidth();" /></td>
+                <td>Height:</td>
+                <td><input type="text" id="houseCollisionHeight" onkeyup="HouseEditor.ChangeCollisionHeight();" /></td>
+            </tr>
+        </table>
+        <div id="houseEditorContainer">
+            <canvas id="houseEditor" width="500" height="500"></canvas>
+        </div>
+        <div id="houseEditorCommands">
+            <div class="button selectedButton" onclick="HouseEditor.SwitchSticky()" id="stickyButton">Snapping</div>
+            <div class="button" onclick="HouseEditor.ToFront()">To Front</div>
+            <div class="button" onclick="HouseEditor.ToBack()">To Back</div>
+            <div class="button" onclick="HouseEditor.DeleteSelected()">Delete</div>
+            <div class="button" onclick="world.Save()">Save</div>
+        </div>
+        <div id="houseEditorMouseOverlay"></div>
+    </div>
+
+    <a href="/Help/house_editor.html" id="helpLink" target="engineHelp">?</a>
+</body>
+</html>

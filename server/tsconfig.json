@@ -1,0 +1,16 @@
+﻿{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "noImplicitAny": false,
+    "noEmitOnError": false,
+    "removeComments": false,
+    "sourceMap": false,
+    "target": "es5",
+    "outFile": "ignore.js",
+    "experimentalDecorators": true
+  },
+  "exclude": [
+    "node_modules",
+    "typings"
+  ]
+}

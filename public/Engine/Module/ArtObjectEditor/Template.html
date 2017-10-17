@@ -1,0 +1,90 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div id="objectList" class="imageList"></div>
+    <div class="imageActions">
+        <div class="button" onclick="ArtObjectEditor.Clone()">Clone</div>
+        <div class="button" onclick="ArtObjectEditor.ShowUpload()" id="buttonUpload">Upload</div>
+        <div class="button" onclick="ArtObjectEditor.Create()">New</div>
+        <div class="button" onclick="ArtObjectEditor.Delete()">Delete</div>
+    </div>
+    <div class="imageParameters" style="height: 40%;">
+        <table>
+            <tr>
+                <td>Name:</td>
+                <td><input type="text" id="name" onkeyup="ArtObjectEditor.Rename()" /></td>
+            </tr>
+            <tr>
+                <td><a href="#" onclick="ArtObjectEditor.PositionSelection(); return false;">Position</a> X:</td>
+                <td><input type="text" id="posX" onkeyup="ArtObjectEditor.ChangeParameter('x', 'posX');" /></td>
+                <td>Y:</td>
+                <td><input type="text" id="posY" onkeyup="ArtObjectEditor.ChangeParameter('y', 'posY');" /></td>
+            </tr>
+            <tr>
+                <td>Width:</td>
+                <td><input type="text" id="width" onkeyup="ArtObjectEditor.ChangeParameter('width', 'width');" /></td>
+                <td>Height:</td>
+                <td><input type="text" id="height" onkeyup="ArtObjectEditor.ChangeParameter('height', 'height');" /></td>
+            </tr>
+            <tr>
+                <td><a href="#" onclick="ArtObjectEditor.GroundSelection(); return false;">Ground</a> X:</td>
+                <td><input type="text" id="groundX" onkeyup="ArtObjectEditor.ChangeParameter('groundX', 'groundX');" /></td>
+                <td>Y:</td>
+                <td><input type="text" id="groundY" onkeyup="ArtObjectEditor.ChangeParameter('groundY', 'groundY');" /></td>
+            </tr>
+            <tr>
+                <td>Collision Size:</td>
+                <td><input type="text" id="collision" onkeyup="ArtObjectEditor.ChangeCollision();" /></td>
+            </tr>
+            <tr>
+                <td>Particle Effect:</td>
+                <td><select id="particleEffect" onchange="ArtObjectEditor.ChangeParameter('particleEffect', 'particleEffect');"></select></td>
+            </tr>
+            <tr>
+                <td>NB Animation frames:</td>
+                <td><input type="text" id="nbAnimationFrames" onkeyup="ArtObjectEditor.ChangeParameter('nbAnimationFrames', 'nbAnimationFrames');" /></td>
+            </tr>
+            <tr>
+                <td>Animation speed:</td>
+                <td><input type="text" id="animationSpeed" onkeyup="ArtObjectEditor.ChangeParameter('animationSpeed', 'animationSpeed');" /></td>
+            </tr>
+            <tr>
+                <td>Frame offset:</td>
+                <td><input type="text" id="frameOffset" onkeyup="ArtObjectEditor.ChangeParameter('frameOffset', 'frameOffset');" /></td>
+            </tr>
+
+        </table>
+        <div id="objectActions"></div>
+    </div>
+    <div id="objectDisplayContainer" class="imageDisplayContainer" style="top: calc(40% + 40px);">
+        <canvas id="objectDisplay" width="500" height="500"></canvas>
+    </div>
+    <div class="imageCommands">
+        <div class="button" onclick="ArtObjectEditor.Detect()">Detect</div>
+        <div class="button" onclick="world.Save()">Save</div>
+        <div class="button" onclick="ArtObjectEditor.EditImage()">Edit Image</div>
+    </div>
+    <div id="uploadArtObject">
+        <form method="post" enctype="multipart/form-data" id="artObjectUploadForm" target="artObjectIframe"
+              action="/upload/Art">
+            <input type="hidden" name="returnClass" value="ArtObjectEditor" />
+            <input type="hidden" name="game" id="uploadGameId" />
+            <input type="hidden" name="token" id="uploadToken" />
+            <input type="file" name="fileUpload" id="fileUpload">
+            <div class="button" onclick="ArtObjectEditor.Upload()">Upload</div><div class="button" onclick="ArtObjectEditor.CloseUpload()">Cancel</div>
+        </form>
+
+    </div>
+
+    <iframe id="artObjectIframe" name="artObjectIframe"></iframe>
+
+    <a href="/Help/map_object_editor.html" id="helpLink" target="engineHelp">?</a>
+
+    <div id="artObjectEditorMouseOverlay"></div>
+    <div id="detectingWindow"><div>Detecting... Please wait...</div></div>
+</body>
+</html>

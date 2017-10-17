@@ -1,0 +1,43 @@
+﻿@import (reference) "../../../Less/engine.less";
+
+#characterPreviewPanel
+{
+    position: absolute;
+    right: 30px;
+    top: 35px;
+    width: 180px;
+    height: 185px;
+    text-align: center;
+    border: solid 1px @panelBorder;
+    border-radius: @panelRadius;
+}
+
+#newArtCharcterDialog
+{
+    position: absolute;
+    top: 34px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    background-color: white;
+    display: none;
+
+    & table
+    {
+        width: 300px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    & table tr > td:first-child
+    {
+        font-weight: bold;
+        width: 1%;
+        white-space: nowrap;
+    }
+
+    & input, select
+    {
+        width: 100%;
+    }
+}

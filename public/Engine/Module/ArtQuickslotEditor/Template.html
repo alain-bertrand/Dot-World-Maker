@@ -1,0 +1,66 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div id="panelDetails" style="bottom: auto;">
+        <table>
+            <tr>
+                <td>Current style:</td>
+                <td><canvas id="panelStyle"></canvas>The quickslot bar is a single image. 10 quickslots items take 32x32 pixels each and should be evenly spaced.</td>
+            </tr>
+            <tr>
+                <td>Visible:</td>
+                <td>
+                    <select id="quickslotVisible" onchange="ArtQuickslotEditor.ChangeParam('quickslotVisible', 'quickslotVisible');">
+                        <option>Yes</option>
+                        <option>No</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Left Border:</td>
+                <td><input type="text" id="leftBorder" onkeyup="ArtQuickslotEditor.ChangeParam('leftBorder', 'leftBorder');" /></td>
+            </tr>
+            <tr>
+                <td>Top Border:</td>
+                <td><input type="text" id="topBorder" onkeyup="ArtQuickslotEditor.ChangeParam('topBorder', 'topBorder');" /></td>
+            </tr>
+            <tr>
+                <td>Item spacing:</td>
+                <td><input type="text" id="itemSpacing" onkeyup="ArtQuickslotEditor.ChangeParam('itemSpacing', 'itemSpacing');" /></td>
+            </tr>
+            <tr>
+                <td>Selected skill color:</td>
+                <td><input type="text" id="selectedSkillColor" onkeyup="ArtQuickslotEditor.ChangeParam('selectedSkillColor', 'selectedSkillColor');" /></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <center>
+                        <div class="button" onclick="ArtQuickslotEditor.ShowUpload()" id="buttonUpload">Upload</div>
+                        <div class="button" onclick="world.Save()">Save</div>
+                    </center>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="uploadArtObject">
+        <form method="post" enctype="multipart/form-data" id="artObjectUploadForm" target="artObjectIframe"
+              action="/upload/Art">
+            <input type="hidden" name="returnClass" value="ArtQuickslotEditor" />
+            <input type="hidden" name="game" id="uploadGameId" />
+            <input type="hidden" name="token" id="uploadToken" />
+            <input type="file" name="fileUpload" id="fileUpload">
+            <div class="button" onclick="ArtQuickslotEditor.Upload()">Upload</div><div class="button" onclick="ArtQuickslotEditor.CloseUpload()">Cancel</div>
+        </form>
+    </div>
+
+    <iframe id="artObjectIframe" name="artObjectIframe"></iframe>
+
+    <a href="/Help/quick_slot_editor.html" id="helpLink" target="engineHelp">?</a>
+</body>
+</html>

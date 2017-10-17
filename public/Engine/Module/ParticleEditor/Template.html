@@ -1,0 +1,26 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div id="listObject"></div>
+    <div id="particleDetails">
+    </div>
+    <div id="particlePreviewContainer">
+        <canvas id="particlePreview" onclick="ParticleEditor.Restart()"></canvas>
+    </div>
+
+    <div id="mainCommands">
+        <div class="button" onclick="ParticleEditor.Restart()">Restart</div>
+        <div class="button" onclick="ParticleEditor.New()">New</div>
+        <div class="button" onclick="ParticleEditor.Clone()">Clone</div>
+        <div class="button" onclick="world.Save();">Save</div>
+        <div class="button" onclick="ParticleEditor.Delete()">Delete</div>
+    </div>
+
+    <a href="/Help/particle_system_editor.html" id="helpLink" target="engineHelp">?</a>
+</body>
+</html>

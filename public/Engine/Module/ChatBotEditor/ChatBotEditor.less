@@ -1,0 +1,65 @@
+﻿@import (reference) "../../../Less/engine.less";
+
+#listChatBot
+{
+    position: absolute;
+    left: 5px;
+    width: 150px;
+    top: @menubarHeight;
+    height: ~"calc(50% - 30px)";
+}
+
+#chatBotCommands
+{
+    position: absolute;
+    left: 5px;
+    top: ~"calc(50% + 5px)";
+}
+
+#listBotSentences
+{
+    position: absolute;
+    left: 5px;
+    width: 150px;
+    top: ~"calc(50% + 30px)";
+    bottom: 30px;
+}
+
+#chatBotDetails
+{
+    position: absolute;
+    top: @menubarHeight;
+    left: 160px;
+    right: 30px;
+    bottom: 30px;
+
+    & table
+    {
+        width: 100%;
+    }
+
+    & table tr
+    {
+        vertical-align: top;
+    }
+
+    & table tr > td:first-child
+    {
+        width: 1%;
+        white-space: nowrap;
+        font-weight: bold;
+    }
+
+    & input, select
+    {
+        width: 100%;
+    }
+}
+
+#chatbot_codecontainer
+{
+    position: absolute;
+    height: 200px;
+    width: 500px;
+    box-sizing: border-box;
+}

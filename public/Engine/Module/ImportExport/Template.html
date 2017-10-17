@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div id="resetActions">
+        <div>
+            <div class="button" onclick="ImportExport.ExportJSON()">Export JSON</div>
+            <span>Export the game content as JSON (doesn't include the art)</span>
+        </div>
+        <div>
+            <div class="button" onclick="ImportExport.ExportGame()">Export Game</div>
+            <span>Export all the game asset as zip</span>
+        </div>
+        <div>
+            <div class="button" onclick="ImportExport.ImportJSON()">Import JSON</div>
+            <span>Import JSON game content (doesn't include the art)</span>
+        </div>
+        <div id="html5export">
+            <div class="button" onclick="ImportExport.Html5()">Create HTML5</div>
+            <span>Creates a zip file containing all the files needed for a standalone single player game. Doesn't requires any special installation on the server side and can be hosted everywhere even on free hosting sites.</span>
+        </div>
+        <div id="apkexport">
+            <div class="button" onclick="ImportExport.AndroidAPK()">Create Android APK</div>
+            <span>Create an Android APP from the game (games is then fully off-line). This is an experimental feature and requires a couple of minutes to complete. Please wait after clicking the button and avoid to over-user it.</span>
+        </div>
+    </div>
+
+
+    <div id="uploadImportData">
+        <form method="post" enctype="multipart/form-data" id="uploadFormData" target="importExportFrame"
+              action="/upload/ImportJson">
+            <input type="hidden" name="game" id="uploadGameId" />
+            <input type="hidden" name="token" id="uploadToken" />
+            <input type="file" name="fileUpload" id="fileUpload">
+            <div class="button" onclick="ImportExport.Upload()">Upload</div><div class="button" onclick="ImportExport.CloseUpload()">Cancel</div>
+        </form>
+    </div>
+
+    <iframe id="importExportFrame" name="importExportFrame"></iframe>
+</body>
+</html>

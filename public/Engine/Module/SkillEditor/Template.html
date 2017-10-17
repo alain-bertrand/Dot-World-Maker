@@ -1,0 +1,42 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div id="skillList" class="elementList"></div>
+    <div class="elementListCommands">
+        <div class="button" onclick="SkillEditor.Add();">Add</div>
+        <div class="button" onclick="SkillEditor.Clone();">Clone</div>
+        <div class="button" onclick="SkillEditor.Delete();">Delete</div>
+    </div>
+    <div id="skillParameters" class="elementParameters"></div>
+    <div id="skillParamCommands">
+        <div class="button" onclick="SkillEditor.AddParam();">Add Parameter</div>
+    </div>
+
+    <div id="codeContainer" class="elementCode">
+        <textarea id="baseCode" spellcheck="false" onkeyup="SkillEditor.ChangeCode()"></textarea>
+    </div>
+    <div class="elementCommands">
+        <div class="button" onclick="world.Save();">Save</div>
+    </div>
+
+    <div id="uploadArtObject">
+        <form method="post" enctype="multipart/form-data" id="artObjectUploadForm" target="artObjectIframe"
+              action="/upload/Art">
+            <input type="hidden" name="returnClass" value="SkillEditor" />
+            <input type="hidden" name="game" id="uploadGameId" />
+            <input type="hidden" name="token" id="uploadToken" />
+            <input type="file" name="fileUpload" id="fileUpload">
+            <div class="button" onclick="SkillEditor.Upload()">Upload</div><div class="button" onclick="SkillEditor.CloseUpload()">Cancel</div>
+        </form>
+    </div>
+
+    <iframe id="artObjectIframe" name="artObjectIframe"></iframe>
+
+    <a href="/Help/skills_editor.html" id="helpLink" target="engineHelp">?</a>
+</body>
+</html>

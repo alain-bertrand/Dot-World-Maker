@@ -1,0 +1,52 @@
+﻿@import (reference) "../../../Less/engine.less";
+
+#particleDetails
+{
+    position: absolute;
+    left: 160px;
+    right: 30px;
+    top: @menubarHeight;
+    bottom: 50%;
+    border: solid 1px @panelBorder;
+    overflow-y: scroll;
+    border-radius: @panelRadius;
+
+    & table
+    {
+        width: 100%;
+    }
+
+    & table tr
+    {
+        vertical-align: top;
+    }
+
+    & table tr > td:nth-child(1)
+    {
+        width: 1%;
+        .fieldLabel;
+    }
+
+    & table tr > td:nth-child(3)
+    {
+        width: 1%;
+        white-space: nowrap;
+    }
+
+    input, select, textarea
+    {
+        width: 100%;
+        resize: none;
+    }
+}
+
+#particlePreviewContainer
+{
+    position: absolute;
+    left: 160px;
+    right: 30px;
+    top: ~"calc(50% + 5px)";
+    bottom: 30px;
+    border: solid 1px @panelBorder;
+    border-radius: @panelRadius;
+}

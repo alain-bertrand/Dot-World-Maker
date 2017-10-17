@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div id="objectList" class="imageList"></div>
+    <div class="imageActions">
+        <div class="button" onclick="ArtSoundEditor.Clone()">Clone</div>
+        <div class="button" onclick="ArtSoundEditor.ShowAdd()">Add</div>
+        <div class="button" onclick="ArtSoundEditor.ShowUpload()" id="buttonUpload">Upload</div>
+        <div class="button" onclick="ArtSoundEditor.Delete()">Delete</div>
+    </div>
+    <div class="imageParameters">
+        <table>
+            <tr>
+                <td>Name:</td>
+                <td><input type="text" id="name" onkeyup="ArtSoundEditor.Rename()" /></td>
+            </tr>
+        </table>
+        <div id="soundPreview"></div>
+    </div>
+    <div class="imageCommands" style="">
+        <div class="button" onclick="world.Save()">Save</div>
+    </div>
+    <div id="uploadArtObject">
+        <form method="post" enctype="multipart/form-data" id="artObjectUploadForm" target="artObjectIframe"
+              action="/upload/Sounds">
+            <input type="hidden" name="game" id="uploadGameId" />
+            <input type="hidden" name="token" id="uploadToken" />
+            <!--Due to the different browsers support, you must upload the same music or sound as MP3 and OGG format. If you don't know how to convert you can use <a href="http://www.audacityteam.org/" target="_blank">Audacity</a> (it's free and open source).<br />
+            <br />-->
+            MP3: <input type="file" name="mp3Upload" id="mp3Upload"><br />
+            <!--OGG: <input type="file" name="oggUpload" id="oggUpload"><br />-->
+            <div class="button" onclick="ArtSoundEditor.Upload()">Upload</div><div class="button" onclick="ArtSoundEditor.CloseUpload()">Cancel</div>
+        </form>
+
+    </div>
+
+    <iframe id="artObjectIframe" name="artObjectIframe"></iframe>
+
+    <div id="soundList"></div>
+
+    <a href="/Help/sound_editor.html" id="helpLink" target="engineHelp">?</a>
+</body>
+</html>

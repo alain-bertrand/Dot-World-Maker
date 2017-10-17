@@ -1,0 +1,321 @@
+﻿@import (reference) "../../../Less/engine.less";
+
+#pixelEditorPalette
+{
+    position: absolute;
+    border: solid 1px @panelBorder;
+    top: 35px;
+    left: 5px;
+    bottom: 270px;
+    padding: 3px;
+    width: 200px;
+    box-shadow: @panelInset;
+    border-radius: @panelRadius;
+    box-sizing: border-box;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    overflow-y: scroll;
+
+    & table
+    {
+        width: 100%;
+    }
+
+    & tr > td:first-child
+    {
+        width: 1%;
+        white-space: nowrap;
+        font-weight: bold;
+    }
+}
+
+#pixelEditorPalette > span.button
+{
+    width: ~"calc(100% - 5px)";
+    box-sizing: border-box;
+}
+
+#pixelEditorColorPicker
+{
+    position: absolute;
+    border: solid 1px @panelBorder;
+    left: 5px;
+    bottom: 5px;
+    padding: 3px;
+    width: 200px;
+    height: 260px;
+    box-shadow: @panelInset;
+    border-radius: @panelRadius;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+#pixelEditorHueSelection
+{
+    position: absolute;
+    border: solid 1px black;
+    bottom: 5px;
+    right: 5px;
+    height: 185px;
+    width: 20px;
+    box-sizing: border-box;
+    background: linear-gradient(to bottom, #FF0000 0%, #FF00FF 17%, #0000FF 33%,#00FFFF 50%,#00FF00 66%, #FFFF00 84%, #FF0000 100%);
+}
+
+#pixelEditorColorSelection
+{
+    position: absolute;
+    border: solid 1px black;
+    bottom: 5px;
+    left: 5px;
+    right: 30px;
+    height: 185px;
+    box-sizing: border-box;
+    background: linear-gradient(to right, #FFFFFF 0%, #FF0000 100%);
+}
+
+#pixelEditorColorSelection2
+{
+    position: absolute;
+    border: solid 1px black;
+    bottom: 5px;
+    left: 5px;
+    right: 30px;
+    height: 185px;
+    box-sizing: border-box;
+    background: linear-gradient(to bottom, rgba(0,0,0, 0) 0%, rgba(0,0,0,1) 100%);
+    overflow: hidden;
+}
+
+#pixelEditorCurrentColor
+{
+    position: absolute;
+    border: solid 2px black;
+    border-radius: 10px;
+    width: 12px;
+    height: 12px;
+    left: 154px;
+    top: -5px;
+    box-sizing: border-box;
+}
+
+#pixelEditorCurrentHue
+{
+    position: absolute;
+    border: solid 2px black;
+    top: 64px;
+    right: 2px;
+    box-sizing: border-box;
+    width: 26px;
+    height: 10px;
+}
+
+#pixelEditorColorMouseSelector
+{
+    position: absolute;
+    left: 0px;
+    bottom: 0px;
+    background-color: transparent;
+    //background-color: rgba(255,0,0,0.5);
+    width: 200px;
+    height: 195px;
+}
+
+#pixelEditorFieldCurrentColor
+{
+    width: 107px;
+}
+
+#pixelEditorColorPreview
+{
+    width: 35px;
+    height: 25px;
+    border: solid 1px black;
+    display: inline-block;
+    vertical-align: bottom;
+    margin-left: 5px;
+}
+
+#pixelEditorCanvasContainer
+{
+    position: absolute;
+    left: 210px;
+    right: 178px;
+    top: 35px;
+    bottom: 118px;
+    box-shadow: @panelInset;
+    border-radius: @panelRadius;
+    border: solid 1px @panelBorder;
+    box-sizing: border-box;
+    overflow: scroll;
+}
+
+#pixelEditorCanvas
+{
+    cursor: crosshair;
+    border: solid 1px black;
+}
+
+#pixelEditorLayers
+{
+    position: absolute;
+    right: 35px;
+    width: 139px;
+    top: 35px;
+    bottom: 118px;
+    box-shadow: @panelInset;
+    border-radius: @panelRadius;
+    border: solid 1px @panelBorder;
+    box-sizing: border-box;
+    overflow-y: scroll;
+
+    & > div
+    {
+        margin: 5px;
+        padding: 3px;
+        background-color: #F0F0F0;
+        border: solid 1px #E0E0E0;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+    & > div > canvas
+    {
+        border: solid 1px black;
+    }
+
+    & > div > span > .button
+    {
+        font-size: 10px;
+        float: right;
+        vertical-align: top;
+        margin-top: -1px;
+    }
+}
+
+.selectedPixelEditorLayer
+{
+    background-color: #FFE0E0 !important;
+}
+
+#pixelEditorLayerActions
+{
+    position: absolute;
+    right: 35px;
+    bottom: 57px;
+    text-align: center;
+    width: 137px;
+
+    & div.button
+    {
+        font-size: 10px;
+        margin: 1px;
+    }
+}
+
+#pixelEditorSpriteList
+{
+    position: absolute;
+    left: 210px;
+    right: 178px;
+    bottom: 5px;
+    height: 108px;
+    box-shadow: @panelInset;
+    border-radius: @panelRadius;
+    border: solid 1px @panelBorder;
+    box-sizing: border-box;
+    overflow-x: scroll;
+    white-space: nowrap;
+
+    & > div
+    {
+        margin: 5px;
+        padding: 3px;
+        background-color: #F0F0F0;
+        border: solid 1px #E0E0E0;
+        display: inline-block;
+        cursor: pointer;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+    & > div > canvas
+    {
+        border: solid 1px black;
+    }
+}
+
+#pixelEditorPreview
+{
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    top: 32px;
+    background-color: #FFFFFF;
+    overflow: scroll;
+    display: none;
+
+    & img
+    {
+        margin: 10px;
+        border: solid 1px black;
+    }
+}
+
+.pixelEditorNewSprite
+{
+    width: 64px;
+    height: 69px;
+    vertical-align: top;
+    color: #A0A0A0;
+    font-weight: bold;
+    font-size: 64px;
+    text-align: center;
+
+    &:hover
+    {
+        color: #808080;
+    }
+}
+
+#pixelEditorPreviewClose
+{
+    position: absolute;
+    right: 5px;
+    top: 0px;
+}
+
+#colorShades
+{
+    margin-top: 5px;
+    width: 100%;
+
+    & td
+    {
+        border: solid 2px black;
+        box-sizing: border-box;
+    }
+}
+
+.selectedShade
+{
+    border:solid 2px red !important;
+}
+
+#addImageFromFile
+{
+    position: absolute;
+    background-color: white;
+    top: 35px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    display: none;
+}

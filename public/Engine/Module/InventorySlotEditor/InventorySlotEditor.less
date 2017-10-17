@@ -1,0 +1,39 @@
+﻿@import (reference) "../../../Less/engine.less";
+
+#listSlots
+{
+    position: absolute;
+    left: 5px;
+    width: 150px;
+    top: @menubarHeight;
+    bottom: 30px;
+}
+
+#slotDetails
+{
+    position: absolute;
+    left: 160px;
+    right: 30px;
+    top: @menubarHeight;
+    bottom: 30px;
+    border: solid 1px @panelBorder;
+    overflow-y: scroll;
+    border-radius: @panelRadius;
+
+    & table
+    {
+        width: 100%;
+    }
+
+    & table tr > td:first-child
+    {
+        width: 1%;
+        font-weight: bold;
+        white-space: nowrap;
+    }
+
+    input, select
+    {
+        width: 100%;
+    }
+}

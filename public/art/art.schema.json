@@ -1,0 +1,333 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "description": "Artset JSON definition",
+  "properties": {
+    "$schema": { "type": "string" },
+    "background": {
+      "description": "Defines the background tiles. Only one file is allowed",
+      "type": "object",
+      "properties": {
+        "file": {
+          "type": "string",
+          "description": "Defines the file name used for the background tiles. Path is relative to the artset."
+        },
+        "width": {
+          "type": "number",
+          "description": "Defines the width of a tile.",
+          "default": "32"
+        },
+        "height": {
+          "type": "number",
+          "description": "Defines the height of a tile.",
+          "default": "32"
+        },
+        "nbColumns": {
+          "type": "number",
+          "description": "Defines how many columns the background tiles file has."
+        },
+        "lastTile": {
+          "type": "number",
+          "description": "Defines the last ID of the possible tiles."
+        },
+        "types": {
+          "type": "object",
+          "description": "Defines the known types of tiles. For example multiple tiles could be used as grass. Used while smart painting.",
+          "additionalProperties": {
+            "type": "array",
+            "description": "Contains all the tiles ID which can be used by this type.",
+            "items": { "type": "number" }
+          }
+        },
+        "levels": {
+          "type": "array",
+          "description": "Defines what the perlin noise generator will use at a given position.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "description": "Defines which tile type should be used for that level."
+              },
+              "maxLevel": {
+                "type": "number",
+                "description": "Defines up to which level to use this type. The value is between 0 and 1, the upper level doesn't require this property.",
+                "minimum": 0,
+                "maximum": 1
+              }
+            },
+            "required": [ "type" ],
+            "additionalProperties": false
+          }
+        },
+        "transitions": {
+          "type": "array",
+          "description": "Defines how to mix two types of tiles. Used by the smart tile painting as well as during the area generation.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "description": "Defines the first type of tiles used for the transition."
+              },
+              "to": {
+                "type": "string",
+                "description": "Defines the second type of tiles used for the transition."
+              },
+              "transition": {
+                "type": "array",
+                "items": { "type": "number" },
+                "description": "The ID of the tiles used for the transition."
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "canWalkOn": {
+          "type": "array",
+          "description": "Defines on which tiles the monster can walk.",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "objects": {
+      "description": "Defines the objects available in the game which can be placed on the map.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "description": "Defines an object which can be placed on the map.",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "Defines the file name containing the object. The path is relative to the art set."
+          },
+          "width": {
+            "type": "number",
+            "description": "Defines how large is the object image."
+          },
+          "height": {
+            "type": "number",
+            "description": "Defines how tall is the object image."
+          },
+          "groundX": {
+            "type": "number",
+            "description": "Defines the X position touching the ground."
+          },
+          "groundY": {
+            "type": "number",
+            "description": "Defines the Y position touching the ground."
+          },
+          "x": {
+            "type": "number",
+            "description": "Defines the X offset where the image of the object starts."
+          },
+          "y": {
+            "type": "number",
+            "description": "Defines the Y offset where the image of the object starts."
+          },
+          "frequency": {
+            "type": "number",
+            "description": "Defines how frequently this object should be placed by the world generator on the map. The value is between 0 and 100.",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "placeOn": {
+            "type": "array",
+            "description": "Defines how which type of tiles this object can be placed.",
+            "items": { "type": "string" }
+          },
+          "collision": {
+            "type": "object",
+            "description": "Defines if actors collide with this object, if not defined then the actors will not collide.",
+            "properties": {
+              "radius": {
+                "type": "number",
+                "description": "Defines the collision radius of the object."
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "characters": {
+      "description": "Defines the characters available in the game which can be placed on the map.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "Defines the file name containing the character. The path is relative to the art set."
+          },
+          "frames": {
+            "type": "number",
+            "description": "Defines the number of frames for a given direction. The middle frame will be the rest position.",
+            "default": "3"
+          },
+          "directions": {
+            "type": "number",
+            "description": "Defines the number of directions a sprite sheet contains.",
+            "default": "4"
+          },
+          "groundX": {
+            "type": "number",
+            "description": "Defines the X position touching the ground."
+          },
+          "groundY": {
+            "type": "number",
+            "description": "Defines the Y position touching the ground."
+          },
+          "imageFrameDivider": {
+            "type": "number",
+            "description": "Number of images rendered before an animation frame is changed."
+          },
+          "width": {
+            "type": "number",
+            "description": "Number of pixel width of a single frame."
+          },
+          "height": {
+            "type": "number",
+            "description": "Number of pixel height of a single frame."
+          },
+          "directionFrames": {
+            "type": "array",
+            "description": "Defines the translation of the direction (0=>right, 1=>bottom, 2=>left, 3=>top) to the actual art.",
+            "items": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 3,
+              "uniqueItems": true
+            }
+          },
+          "collision": {
+            "type": "object",
+            "description": "Defines if actors collide with this object, if not defined then the actors will not collide.",
+            "properties": {
+              "radius": {
+                "type": "number",
+                "description": "Defines the collision radius of the object."
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false,
+        "required": [ "file", "frames", "directions", "groundX", "groundY", "width", "height", "directionFrames", "imageFrameDivider" ]
+      }
+    },
+    "monsters": {
+      "description": "Defines the characters available in the game which can be placed on the map.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "Defines the file name containing the character. The path is relative to the art set."
+          },
+          "frames": {
+            "type": "number",
+            "description": "Defines the number of frames for a given direction. The middle frame will be the rest position.",
+            "default": "3"
+          },
+          "directions": {
+            "type": "number",
+            "description": "Defines the number of directions a sprite sheet contains.",
+            "default": "4"
+          },
+          "groundX": {
+            "type": "number",
+            "description": "Defines the X position touching the ground."
+          },
+          "groundY": {
+            "type": "number",
+            "description": "Defines the Y position touching the ground."
+          },
+          "width": {
+            "type": "number",
+            "description": "Number of pixel width of a single frame."
+          },
+          "height": {
+            "type": "number",
+            "description": "Number of pixel height of a single frame."
+          },
+          "imageFrameDivider": {
+            "type": "number",
+            "description": "Number of images rendered before an animation frame is changed."
+          },
+          "canWalkOn": {
+            "type": "array",
+            "description": "Defines on which tiles the monster can walk.",
+            "items": { "type": "string" }
+          },
+          "directionFrames": {
+            "type": "array",
+            "description": "Defines the translation of the direction (0=>right, 1=>bottom, 2=>left, 3=>top) to the actual art.",
+            "items": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 3,
+              "uniqueItems": true
+            }
+          },
+          "collision": {
+            "type": "object",
+            "description": "Defines if actors collide with this object, if not defined then the actors will not collide.",
+            "properties": {
+              "radius": {
+                "type": "number",
+                "description": "Defines the collision radius of the object."
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false,
+        "required": [ "file", "frames", "directions", "groundX", "groundY", "width", "height", "directionFrames", "imageFrameDivider" ]
+      }
+    },
+    "skills": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "file": { "type": "string" }
+        }
+      }
+    },
+    "house_parts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "file": { "type": "string" },
+          "width": { "type": "number" },
+          "height": { "type": "number" },
+          "x": { "type": "number" },
+          "y": { "type": "number" }
+        },
+        "additionalProperties": false,
+        "required": [ "file", "height", "width", "x", "y" ]
+      }
+    },
+    "houses": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "part": { "type": "string" },
+            "x": { "type": "number" },
+            "y": { "type": "number" }
+          },
+          "required": [ "part", "x", "y" ],
+          "additionalProperties": false
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}
