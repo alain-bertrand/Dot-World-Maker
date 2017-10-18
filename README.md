@@ -1,5 +1,7 @@
 # Dot World Maker
-Online web role playing game (RPG) engine let you build your own game directly from your browser.
+Online web role playing game (RPG) engine let you build your own game directly from your browser. This is a complete and fully running engine, allowing to directly create a multi-player game running on any HTML5 browser (even mobile phones).
+
+This is also the same base engine used on https://www.dotworldmaker.com
 
 ## Requirements
 * Your server must have MySQL or MariaDB installed.
