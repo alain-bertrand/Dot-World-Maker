@@ -2356,28 +2356,6 @@ var ARC4 = (function () {
     };
     return ARC4;
 }());
-var KnownCode = (function () {
-    function KnownCode() {
-        this.Parameters = {};
-        this.Includes = [];
-    }
-    KnownCode.prototype.Store = function () {
-        return {
-            Author: this.Author,
-            Name: this.Name,
-            Source: this.Source,
-            Parameters: this.Parameters,
-            Description: this.Description,
-            Includes: this.Includes,
-            Enabled: this.Enabled,
-            CodeBrowsing: this.CodeBrowsing,
-            AllowEditing: this.AllowEditing,
-            Price: this.Price,
-            Version: this.Version
-        };
-    };
-    return KnownCode;
-}());
 var dialogAction = new ((function () {
     function class_2() {
         this.code = {};
@@ -2712,6 +2690,23 @@ var GiveSkill = (function (_super) {
 GiveSkill = __decorate([
     DialogActionClass
 ], GiveSkill);
+var HideMinimap = (function (_super) {
+    __extends(HideMinimap, _super);
+    function HideMinimap() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    HideMinimap.prototype.Display = function (id, values, updateFunction) {
+        var html = "";
+        return html;
+    };
+    HideMinimap.prototype.Execute = function (values, env) {
+        play.showMinimap = false;
+    };
+    return HideMinimap;
+}(ActionClass));
+HideMinimap = __decorate([
+    DialogActionClass
+], HideMinimap);
 /// <reference path="../Dialogs/DialogAction.ts" />
 var IncreaseStat = (function (_super) {
     __extends(IncreaseStat, _super);
@@ -3195,6 +3190,23 @@ var ShowMapMessage = (function (_super) {
 ShowMapMessage = __decorate([
     DialogActionClass
 ], ShowMapMessage);
+var ShowMinimap = (function (_super) {
+    __extends(ShowMinimap, _super);
+    function ShowMinimap() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    ShowMinimap.prototype.Display = function (id, values, updateFunction) {
+        var html = "";
+        return html;
+    };
+    ShowMinimap.prototype.Execute = function (values, env) {
+        play.showMinimap = true;
+    };
+    return ShowMinimap;
+}(ActionClass));
+ShowMinimap = __decorate([
+    DialogActionClass
+], ShowMinimap);
 /// <reference path="../Dialogs/DialogAction.ts" />
 var ShowShop = (function (_super) {
     __extends(ShowShop, _super);
@@ -3591,6 +3603,28 @@ var ChatBotSentence = (function () {
     };
     return ChatBotSentence;
 }());
+var KnownCode = (function () {
+    function KnownCode() {
+        this.Parameters = {};
+        this.Includes = [];
+    }
+    KnownCode.prototype.Store = function () {
+        return {
+            Author: this.Author,
+            Name: this.Name,
+            Source: this.Source,
+            Parameters: this.Parameters,
+            Description: this.Description,
+            Includes: this.Includes,
+            Enabled: this.Enabled,
+            CodeBrowsing: this.CodeBrowsing,
+            AllowEditing: this.AllowEditing,
+            Price: this.Price,
+            Version: this.Version
+        };
+    };
+    return KnownCode;
+}());
 var dialogCondition = new ((function () {
     function class_3() {
         this.code = {};
@@ -3846,6 +3880,42 @@ CheckLookIsNot = __decorate([
     DialogConditionClass
 ], CheckLookIsNot);
 /// <reference path="../Dialogs/DialogCondition.ts" />
+var CheckMinimapIsHidden = (function (_super) {
+    __extends(CheckMinimapIsHidden, _super);
+    function CheckMinimapIsHidden() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    CheckMinimapIsHidden.prototype.Display = function (id, values, updateFunction) {
+        var html = "";
+        return html;
+    };
+    CheckMinimapIsHidden.prototype.Check = function (values, env) {
+        return !play.showMinimap;
+    };
+    return CheckMinimapIsHidden;
+}(ConditionClass));
+CheckMinimapIsHidden = __decorate([
+    DialogConditionClass
+], CheckMinimapIsHidden);
+/// <reference path="../Dialogs/DialogCondition.ts" />
+var CheckMinimapIsVisible = (function (_super) {
+    __extends(CheckMinimapIsVisible, _super);
+    function CheckMinimapIsVisible() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    CheckMinimapIsVisible.prototype.Display = function (id, values, updateFunction) {
+        var html = "";
+        return html;
+    };
+    CheckMinimapIsVisible.prototype.Check = function (values, env) {
+        return play.showMinimap;
+    };
+    return CheckMinimapIsVisible;
+}(ConditionClass));
+CheckMinimapIsVisible = __decorate([
+    DialogConditionClass
+], CheckMinimapIsVisible);
+/// <reference path="../Dialogs/DialogCondition.ts" />
 var CheckNotHasSkill = (function (_super) {
     __extends(CheckNotHasSkill, _super);
     function CheckNotHasSkill() {
@@ -4065,12 +4135,6 @@ var CheckUserStat = (function (_super) {
 CheckUserStat = __decorate([
     DialogConditionClass
 ], CheckUserStat);
-var Dialog = (function () {
-    function Dialog() {
-        this.Answers = [];
-    }
-    return Dialog;
-}());
 var knownEffects = [];
 // Class decorator which will put all the API inside the api variable.
 function MapEffectClass(target) {
@@ -4149,257 +4213,11 @@ var SightEffect = (function (_super) {
 SightEffect = __decorate([
     MapEffectClass
 ], SightEffect);
-var InventoryObject = (function () {
-    function InventoryObject(name, count, usage) {
-        if (count === void 0) { count = 1; }
-        if (usage === void 0) { usage = null; }
-        this.Name = name;
-        this.Count = count;
-        this.UsageLevel = usage;
+var Dialog = (function () {
+    function Dialog() {
+        this.Answers = [];
     }
-    InventoryObject.prototype.GetDetails = function () {
-        for (var i = 0; i < world.InventoryObjects.length; i++)
-            if (world.InventoryObjects[i].Name == this.Name)
-                return world.InventoryObjects[i];
-        return null;
-    };
-    InventoryObject.prototype.GetObjectType = function () {
-        return this.GetDetails().GetType();
-    };
-    return InventoryObject;
-}());
-var InventorySlot = (function () {
-    function InventorySlot(name) {
-        this.Name = name;
-    }
-    InventorySlot.DefaultSlots = function () {
-        return [
-            new InventorySlot('Head'),
-            new InventorySlot('Body'),
-            new InventorySlot('LeftHand'),
-            new InventorySlot('RightHand'),
-            new InventorySlot('Legs'),
-            new InventorySlot('Feet'),
-            new InventorySlot('Neck'),
-            new InventorySlot('LeftHandFinger'),
-            new InventorySlot('RightHandFinger')
-        ];
-    };
-    return InventorySlot;
-}());
-var KnownObject = (function () {
-    function KnownObject(name, objectType, slots, weight, price, description, maxStack, action, actionCode, parameters) {
-        this.UsageConditions = [];
-        this.UnwearConditions = [];
-        this.WearConditions = [];
-        this.DropConditions = [];
-        this.UsageActions = [];
-        this.Name = name;
-        this.ObjectType = objectType;
-        this.Slots = slots ? slots : [];
-        this.Weight = weight ? weight : 0;
-        this.Price = price ? price : 0;
-        this.Description = description ? description : "";
-        this.MaxStack = maxStack ? maxStack : 0;
-        this.Action = action;
-        this.ActionCode = actionCode;
-        this.Parameters = parameters ? parameters : [];
-        this.Image = '/art/tileset2/inventory_object.png';
-    }
-    KnownObject.DefaultObjects = function () {
-        var result = [
-            new KnownObject("Wood Stick", "Weapon", ["RightHand"], 2, 2, "A simple wood stick to defend yourself", 1, null, null, [new ObjectParameter("Base Damage", "5"), new ObjectParameter("Attack Speed", "0.5")]),
-            new KnownObject("Apple", "Food", [], 1, 1, "A red apple", 10, null, null, [new ObjectParameter("Life Recover", "3")])
-        ];
-        return result;
-    };
-    KnownObject.prototype.GetType = function () {
-        for (var i = 0; i < world.InventoryObjectTypes.length; i++)
-            if (world.InventoryObjectTypes[i].Name == this.ObjectType)
-                return world.InventoryObjectTypes[i];
-        return null;
-    };
-    KnownObject.prototype.GetParameter = function (statName) {
-        // Checks within the object properties
-        for (var prop in this)
-            if (prop.toLowerCase() == statName.toLowerCase())
-                return "" + this[prop];
-        // Checks within the additional parameters
-        for (var i = 0; i < this.Parameters.length; i++)
-            if (this.Parameters[i].Name.toLowerCase() == statName.toLowerCase())
-                return this.Parameters[i].Value;
-        return null;
-    };
-    KnownObject.prototype.CanUnwear = function () {
-        if (world.SimplifiedObjectLogic) {
-            var env = new CodeEnvironement();
-            env.SetVariable('currentItem', new VariableValue(this.Name));
-            if (!this.UnwearConditions)
-                this.UnwearConditions = [];
-            if (this.UnwearConditions.length)
-                for (var i = 0; i < this.UnwearConditions.length; i++) {
-                    if (!dialogCondition.code[this.UnwearConditions[i].Name].Check(this.UnwearConditions[i].Values, env))
-                        return false;
-                }
-            else
-                for (var i = 0; i < this.GetType().UnwearConditions.length; i++) {
-                    if (!dialogCondition.code[this.GetType().UnwearConditions[i].Name].Check(this.GetType().DropConditions[i].Values, env))
-                        return false;
-                }
-            return true;
-        }
-        var code = this.GetObjectCode();
-        if (code && code.HasFunction("CanUnwear"))
-            return code.ExecuteFunction("CanUnwear", [new VariableValue(this.Name)]).GetBoolean();
-        return true;
-    };
-    KnownObject.prototype.CanWear = function () {
-        if (this.Slots.length == 0)
-            return false;
-        if (world.SimplifiedObjectLogic) {
-            var env = new CodeEnvironement();
-            env.SetVariable('currentItem', new VariableValue(this.Name));
-            if (this.WearConditions.length)
-                for (var i = 0; i < this.WearConditions.length; i++) {
-                    if (!dialogCondition.code[this.WearConditions[i].Name].Check(this.WearConditions[i].Values, env))
-                        return false;
-                }
-            else
-                for (var i = 0; i < this.GetType().WearConditions.length; i++) {
-                    if (!dialogCondition.code[this.GetType().WearConditions[i].Name].Check(this.GetType().WearConditions[i].Values, env))
-                        return false;
-                }
-            return true;
-        }
-        var code = this.GetObjectCode();
-        if (code && code.HasFunction("CanWear"))
-            return code.ExecuteFunction("CanWear", [new VariableValue(this.Name)]).GetBoolean();
-        return true;
-    };
-    KnownObject.prototype.CanUse = function () {
-        if (world.SimplifiedObjectLogic) {
-            var env = new CodeEnvironement();
-            env.SetVariable('currentItem', new VariableValue(this.Name));
-            if (this.UsageConditions.length)
-                for (var i = 0; i < this.UsageConditions.length; i++) {
-                    if (!dialogCondition.code[this.UsageConditions[i].Name].Check(this.UsageConditions[i].Values, env))
-                        return false;
-                }
-            else
-                for (var i = 0; i < this.GetType().UsageConditions.length; i++) {
-                    if (!dialogCondition.code[this.GetType().UsageConditions[i].Name].Check(this.GetType().UsageConditions[i].Values, env))
-                        return false;
-                }
-            return true;
-        }
-        var code = this.GetObjectCode();
-        if (code && code.HasFunction("CanUse"))
-            return code.ExecuteFunction("CanUse", [new VariableValue(this.Name)]).GetBoolean();
-        return true;
-    };
-    KnownObject.prototype.CanDrop = function () {
-        if (world.SimplifiedObjectLogic) {
-            var env = new CodeEnvironement();
-            env.SetVariable('currentItem', new VariableValue(this.Name));
-            if (this.DropConditions.length)
-                for (var i = 0; i < this.DropConditions.length; i++) {
-                    if (!dialogCondition.code[this.DropConditions[i].Name].Check(this.DropConditions[i].Values, env))
-                        return false;
-                }
-            else
-                for (var i = 0; i < this.GetType().DropConditions.length; i++) {
-                    if (!dialogCondition.code[this.GetType().DropConditions[i].Name].Check(this.GetType().DropConditions[i].Values, env))
-                        return false;
-                }
-            return true;
-        }
-        var code = this.GetObjectCode();
-        if (code && code.HasFunction("CanDrop"))
-            return code.ExecuteFunction("CanDrop", [new VariableValue(this.Name)]).GetBoolean();
-        return true;
-    };
-    KnownObject.prototype.Use = function () {
-        if (world.SimplifiedObjectLogic) {
-            var env = new CodeEnvironement();
-            env.SetVariable('currentItem', new VariableValue(this.Name));
-            if (this.UsageActions.length)
-                for (var i = 0; i < this.UsageActions.length; i++)
-                    dialogAction.code[this.UsageActions[i].Name].Execute(this.UsageActions[i].Values, env);
-            else
-                for (var i = 0; i < this.GetType().UsageActions.length; i++)
-                    dialogAction.code[this.GetType().UsageActions[i].Name].Execute(this.GetType().UsageActions[i].Values, env);
-            return;
-        }
-        var code = this.GetObjectCode();
-        if (code.HasFunction("Use"))
-            code.ExecuteFunction("Use", [new VariableValue(this.Name)]);
-    };
-    KnownObject.prototype.GetObjectCode = function () {
-        var code;
-        if (this.Action && this.ActionCode && this.ActionCode.trim() != "") {
-            if (this.ActionCode.indexOf("function") == -1)
-                return CodeParser.Parse("function Use() { " + this.ActionCode + ";}");
-            return CodeParser.Parse(this.ActionCode);
-        }
-        else if (this.GetType().Action) {
-            if (this.GetType().ActionCode.indexOf("function") == -1)
-                return CodeParser.Parse("function Use() { " + this.GetType().ActionCode + ";}");
-            return CodeParser.Parse(this.GetType().ActionCode);
-        }
-        return code;
-    };
-    KnownObject.prototype.ActionLabel = function () {
-        if (this.Action)
-            return this.Action;
-        else if (this.GetType().Action)
-            return this.GetType().Action;
-        return null;
-    };
-    return KnownObject;
-}());
-var ObjectDefinedParameter = (function () {
-    function ObjectDefinedParameter(name, defaultValue) {
-        this.Name = name;
-        this.DefaultValue = defaultValue;
-    }
-    return ObjectDefinedParameter;
-}());
-var ObjectParameter = (function () {
-    function ObjectParameter(name, value) {
-        this.Name = name;
-        this.Value = value;
-    }
-    return ObjectParameter;
-}());
-var ObjectType = (function () {
-    function ObjectType(name, group, action, actionCode, parameters) {
-        this.UsageConditions = [];
-        this.WearConditions = [];
-        this.UnwearConditions = [];
-        this.DropConditions = [];
-        this.UsageActions = [];
-        this.Name = name;
-        this.Group = group;
-        this.Action = action;
-        this.ActionCode = actionCode;
-        this.Parameters = parameters ? parameters : [];
-    }
-    ObjectType.DefaultObjectType = function () {
-        var result = [
-            new ObjectType("Head Armor", "Armor", null, null, [new ObjectDefinedParameter("Protection", "1")]),
-            new ObjectType("Body Armor", "Armor", null, null, [new ObjectDefinedParameter("Protection", "1")]),
-            new ObjectType("Leg Armor", "Armor", null, null, [new ObjectDefinedParameter("Protection", "1")]),
-            new ObjectType("Feet Armor", "Armor", null, null, [new ObjectDefinedParameter("Protection", "1")]),
-            new ObjectType("Hand Armor", "Armor", null, null, [new ObjectDefinedParameter("Protection", "1")]),
-            new ObjectType("Weapon", "Weapon", null, null, [new ObjectDefinedParameter("Base Damage", "1"), new ObjectDefinedParameter("Attack Speed", "1")]),
-            new ObjectType("Potion", "Aid", "Drink", "function Use(currentItem)\n{\n\tInventory.RemoveItem(currentItem);\n\tif(Inventory.ObjectParameterExists(currentItem,'Life Recover'))\n\t\tPlayer.IncreaseStat('Life',Inventory.ObjectParameter(currentItem,'Life Recover'));\n}", [new ObjectDefinedParameter("Life Recover", "1")]),
-            new ObjectType("Food", "Aid", "Eat", "function Use(currentItem)\n{\n\tInventory.RemoveItem(currentItem);\n\tif(Inventory.ObjectParameterExists(currentItem,'Life Recover'))\n\t\tPlayer.IncreaseStat('Life',Inventory.ObjectParameter(currentItem,'Life Recover'));\n}", [new ObjectDefinedParameter("Life Recover", "0")])
-        ];
-        result[6].UsageActions = [{ "Name": "IncreaseStat", "Values": ["Life", "Inventory.ObjectParameter(currentItem, 'Life Recover')"] }, { "Name": "RemoveCurrentItem", "Values": ["1"] }];
-        result[7].UsageActions = [{ "Name": "IncreaseStat", "Values": ["Life", "Inventory.ObjectParameter(currentItem, 'Life Recover')"] }, { "Name": "RemoveCurrentItem", "Values": ["1"] }];
-        return result;
-    };
-    return ObjectType;
+    return Dialog;
 }());
 var mapBag = new ((function () {
     function class_4() {
@@ -8276,105 +8094,6 @@ var Skill = (function () {
     }
     return Skill;
 }());
-var sounds = {};
-var Sounds = (function () {
-    function Sounds() {
-    }
-    Sounds.Init = function (clearAtStart) {
-        if (clearAtStart === void 0) { clearAtStart = true; }
-        if (clearAtStart)
-            Sounds.ClearSound();
-        if (!world.art.sounds)
-            return;
-        for (var item in world.art.sounds)
-            Sounds.Load(item, world.art.sounds[item].mp3, world.art.sounds[item].ogg);
-    };
-    Sounds.ClearSound = function () {
-        /*var soundArea = $('#sounds').first();
-        while (soundArea.firstChild != null)
-            soundArea.removeChild(soundArea.firstChild);
-        sounds = {};*/
-        for (var item in sounds) {
-            for (var i = 0; i < sounds[item].stack; i++) {
-                try {
-                    sounds[item].sounds[i].pause();
-                    sounds[item].sounds[i].currentTime = 0;
-                }
-                catch (ex) {
-                }
-            }
-        }
-        Sounds.Init(false);
-    };
-    Sounds.Load = function (name, mp3, ogg, stack) {
-        name = name.id();
-        if (document.getElementById("sound_" + name + "_" + 0))
-            return;
-        var soundArea = $('#sounds').first();
-        if (!stack)
-            stack = 6;
-        var audioStack = { round: 0, stack: stack, sounds: [] };
-        for (var i = 0; i < stack; i++) {
-            var audio = document.createElement('audio');
-            var source = document.createElement('source');
-            if (("" + document.location).substr(0, 5) == "file:" && mp3 != null && mp3 != undefined && mp3.charAt(0) == '/')
-                source.src = mp3.substr(1);
-            else
-                source.src = mp3;
-            source.type = "audio/mpeg";
-            audio.appendChild(source);
-            audio.id = "sound_" + name + "_" + i;
-            soundArea.appendChild(audio);
-            audio.oncanplay = function () {
-                audio['loaded'] = true;
-            };
-            audioStack.sounds[i] = audio;
-        }
-        sounds[name] = audioStack;
-    };
-    Sounds.Play = function (name, volume, looped) {
-        if (volume === void 0) { volume = 0.6; }
-        if (looped === void 0) { looped = false; }
-        name = name.id();
-        var browser = "";
-        if (("" + navigator.userAgent).toLowerCase().indexOf("chrome") != -1)
-            browser = "Chrome";
-        else if (("" + navigator.userAgent).toLowerCase().indexOf("msie") != -1)
-            browser = "Internet Explorer";
-        else if (("" + navigator.userAgent).toLowerCase().indexOf("opera") != -1)
-            browser = "Opera";
-        else if (("" + navigator.userAgent).toLowerCase().indexOf("firefox") != -1)
-            browser = "Firefox";
-        var s = null;
-        try {
-            if (sounds[name].stack == null || sounds[name].stack == undefined) {
-                s = sounds[name];
-            }
-            else {
-                try {
-                    sounds[name].sounds[sounds[name].round].currentTime = 0;
-                }
-                catch (ex2) {
-                }
-                if (browser == "Chrome")
-                    sounds[name].sounds[sounds[name].round].load();
-                sounds[name].round = (sounds[name].round + 1) % sounds[name].stack;
-                s = sounds[name].sounds[sounds[name].round];
-            }
-            s.loop = looped;
-            try {
-                s.currentTime = 0;
-            }
-            catch (ex2) {
-            }
-            s.volume = volume;
-            s.play();
-        }
-        catch (ex) {
-        }
-    };
-    return Sounds;
-}());
 var statCodes = ["// Default life stat.\n\
 \n\
 /// Name: Life,string\n\
@@ -8686,6 +8405,105 @@ var Stat = (function () {
     function Stat() {
     }
     return Stat;
+}());
+var sounds = {};
+var Sounds = (function () {
+    function Sounds() {
+    }
+    Sounds.Init = function (clearAtStart) {
+        if (clearAtStart === void 0) { clearAtStart = true; }
+        if (clearAtStart)
+            Sounds.ClearSound();
+        if (!world.art.sounds)
+            return;
+        for (var item in world.art.sounds)
+            Sounds.Load(item, world.art.sounds[item].mp3, world.art.sounds[item].ogg);
+    };
+    Sounds.ClearSound = function () {
+        /*var soundArea = $('#sounds').first();
+        while (soundArea.firstChild != null)
+            soundArea.removeChild(soundArea.firstChild);
+        sounds = {};*/
+        for (var item in sounds) {
+            for (var i = 0; i < sounds[item].stack; i++) {
+                try {
+                    sounds[item].sounds[i].pause();
+                    sounds[item].sounds[i].currentTime = 0;
+                }
+                catch (ex) {
+                }
+            }
+        }
+        Sounds.Init(false);
+    };
+    Sounds.Load = function (name, mp3, ogg, stack) {
+        name = name.id();
+        if (document.getElementById("sound_" + name + "_" + 0))
+            return;
+        var soundArea = $('#sounds').first();
+        if (!stack)
+            stack = 6;
+        var audioStack = { round: 0, stack: stack, sounds: [] };
+        for (var i = 0; i < stack; i++) {
+            var audio = document.createElement('audio');
+            var source = document.createElement('source');
+            if (("" + document.location).substr(0, 5) == "file:" && mp3 != null && mp3 != undefined && mp3.charAt(0) == '/')
+                source.src = mp3.substr(1);
+            else
+                source.src = mp3;
+            source.type = "audio/mpeg";
+            audio.appendChild(source);
+            audio.id = "sound_" + name + "_" + i;
+            soundArea.appendChild(audio);
+            audio.oncanplay = function () {
+                audio['loaded'] = true;
+            };
+            audioStack.sounds[i] = audio;
+        }
+        sounds[name] = audioStack;
+    };
+    Sounds.Play = function (name, volume, looped) {
+        if (volume === void 0) { volume = 0.6; }
+        if (looped === void 0) { looped = false; }
+        name = name.id();
+        var browser = "";
+        if (("" + navigator.userAgent).toLowerCase().indexOf("chrome") != -1)
+            browser = "Chrome";
+        else if (("" + navigator.userAgent).toLowerCase().indexOf("msie") != -1)
+            browser = "Internet Explorer";
+        else if (("" + navigator.userAgent).toLowerCase().indexOf("opera") != -1)
+            browser = "Opera";
+        else if (("" + navigator.userAgent).toLowerCase().indexOf("firefox") != -1)
+            browser = "Firefox";
+        var s = null;
+        try {
+            if (sounds[name].stack == null || sounds[name].stack == undefined) {
+                s = sounds[name];
+            }
+            else {
+                try {
+                    sounds[name].sounds[sounds[name].round].currentTime = 0;
+                }
+                catch (ex2) {
+                }
+                if (browser == "Chrome")
+                    sounds[name].sounds[sounds[name].round].load();
+                sounds[name].round = (sounds[name].round + 1) % sounds[name].stack;
+                s = sounds[name].sounds[sounds[name].round];
+            }
+            s.loop = looped;
+            try {
+                s.currentTime = 0;
+            }
+            catch (ex2) {
+            }
+            s.volume = volume;
+            s.play();
+        }
+        catch (ex) {
+        }
+    };
+    return Sounds;
 }());
 var RunningEffect = (function () {
     function RunningEffect() {
@@ -11225,6 +11043,3800 @@ PerlinGenerator = PerlinGenerator_1 = __decorate([
     WorldGeneratorClass
 ], PerlinGenerator);
 var PerlinGenerator_1;
+var chat = new ((function () {
+    function class_11() {
+        this.intervalCounter = 0;
+        this.chatNewMessage = false;
+        this.wasHidden = false;
+        this.onMapChat = false;
+        this.channels = {};
+        this.smilies_txt = [[":-)", ":)"], [":-P", ":P", ":-p", ":p"], [":O", ":o", ":-o", ":-O"], [":-(", ":("], [":-/"], [";-)",
+                ";)"], [":D", ":-D"], ["8)", "8-)"], ["B)", "B-)"], ["XD", "xD", "X-D"], ["T.T"], ["^^'", "^.^'"], ["^^", "^.^"], ["O.O", "o.o"],
+            ["8|", "8-|"], ["\M/"], ["&gt;.&lt;"], ["XP", "X-P"], ["oO", "o.O", "o0", "o.0"], ["-.-"], ["(:&lt;"], ["'W'"], [":S", ":-S"],
+            ["*.*"], [":X"], ["X.X", "x.x"], ["$.$"], ["o@@o"], ["9.9"], ["O:&lt;"], ["B|"], ["B("], ["B0"], ["@.@"], ["^**^"], ["9.6"],
+            ["/.O"], ["d.b"], ["&gt;.&gt;"], ["=^_^="]];
+    }
+    return class_11;
+}()));
+var Chat = (function () {
+    function Chat() {
+    }
+    Chat.AdditionalCSS = function () {
+        var r = parseInt(Main.EnsureColor(world.art.panelStyle.buttonBackground).substr(1, 2), 16);
+        var g = parseInt(Main.EnsureColor(world.art.panelStyle.buttonBackground).substr(3, 2), 16);
+        var b = parseInt(Main.EnsureColor(world.art.panelStyle.buttonBackground).substr(5, 2), 16);
+        return "#chatEntry\n\
+{\n\
+    width: calc(100% - " + (95 + world.art.panelStyle.leftBorder) + "px);\n\
+    top: " + (("" + document.location).indexOf("maker.html") != -1 ? "35px" : "5px") + ";\n\
+}\n\
+#chatEntryLine {\n\
+    background-color: rgba(" + r + "," + g + "," + b + ",0.6);\n\
+    color: " + Main.EnsureColor(world.art.panelStyle.contentColor) + ";\n\
+    border: solid 1px " + Main.EnsureColor(world.art.panelStyle.buttonBorder) + ";\n\
+}\n\
+#chatContainer {\n\
+    width: calc(100% - 95px);\n\
+    top: " + (("" + document.location).indexOf("maker.html") != -1 ? "65px" : "35px") + ";\n\
+}\n\
+@media (min-width: 1000px)\n\
+{\n\
+    #chatContainer {\n\
+        left: calc(50% + " + (parseInt("" + world.art.quickslotStyle.width) / 2 + 5) + "px);\n\
+        top: auto;\n\
+        bottom: 40px;\n\
+        width: auto;\n\
+    }\n\
+    #chatEntry\n\
+    {\n\
+        left: calc(50% + " + (parseInt("" + world.art.quickslotStyle.width) / 2 + 5) + "px);\n\
+        width: auto;\n\
+        top: auto;\n\
+        bottom: 5px;\n\
+    }\n\
+}\n\
+#chatChannels div {\n\
+    border: solid 1px " + Main.EnsureColor(world.art.panelStyle.buttonBorder) + ";\n\
+}\n\
+.selectedChannel {\n\
+    background-color: " + Main.EnsureColor(world.art.panelStyle.buttonBorder) + ";\n\
+}";
+    };
+    Chat.Init = function () {
+        if (!framework.Preferences['token'] || world.Edition == EditorEdition.Demo || framework.Preferences['token'] == "demo" || window['io'] == undefined || window['io'] == null || world.ChatEnabled === false) {
+            $("#chatEntry").hide();
+            return;
+        }
+        if (world.Player.ChatBannedTill && typeof world.Player.ChatBannedTill == "string")
+            world.Player.ChatBannedTill = new Date(world.Player.ChatBannedTill);
+        if (world.Player.ChatMutedTill && typeof world.Player.ChatMutedTill == "string")
+            world.Player.ChatMutedTill = new Date(world.Player.ChatMutedTill);
+        if (world.Player.ChatBannedTill && world.Player.ChatBannedTill.getTime() < (new Date()).getTime())
+            world.Player.ChatBannedTill = null;
+        if (world.Player.ChatMutedTill && world.Player.ChatMutedTill.getTime() < (new Date()).getTime())
+            world.Player.ChatMutedTill = null;
+        if (world.Player.ChatBannedTill && world.Player.ChatBannedTill.getTime() > (new Date()).getTime()) {
+            $("#chatContainer").hide();
+            $("#chatEntry").hide();
+            return;
+        }
+        chat.socket = window['io']();
+        chat.socket.on('connect', Chat.Connect);
+        chat.socket.on('chat', Chat.Receive);
+        chat.socket.on('join', Chat.Join);
+        chat.socket.on('leave', Chat.Leave);
+        chat.socket.on('channelUserList', Chat.ChannelUserList);
+        chat.socket.on('chatBot', Chat.BotLine);
+        chat.socket.on('mute', function (till) {
+            world.Player.ChatMutedTill = new Date(till);
+            world.Player.StoredCompare = world.Player.JSON();
+            Framework.ShowMessage("You have been chat muted till " + world.Player.ChatMutedTill);
+        });
+        chat.socket.on('ban', function (till) {
+            world.Player.ChatBannedTill = new Date(till);
+            world.Player.StoredCompare = world.Player.JSON();
+            Framework.ShowMessage("You have been chat banned till " + world.Player.ChatBannedTill);
+            $("#chatContainer").hide();
+            $("#chatEntry").hide();
+        });
+        $("#chatTitle").bind("click", Chat.ShowHide);
+        $("#chatCollapsed").bind("click", Chat.ShowHide);
+        if (!chat.chatInterval)
+            chat.chatInterval = setInterval(Chat.ChatInterval, 500);
+    };
+    Chat.ChatInterval = function () {
+        if (world.Player.ChatBannedTill && world.Player.ChatBannedTill.getTime() > (new Date()).getTime()) {
+            $("#chatContainer").hide();
+            $("#chatEntry").hide();
+            return;
+        }
+        // We entered in a zone
+        if (play.renderer && !chat.channels[world.Player.Zone.replace(/\./g, "_")]) {
+            chat.socket.emit('join', world.Id, framework.Preferences['token'], world.Player.Zone.replace(/\./g, "_"));
+            var items = [];
+            for (var item in chat.channels)
+                items.push(item);
+            chat.channels[world.Player.Zone.replace(/\./g, "_")] = { newMessage: false, messages: [], users: [] };
+            for (var i = 0; i < items.length; i++) {
+                var item = items[i];
+                if (item == "#global" || item == world.Player.Zone.replace(/\./g, "_"))
+                    continue;
+                chat.socket.emit('leave', world.Id, framework.Preferences['token'], item.replace(/\./g, "_"));
+                delete chat.channels[item];
+            }
+            Chat.UpdateChannels();
+            if (chat.currentChannel != "#global" || items.length == 1)
+                Chat.SelectChannel(world.Player.Zone.replace(/\./g, "_"));
+        }
+        // We left the play page
+        if (!play.renderer) {
+            var updated = false;
+            var items = [];
+            for (var item in chat.channels)
+                items.push(item);
+            for (var i = 0; i < items.length; i++) {
+                var item = items[i];
+                if (item == "#global")
+                    continue;
+                updated = true;
+                delete chat.channels[item];
+                chat.socket.emit('leave', world.Id, framework.Preferences['token'], item);
+            }
+            if (updated)
+                Chat.UpdateChannels();
+            Chat.SelectChannel("#global");
+        }
+        if (play.renderer && chat.onMapChat === false) {
+            chat.onMapChat = true;
+            $("#chatEntry").show();
+            $("#chatLine").hide();
+            $("#chatScroll").addClass("fullChatScroll");
+            $("#chatUserList").addClass("fullChatScroll");
+        }
+        else if (!play.renderer && chat.onMapChat === true) {
+            chat.onMapChat = false;
+            $("#chatEntry").hide();
+            $("#chatLine").show();
+            $("#chatScroll").removeClass("fullChatScroll");
+            $("#chatUserList").removeClass("fullChatScroll");
+        }
+        if ($("#chatCollapsed").is(":visible") && chat.chatNewMessage) {
+            if (chat.intervalCounter % 2)
+                $("#chatCollapsed .gamePanelContentNoHeader > div").html("- New message -");
+            else
+                $("#chatCollapsed .gamePanelContentNoHeader > div").html("Click to chat");
+        }
+        for (var item in chat.channels) {
+            if (chat.channels[item].newMessage) {
+                Chat.UpdateChannels();
+                break;
+            }
+        }
+        chat.intervalCounter = 1 - chat.intervalCounter;
+    };
+    Chat.Connect = function () {
+        if (!framework.Preferences['token'] || world.Edition == EditorEdition.Demo || framework.Preferences['token'] == "demo" || window['io'] == undefined || window['io'] == null)
+            return;
+        chat.socket.emit('join', world.Id, framework.Preferences['token'], "#global");
+        chat.channels["#global"] = { newMessage: false, messages: [], users: [] };
+        Chat.UpdateChannels();
+        Chat.SelectChannel("#global");
+        if (framework.Preferences["ChatVisible"] === false) {
+            $("#chatContainer").hide();
+            $("#chatCollapsed").show();
+        }
+        else {
+            $("#chatContainer").show();
+            $("#chatCollapsed").hide();
+        }
+        if (world.Player.ChatBannedTill && world.Player.ChatBannedTill.getTime() > (new Date()).getTime()) {
+            $("#chatContainer").hide();
+            $("#chatEntry").hide();
+            return;
+        }
+    };
+    Chat.Key = function (evt, field) {
+        switch (evt.keyCode) {
+            case 13:
+                Chat.SendLine($("#" + field).val());
+                $("#" + field).val("");
+                break;
+            case 27:
+                $("#" + field).blur();
+                if (chat.wasHidden == true)
+                    Chat.ShowHide();
+                break;
+            default:
+                break;
+        }
+    };
+    Chat.SelectChannel = function (channel) {
+        if (!chat.channels[channel])
+            return;
+        chat.currentChannel = channel;
+        chat.channels[channel].newMessage = false;
+        Chat.RedrawUserList();
+        Chat.RedrawChannelHistory();
+        /*$("#chatChannels div").removeClass("selectedChannel");
+        $("#" + channel.id()).addClass("selectedChannel");*/
+        Chat.UpdateChannels();
+    };
+    Chat.UpdateChannels = function () {
+        var html = "<span>Channels:</span>";
+        for (var item in chat.channels)
+            html += "<div onclick=\"Chat.SelectChannel('" + item.replace(/'/g, "\\'") + "');\" id=\"" + item.id() + "\" class='" + (item == chat.currentChannel ? " selectedChannel" : "") + (chat.channels[item].newMessage && chat.intervalCounter % 2 ? " channelNewMessage" : "") + "'>" + item + "</div>";
+        $("#chatChannels").html(html);
+    };
+    Chat.UpdateAllChannelsUserList = function () {
+        for (var i in chat.channels) {
+            Chat.UpdateChannelUserList(i);
+        }
+    };
+    Chat.UpdateChannelUserList = function (channel) {
+        chat.socket.emit('getChannelUserList', world.Id, channel);
+    };
+    Chat.ChannelUserList = function (channel, users) {
+        if (!chat.channels[channel])
+            return;
+        for (var i = 0; i < world.ChatBots.length; i++) {
+            // Skip the invisible bots
+            if (world.ChatBots[i].Name[0] == "~")
+                continue;
+            if (world.ChatBots[i].Channel == "*" || world.ChatBots[i].Channel == "" || world.ChatBots[i].Channel.toLowerCase() == channel.toLowerCase())
+                users.push(world.ChatBots[i].Name);
+        }
+        chat.channels[channel].users = users;
+        if (chat.currentChannel == channel)
+            Chat.RedrawUserList();
+    };
+    Chat.Join = function (user, channel) {
+        Chat.AddChatLine("", channel, "<b class='chatSystemMessage'>" + user + " joined " + channel + "</b>");
+        Chat.UpdateChannelUserList(channel);
+    };
+    Chat.Leave = function (user, channel) {
+        Chat.AddChatLine("", channel, "<b class='chatSystemMessage'>" + user + " left " + channel + "</b>");
+        Chat.UpdateChannelUserList(channel);
+    };
+    Chat.BotLine = function (botname, fromUser, channel, line) {
+        if (botname[0] == "~")
+            Chat.AddChatLine(null, channel, line.htmlEntities(false).replace(/\n/g, "<br />"));
+        else
+            Chat.AddChatLine(botname, channel, line.htmlEntities(false).replace(/\n/g, "<br />"));
+    };
+    Chat.SendBotLine = function (botname, channel, line) {
+        if (framework.Preferences['token'] == "demo") {
+            Chat.AddChatLine(null, chat.currentChannel, "The chat is disabled in the demo.");
+            return;
+        }
+        if (!chat || !chat.socket)
+            return;
+        if (!world.Player.ChatMutedTill || world.Player.ChatMutedTill.getTime() < (new Date()).getTime())
+            chat.socket.emit('bot', botname, channel, line);
+    };
+    Chat.SendLine = function (line, channel) {
+        if (channel === void 0) { channel = null; }
+        if (world.Player.ChatMutedTill && world.Player.ChatMutedTill.getTime() >= (new Date()).getTime()) {
+            Chat.AddChatLine(null, chat.currentChannel, "<b>!! you are chat muted till " + world.Player.ChatMutedTill + " !!</b>");
+            return;
+        }
+        if (world.Player.ChatBannedTill && world.Player.ChatBannedTill.getTime() >= (new Date()).getTime()) {
+            Chat.AddChatLine(null, chat.currentChannel, "<b>!! you are chat banned till " + world.Player.ChatBannedTill + " !!</b>");
+            return;
+        }
+        if (!chat || !chat.socket)
+            return;
+        if (framework.Preferences['token'] == "demo") {
+            Chat.AddChatLine(null, chat.currentChannel, "The chat is disabled in the demo.");
+            return;
+        }
+        var line = line.trim();
+        if (!line || line == "")
+            return;
+        var botToRun = 0;
+        var botHandled = false;
+        var normalHandling = function () {
+            if (botHandled == true || botToRun > 0)
+                return;
+            if (line.toLowerCase().indexOf("/e ") == 0 || line.toLowerCase().indexOf("/emote ") == 0) {
+                var emote = "--";
+                try {
+                    emote = line.split(' ')[1].toLowerCase();
+                }
+                catch (ex) {
+                }
+                if (EmotesArt[emote] !== undefined) {
+                    world.Player.EmoteTimer = 0;
+                    world.Player.CurrentEmote = EmotesArt[emote];
+                }
+                else
+                    Chat.AddChatLine(null, channel ? channel : chat.currentChannel, "Unknown emote.");
+            }
+            else if (line.toLowerCase().indexOf("/") == 0 && line.toLowerCase().indexOf("/me ") != 0) {
+                Chat.AddChatLine(null, channel ? channel : chat.currentChannel, "Unknown command.");
+            }
+            else
+                chat.socket.emit('send', channel ? channel : chat.currentChannel, line);
+        };
+        var toExecute = [];
+        for (var i = 0; i < world.ChatBots.length; i++) {
+            if (!(world.ChatBots[i].Channel == "*" || world.ChatBots[i].Channel == "" || world.ChatBots[i].Channel.toLowerCase() == channel.toLowerCase()))
+                continue;
+            botToRun++;
+        }
+        if (world.ChatBots.length > 0)
+            for (var i = 0; i < world.ChatBots.length; i++) {
+                if (!(world.ChatBots[i].Channel == "*" || world.ChatBots[i].Channel == "" || world.ChatBots[i].Channel.toLowerCase() == channel.toLowerCase()))
+                    continue;
+                var a = function () {
+                    var bot = world.ChatBots[i];
+                    bot.HandleChat(line, function (res) {
+                        botToRun--;
+                        if (res) {
+                            //Chat.AddChatLine(username, chat.currentChannel, line);
+                            //Chat.AddChatLine(world.ChatBots[i].Name, chat.currentChannel, res);
+                            if (res[0] == "/")
+                                chat.socket.emit('bot', bot.Name, channel ? channel : chat.currentChannel, "/" + res);
+                            else if (res[0] == "!")
+                                Chat.AddChatLine(bot.Name[0] == "~" ? null : bot.Name, channel ? channel : chat.currentChannel, res.substr(1).htmlEntities(false).replace(/\n/g, "<br />"));
+                            else {
+                                chat.socket.emit('send', channel ? channel : chat.currentChannel, line);
+                                chat.socket.emit('bot', bot.Name, channel ? channel : chat.currentChannel, res);
+                            }
+                            botHandled = true;
+                        }
+                        else
+                            normalHandling();
+                    });
+                }();
+            }
+        else
+            normalHandling();
+    };
+    Chat.Receive = function (sender, channel, message) {
+        if (!chat.channels[channel])
+            return;
+        if ($("#chatCollapsed").is(":visible"))
+            chat.chatNewMessage = true;
+        if (chat.currentChannel != channel)
+            chat.channels[channel].newMessage = true;
+        Chat.AddChatLine(sender, channel, message);
+    };
+    Chat.UrlChanger = function (str) {
+        return str.replace(/(^|\s|\>)(http[s]{0,1}:\/\/[a-zA-Z0-9\/\-\+:\.\?=_\&\#\;\%\,~]{1,30})([a-zA-Z0-9\/\-\+:\.\?=_\&\#\;\%\,~]*)/g, "$1[<A HREF='$2$3' TARGET='_BLANK'>$2 ...</A>]");
+    };
+    Chat.Smilies = function (str) {
+        if (!chat.smiliesDb) {
+            chat.smiliesDb = [];
+            for (var i = 0; i < chat.smilies_txt.length; i++) {
+                for (var j = 0; j < chat.smilies_txt[i].length; j++) {
+                    var e = chat.smilies_txt[i][j].replace(/([\.\+\|\\\$\^\(\)\:\?\*\/])/g, '\\$1');
+                    chat.smiliesDb.push({ regexp: new RegExp("(^|\\s|\\>)" + e + "(\\s|\\<|$)", "g"), html: "$1<div style='background-image: url(\"/art/tileset2/smilies.png\"); display: inline-block; width: 20px; height: 16px; background-position: -" + (i * 20) + "px 0px;'></div>$2" });
+                }
+            }
+        }
+        for (var i = 0; i < chat.smiliesDb.length; i++)
+            str = str.replace(chat.smiliesDb[i].regexp, chat.smiliesDb[i].html);
+        return str;
+    };
+    Chat.AddChatLine = function (sender, channel, message) {
+        if (!chat.channels[channel])
+            return;
+        //chat.channels[channel] = [];
+        chat.channels[channel].messages.push({ sender: sender, message: message });
+        while (chat.channels[channel].messages.length > 100)
+            chat.channels[channel].messages.shift();
+        if (channel == chat.currentChannel)
+            Chat.AddChatScrollLine(sender, message);
+    };
+    Chat.AddChatScrollLine = function (sender, message) {
+        if (!message || message.length == 0)
+            return;
+        if (message.toLowerCase().indexOf("/me ") == 0) {
+            message = "<b>-- " + ("" + sender).htmlEntities(false) + " " + message.substr(3).trim().htmlEntities(false) + " --</b>";
+            sender = null;
+        }
+        else if (message.indexOf("//") == 0 && sender != null) {
+            return;
+        }
+        else if (message.indexOf("//") == 0) {
+            message = "<b>** " + message.substr(2).trim() + " **</b>";
+            sender = null;
+        }
+        if (sender != null && sender != "")
+            message = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        if (world.ChatSmilies)
+            message = Chat.Smilies(message);
+        if (world.ChatLink)
+            message = Chat.UrlChanger(message);
+        var chatScroll = $("#chatScroll").first();
+        while (chatScroll.children.length > 100)
+            chatScroll.removeChild(chatScroll.children[0]);
+        $("#chatScroll").html($("#chatScroll").html() + "<div><div" + (sender ? " onclick='PublicViewPlayer.Show(\"" + sender + "\");'" : "") + ">" + (!sender || sender == "" ? "&nbsp;" : sender.htmlEntities(false)) + "</div><div>" + message + "</div></div>");
+        $("#chatScroll").scrollTop($("#chatScroll").scrollTop() + 60000);
+    };
+    Chat.RedrawUserList = function () {
+        var html = "";
+        var users = chat.channels[chat.currentChannel].users;
+        if (users) {
+            users.sort();
+            for (var i = 0; i < users.length; i++) {
+                html += "<div>" + users[i] + "</div>";
+            }
+        }
+        $("#chatUserList").html(html);
+    };
+    Chat.RedrawChannelHistory = function () {
+        $("#chatScroll").html("");
+        for (var i = 0; i < chat.channels[chat.currentChannel].messages.length; i++)
+            Chat.AddChatScrollLine(chat.channels[chat.currentChannel].messages[i].sender, chat.channels[chat.currentChannel].messages[i].message);
+    };
+    Chat.Focus = function () {
+        if ($("#chatCollapsed").is(":visible")) {
+            chat.wasHidden = true;
+            Chat.ShowHide();
+        }
+        else
+            chat.wasHidden = false;
+        if (chat.onMapChat)
+            $("#chatEntryLine").focus();
+        else
+            $("#chatLine").focus();
+    };
+    Chat.ShowHide = function () {
+        if ($("#chatCollapsed").is(":visible")) {
+            $("#chatContainer").show();
+            $("#chatCollapsed").hide();
+            chat.chatNewMessage = false;
+            $("#chatCollapsed .gamePanelContentNoHeader > div").html("Click to chat");
+        }
+        else {
+            $("#chatContainer").hide();
+            $("#chatCollapsed").show();
+        }
+        framework.Preferences["ChatVisible"] = !$("#chatCollapsed").is(":visible");
+        Framework.SavePreferences();
+    };
+    return Chat;
+}());
+var InventoryObject = (function () {
+    function InventoryObject(name, count, usage) {
+        if (count === void 0) { count = 1; }
+        if (usage === void 0) { usage = null; }
+        this.Name = name;
+        this.Count = count;
+        this.UsageLevel = usage;
+    }
+    InventoryObject.prototype.GetDetails = function () {
+        for (var i = 0; i < world.InventoryObjects.length; i++)
+            if (world.InventoryObjects[i].Name == this.Name)
+                return world.InventoryObjects[i];
+        return null;
+    };
+    InventoryObject.prototype.GetObjectType = function () {
+        return this.GetDetails().GetType();
+    };
+    return InventoryObject;
+}());
+var InventorySlot = (function () {
+    function InventorySlot(name) {
+        this.Name = name;
+    }
+    InventorySlot.DefaultSlots = function () {
+        return [
+            new InventorySlot('Head'),
+            new InventorySlot('Body'),
+            new InventorySlot('LeftHand'),
+            new InventorySlot('RightHand'),
+            new InventorySlot('Legs'),
+            new InventorySlot('Feet'),
+            new InventorySlot('Neck'),
+            new InventorySlot('LeftHandFinger'),
+            new InventorySlot('RightHandFinger')
+        ];
+    };
+    return InventorySlot;
+}());
+var KnownObject = (function () {
+    function KnownObject(name, objectType, slots, weight, price, description, maxStack, action, actionCode, parameters) {
+        this.UsageConditions = [];
+        this.UnwearConditions = [];
+        this.WearConditions = [];
+        this.DropConditions = [];
+        this.UsageActions = [];
+        this.Name = name;
+        this.ObjectType = objectType;
+        this.Slots = slots ? slots : [];
+        this.Weight = weight ? weight : 0;
+        this.Price = price ? price : 0;
+        this.Description = description ? description : "";
+        this.MaxStack = maxStack ? maxStack : 0;
+        this.Action = action;
+        this.ActionCode = actionCode;
+        this.Parameters = parameters ? parameters : [];
+        this.Image = '/art/tileset2/inventory_object.png';
+    }
+    KnownObject.DefaultObjects = function () {
+        var result = [
+            new KnownObject("Wood Stick", "Weapon", ["RightHand"], 2, 2, "A simple wood stick to defend yourself", 1, null, null, [new ObjectParameter("Base Damage", "5"), new ObjectParameter("Attack Speed", "0.5")]),
+            new KnownObject("Apple", "Food", [], 1, 1, "A red apple", 10, null, null, [new ObjectParameter("Life Recover", "3")])
+        ];
+        return result;
+    };
+    KnownObject.prototype.GetType = function () {
+        for (var i = 0; i < world.InventoryObjectTypes.length; i++)
+            if (world.InventoryObjectTypes[i].Name == this.ObjectType)
+                return world.InventoryObjectTypes[i];
+        return null;
+    };
+    KnownObject.prototype.GetParameter = function (statName) {
+        // Checks within the object properties
+        for (var prop in this)
+            if (prop.toLowerCase() == statName.toLowerCase())
+                return "" + this[prop];
+        // Checks within the additional parameters
+        for (var i = 0; i < this.Parameters.length; i++)
+            if (this.Parameters[i].Name.toLowerCase() == statName.toLowerCase())
+                return this.Parameters[i].Value;
+        return null;
+    };
+    KnownObject.prototype.CanUnwear = function () {
+        if (world.SimplifiedObjectLogic) {
+            var env = new CodeEnvironement();
+            env.SetVariable('currentItem', new VariableValue(this.Name));
+            if (!this.UnwearConditions)
+                this.UnwearConditions = [];
+            if (this.UnwearConditions.length)
+                for (var i = 0; i < this.UnwearConditions.length; i++) {
+                    if (!dialogCondition.code[this.UnwearConditions[i].Name].Check(this.UnwearConditions[i].Values, env))
+                        return false;
+                }
+            else
+                for (var i = 0; i < this.GetType().UnwearConditions.length; i++) {
+                    if (!dialogCondition.code[this.GetType().UnwearConditions[i].Name].Check(this.GetType().DropConditions[i].Values, env))
+                        return false;
+                }
+            return true;
+        }
+        var code = this.GetObjectCode();
+        if (code && code.HasFunction("CanUnwear"))
+            return code.ExecuteFunction("CanUnwear", [new VariableValue(this.Name)]).GetBoolean();
+        return true;
+    };
+    KnownObject.prototype.CanWear = function () {
+        if (this.Slots.length == 0)
+            return false;
+        if (world.SimplifiedObjectLogic) {
+            var env = new CodeEnvironement();
+            env.SetVariable('currentItem', new VariableValue(this.Name));
+            if (this.WearConditions.length)
+                for (var i = 0; i < this.WearConditions.length; i++) {
+                    if (!dialogCondition.code[this.WearConditions[i].Name].Check(this.WearConditions[i].Values, env))
+                        return false;
+                }
+            else
+                for (var i = 0; i < this.GetType().WearConditions.length; i++) {
+                    if (!dialogCondition.code[this.GetType().WearConditions[i].Name].Check(this.GetType().WearConditions[i].Values, env))
+                        return false;
+                }
+            return true;
+        }
+        var code = this.GetObjectCode();
+        if (code && code.HasFunction("CanWear"))
+            return code.ExecuteFunction("CanWear", [new VariableValue(this.Name)]).GetBoolean();
+        return true;
+    };
+    KnownObject.prototype.CanUse = function () {
+        if (world.SimplifiedObjectLogic) {
+            var env = new CodeEnvironement();
+            env.SetVariable('currentItem', new VariableValue(this.Name));
+            if (this.UsageConditions.length)
+                for (var i = 0; i < this.UsageConditions.length; i++) {
+                    if (!dialogCondition.code[this.UsageConditions[i].Name].Check(this.UsageConditions[i].Values, env))
+                        return false;
+                }
+            else
+                for (var i = 0; i < this.GetType().UsageConditions.length; i++) {
+                    if (!dialogCondition.code[this.GetType().UsageConditions[i].Name].Check(this.GetType().UsageConditions[i].Values, env))
+                        return false;
+                }
+            return true;
+        }
+        var code = this.GetObjectCode();
+        if (code && code.HasFunction("CanUse"))
+            return code.ExecuteFunction("CanUse", [new VariableValue(this.Name)]).GetBoolean();
+        return true;
+    };
+    KnownObject.prototype.CanDrop = function () {
+        if (world.SimplifiedObjectLogic) {
+            var env = new CodeEnvironement();
+            env.SetVariable('currentItem', new VariableValue(this.Name));
+            if (this.DropConditions.length)
+                for (var i = 0; i < this.DropConditions.length; i++) {
+                    if (!dialogCondition.code[this.DropConditions[i].Name].Check(this.DropConditions[i].Values, env))
+                        return false;
+                }
+            else
+                for (var i = 0; i < this.GetType().DropConditions.length; i++) {
+                    if (!dialogCondition.code[this.GetType().DropConditions[i].Name].Check(this.GetType().DropConditions[i].Values, env))
+                        return false;
+                }
+            return true;
+        }
+        var code = this.GetObjectCode();
+        if (code && code.HasFunction("CanDrop"))
+            return code.ExecuteFunction("CanDrop", [new VariableValue(this.Name)]).GetBoolean();
+        return true;
+    };
+    KnownObject.prototype.Use = function () {
+        if (world.SimplifiedObjectLogic) {
+            var env = new CodeEnvironement();
+            env.SetVariable('currentItem', new VariableValue(this.Name));
+            if (this.UsageActions.length)
+                for (var i = 0; i < this.UsageActions.length; i++)
+                    dialogAction.code[this.UsageActions[i].Name].Execute(this.UsageActions[i].Values, env);
+            else
+                for (var i = 0; i < this.GetType().UsageActions.length; i++)
+                    dialogAction.code[this.GetType().UsageActions[i].Name].Execute(this.GetType().UsageActions[i].Values, env);
+            return;
+        }
+        var code = this.GetObjectCode();
+        if (code.HasFunction("Use"))
+            code.ExecuteFunction("Use", [new VariableValue(this.Name)]);
+    };
+    KnownObject.prototype.GetObjectCode = function () {
+        var code;
+        if (this.Action && this.ActionCode && this.ActionCode.trim() != "") {
+            if (this.ActionCode.indexOf("function") == -1)
+                return CodeParser.Parse("function Use() { " + this.ActionCode + ";}");
+            return CodeParser.Parse(this.ActionCode);
+        }
+        else if (this.GetType().Action) {
+            if (this.GetType().ActionCode.indexOf("function") == -1)
+                return CodeParser.Parse("function Use() { " + this.GetType().ActionCode + ";}");
+            return CodeParser.Parse(this.GetType().ActionCode);
+        }
+        return code;
+    };
+    KnownObject.prototype.ActionLabel = function () {
+        if (this.Action)
+            return this.Action;
+        else if (this.GetType().Action)
+            return this.GetType().Action;
+        return null;
+    };
+    return KnownObject;
+}());
+var ObjectDefinedParameter = (function () {
+    function ObjectDefinedParameter(name, defaultValue) {
+        this.Name = name;
+        this.DefaultValue = defaultValue;
+    }
+    return ObjectDefinedParameter;
+}());
+var ObjectParameter = (function () {
+    function ObjectParameter(name, value) {
+        this.Name = name;
+        this.Value = value;
+    }
+    return ObjectParameter;
+}());
+var ObjectType = (function () {
+    function ObjectType(name, group, action, actionCode, parameters) {
+        this.UsageConditions = [];
+        this.WearConditions = [];
+        this.UnwearConditions = [];
+        this.DropConditions = [];
+        this.UsageActions = [];
+        this.Name = name;
+        this.Group = group;
+        this.Action = action;
+        this.ActionCode = actionCode;
+        this.Parameters = parameters ? parameters : [];
+    }
+    ObjectType.DefaultObjectType = function () {
+        var result = [
+            new ObjectType("Head Armor", "Armor", null, null, [new ObjectDefinedParameter("Protection", "1")]),
+            new ObjectType("Body Armor", "Armor", null, null, [new ObjectDefinedParameter("Protection", "1")]),
+            new ObjectType("Leg Armor", "Armor", null, null, [new ObjectDefinedParameter("Protection", "1")]),
+            new ObjectType("Feet Armor", "Armor", null, null, [new ObjectDefinedParameter("Protection", "1")]),
+            new ObjectType("Hand Armor", "Armor", null, null, [new ObjectDefinedParameter("Protection", "1")]),
+            new ObjectType("Weapon", "Weapon", null, null, [new ObjectDefinedParameter("Base Damage", "1"), new ObjectDefinedParameter("Attack Speed", "1")]),
+            new ObjectType("Potion", "Aid", "Drink", "function Use(currentItem)\n{\n\tInventory.RemoveItem(currentItem);\n\tif(Inventory.ObjectParameterExists(currentItem,'Life Recover'))\n\t\tPlayer.IncreaseStat('Life',Inventory.ObjectParameter(currentItem,'Life Recover'));\n}", [new ObjectDefinedParameter("Life Recover", "1")]),
+            new ObjectType("Food", "Aid", "Eat", "function Use(currentItem)\n{\n\tInventory.RemoveItem(currentItem);\n\tif(Inventory.ObjectParameterExists(currentItem,'Life Recover'))\n\t\tPlayer.IncreaseStat('Life',Inventory.ObjectParameter(currentItem,'Life Recover'));\n}", [new ObjectDefinedParameter("Life Recover", "0")])
+        ];
+        result[6].UsageActions = [{ "Name": "IncreaseStat", "Values": ["Life", "Inventory.ObjectParameter(currentItem, 'Life Recover')"] }, { "Name": "RemoveCurrentItem", "Values": ["1"] }];
+        result[7].UsageActions = [{ "Name": "IncreaseStat", "Values": ["Life", "Inventory.ObjectParameter(currentItem, 'Life Recover')"] }, { "Name": "RemoveCurrentItem", "Values": ["1"] }];
+        return result;
+    };
+    return ObjectType;
+}());
+var codeEditor = new ((function () {
+    function class_12() {
+        this.hideHelpTimer = null;
+        this.currentEditor = null;
+        this.currentSelection = null;
+        this.currentList = null;
+        this.currentSelectedCompletion = null;
+        this.currentTextToTheEnd = null;
+    }
+    return class_12;
+}()));
+var CodeEditor = (function () {
+    function CodeEditor() {
+    }
+    CodeEditor.Create = function (element) {
+        var editor = CodeMirror.fromTextArea($("#" + element).first(), {
+            lineNumbers: true,
+            matchBrackets: true,
+            continueComments: "Enter",
+            showCursorWhenSelecting: true,
+            tabSize: 4,
+            indentUnit: 4
+        });
+        codeEditor.currentEditor = editor;
+        editor.on("blur", function () {
+            if (codeEditor.hideHelpTimer) {
+                clearTimeout(codeEditor.hideHelpTimer);
+                codeEditor.hideHelpTimer = null;
+            }
+            codeEditor.hideHelpTimer = setTimeout(function () { CodeEditor.HideHelp(element); }, 500);
+        });
+        editor.setOption("extraKeys", {
+            "Enter": function () {
+                if (codeEditor.currentList && codeEditor.currentSelectedCompletion !== null) {
+                    CodeEditor.Add(codeEditor.currentList[codeEditor.currentSelectedCompletion]);
+                    event.preventDefault();
+                    event.stopPropagation();
+                    return false;
+                }
+                return CodeMirror.Pass;
+            },
+            "Tab": function () {
+                if (codeEditor.currentList && codeEditor.currentSelectedCompletion !== null) {
+                    CodeEditor.Add(codeEditor.currentList[codeEditor.currentSelectedCompletion]);
+                    event.preventDefault();
+                    event.stopPropagation();
+                    return false;
+                }
+                return CodeMirror.Pass;
+            },
+            "Up": function () {
+                if (codeEditor.currentList && codeEditor.currentSelectedCompletion !== null && codeEditor.currentList[0].indexOf(".") != -1) {
+                    codeEditor.currentSelectedCompletion--;
+                    if (codeEditor.currentSelectedCompletion < 0)
+                        codeEditor.currentSelectedCompletion = codeEditor.currentList.length - 1;
+                    CodeEditor.UpdateList(element);
+                    $("#codeHelp_" + element + " .selectedInsertion").first().scrollIntoView();
+                    return false;
+                }
+                return CodeMirror.Pass;
+            },
+            "Down": function () {
+                if (codeEditor.currentList && codeEditor.currentSelectedCompletion !== null && codeEditor.currentList[0].indexOf(".") != -1) {
+                    codeEditor.currentSelectedCompletion++;
+                    if (codeEditor.currentSelectedCompletion >= codeEditor.currentList.length)
+                        codeEditor.currentSelectedCompletion = 0;
+                    CodeEditor.UpdateList(element);
+                    $("#codeHelp_" + element + " .selectedInsertion").first().scrollIntoView();
+                    return false;
+                }
+                return CodeMirror.Pass;
+            },
+            "Esc": function () {
+                if (codeEditor.hideHelpTimer) {
+                    if (codeEditor.hideHelpTimer) {
+                        clearTimeout(codeEditor.hideHelpTimer);
+                        codeEditor.hideHelpTimer = null;
+                    }
+                    CodeEditor.HideHelp(element);
+                    return false;
+                }
+                return CodeMirror.Pass;
+            },
+            "Ctrl-Q": "toggleComment"
+        });
+        editor.on("cursorActivity", function () {
+            codeEditor.currentList = null;
+            codeEditor.currentSelectedCompletion = null;
+            if (codeEditor.hideHelpTimer) {
+                clearTimeout(codeEditor.hideHelpTimer);
+                codeEditor.hideHelpTimer = null;
+            }
+            var line = editor.getCursor().line;
+            var char = editor.getCursor().ch;
+            var code = editor.getValue();
+            var lines = code.split('\n');
+            if (lines[line]) {
+                var allowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._";
+                var overText = "";
+                var toTheEnd = 0;
+                char--;
+                for (var i = char; i >= 0; i--) {
+                    //var c = lines[line].charAt(i);
+                    var c = CodeEditor.GetCharAt(line, i);
+                    if (allowedChars.indexOf(c) == -1)
+                        break;
+                    overText = c + overText;
+                }
+                if (overText.length > 0)
+                    for (var i = char + 1; i < lines[line].length; i++) {
+                        var c = CodeEditor.GetCharAt(line, i);
+                        if (allowedChars.indexOf(c) == -1)
+                            break;
+                        overText += c;
+                        toTheEnd++;
+                    }
+                codeEditor.currentTextToTheEnd = toTheEnd;
+                codeEditor.currentSelection = overText;
+                var foundApi = GetApiDescription(overText);
+                if (foundApi) {
+                    var domLine = $(".CodeMirror-line").eq(line + 1);
+                    var coords = codeEditor.currentEditor.cursorCoords(true, "page");
+                    var y = coords.top;
+                    var x = coords.left - 150;
+                    $("#codeHelp_" + element).show();
+                    if (y + 200 > window.innerHeight - 35)
+                        $("#codeHelp_" + element).css("top", "" + (y - 110) + "px");
+                    else
+                        $("#codeHelp_" + element).css("top", "" + (y + 20) + "px");
+                    if (x < 0)
+                        x = 0;
+                    if (x > window.innerHeight - 310)
+                        x = window.innerHeight - 310;
+                    $("#codeHelp_" + element).css("left", "" + x + "px");
+                    $("#codeHelp_" + element).html(GetApiSignature(overText) + foundApi);
+                    codeEditor.hideHelpTimer = setTimeout(function () { CodeEditor.HideHelp(element); }, 5000);
+                }
+                else {
+                    // We still have to choose an API
+                    var list = [];
+                    if (overText != "") {
+                        if (overText.indexOf(".") == -1) {
+                            var last = null;
+                            for (var i = 0; i < apiFunctions.length; i++) {
+                                var f = apiFunctions[i].name.split('.')[0];
+                                if (last == f)
+                                    continue;
+                                if (f.toLowerCase().indexOf(overText.toLowerCase()) == 0)
+                                    list.push(f);
+                                last = f;
+                            }
+                        }
+                        else {
+                            for (var i = 0; i < apiFunctions.length; i++)
+                                if (apiFunctions[i].name.toLowerCase().indexOf(overText.toLowerCase()) == 0)
+                                    list.push(apiFunctions[i].name);
+                        }
+                        list.sort();
+                    }
+                    if (list && list.length > 0) {
+                        codeEditor.currentList = list;
+                        codeEditor.currentSelectedCompletion = 0;
+                        CodeEditor.UpdateList(element);
+                        var domLine = $(".CodeMirror-line").eq(line + 1);
+                        var coords = codeEditor.currentEditor.cursorCoords(true, "page");
+                        var y = coords.top;
+                        var x = coords.left - 150;
+                        $("#codeHelp_" + element).show();
+                        if (y + 200 > window.innerHeight - 35)
+                            $("#codeHelp_" + element).css("top", "" + (y - 110) + "px");
+                        else
+                            $("#codeHelp_" + element).css("top", "" + (y + 20) + "px");
+                        if (x < 0)
+                            x = 0;
+                        if (x > window.innerHeight - 310)
+                            x = window.innerHeight - 310;
+                        $("#codeHelp_" + element).css("left", "" + x + "px");
+                    }
+                    else
+                        CodeEditor.HideHelp(element);
+                }
+            }
+            else
+                CodeEditor.HideHelp(element);
+        });
+        editor.on('change', function () {
+            $("#codeError_" + element).hide();
+            var nblines = editor.getDoc().lineCount();
+            for (var i = 0; i < nblines; i++)
+                editor.removeLineClass(i, 'background', "line-error");
+            var code = editor.getValue();
+            try {
+                CodeParser.Parse(code.replace(/\@[a-z0-9_]+\@/gi, "1"));
+            }
+            catch (ex) {
+                var m = ("" + ex).match(/ ([0-9]+):([0-9]+)/);
+                if (m != null)
+                    editor.addLineClass(parseInt(m[1]) - 1, 'background', "line-error");
+                setTimeout(function () { $("#codeError_" + element).show().html(ex); }, 10);
+            }
+        });
+        return editor;
+    };
+    CodeEditor.GetCharAt = function (line, col) {
+        return codeEditor.currentEditor.getRange({ line: line, ch: col }, { line: line, ch: col + 1 });
+    };
+    CodeEditor.UpdateList = function (element) {
+        if (codeEditor.hideHelpTimer) {
+            clearTimeout(codeEditor.hideHelpTimer);
+            codeEditor.hideHelpTimer = null;
+        }
+        var html = "";
+        for (var i = 0; i < codeEditor.currentList.length; i++) {
+            html += "<div onclick='CodeEditor.Add(\"" + codeEditor.currentList[i] + "\");'" + (codeEditor.currentSelectedCompletion == i ? " class='selectedInsertion'" : "") + ">" + codeEditor.currentList[i] + "</div>";
+        }
+        $("#codeHelp_" + element).html(html);
+        codeEditor.hideHelpTimer = setTimeout(function () { CodeEditor.HideHelp(element); }, 5000);
+    };
+    CodeEditor.Add = function (text) {
+        if (codeEditor.hideHelpTimer) {
+            clearTimeout(codeEditor.hideHelpTimer);
+            codeEditor.hideHelpTimer = null;
+        }
+        if (text.indexOf('.') == -1)
+            text += '.';
+        else {
+            var api = GetApiSignature(text).replace(/<.{0,1}span[^>]*>/gi, "").replace(";", "");
+            text += api.substr(text.length);
+        }
+        var pos = codeEditor.currentEditor.getCursor();
+        codeEditor.currentEditor.replaceRange(text.substr(codeEditor.currentSelection.length), { line: pos.line, ch: pos.ch + (codeEditor.currentTextToTheEnd > 0 ? codeEditor.currentTextToTheEnd + 1 : 0) });
+    };
+    CodeEditor.HideHelp = function (element) {
+        $("#codeHelp_" + element).hide();
+        codeEditor.hideHelpTimer = null;
+        codeEditor.currentList = null;
+        codeEditor.currentSelectedCompletion = null;
+    };
+    return CodeEditor;
+}());
+var CodeGraphEditor = (function () {
+    function CodeGraphEditor(element, isGenericCode, tab) {
+        if (isGenericCode === void 0) { isGenericCode = false; }
+        if (tab === void 0) { tab = null; }
+        var _this = this;
+        this.expandedBlocks = [];
+        this.OnChange = null;
+        this.inUpdate = false;
+        this.isGenericCode = false;
+        var hasHelp = false;
+        this.element = element;
+        this.isGenericCode = isGenericCode;
+        this.parent = $("#" + element).first().parentElement.id;
+        var elemHtml = $("#" + element).first().outerHTML;
+        $("#" + element).first().outerHTML = "<div id='codeError_" + element + "' class='elementCodeWarning' style='position: absolute; left: 0px; right: 0px; top: 0px; width: auto;'>Error!</div><div class='codeGraphTextContainer'>" + elemHtml + "</div>";
+        var html = "<div id='graph_" + this.element + "' class='codeGraphArea' path=''></div>";
+        html += "<input type='text' id='search_graph_" + this.element + "' placeholder='Search...' class='codeGraphSearchNodes'>";
+        html += "<div id='selector_" + this.element + "' class='codeGraphSelector'></div>";
+        if ($($("#" + element).first().parentElement).height() > 400) {
+            html += "<div id='node_help_" + this.element + "' class='codeGraphNodeHelp'></div>";
+            hasHelp = true;
+        }
+        //if (("" + document.location).indexOf("localhost") != -1 || ("" + document.location).indexOf("test_grapheditor") != -1)
+        html += "<div class='codeGraphTabs'><span id='btn_" + element + "_text'>Text</span><span id='btn_" + element + "_node'>Node</span></div>";
+        html += "<div id='codeHelp_" + this.element + "' class='codeHelp'></div>";
+        Framework.ReloadPreferences();
+        //if (("" + document.location).indexOf("localhost") != -1 || ("" + document.location).indexOf("test_grapheditor") != -1)
+        if (framework.Preferences && framework.Preferences['codeGraphEditor_help'] !== false && tab == null) {
+            html += "<div id='codeGraphEditorHelp'>";
+            html += "The code editor allows to edit the logic of the game, however a full flexible logic requires a complete scripting engine. ";
+            html += "To help you with the task you can either type it if you are already a skilled developer, or you can use the node view. ";
+            html += "At any time you can switch from one view to the other using the tabs under the editor (text / node).";
+            html += "<br><br>";
+            html += "While working with the nodes, simply drag drop the nodes to add, remove or change the orders. Clicking on the header of a node expands it.";
+            html += "<br><br>";
+            html += "<center><a href='/Help/node_script.html' target='engineHelp' class='button'>Help</a> <span class='button' onclick='CodeGraphEditor.HideWelcome()'>Hide</span></center></div>";
+        }
+        $("#" + this.parent).append(html);
+        this.code = $("#" + element).val();
+        this.editor = CodeEditor.Create(element);
+        this.editor.on("change", function () {
+            if (_this.inUpdate)
+                return;
+            // Currently we have the text editor as main one.
+            if ($("#" + _this.parent + " .codeGraphTextContainer").is(":visible"))
+                _this.statements = null;
+            if (_this.OnChange)
+                _this.OnChange();
+        });
+        this.statements = [];
+        try {
+            var parser = new CodeParser(this.code);
+            this.statements = parser.GetAllStatements();
+        }
+        catch (ex) {
+        }
+        $("#search_graph_" + this.element).bind("keyup", function () {
+            _this.RenderSelector();
+        });
+        $("#graph_" + this.element).bind("dragover", function (evt) {
+            evt.preventDefault();
+            evt.dataTransfer.dropEffect = "move";
+        }).bind("drop", function (evt) {
+            evt.preventDefault();
+            var data = JSON.parse(evt.dataTransfer.getData("text"));
+            if (data.type == "existing") {
+                _this.DeleteNode(data.call);
+                _this.FromNodeToCode();
+                _this.RenderNodes();
+            }
+            else {
+                _this.DropOnEmpty(evt);
+            }
+        });
+        $("#btn_" + element + "_text").bind("click", function () {
+            $("#btn_" + element + "_node").removeClass("codeGraphActiveTab");
+            $("#btn_" + element + "_text").addClass("codeGraphActiveTab");
+            framework.Preferences['codeGraphEditor_tab'] = 'text';
+            Framework.SavePreferences();
+            $("#" + _this.parent + " .codeGraphTextContainer").show();
+            _this.editor.refresh();
+            $("#graph_" + _this.element).hide();
+            $("#selector_" + _this.element).hide();
+            $("#search_graph_" + _this.element).hide();
+            $("#node_help_" + _this.element).hide();
+        });
+        $("#btn_" + element + "_node").bind("click", function () {
+            $("#btn_" + element + "_text").removeClass("codeGraphActiveTab");
+            $("#btn_" + element + "_node").addClass("codeGraphActiveTab");
+            framework.Preferences['codeGraphEditor_tab'] = 'node';
+            Framework.SavePreferences();
+            $("#" + _this.parent + " .codeGraphTextContainer").hide();
+            $("#codeError_" + element).hide();
+            if (!_this.statements) {
+                _this.code = _this.editor.getValue();
+                _this.statements = [];
+                try {
+                    var parser = new CodeParser(_this.code);
+                    _this.statements = parser.GetAllStatements();
+                }
+                catch (ex) {
+                }
+                _this.RenderNodes();
+            }
+            $("#graph_" + _this.element).show();
+            $("#selector_" + _this.element).show();
+            $("#search_graph_" + _this.element).show();
+            $("#node_help_" + _this.element).show();
+        });
+        if ((framework.Preferences['codeGraphEditor_tab'] === 'text' || tab === "text") && (tab !== "node" || !tab)) {
+            $("#graph_" + this.element).hide();
+            $("#selector_" + this.element).hide();
+            $("#search_graph_" + this.element).hide();
+            $("#node_help_" + this.element).hide();
+            $("#btn_" + element + "_text").addClass("codeGraphActiveTab");
+        }
+        else {
+            $("#" + this.parent + " .codeGraphTextContainer").hide();
+            $("#btn_" + element + "_node").addClass("codeGraphActiveTab");
+        }
+        //}
+        this.RenderNodes();
+        this.RenderSelector();
+        if (!hasHelp)
+            $("#selector_" + this.element).css("bottom", "16px");
+    }
+    CodeGraphEditor.prototype.GetNode = function (path) {
+        var p = path.split('.');
+        var result = this.statements;
+        while (p.length > 0) {
+            var currentPath = p.shift();
+            // Must be a number => it's an index of an array
+            if (currentPath.match(/^[0-9]+$/)) {
+                if (result.constructor == BlockStatement)
+                    result = result.Statements[parseInt(currentPath)];
+                else
+                    result = result[parseInt(currentPath)];
+            }
+            else
+                result = result[currentPath];
+        }
+        return result;
+    };
+    CodeGraphEditor.prototype.SetNode = function (path, value) {
+        var p = path.split('.');
+        var node = this.statements;
+        while (p.length > 1) {
+            var currentPath = p.shift();
+            // Must be a number => it's an index of an array
+            if (currentPath.match(/^[0-9]+$/)) {
+                if (node.constructor == BlockStatement)
+                    node = node.Statements[parseInt(currentPath)];
+                else
+                    node = node[parseInt(currentPath)];
+            }
+            else
+                node = node[currentPath];
+        }
+        var className = ("" + node.constructor).match(/function ([^\(]+)\(/)[1];
+        var info = statementEditorInfo[className.replace(/Statement$/, "")];
+        if (typeof value !== "string")
+            node[p[0]] = value;
+        else if (info) {
+            var found = false;
+            for (var i = 0; i < info.params.length; i++) {
+                if (info.params[i].name == p[0]) {
+                    if (info.params[i].type == "VariableValue" && info.params[i].valueType == "number") {
+                        var val = parseFloat(value);
+                        if (!isNaN(val))
+                            node[p[0]] = new VariableValue(val);
+                    }
+                    else if (info.params[i].type == "VariableValue")
+                        node[p[0]] = new VariableValue(value);
+                    else
+                        node[p[0]] = value;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+                node[p[0]] = value;
+        }
+        else
+            node[p[0]] = value;
+    };
+    CodeGraphEditor.prototype.DeleteNode = function (path) {
+        var p = path.split('.');
+        var node = this.statements;
+        while (p.length > 1) {
+            var currentPath = p.shift();
+            // Must be a number => it's an index of an array
+            if (currentPath.match(/^[0-9]+$/)) {
+                if (node.constructor == BlockStatement)
+                    node = node.Statements[parseInt(currentPath)];
+                else
+                    node = node[parseInt(currentPath)];
+            }
+            else
+                node = node[currentPath];
+        }
+        if (p[0].match(/^[0-9]+$/)) {
+            if (node.constructor == BlockStatement)
+                return node.Statements.splice(parseInt(p[0]), 1)[0];
+            else if (path.endsWith(".values." + p[0])) {
+                var val = node[parseInt(p[0])];
+                node[parseInt(p[0])] = null;
+                return val;
+            }
+            else
+                return node.splice(parseInt(p[0]), 1)[0];
+        }
+        else {
+            var result = node[p[0]];
+            node[p[0]] = null;
+            return result;
+        }
+    };
+    CodeGraphEditor.prototype.RenderNodes = function () {
+        var _this = this;
+        var html = "";
+        for (var i = 0; i < this.statements.length; i++) {
+            html += this.statements[i].HTMLBlocks("" + i, this.statements);
+            if (this.statements[i].constructor == FunctionDefinitionStatement)
+                html += "<div class='codeBlockSeparator'></div>";
+        }
+        html += "<span class='emptyBlock' path=''>Empty</span>";
+        $("#graph_" + this.element).html(html);
+        $("#graph_" + this.element + " .emptyBlock").bind("dragover", function (evt) {
+            evt.preventDefault();
+            // Set the dropEffect to move
+            evt.dataTransfer.dropEffect = "move";
+        });
+        // Allow to drop new items on an empty block
+        $("#graph_" + this.element + " .emptyBlock").bind("drop", function (evt) { _this.DropOnEmpty(evt); });
+        // Highlight the block
+        $("#graph_" + this.element + " .codeBlock").addClass("collapsedBlock").bind("mouseover", function (evt) { _this.MouseOver(evt); }).bind("mouseout", function (evt) { _this.MouseOut(evt); });
+        // Expand / contract a block
+        $("#graph_" + this.element + " .blockType, #graph_" + this.element + " .simpleBlockType").prop("draggable", true)
+            .bind("dragstart", function (evt) { _this.Collapse(evt); evt.dataTransfer.setData("text", JSON.stringify({ type: "existing", call: evt.target.parentElement.id.substr(3).replace(/_/g, ".") })); })
+            .bind("drop", function (evt) { _this.DropOnStatement(evt); })
+            .bind("mousedown", function (evt) { _this.Collapse(evt); });
+        $("#graph_" + this.element + " .endBlock").bind("mousedown", function (evt) { _this.Collapse(evt); });
+        // Prevent expand / contract while clicking on a field
+        $("#graph_" + this.element + " input").bind("mousedown", function (evt) { evt.cancelBubble = true; return false; }).bind("keyup", function (evt) { _this.UpdateField(evt); });
+        // Boolean click => reverse it
+        var booleanClick = function (evt) {
+            var id = evt.target.parentElement.id;
+            var path = id.substr(3).replace(/_/g, ".");
+            var node = _this.GetNode(path);
+            node.value = new VariableValue(!node.value.GetBoolean());
+            $("#" + id).first().outerHTML = node.HTMLBlocks(path);
+            $("#" + id).bind("mousedown", booleanClick);
+            $("#" + id + " .simpleBlockType").prop("draggable", true)
+                .bind("dragstart", function (evt) { _this.Collapse(evt); evt.dataTransfer.setData("text", JSON.stringify({ type: "existing", call: evt.target.parentElement.id.substr(3).replace(/_/g, ".") })); })
+                .bind("drop", function (evt) { _this.DropOnStatement(evt); })
+                .bind("mousedown", function (evt) { _this.Collapse(evt); });
+            _this.FromNodeToCode();
+            evt.cancelBubble = true;
+            return false;
+        };
+        $("#graph_" + this.element + " span[block='boolean']").bind("mousedown", booleanClick);
+        $("#graph_" + this.element + " .blockDeleteArrayEntry").bind("mousedown", function (evt) {
+            var path = evt.target.getAttribute("path");
+            var p = path.split('.');
+            var entry = p.pop();
+            var node = _this.GetNode(p.join('.'));
+            node.splice(parseInt(entry), 1);
+            _this.RenderNodes();
+            _this.FromNodeToCode();
+        });
+        $("#graph_" + this.element + " .blockAddArrayEntry").bind("mousedown", function (evt) {
+            var path = evt.target.getAttribute("path");
+            var node = _this.GetNode(path);
+            node.push("");
+            _this.RenderNodes();
+            _this.FromNodeToCode();
+        });
+        for (var i = 0; i < this.expandedBlocks.length; i++)
+            $("#" + this.expandedBlocks[i]).removeClass("collapsedBlock");
+    };
+    CodeGraphEditor.prototype.UpdateField = function (evt) {
+        var val = $(evt.target).val();
+        var path = evt.target.getAttribute("path");
+        this.SetNode(path, val);
+        this.FromNodeToCode();
+        var p = path.split('.');
+        p.pop();
+        var parentNode = this.GetNode(p.join('.'));
+        if (parentNode.constructor == FunctionDefinitionStatement)
+            this.RenderSelector();
+    };
+    CodeGraphEditor.prototype.DropOnStatement = function (evt) {
+        evt.cancelBubble = true;
+        evt.preventDefault();
+        var path = evt.target.parentElement.id.substr(3).replace(/_/g, ".");
+        if (!path)
+            return;
+        var p = path.split('.');
+        var lastPath = p.pop();
+        var parentPath = p.join(".");
+        var node = this.GetNode(parentPath);
+        if (parentPath == "")
+            node = this.statements;
+        // Get the id of the target and add the moved element to the target's DOM
+        var data = JSON.parse(evt.dataTransfer.getData("text"));
+        evt.dataTransfer.clearData();
+        var newNode = null;
+        switch (data.type) {
+            case "base":
+                newNode = new window[data.call]();
+                break;
+            case "api":
+                var params = [];
+                for (var i = 0; i < apiFunctions.length; i++) {
+                    if (apiFunctions[i].name.toLowerCase() == data.call.toLowerCase()) {
+                        for (var j = 0; j < apiFunctions[i].parameters.length; j++)
+                            params.push(null);
+                        break;
+                    }
+                }
+                newNode = new FunctionCallStatement(data.call, params, 0, 0);
+                break;
+            case "existing":
+                newNode = this.DeleteNode(data.call);
+                break;
+        }
+        if (!newNode)
+            return;
+        if (node && node.constructor === BlockStatement)
+            node = node.Statements;
+        if (path.endsWith(".values." + lastPath))
+            node[parseInt(lastPath)] = newNode;
+        else if (node && node.constructor === Array)
+            node.splice(parseInt(lastPath), 0, newNode);
+        else
+            this.SetNode(parentPath, newNode);
+        this.FromNodeToCode();
+        this.RenderNodes();
+    };
+    CodeGraphEditor.prototype.DropOnEmpty = function (evt) {
+        evt.cancelBubble = true;
+        evt.preventDefault();
+        var path = evt.target.getAttribute("path");
+        var node = null;
+        if (path === "")
+            node = this.statements;
+        else
+            node = this.GetNode(path);
+        // Get the id of the target and add the moved element to the target's DOM
+        var data = JSON.parse(evt.dataTransfer.getData("text"));
+        evt.dataTransfer.clearData();
+        var newNode = null;
+        switch (data.type) {
+            case "base":
+                newNode = new window[data.call]();
+                break;
+            case "api":
+                var params = [];
+                for (var i = 0; i < apiFunctions.length; i++) {
+                    if (apiFunctions[i].name.toLowerCase() == data.call.toLowerCase()) {
+                        for (var j = 0; j < apiFunctions[i].parameters.length; j++)
+                            params.push(null);
+                        break;
+                    }
+                }
+                newNode = new FunctionCallStatement(data.call, params, 0, 0);
+                break;
+            case "existing":
+                newNode = this.DeleteNode(data.call);
+                break;
+        }
+        if (node === this.statements) {
+            if (newNode.constructor != CommentStatement && newNode.constructor != FunctionDefinitionStatement) {
+                Framework.ShowMessage("Only comments and functions definitions can be placed on the top level.");
+                return;
+            }
+        }
+        else if (newNode.constructor == FunctionDefinitionStatement) {
+            Framework.ShowMessage("Function definitions can be placed only on the top level.");
+            return;
+        }
+        if (node && node.constructor === BlockStatement) {
+            var className = ("" + newNode.constructor).match(/function ([^\(]+)\(/)[1];
+            if (!topBlockStatements.contains(className)) {
+                Framework.ShowMessage("This block cannot be placed here.");
+                return;
+            }
+        }
+        if (!newNode)
+            return;
+        if (node && node.constructor === BlockStatement)
+            node.Statements.push(newNode);
+        else if (node && node.constructor === Array)
+            node.push(newNode);
+        else
+            this.SetNode(path, newNode);
+        this.FromNodeToCode();
+        this.RenderNodes();
+        if (newNode.constructor == FunctionDefinitionStatement)
+            this.RenderSelector();
+        //console.log("Dragged: " + data);
+        //ev.target.appendChild(document.getElementById(data));
+    };
+    CodeGraphEditor.prototype.RenderSelector = function () {
+        var _this = this;
+        var search = $("#search_graph_" + this.element).val().toLowerCase();
+        var html = "";
+        var isFirst = true;
+        knownStatements.sort();
+        for (var i = 0; i < knownStatements.length; i++) {
+            if (knownStatements[i].replace(/Statement$/, "").toLowerCase().indexOf(search) == -1)
+                continue;
+            if (knownStatements[i] == "FunctionCallStatement" || knownStatements[i] == "BlockStatement" || knownStatements[i] == "EmptyStatement" || knownStatements[i] == "EmptyArrayStatement")
+                continue;
+            if (isFirst) {
+                html += "<div class='codeGroup'><span>Logic:</span>";
+                isFirst = false;
+            }
+            html += "<p type='base' call='" + knownStatements[i] + "'>" + knownStatements[i].replace(/Statement$/, "").title() + "</p>";
+        }
+        if (!isFirst)
+            html += "</div>";
+        var apiGroups = [];
+        for (var item in api)
+            apiGroups.push(item);
+        var isFirst = true;
+        for (var i = 0; i < apiGroups.length; i++) {
+            var functions = [];
+            for (var j = 0; j < apiFunctions.length; j++) {
+                if (apiFunctions[j].name.toLowerCase().indexOf(search) == -1)
+                    continue;
+                if (apiFunctions[j].name.split('.')[0].toLowerCase() == apiGroups[i].toLowerCase())
+                    functions.push(apiFunctions[j].name.split('.')[1]);
+            }
+            functions.sort();
+            if (functions.length == 0)
+                continue;
+            if (isFirst) {
+                html += "<div class='codeGroup'><span>API:</span>";
+                isFirst = false;
+            }
+            html += "<div class='codeGroup'><span>" + apiGroups[i].capitalize() + ":</span>";
+            for (var j = 0; j < functions.length; j++)
+                html += "<p type='api' call='" + apiGroups[i].capitalize() + "." + functions[j] + "'>" + functions[j] + "</p>";
+            html += "</div>";
+        }
+        if (!isFirst)
+            html += "</div>";
+        if (!this.isGenericCode) {
+            isFirst = true;
+            for (var i = 0; i < this.statements.length; i++) {
+                if (this.statements[i].constructor != FunctionDefinitionStatement)
+                    continue;
+                if (this.statements[i].Name.toLowerCase().indexOf(search) == -1)
+                    continue;
+                if (isFirst) {
+                    html += "<div class='codeGroup'><span>Functions:</span>";
+                    isFirst = false;
+                }
+                html += "<p type='api' call='" + this.statements[i].Name + "'>" + this.statements[i].Name + "</p>";
+            }
+            if (!isFirst)
+                html += "</div>";
+        }
+        isFirst = true;
+        if (world && world.Codes)
+            for (var i = 0; i < world.Codes.length; i++) {
+                if (!world.Codes[i].code) {
+                    try {
+                        world.Codes[i].code = CodeParser.ParseWithParameters(world.Codes[i].Source, world.Codes[i].Parameters);
+                    }
+                    catch (ex) {
+                    }
+                }
+                if (!world.Codes[i].code)
+                    continue;
+                for (var item in world.Codes[i].code.FunctionCodes) {
+                    if (item.toLowerCase().indexOf(search) == -1)
+                        continue;
+                    if (isFirst) {
+                        html += "<div class='codeGroup'><span>Generic Functions:</span>";
+                        isFirst = false;
+                    }
+                    html += "<p type='api' call='me." + world.Codes[i].Name + "." + item + "'>" + item + "</p>";
+                }
+            }
+        if (!isFirst)
+            html += "</div>";
+        $("#selector_" + this.element).html(html);
+        $("#selector_" + this.element + " p").prop("draggable", true).bind("dragstart", function (evt) {
+            //console.log(evt.target.innerHTML);
+            //evt.initDragEvent();
+            evt.dataTransfer.setData("text", JSON.stringify({ type: evt.target.getAttribute("type"), call: evt.target.getAttribute("call") }));
+        }).bind("mouseover", function (evt) {
+            var type = evt.target.getAttribute("type");
+            var call = evt.target.getAttribute("call").replace(/Statement$/, "");
+            $("#node_help_" + _this.element).html("");
+            if (type == "base" && statementEditorInfo[call])
+                $("#node_help_" + _this.element).html(statementEditorInfo[call].help);
+            else if (type == "api") {
+                call = ("" + call).toLowerCase();
+                var p = call.split('.');
+                if (p.length == 2) {
+                    for (var i = 0; i < apiFunctions.length; i++) {
+                        if (apiFunctions[i].name.toLowerCase() == call) {
+                            $("#node_help_" + _this.element).html(GetApiSignature(call) + GetApiDescription(call));
+                            break;
+                        }
+                    }
+                }
+                else
+                    $("#node_help_" + _this.element).html("Calls the function '" + call + "' and pass the parameters.");
+            }
+        }).bind("mouseout", function (evt) {
+            $("#node_help_" + _this.element).html("");
+        });
+    };
+    CodeGraphEditor.prototype.Collapse = function (evt) {
+        var obj = evt.target;
+        while (obj.className.indexOf("codeBlock") == -1)
+            obj = obj.parentElement;
+        $(obj).toggleClass("collapsedBlock");
+        var id = obj.id;
+        // Not collapsed
+        if (obj.className.indexOf("collapsedBlock") == -1)
+            this.expandedBlocks.push(id);
+        else {
+            for (var i = 0; i < this.expandedBlocks.length; i++) {
+                if (this.expandedBlocks[i] == id) {
+                    this.expandedBlocks.splice(i, 1);
+                    break;
+                }
+            }
+        }
+    };
+    CodeGraphEditor.prototype.GetCode = function () {
+        return this.editor.getDoc().getValue();
+    };
+    CodeGraphEditor.prototype.SetCode = function (source) {
+        this.inUpdate = true;
+        this.code = source;
+        this.statements = [];
+        try {
+            var parser = new CodeParser(this.code);
+            this.statements = parser.GetAllStatements();
+            this.RenderNodes();
+            this.RenderSelector();
+        }
+        catch (ex) {
+        }
+        this.editor.getDoc().setValue(source);
+        this.editor.refresh();
+        CodeMirror.signal(this.editor, "change");
+        this.inUpdate = false;
+    };
+    CodeGraphEditor.prototype.SetReadonly = function (readonly) {
+        this.editor.readOnly = readonly;
+    };
+    CodeGraphEditor.prototype.FromNodeToCode = function () {
+        try {
+            var code = "";
+            for (var i = 0; i < this.statements.length; i++) {
+                code += this.statements[i].ToCode(0) + "\n";
+            }
+            code = code.trim();
+            this.code = code;
+            this.editor.getDoc().setValue(code);
+            this.editor.refresh();
+            CodeMirror.signal(this.editor, "change");
+        }
+        catch (ex) {
+        }
+    };
+    CodeGraphEditor.prototype.Refresh = function () {
+        this.editor.refresh();
+    };
+    CodeGraphEditor.prototype.MouseOver = function (evt) {
+        $(".overBlock").removeClass("overBlock");
+        var obj = evt.target;
+        while (obj.className.indexOf("codeBlock") == -1)
+            obj = obj.parentElement;
+        $(obj).addClass("overBlock");
+        $("#node_help_" + this.element).html("");
+        var path = obj.id.substr(3).replace(/_/g, ".");
+        if (path) {
+            var node = this.GetNode(path);
+            if (node) {
+                if (node.constructor == FunctionCallStatement) {
+                    var call = node.Name.toLowerCase();
+                    var p = call.split('.');
+                    if (p.length == 2) {
+                        for (var i = 0; i < apiFunctions.length; i++) {
+                            if (apiFunctions[i].name.toLowerCase() == call) {
+                                $("#node_help_" + this.element).html(GetApiSignature(call) + GetApiDescription(call));
+                                break;
+                            }
+                        }
+                    }
+                    else
+                        $("#node_help_" + this.element).html("Calls the function '" + call + "' and pass the parameters.");
+                }
+                else {
+                    var className = ("" + node.constructor).match(/function ([^\(]+)\(/)[1].replace("Statement", "");
+                    if (statementEditorInfo[className])
+                        $("#node_help_" + this.element).html(statementEditorInfo[className].help);
+                }
+            }
+        }
+    };
+    CodeGraphEditor.prototype.MouseOut = function (evt) {
+        $(".overBlock").removeClass("overBlock");
+        $("#node_help_" + this.element).html("");
+    };
+    CodeGraphEditor.HideWelcome = function () {
+        Framework.ReloadPreferences();
+        framework.Preferences['codeGraphEditor_help'] = false;
+        Framework.SavePreferences();
+        $("#codeGraphEditorHelp").hide();
+    };
+    return CodeGraphEditor;
+}());
+var inventoryMenu = new ((function () {
+    function class_13() {
+        this.inventoryDisplayed = false;
+    }
+    return class_13;
+}()));
+var InventoryMenu = (function () {
+    function InventoryMenu() {
+    }
+    InventoryMenu.AdditionalCSS = function () {
+        return "#inventoryIcon\n\
+{\n\
+    position: absolute;\n\
+    left: -" + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
+    top: 80px;\n\
+}\n\
+#inventoryIcon .gamePanelContentNoHeader\n\
+{\n\
+    width: 74px;\n\
+}\n\
+#inventoryObjectDetails\n\
+{\n\
+    position: absolute;\n\
+    left: " + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
+    right: " + parseInt("" + world.art.panelStyle.rightBorder) + "px;\n\
+    bottom: " + parseInt("" + world.art.panelStyle.bottomBorder) + "px;\n\
+    overflow: hidden;\n\
+    height: 150px;\n\
+    padding: 7px;\n\
+    box-sizing: border-box;\n\
+}\n\
+\n\
+#inventoryObjectList\n\
+{\n\
+    position: absolute;\n\
+    left: " + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
+    right: " + parseInt("" + world.art.panelStyle.rightBorder) + "px;\n\
+    top: " + parseInt("" + world.art.panelStyle.topBorder) + "px;\n\
+    bottom: " + (parseInt("" + world.art.panelStyle.bottomBorder) + 150) + "px;\n\
+    overflow-y: scroll;\n\
+}\n\
+\n\
+#inventoryObjectList h1\n\
+{\n\
+    border-bottom: solid 1px " + Main.EnsureColor(world.art.panelStyle.contentColor) + ";\n\
+    margin-bottom: 5px;\n\
+}\n\
+";
+    };
+    InventoryMenu.Init = function (position) {
+        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowInventory === false))) {
+            $("#inventoryIcon").hide();
+            return position;
+        }
+        $("#inventoryIcon").css("top", position + "px");
+        if (game)
+            $("#inventoryIcon .gamePanelContentNoHeader").html("<img src='art/tileset2/inventory_icon.png'>");
+        else
+            $("#inventoryIcon .gamePanelContentNoHeader").html("<img src='/art/tileset2/inventory_icon.png'>");
+        return position + 64 + world.art.panelStyle.topBorder;
+    };
+    InventoryMenu.Toggle = function () {
+        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowInventory === false)))
+            return;
+        $("#profileIcon").removeClass("openPanelIcon");
+        profileMenu.profileDisplayed = false;
+        $("#messageIcon").removeClass("openPanelIcon");
+        messageMenu.messageDisplayed = false;
+        $("#journalIcon").removeClass("openPanelIcon");
+        journalMenu.journalDisplayed = false;
+        if (inventoryMenu.inventoryDisplayed) {
+            $("#gameMenuPanel").hide();
+            $("#inventoryIcon").removeClass("openPanelIcon");
+            inventoryMenu.inventoryDisplayed = false;
+        }
+        else {
+            inventoryMenu.inventoryDisplayed = true;
+            $("#gameMenuPanel").show();
+            $("#inventoryIcon").addClass("openPanelIcon");
+            InventoryMenu.Update();
+        }
+    };
+    InventoryMenu.Update = function () {
+        if (!inventoryMenu.inventoryDisplayed)
+            return;
+        var html = "";
+        var wearSomething = false;
+        for (var slot in world.Player.EquipedObjects) {
+            wearSomething = true;
+            break;
+        }
+        html += "<div id='inventoryObjectList'>";
+        if (wearSomething) {
+            html += "<h1>Wearing</h1>";
+            html += "<table class='inventoryList'>";
+            for (var slot in world.Player.EquipedObjects) {
+                html += "<tr>";
+                var wearedItem = world.Player.EquipedObjects[slot];
+                var details = world.GetInventoryObject(wearedItem.Name);
+                if (!details)
+                    continue;
+                if (details.CanUnwear())
+                    html += "<td><div class='gameButton' onclick='InventoryMenu.Unwear(\"" + slot.htmlEntities() + "\");'>Unwear</div></td>";
+                else
+                    html += "<td>&nbsp;</td>";
+                html += "<td>" + (details.Image ? "<img src='" + details.Image.htmlEntities() + "' width='32' height='32'>" : "") + "</td>";
+                html += "<td>" + world.Player.EquipedObjects[slot].Name.htmlEntities() + "</td>";
+                html += "<td>" + slot.title().htmlEntities() + "</td>";
+                html += "</tr>";
+            }
+            html += "</table>";
+        }
+        html += "<h1>Inventory</h1>";
+        if (!world.Player.Inventory || !world.Player.Inventory.length) {
+            $("#gameMenuPanelContent").html(html);
+            return;
+        }
+        world.Player.Inventory.sort(function (a, b) {
+            if (a.Name > b.Name)
+                return 1;
+            if (a.Name < b.Name)
+                return -1;
+            return 0;
+        });
+        world.Player.StoredCompare = world.Player.JSON();
+        html += "<table class='inventoryList'>";
+        html += "<thead>";
+        html += "<tr><td>&nbsp;</td><td>&nbsp;</td><td>Item</td><td>Quantity</td></tr>";
+        html += "</thead>";
+        html += "<tbody>";
+        for (var i = 0; i < world.Player.Inventory.length; i++) {
+            var details = world.Player.Inventory[i].GetDetails();
+            if (details == null) {
+                world.Player.Inventory.splice(i, 1);
+                i--;
+                world.Player.StoredCompare = world.Player.JSON();
+                continue;
+            }
+            html += "<tr onmouseover='InventoryMenu.ShowDetails(" + i + ");' onmouseout='InventoryMenu.HideDetails();'>";
+            html += "<td>";
+            if (details.CanWear())
+                html += "<div class='gameButton' onclick='InventoryMenu.Wear(" + i + ");'>Equip</div>";
+            if (details.ActionLabel() && details.CanUse())
+                html += "<div class='gameButton' onclick='InventoryMenu.Use(" + i + ");'>" + details.ActionLabel().htmlEntities() + "</div>";
+            if (details.CanDrop())
+                html += "<div class='gameButton' onclick='InventoryMenu.Drop(" + i + ");'>Drop</div>";
+            if (details.CanWear() || (details.ActionLabel() && details.CanUse()))
+                html += "<div class='gameButton' onclick='InventoryMenu.Quickslot(" + i + ");'>Quickslot</div>";
+            html += "</td>";
+            html += "<td>" + (details.Image ? "<img src='" + details.Image.htmlEntities() + "' width='32' height='32'>" : "") + "</td>";
+            html += "<td><div>" + world.Player.Inventory[i].Name.htmlEntities() + "</div></td>";
+            html += "<td>" + ("" + world.Player.Inventory[i].Count).htmlEntities() + "</td>";
+            html += "</tr>";
+        }
+        html += "</tbody></table></div>";
+        html += "<div id='inventoryObjectDetails'></div>";
+        $("#gameMenuPanelContent").html(html);
+    };
+    InventoryMenu.ShowDetails = function (rowId) {
+        var details = world.Player.Inventory[rowId].GetDetails();
+        var html = "";
+        html += (details.Image ? "<img src='" + details.Image.htmlEntities() + "' width='32' height='32' style='vertical-align: middle;'>" : "");
+        html += "<b>" + details.Name.htmlEntities() + ":</b><br>";
+        html += Main.TextTransform(details.Description, true);
+        $("#inventoryObjectDetails").html(html);
+    };
+    InventoryMenu.HideDetails = function () {
+        $("#inventoryObjectDetails").html("");
+    };
+    InventoryMenu.Wear = function (rowId) {
+        var details = world.Player.Inventory[rowId].GetDetails();
+        if (details.CanWear())
+            world.Player.Wear(world.Player.Inventory[rowId].Name);
+    };
+    InventoryMenu.Unwear = function (slotName) {
+        var wearedItem = world.Player.EquipedObjects[slotName];
+        var details = world.GetInventoryObject(wearedItem.Name);
+        if (details.CanUnwear())
+            world.Player.Unwear(slotName);
+    };
+    InventoryMenu.Drop = function (rowId) {
+        var details = world.Player.Inventory[rowId].GetDetails();
+        if (details.CanDrop())
+            world.Player.RemoveItem(world.Player.Inventory[rowId].Name);
+    };
+    InventoryMenu.Use = function (rowId) {
+        var details = world.Player.Inventory[rowId].GetDetails();
+        if (details.CanUse())
+            details.Use();
+    };
+    InventoryMenu.Quickslot = function (rowId) {
+        profileMenu.profileDisplayed = false;
+        var html = "<h1>Quickslot</h1>";
+        for (var i = 0; i < 10; i++) {
+            var q = world.Player.QuickSlot[i];
+            var skill = null;
+            if (!q)
+                q = "-- Empty --";
+            else if (q.substring(0, 2) == "S/") {
+                var skill = world.GetSkill(q.substring(2));
+                q = "Skill " + q.substring(2).title().htmlEntities();
+            }
+            else
+                q = "Item " + q.substring(2).title().htmlEntities();
+            if (skill && skill.CodeVariable("QuickslotEditable") === "false") {
+                html += "Slot " + (i + 1) + " " + q + "<br>";
+            }
+            else
+                html += "<div class='gameButton' onclick='InventoryMenu.SetQuickslot(" + rowId + "," + i + ");'>Slot " + (i + 1) + "</div>" + q + "<br>";
+        }
+        html += "<center><div class='gameButton' onclick='InventoryMenu.Update();'>Cancel</div></center>";
+        $("#gameMenuPanelContent").html(html);
+    };
+    InventoryMenu.SetQuickslot = function (rowId, slotId) {
+        var details = world.Player.Inventory[rowId].GetDetails();
+        var itemName = details.Name;
+        for (var i = 0; i < 10; i++)
+            if (world.Player.QuickSlot[i] == "I/" + itemName)
+                world.Player.QuickSlot[i] = null;
+        world.Player.QuickSlot[slotId] = "I/" + itemName;
+        world.Player.StoredCompare = world.Player.JSON();
+        world.Player.Save();
+        InventoryMenu.Update();
+    };
+    return InventoryMenu;
+}());
+/// <reference path="../../Common/Libs/MiniQuery.ts"/>
+var Routing = (function () {
+    function Routing(action, callback) {
+        this.Action = action;
+        this.Callback = callback;
+    }
+    return Routing;
+}());
+var GuiPart = (function () {
+    function GuiPart(position, callback) {
+        this.Position = position;
+        this.Callback = callback;
+    }
+    return GuiPart;
+}());
+String.prototype.endsWith = function (toCheck) {
+    return (this.substr(this.length - toCheck.length) == toCheck);
+};
+String.prototype.title = function () {
+    return this.replace(/(\w)([A-Z][a-z])/g, "$1 $2");
+};
+String.prototype.padLeft = function (c, nb) {
+    if (this.length >= nb)
+        return this;
+    return Array(nb - this.length + 1).join(c) + this;
+};
+String.prototype.htmlEntities = function (escapeQuotes) {
+    if (escapeQuotes === void 0) { escapeQuotes = true; }
+    if (!escapeQuotes)
+        return this.replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;");
+    return this.replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;").replace(/'/g, "&#39;").replace(/"/g, "&quot;");
+};
+String.prototype.capitalize = function () {
+    return this.charAt(0).toUpperCase() + this.substr(1);
+};
+/**
+* Transorms the string into a CSS valid ID
+*/
+String.prototype.id = function () {
+    return this.replace(/ /g, "_").replace(/\//g, "_").replace(/#/g, "_").replace(/\./g, "_").replace(/</g, "_")
+        .replace(/:/g, "_").replace(/\+/g, "_").replace(/\*/g, "_").replace(/\-/g, "_").replace(/\\/g, "_")
+        .replace(/\(/g, "_").replace(/\)/g, "_").replace(/\&/g, "_").replace(/,/g, "_").replace(/\=/g, "_").replace(/\'/g, "_");
+};
+Array.prototype.contains = function (toFind) {
+    for (var i = 0; i < this.length; i++)
+        if (this[i] == toFind)
+            return true;
+    return false;
+};
+function FirstItem(dictionary) {
+    for (var item in dictionary)
+        return item;
+    return null;
+}
+function Keys(dictionary) {
+    var keys = [];
+    for (var item in dictionary)
+        keys.push(item);
+    return keys;
+}
+function isString(variable) {
+    return (typeof variable == 'string' || variable instanceof String);
+}
+function IsNull(value) {
+    return (value === null || value === undefined);
+}
+function IfIsNull(value, defaultValue) {
+    return ((value === null || value === undefined) ? defaultValue : value);
+}
+/**
+ * Don't use static properties as it may trigger Typescript bugs. Therefore an instance of an anonymous class
+ * containting the needed values is the current solution.
+ * Sadly with this solution we loose the visibility of the properties.
+ *
+ * https://github.com/Microsoft/TypeScript/issues/5549
+ *
+ */
+var framework = new ((function () {
+    function class_14() {
+        this.DefaultModule = "Play";
+        this.Routing = [];
+        this.HandleUrl = true;
+        this.LastRoute = null;
+        this.CurrentHandler = null;
+        this.Preferences = {};
+        this.eventRouteCall = null;
+        this.cachedTemplates = [];
+        this.CurrentUrl = {};
+        this.GuiParts = [];
+        this.Months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        this.WeekDays = ["M", "T", "W", "T", "F", "S", "S"];
+        this.MonthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        this.keyPressed = [];
+        this.specialKeyHandling = [];
+        this.isPrompt = false;
+        this.RoutePrefix = "/Engine/Module/";
+    }
+    return class_14;
+}()));
+/**
+ * Base framework class
+ *
+ * Page sections must implement:
+ * static Recover(url)
+ * The function will receive an "url" object (dictionary) containing all the URL parameters.
+ *
+ * Any class can implement the following function which will be called during the framework initialization:
+ * static InitFunction(): void
+ * The framework will need a corresponding Templates/XXX.html or
+ * an <script id="XXX" type="text/html"> tag in the index.html where XXX is the name of the typescript class.
+ *
+ */
+var Framework = (function () {
+    function Framework() {
+    }
+    /**
+     * Calculates an MD5 of a given string
+     */
+    Framework.MD5 = function (source) {
+        return window["md5"](source);
+    };
+    /**
+     * Parse the URL and returns an object (dictionary) of the parsed URL.
+     * @param url the string of the url (the # part of the url is the important piece).
+     */
+    Framework.ParseUrl = function (url) {
+        if (url === void 0) { url = null; }
+        if (!url) {
+            url = ("" + document.location);
+            if (url.indexOf("#") == -1)
+                url = "";
+            else
+                url = url.substr(url.indexOf("#") + 1);
+        }
+        else
+            url = url.substr(url.indexOf("#") + 1);
+        var parts = url.split("&");
+        var result = {};
+        parts.forEach(function (row) { return result[row.split("=")[0]] = decodeURIComponent(row.split("=")[1]); });
+        return result;
+    };
+    Framework.ParseQuery = function (url) {
+        if (url === void 0) { url = null; }
+        if (!url) {
+            url = ("" + document.location);
+            if (url.indexOf("?") == -1)
+                url = "";
+            else
+                url = url.substr(url.indexOf("?") + 1);
+        }
+        else
+            url = url.substr(url.indexOf("?") + 1);
+        if (url.indexOf('#') != -1)
+            url = url.substr(0, url.indexOf('#'));
+        var parts = url.split("&");
+        var result = {};
+        parts.forEach(function (row) { return result[row.split("=")[0]] = decodeURIComponent(row.split("=")[1]); });
+        return result;
+    };
+    /**
+    * Re-execute the routing
+    */
+    Framework.Recall = function () {
+        Framework.ExecuteRoute();
+    };
+    /**
+     * Internal function used to re-route the URL to the right class and passing the parsed URL to the callback.
+     */
+    Framework.ExecuteRoute = function (reload) {
+        if (reload === void 0) { reload = false; }
+        if (!framework.HandleUrl)
+            return;
+        var url = Framework.ParseUrl();
+        if (!url["action"])
+            url["action"] = framework.DefaultModule;
+        framework.CurrentUrl = url;
+        var found = false;
+        for (var i = 0; i < framework.Routing.length; i++) {
+            if (framework.Routing[i].Action == url["action"]) {
+                found = true;
+                break;
+            }
+        }
+        if (!found)
+            url["action"] = framework.DefaultModule;
+        Framework.RoutePage(url["action"], reload);
+    };
+    Framework.Rerun = function () {
+        Framework.ExecuteRoute(true);
+    };
+    Framework.RoutePage = function (page, reload) {
+        if (reload === void 0) { reload = false; }
+        for (var i = 0; i < framework.Routing.length; i++) {
+            if (framework.Routing[i].Action == page) {
+                var isReady = true;
+                if (framework.LastRoute != page || reload === true) {
+                    if (framework.LastRoute != null) {
+                        try {
+                            window[framework.LastRoute].Dispose();
+                        }
+                        catch (ex) {
+                            //alert(ex);
+                        }
+                    }
+                    if ($("#" + framework.Routing[i].Action).length) {
+                        $("#contentArea").html($("#" + framework.Routing[i].Action).html());
+                        framework.LastRoute = page;
+                    }
+                    else if (framework.cachedTemplates[framework.Routing[i].Action]) {
+                        $("#contentArea").html(framework.cachedTemplates[framework.Routing[i].Action]);
+                        framework.LastRoute = page;
+                    }
+                    else {
+                        isReady = false;
+                        $.ajax({
+                            type: "GET",
+                            url: framework.RoutePrefix + framework.Routing[i].Action + "/Template.html",
+                            success: function (msg) {
+                                if (msg.toLocaleLowerCase().indexOf("<body>")) {
+                                    var m = msg.match(/\<body\>((.|\n|\r)*)\<\/body\>/i);
+                                    if (m && m[1])
+                                        msg = m[1];
+                                }
+                                framework.cachedTemplates[framework.Routing[i].Action] = msg;
+                                $("#contentArea").html(msg);
+                                framework.LastRoute = page;
+                                framework.CurrentHandler = page;
+                                framework.Routing[i].Callback(framework.CurrentUrl);
+                                document.dispatchEvent(framework.eventRouteCall);
+                            }
+                        });
+                    }
+                }
+                if (isReady) {
+                    framework.CurrentHandler = page;
+                    framework.Routing[i].Callback(framework.CurrentUrl);
+                    document.dispatchEvent(framework.eventRouteCall);
+                }
+                return;
+            }
+        }
+    };
+    /**
+     * Changes the title of the page
+     * @param title component added to the page title
+     */
+    Framework.SetTitle = function (title) {
+        if (!title || title == "")
+            document.title = "Dot World Maker";
+        else
+            document.title = "Dot World Maker - " + title;
+    };
+    Framework.MakeUrl = function (newData) {
+        var s = "";
+        var props = [];
+        for (var i in newData)
+            props.push(i);
+        props.sort();
+        for (var j = 0; j < props.length; j++) {
+            if (!newData[props[j]] || newData[props[j]] == "")
+                continue;
+            if (s != "")
+                s += "&";
+            s += props[j] + "=" + encodeURIComponent(newData[props[j]]);
+        }
+        return s;
+    };
+    /**
+     * Change the URL
+     * @param newData should be a dictionary which will build hash part of the URL
+     * @skipHandler will avoid to call the routing (by default it's true)
+     */
+    Framework.SetLocation = function (newData, skipHandler, replace) {
+        if (skipHandler === void 0) { skipHandler = true; }
+        if (replace === void 0) { replace = false; }
+        // We need to compose it ourself
+        if (isString(newData))
+            newData = JSON.parse(newData);
+        if (!newData['action'])
+            newData['action'] = framework.CurrentHandler;
+        framework.CurrentUrl = newData;
+        newData = Framework.MakeUrl(newData);
+        var oldUrl = "" + document.location;
+        var url = ("" + document.location);
+        if (url.indexOf("#") != -1)
+            url = url.substr(0, url.indexOf("#"));
+        if (skipHandler)
+            framework.HandleUrl = false;
+        url += "#" + newData;
+        if (replace)
+            document.location.replace(url);
+        else
+            document.location.assign(url);
+        if (skipHandler) {
+            setTimeout(function () {
+                framework.HandleUrl = true;
+            }, 100);
+        }
+        else if (oldUrl == url)
+            Framework.ExecuteRoute();
+    };
+    /**
+     * Set a callback in case the routing change
+     */
+    Framework.OnRouteCall = function (callback) {
+        document.addEventListener("RouteCall", callback, false);
+    };
+    /**
+     * Save the preference object to local storage
+     */
+    Framework.SavePreferences = function () {
+        localStorage.setItem("preferences", JSON.stringify(framework.Preferences));
+    };
+    /**
+     * Store the routings
+     */
+    Framework.AutoLinkRoutes = function () {
+        for (var i in window) {
+            try {
+                if (i.substr(0, 3) != "web" && window[i] && window[i].Recover) {
+                    if (!(window[i].IsAccessible && window[i].IsAccessible() == false))
+                        framework.Routing.push(new Routing(i, window[i].Recover));
+                }
+            }
+            catch (ex) {
+            }
+        }
+    };
+    /**
+     * Store the gui parts
+     */
+    Framework.AutoLinkGuiParts = function () {
+        for (var i in window) {
+            try {
+                if (i.substr(0, 3) != "web" && window[i] && window[i].GuiPart) {
+                    var p = window[i].GuiPart();
+                    if (p)
+                        framework.GuiParts.push(p);
+                }
+            }
+            catch (ex) {
+            }
+        }
+        framework.GuiParts.sort(function (a, b) { return a.Position - b.Position; });
+    };
+    Framework.FixObjectDates = function (source) {
+        var dest = JSON.parse(JSON.stringify(source));
+        for (var i in dest) {
+            if (source[i] instanceof Date)
+                dest[i] = Framework.FullDateFormat(source[i]);
+        }
+        return dest;
+    };
+    Framework.NetDate = function (source) {
+        return "/Date(" + source.getTime() + ")/";
+    };
+    Framework.DateFormat = function (source) {
+        if (!source)
+            return "";
+        return source.getFullYear() + "/" + ("" + (source.getMonth() + 1)).padLeft("0", 2) + "/" + ("" + source.getDate()).padLeft("0", 2);
+        //return ("" + source.getDate()).padLeft("0", 2) + "/" + ("" + (source.getMonth() + 1)).padLeft("0", 2) + "/" + source.getFullYear();
+    };
+    Framework.FullDateFormat = function (source) {
+        if (!source)
+            return "";
+        return source.getFullYear() + "/" + ("" + (source.getMonth() + 1)).padLeft("0", 2) + "/" + ("" + source.getDate()).padLeft("0", 2) + " " +
+            ("" + source.getHours()).padLeft("0", 2) + ":" + ("" + source.getMinutes()).padLeft("0", 2) + ":" + ("" + source.getSeconds()).padLeft("0", 2);
+        /*return ("" + source.getDate()).padLeft("0", 2) + "/" + ("" + (source.getMonth() + 1)).padLeft("0", 2) + "/" + source.getFullYear() + " " +
+            ("" + source.getHours()).padLeft("0", 2) + ":" + ("" + source.getMinutes()).padLeft("0", 2) + ":" + ("" + source.getSeconds()).padLeft("0", 2);*/
+    };
+    Framework.ParseDate = function (source) {
+        if (!source || source == "")
+            return null;
+        if (source.charAt(source.length - 1) == "Z")
+            return new Date(source);
+        source = source.replace(/\./g, "/").replace(/\-/g, "/");
+        if (source.charAt(2) == "/") {
+            return new Date(parseInt(source.substr(6, 4)), parseInt(source.substr(3, 2)) - 1, parseInt(source.substr(0, 2)));
+        }
+        else if (source.charAt(4) == "/") {
+            return new Date(parseInt(source.substr(0, 4)), parseInt(source.substr(5, 2)) - 1, parseInt(source.substr(8, 2)));
+        }
+        return new Date(parseInt(source));
+    };
+    /**
+     * Calls all the InitFunction
+     */
+    Framework.CallInits = function () {
+        for (var i in window) {
+            try {
+                if (i.substr(0, 3) != "web" && window[i] && window[i].InitFunction) {
+                    window[i].InitFunction();
+                }
+            }
+            catch (ex) {
+            }
+        }
+    };
+    Framework.HandleError = function (returnedError) {
+        if (returnedError.status == 0)
+            return "";
+        try {
+            var err = JSON.parse(returnedError.responseText);
+            if (err.ExceptionType == "IV4.Backend.IvException") {
+                var msg = err.Message;
+                return msg.substr(msg.indexOf(":") + 1);
+            }
+            else {
+                /*Framework.RoutePage("ErrorHandling");
+                ErrorHandling.SetError(err.Message + "\n" + err.ExceptionType + "\n" + err.StackTrace);*/
+                return "";
+            }
+        }
+        catch (ex) {
+            /*Framework.RoutePage("ErrorHandling");
+            ErrorHandling.SetError(returnedError.responseText);*/
+            return "";
+        }
+    };
+    Framework.IsKeyPressed = function (code) {
+        if (framework.keyPressed[code] === true)
+            return true;
+        return false;
+    };
+    Framework.RegisterKey = function (keyCode, callback) {
+        framework.specialKeyHandling[keyCode] = callback;
+    };
+    Framework.keyDown = function (e) {
+        e = e ? e : event;
+        framework.keyPressed[e.keyCode] = true;
+        //console.log(e.keyCode);
+        if (framework.specialKeyHandling[e.keyCode]) {
+            if (framework.specialKeyHandling[e.keyCode](e.keyCode) === true) {
+                // Firefox
+                try {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                catch (er) {
+                }
+                // IE
+                try {
+                    e.cancelBubble = true;
+                    e.returnValue = false;
+                }
+                catch (er) {
+                }
+                return false;
+            }
+        }
+        else
+            return true;
+    };
+    Framework.keyUp = function (e) {
+        e = e ? e : event;
+        framework.keyPressed[e.keyCode] = false;
+        if (framework.specialKeyHandling[e.keyCode]) {
+            // Firefox
+            try {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+            catch (er) {
+            }
+            // IE
+            try {
+                e.cancelBubble = true;
+                e.returnValue = false;
+            }
+            catch (er) {
+            }
+            return false;
+        }
+        else
+            return true;
+    };
+    Framework.Confirm = function (displayQuestion, yesCallback, noCallback) {
+        if (noCallback === void 0) { noCallback = null; }
+        framework.isPrompt = false;
+        $("#backgroundConfirm").show();
+        $("#confirmDialog").show();
+        $("#confirmOk").hide();
+        $("#confirmYes").show().html("Yes");
+        $("#confirmNo").show().html("No");
+        $("#confirmLabel").html(displayQuestion);
+        //$("#confirmDialog").css("top", "0px");
+        $("#confirmDialog").animate({
+            top: ($(window).height() / 2 - 50) + "px"
+        }, 200);
+        framework.yesCallback = yesCallback;
+        framework.noCallback = noCallback;
+    };
+    Framework.Prompt = function (displayQuestion, defaultValue, yesCallback, noCallback, confirmLabel, cancelLabel) {
+        if (noCallback === void 0) { noCallback = null; }
+        if (confirmLabel === void 0) { confirmLabel = "Confirm"; }
+        if (cancelLabel === void 0) { cancelLabel = "Cancel"; }
+        framework.isPrompt = true;
+        $("#backgroundConfirm").show();
+        $("#confirmDialog").show();
+        $("#confirmOk").hide();
+        $("#confirmYes").show().html(confirmLabel);
+        $("#confirmNo").show().html(cancelLabel);
+        $("#confirmLabel").html(displayQuestion + "<br><input type='text' id='promptField' value='" + (defaultValue ? defaultValue.htmlEntities() : "") + "'>");
+        //$("#confirmDialog").css("top", "0px");
+        $("#confirmDialog").animate({
+            top: ($(window).height() / 2 - 50) + "px"
+        }, 200, function () {
+            $("#promptField").focus();
+        });
+        $("#promptField").focus();
+        framework.yesCallback = yesCallback;
+        framework.noCallback = noCallback;
+    };
+    Framework.Alert = function (displayLabel, okCallback) {
+        if (okCallback === void 0) { okCallback = null; }
+        framework.isPrompt = false;
+        $("#backgroundConfirm").show();
+        $("#confirmDialog").show();
+        $("#confirmOk").show();
+        $("#confirmYes").hide();
+        $("#confirmNo").hide();
+        $("#confirmLabel").html(displayLabel);
+        $("#backgroundConfirm").bind("click", Framework.ConfirmOk);
+        //$("#confirmDialog").css("top", "0px");
+        try {
+            $("#confirmDialog").animate({
+                top: ($(window).height() / 2 - 50) + "px"
+            }, 200);
+        }
+        catch (ex) {
+        }
+        framework.yesCallback = okCallback;
+    };
+    Framework.ShowMessage = function (displayText) {
+        if (framework.MessageTimeout)
+            clearTimeout(framework.MessageTimeout);
+        $("#displayMessage").show().first().className = "displayMessageVisible";
+        $("#displayMessageContent").html(displayText);
+        framework.MessageTimeout = setTimeout(function () {
+            $("#displayMessage").first().className = "displayMessageHidden";
+            framework.MessageTimeout = setTimeout(function () {
+                $("#displayMessage").hide();
+                framework.MessageTimeout = null;
+            }, 500);
+        }, 5000);
+    };
+    Framework.ConfirmOk = function () {
+        $("#backgroundConfirm").unbind("click", Framework.ConfirmOk);
+        $("#backgroundConfirm").hide();
+        $("#confirmDialog").hide();
+        if (framework.yesCallback)
+            framework.yesCallback();
+    };
+    Framework.ConfirmYes = function () {
+        $("#backgroundConfirm").hide();
+        $("#confirmDialog").hide();
+        if (framework.isPrompt && framework.yesCallback)
+            framework.yesCallback($("#promptField").val());
+        else if (framework.yesCallback)
+            framework.yesCallback();
+    };
+    Framework.ConfirmNo = function () {
+        $("#backgroundConfirm").hide();
+        $("#confirmDialog").hide();
+        if (framework.noCallback)
+            framework.noCallback();
+    };
+    Framework.ReloadPreferences = function () {
+        framework.Preferences = {};
+        if (localStorage.getItem("preferences") != null && localStorage.getItem("preferences") != undefined)
+            framework.Preferences = JSON.parse(localStorage.getItem("preferences"));
+    };
+    Framework.SetRoutePrefix = function (prefix) {
+        framework.RoutePrefix = prefix;
+    };
+    /**
+     * Initialization of the framework.
+     */
+    Framework.Init = function (withExecuteRoute) {
+        if (withExecuteRoute === void 0) { withExecuteRoute = true; }
+        $(document).bind("keydown", Framework.keyDown);
+        $(document).bind("keyup", Framework.keyUp);
+        // Used to place the debugger at the start
+        //alert("init");
+        if (localStorage.getItem("preferences") != null && localStorage.getItem("preferences") != undefined)
+            framework.Preferences = JSON.parse(localStorage.getItem("preferences"));
+        framework.eventRouteCall = document.createEvent("Event");
+        framework.eventRouteCall.initEvent("RouteCall", true, true);
+        Framework.CallInits();
+        Framework.AutoLinkRoutes();
+        Framework.AutoLinkGuiParts();
+        if (withExecuteRoute)
+            Framework.ExecuteRoute();
+        window.addEventListener("hashchange", function () {
+            Framework.ExecuteRoute();
+        });
+    };
+    return Framework;
+}());
+/// <reference path="../../../Common/Libs/MiniQuery.ts"/>
+/// <reference path="../../../Common/Libs/Framework.ts"/>
+var MenuItem = (function () {
+    function MenuItem(label, link) {
+        this.Label = label;
+        this.Link = link;
+    }
+    return MenuItem;
+}());
+var menubarStatic = new ((function () {
+    function class_15() {
+        this.previousItem = null;
+        this.KnownItems = [];
+        this.hoverHideTimer = null;
+    }
+    return class_15;
+}()));
+var Menubar = (function () {
+    function Menubar() {
+    }
+    Menubar.InitFunction = function () {
+        var menu = document.getElementById("menubar");
+        if (!menu)
+            return;
+        /*var pos = 5;
+        for (var i = 0; i < menu.children.length; i++)
+        {
+            var item: HTMLElement = <HTMLElement>menu.children[i];
+            item.style.left = pos + "px";
+            pos += $(item).width();
+        }*/
+        $("#menubar a").bind("dragstart", function () { return false; }).bind("drop", function () { return false; });
+        $("#hideMenu").mouseover(Menubar.HoverHideMenus).mouseout(Menubar.StopHoverHideMenus);
+        $("#searchPanel").mouseover(Menubar.HoverHideMenus);
+        for (var i = 0; i < menu.children.length; i++) {
+            var item = menu.children[i];
+            if (item.children.length > 0) {
+                item.onmouseover = function () {
+                    var currentSubmenu = item.children[0];
+                    return function () {
+                        if (menubarStatic.previousItem == currentSubmenu.textContent)
+                            return;
+                        Menubar.HideMenus();
+                        menubarStatic.previousItem = currentSubmenu.textContent;
+                        $("#hideMenu").show();
+                        $(currentSubmenu).show();
+                    };
+                }();
+                Menubar.HookSubmenu(item.children[0]);
+            }
+            else
+                item.onmouseover = Menubar.HideMenus;
+        }
+        Menubar.ExtractItems();
+    };
+    Menubar.ExtractItems = function (menuItem) {
+        if (menuItem === void 0) { menuItem = null; }
+        if (!menuItem) {
+            menubarStatic.KnownItems = [];
+            menuItem = document.getElementById("menubar");
+        }
+        for (var i = 0; i < menuItem.children.length; i++) {
+            var item = menuItem.children[i];
+            if (item.children.length > 0) {
+                //if($(item).is(":visible"))
+                if (item.style.display !== "none")
+                    Menubar.ExtractItems(item.children[0]);
+            }
+            else if (item.style.display !== "none") {
+                var n = new MenuItem((item.attributes["label"] ? item.attributes["label"].textContent : item.textContent), (item.attributes["href"] ? item.attributes["href"].textContent : ""));
+                if (item.onclick && (!n.Link || n.Link == "" || n.Link == "#"))
+                    n.Link = item.onclick;
+                menubarStatic.KnownItems.push(n);
+            }
+            if (item.tagName.toLowerCase() == "a") {
+                $(item).bind("click", function () {
+                    $("#hideMenu").hide();
+                    Menubar.HideMenus();
+                });
+            }
+        }
+    };
+    Menubar.HookSubmenu = function (menuItem) {
+        for (var i = 0; i < menuItem.children.length; i++) {
+            var item = menuItem.children[i];
+            if (item.children.length > 0) {
+                item.onmouseover = function () {
+                    var child = item.children[0];
+                    $(child).addClass("childMenuBar");
+                    return function (e) {
+                        $("#menubar .childMenuBar").hide();
+                        $(child).show();
+                        e.stopPropagation();
+                    };
+                }();
+            }
+            else
+                item.onmouseover = function () {
+                    $("#menubar .childMenuBar").hide();
+                };
+        }
+    };
+    Menubar.HideMenus = function () {
+        menubarStatic.previousItem = null;
+        menubarStatic.hoverHideTimer = null;
+        $("#hideMenu").hide();
+        $("#menubar > div > div").hide();
+        $("#menubar .childMenuBar").hide();
+    };
+    Menubar.HoverHideMenus = function () {
+        if (menubarStatic.hoverHideTimer)
+            clearTimeout(menubarStatic.hoverHideTimer);
+        menubarStatic.hoverHideTimer = setTimeout(Menubar.HideMenus, 500);
+    };
+    Menubar.StopHoverHideMenus = function () {
+        if (menubarStatic.hoverHideTimer)
+            clearTimeout(menubarStatic.hoverHideTimer);
+        menubarStatic.hoverHideTimer = null;
+    };
+    /**
+     * Allows to disable a menu entry
+     * @param menuPath searched path in the form Main>Child>SubChild
+     */
+    Menubar.DisableMenu = function (menuPath, menuSection, currentPath) {
+        if (menuSection === void 0) { menuSection = null; }
+        if (currentPath === void 0) { currentPath = ""; }
+        if (!menuSection)
+            menuSection = document.getElementById("menubar");
+        for (var i = 0; i < menuSection.children.length; i++) {
+            var t = menuSection.children[i].textContent.trim();
+            var p = currentPath + t.split('\n')[0];
+            if (p == menuPath) {
+                $(menuSection.children[i]).hide();
+                Menubar.ExtractItems();
+                return true;
+            }
+            else if (menuSection.children[i].children.length > 0) {
+                var r = Menubar.DisableMenu(menuPath, menuSection.children[i].children[0], p + ">");
+                if (r == true)
+                    return true;
+            }
+        }
+        return false;
+    };
+    /**
+     * Allows to enable a menu entry
+     * @param menuPath searched path in the form Main>Child>SubChild
+     */
+    Menubar.EnableMenu = function (menuPath, menuSection, currentPath) {
+        if (menuSection === void 0) { menuSection = null; }
+        if (currentPath === void 0) { currentPath = ""; }
+        if (!menuSection)
+            menuSection = document.getElementById("menubar");
+        for (var i = 0; i < menuSection.children.length; i++) {
+            var t = menuSection.children[i].textContent.trim();
+            var p = currentPath + t.split('\n')[0];
+            if (p == menuPath) {
+                $(menuSection.children[i]).show();
+                Menubar.ExtractItems();
+                return true;
+            }
+            else if (menuSection.children[i].children.length > 0) {
+                var r = Menubar.EnableMenu(menuPath, menuSection.children[i].children[0], p + ">");
+                if (r == true)
+                    return true;
+            }
+        }
+        return false;
+    };
+    return Menubar;
+}());
+var journalMenu = new ((function () {
+    function class_16() {
+        this.journalDisplayed = false;
+    }
+    return class_16;
+}()));
+var JournalMenu = (function () {
+    function JournalMenu() {
+    }
+    JournalMenu.AdditionalCSS = function () {
+        return "#journalIcon\n\
+{\n\
+    position: absolute;\n\
+    left: -" + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
+    top: 245px;\n\
+}\n\
+#journalIcon .gamePanelContentNoHeader\n\
+{\n\
+    width: 74px;\n\
+}\n\
+";
+    };
+    JournalMenu.Init = function (position) {
+        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowJournal === false))) {
+            $("#journalIcon").hide();
+            return position;
+        }
+        $("#journalIcon").css("top", position + "px");
+        if (game)
+            $("#journalIcon .gamePanelContentNoHeader").html("<img src='art/tileset2/journal_icon.png'>");
+        else
+            $("#journalIcon .gamePanelContentNoHeader").html("<img src='/art/tileset2/journal_icon.png'>");
+        return position + 64 + world.art.panelStyle.topBorder;
+    };
+    JournalMenu.Toggle = function () {
+        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowJournal === false)))
+            return;
+        inventoryMenu.inventoryDisplayed = false;
+        $("#inventoryIcon").removeClass("openPanelIcon");
+        messageMenu.messageDisplayed = false;
+        $("#messageIcon").removeClass("openPanelIcon");
+        profileMenu.profileDisplayed = false;
+        $("#profileIcon").removeClass("openPanelIcon");
+        if (journalMenu.journalDisplayed) {
+            $("#gameMenuPanel").hide();
+            $("#journalIcon").removeClass("openPanelIcon");
+            journalMenu.journalDisplayed = false;
+        }
+        else {
+            journalMenu.journalDisplayed = true;
+            $("#gameMenuPanel").show();
+            $("#journalIcon").addClass("openPanelIcon");
+            JournalMenu.Update();
+        }
+    };
+    JournalMenu.Update = function () {
+        if (!journalMenu.journalDisplayed)
+            return;
+        world.Player.Quests.sort(JournalMenu.SortQuests);
+        world.Player.StoredCompare = world.Player.JSON();
+        world.Player.Save();
+        var html = "<h1>Quest Journal</h1>";
+        if (world.Player.Quests.length > 0) {
+            var showCompleted = false;
+            if (!world.Player.Quests[0].Completed)
+                html += "<h2>Open quests</h2>";
+            for (var i = 0; i < world.Player.Quests.length; i++) {
+                var quest = world.GetQuest(world.Player.Quests[i].Name);
+                if (!quest)
+                    continue;
+                if (!showCompleted && world.Player.Quests[i].Completed) {
+                    showCompleted = true;
+                    html += "<h2>Completed quests</h2>";
+                }
+                html += "<b>" + quest.Name.htmlEntities() + "</b><br>";
+                html += Main.TextTransform(quest.Description, true) + "<br>";
+                for (var j = 0; j < world.Player.Quests[i].JournalEntries.length; j++) {
+                    var entry = JournalMenu.GetJournal(quest, world.Player.Quests[i].JournalEntries[j].EntryId);
+                    if (!entry)
+                        continue;
+                    html += Main.TextTransform(entry) + "<br>";
+                }
+            }
+        }
+        $("#gameMenuPanelContent").html(html);
+    };
+    JournalMenu.GetJournal = function (quest, id) {
+        for (var i = 0; i < quest.JournalEntries.length; i++)
+            if (quest.JournalEntries[i].Id == id)
+                return quest.JournalEntries[i].Entry;
+        return null;
+    };
+    JournalMenu.SortQuests = function (a, b) {
+        if (a.Completed && b.Completed) {
+            if (a.Completed > b.Completed)
+                return -1;
+            if (a.Completed < b.Completed)
+                return 1;
+            return 0;
+        }
+        if (a.Completed && !b.Completed)
+            return 1;
+        if (!a.Completed && b.Completed)
+            return -1;
+        if (a.JournalEntries && a.JournalEntries.length > 0 && b.JournalEntries && b.JournalEntries.length > 0) {
+            if (a.JournalEntries[a.JournalEntries.length - 1] > b.JournalEntries[b.JournalEntries.length - 1])
+                return 1;
+            if (a.JournalEntries[a.JournalEntries.length - 1] < b.JournalEntries[b.JournalEntries.length - 1])
+                return -1;
+            return 0;
+        }
+        if (a.JournalEntries && a.JournalEntries.length > 0 && (!b.JournalEntries || b.JournalEntries.length == 0))
+            return 1;
+        if ((!a.JournalEntries || a.JournalEntries.length == 0) && b.JournalEntries && b.JournalEntries.length > 0)
+            return -1;
+        if (a.Started > b.Started)
+            return 1;
+        if (a.Started < b.Started)
+            return -1;
+        return 0;
+    };
+    return JournalMenu;
+}());
+/// <reference path="../../../Common/Libs/Framework.ts" />
+var listSelector = new ((function () {
+    function class_17() {
+        this.CurrentSelectors = {};
+    }
+    return class_17;
+}()));
+var ListSelector = (function () {
+    /**
+     * Creates a selection list (sorted) with search box.
+     * @param HTML element id to put the list on (should be a div)
+     * @param data source (an array or an object)
+     * @param displayColumn (optional) the field name to display, valid only for an array source
+     */
+    function ListSelector(element, data, displayColumn) {
+        this.Sort = true;
+        listSelector[element] = this;
+        this.element = element;
+        this.data = data;
+        this.displayColumn = displayColumn;
+        if (displayColumn) {
+            this.sortedDirect = [];
+            for (var i = 0; i < data.length; i++)
+                this.sortedDirect.push(i);
+            this.sortedDirect.sort(function (a, b) {
+                if (data[a][displayColumn] > data[b][displayColumn])
+                    return 1;
+                if (data[a][displayColumn] < data[b][displayColumn])
+                    return -1;
+                return 0;
+            });
+        }
+        $("#" + this.element).addClass("listSelector");
+        this.Render();
+    }
+    ListSelector.prototype.Dispose = function () {
+        $("#" + this.element).html("");
+        delete listSelector[this.element];
+    };
+    ListSelector.prototype.Rebind = function () {
+        var _this = this;
+        $("#list_selector_" + this.element).bind("keyup", function () {
+            $("#display_list_selector_" + _this.element).html(_this.RenderList());
+        });
+    };
+    ListSelector.prototype.Render = function () {
+        var _this = this;
+        var html = "";
+        html += "<input type='text' id='list_selector_" + this.element + "' placeholder='Search...'>";
+        html += "<div id='display_list_selector_" + this.element + "'>";
+        html += this.RenderList();
+        html += "</div>";
+        $("#" + this.element).html(html);
+        $("#list_selector_" + this.element).bind("keyup", function () {
+            $("#display_list_selector_" + _this.element).html(_this.RenderList());
+        });
+    };
+    ListSelector.prototype.UpdateList = function (newData) {
+        if (newData)
+            this.data = newData;
+        else
+            newData = this.data;
+        if (this.displayColumn) {
+            this.sortedDirect = [];
+            for (var i = 0; i < this.data.length; i++)
+                this.sortedDirect.push(i);
+            var displayColumn = this.displayColumn;
+            this.sortedDirect.sort(function (a, b) {
+                if (newData[a][displayColumn] > newData[b][displayColumn])
+                    return 1;
+                if (newData[a][displayColumn] < newData[b][displayColumn])
+                    return -1;
+                return 0;
+            });
+        }
+        $("#display_list_selector_" + this.element).html(this.RenderList());
+    };
+    ListSelector.prototype.RenderList = function () {
+        var html = "";
+        html += "<table>";
+        var searchTxt = $("#list_selector_" + this.element).val();
+        var search = (searchTxt ? searchTxt : "").trim().toLowerCase();
+        if (this.displayColumn) {
+            for (var i = 0; i < this.data.length; i++) {
+                var val = "" + this.data[this.sortedDirect[i]][this.displayColumn];
+                if (search && search != "" && (!val || val.toLowerCase().indexOf(search) == -1))
+                    continue;
+                html += "<tr id='display_list_selector_" + this.element + "_" + this.sortedDirect[i] + "' onclick='ListSelector.Find(\"" + this.element + "\").Select(" + this.sortedDirect[i] + ");'" + (this.selectedRow == this.sortedDirect[i] ? " class='listSelectorSelectedRow'" : "") + "><td>" + val + "</td></tr>";
+            }
+        }
+        else {
+            var names = [];
+            for (var item in this.data)
+                names.push(item);
+            if (this.Sort)
+                names.sort();
+            for (var i = 0; i < names.length; i++) {
+                var val = names[i];
+                if (search && search != "" && (!val || val.toLowerCase().indexOf(search) == -1))
+                    continue;
+                html += "<tr id='display_list_selector_" + this.element + "_" + val.id() + "' onclick='ListSelector.Find(\"" + this.element + "\").Select(\"" + val + "\");'" + (this.selectedRow == val ? " class='listSelectorSelectedRow'" : "") + "><td>" + val + "</td></tr>";
+            }
+        }
+        html += "</table>";
+        return html;
+    };
+    ListSelector.Find = function (name) {
+        return listSelector[name];
+    };
+    ListSelector.prototype.Select = function (row) {
+        this.selectedRow = row;
+        $("#display_list_selector_" + this.element + " tr").removeClass("listSelectorSelectedRow");
+        if (this.displayColumn)
+            $("#display_list_selector_" + this.element + "_" + row).addClass("listSelectorSelectedRow");
+        else if (row !== null)
+            $("#display_list_selector_" + this.element + "_" + row.id()).addClass("listSelectorSelectedRow");
+        if (this.OnSelect)
+            this.OnSelect(row);
+    };
+    return ListSelector;
+}());
+var profileMenu = new ((function () {
+    function class_18() {
+        this.profileDisplayed = false;
+    }
+    return class_18;
+}()));
+var ProfileMenu = (function () {
+    function ProfileMenu() {
+    }
+    ProfileMenu.AdditionalCSS = function () {
+        return "#profileIcon\n\
+{\n\
+    position: absolute;\n\
+    left: -" + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
+    top: 165px;\n\
+}\n\
+#profileIcon .gamePanelContentNoHeader\n\
+{\n\
+    width: 74px;\n\
+}\n\
+";
+    };
+    ProfileMenu.Init = function (position) {
+        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowStats === false))) {
+            $("#profileIcon").hide();
+            return position;
+        }
+        $("#profileIcon").css("top", position + "px");
+        if (game)
+            $("#profileIcon .gamePanelContentNoHeader").html("<img src='art/tileset2/profile_icon.png'><div>+</div>");
+        else
+            $("#profileIcon .gamePanelContentNoHeader").html("<img src='/art/tileset2/profile_icon.png'><div>+</div>");
+        if (!ProfileMenu.HasToUpgrade())
+            $("#profileIcon div.gamePanelContentNoHeader > div").hide();
+        return position + 64 + world.art.panelStyle.topBorder;
+    };
+    ProfileMenu.Toggle = function () {
+        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowStats === false)))
+            return;
+        inventoryMenu.inventoryDisplayed = false;
+        $("#inventoryIcon").removeClass("openPanelIcon");
+        messageMenu.messageDisplayed = false;
+        $("#messageIcon").removeClass("openPanelIcon");
+        $("#journalIcon").removeClass("openPanelIcon");
+        journalMenu.journalDisplayed = false;
+        if (profileMenu.profileDisplayed) {
+            $("#gameMenuPanel").hide();
+            $("#profileIcon").removeClass("openPanelIcon");
+            profileMenu.profileDisplayed = false;
+        }
+        else {
+            profileMenu.profileDisplayed = true;
+            $("#gameMenuPanel").show();
+            $("#profileIcon").addClass("openPanelIcon");
+            ProfileMenu.Update();
+        }
+    };
+    ProfileMenu.HasToUpgrade = function () {
+        for (var i = 0; i < world.Player.Stats.length; i++) {
+            if (world.Player.Stats[i].BaseStat.CodeVariable('PlayerVisible') === "false")
+                continue;
+            var res = world.Player.Stats[i].BaseStat.InvokeFunction("CanUpgrade", []);
+            if (res && res.GetBoolean() == true)
+                return true;
+        }
+        return false;
+    };
+    ProfileMenu.Update = function () {
+        if (ProfileMenu.HasToUpgrade())
+            $("#profileIcon div.gamePanelContentNoHeader > div").show();
+        else
+            $("#profileIcon div.gamePanelContentNoHeader > div").hide();
+        if (!profileMenu.profileDisplayed)
+            return;
+        var html = "";
+        html = "<h1>Profile<h1>";
+        html += "<h2>Stats</h2>";
+        html += "<table class='profileList'>";
+        html += "<thead><tr><td>Name:</td><td>Value:</td><td>Max:</td><td>&nbsp;</td></tr></thead>";
+        html += "<tbody>";
+        for (var i = 0; i < world.Player.Stats.length; i++) {
+            if (world.Player.Stats[i].BaseStat.CodeVariable('PlayerVisible') === "false")
+                continue;
+            html += "<tr>";
+            html += "<td>" + (world.Player.Stats[i].BaseStat.CodeVariable('DisplayName') ? world.Player.Stats[i].BaseStat.CodeVariable('DisplayName') : world.Player.Stats[i].Name).htmlEntities() + "</td>";
+            html += "<td>" + world.Player.Stats[i].Value + "</td>";
+            html += "<td>" + (world.Player.GetStatMaxValue(world.Player.Stats[i].Name) ? world.Player.GetStatMaxValue(world.Player.Stats[i].Name) : "&nbsp;") + "</td>";
+            var res = world.Player.Stats[i].BaseStat.InvokeFunction("CanUpgrade", []);
+            if (res && res.GetBoolean() == true)
+                html += "<td><div class='gameButton' onclick='ProfileMenu.UpgradeStat(\"" + world.Player.Stats[i].Name + "\")')>+</div></td>";
+            else
+                html += "<td>&nbsp;</td>";
+            html += "</tr>";
+        }
+        html += "</tbody>";
+        html += "</table>";
+        html += "<h2>Skills</h2>";
+        html += "<table class='profileList'>";
+        html += "<thead><tr><td>Name:</td><td>Level:</td><td>&nbsp;</td></tr></thead>";
+        html += "<tbody>";
+        for (var i = 0; i < world.Player.Skills.length; i++) {
+            html += "<tr>";
+            html += "<td>" + (world.Player.Skills[i].BaseSkill.CodeVariable('DisplayName') ? world.Player.Skills[i].BaseSkill.CodeVariable('DisplayName') : world.Player.Skills[i].Name).htmlEntities() + "</td><td>" + (world.Player.Skills[i].Level ? ("" + world.Player.Skills[i].Level).htmlEntities() : "&nbsp;") + "</td>";
+            html += "<td>";
+            if (world.Player.Skills[i].BaseSkill.CodeVariable("Quickslot") == "true" && world.Player.Skills[i].BaseSkill.CodeVariable("QuickslotEditable") !== "false")
+                html += "<div class='gameButton' onclick='ProfileMenu.Quickslot(\"" + world.Player.Skills[i].Name.htmlEntities() + "\");'>Quickslot</div>";
+            else
+                html += "&nbsp;";
+            html += "</td>";
+            html += "</tr>";
+        }
+        html += "</tbody>";
+        html += "</table>";
+        html += "<br><br>";
+        html += "<center><div class='gameButton' onclick=\"document.location='#action=Logout';\">Logout</div> <div class='gameButton' onclick='ProfileMenu.ResetPlayer();'>Reset your player</div></center>";
+        $("#gameMenuPanelContent").html(html);
+    };
+    ProfileMenu.DoResetPlayer = function () {
+        if (Main.CheckNW()) {
+            var saves = {};
+            if (framework.Preferences['gameSaves'])
+                saves = JSON.parse(framework.Preferences['gameSaves']);
+            delete saves["S" + world.Id];
+            framework.Preferences['gameSaves'] = JSON.stringify(saves);
+            Framework.SavePreferences();
+            world.Init();
+            Main.GenerateGameStyle();
+            world.ResetAreas();
+            world.ResetGenerator();
+            Framework.Rerun();
+            return;
+        }
+        if (!framework.Preferences['token'] || framework.Preferences['token'] == "demo") {
+            document.location.reload();
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url: '/backend/ResetPlayer',
+            data: {
+                game: world.Id,
+                token: framework.Preferences['token']
+            },
+            success: function (msg) {
+                document.location.reload();
+            },
+            error: function (msg, textStatus) {
+                if (msg.d && msg.d.error)
+                    Framework.ShowMessage(msg.d.error);
+                else
+                    Framework.ShowMessage(msg);
+            }
+        });
+    };
+    ProfileMenu.ResetPlayer = function () {
+        Framework.Confirm("Are you sure you want to reset your player? You lose all the stats, items, and quests and start as a fresh new player.", ProfileMenu.DoResetPlayer);
+    };
+    ProfileMenu.UpgradeStat = function (statName) {
+        var res = world.Player.FindStat(statName).BaseStat.InvokeFunction("CanUpgrade", []);
+        if (!res || res.GetBoolean() !== true)
+            return;
+        world.Player.SetStat(statName, world.Player.GetStat(statName) + 1);
+        //world.Player.FindStat(statName).Value++;
+        ProfileMenu.Update();
+    };
+    ProfileMenu.Quickslot = function (skillName) {
+        profileMenu.profileDisplayed = false;
+        var html = "<h1>Quickslot</h1>";
+        for (var i = 0; i < 10; i++) {
+            var q = world.Player.QuickSlot[i];
+            var skill = null;
+            if (!q)
+                q = "-- Empty --";
+            else if (q.substring(0, 2) == "S/") {
+                var skill = world.GetSkill(q.substring(2));
+                q = "Skill " + q.substring(2).title().htmlEntities();
+            }
+            else
+                q = "Item " + q.substring(2).title().htmlEntities();
+            if (skill && skill.CodeVariable("QuickslotEditable") === "false") {
+                html += "Slot " + (i + 1) + " " + q + "<br>";
+            }
+            else
+                html += "<div class='gameButton' onclick='ProfileMenu.SetQuickslot(\"" + skillName.htmlEntities() + "\"," + i + ");'>Slot " + (i + 1) + "</div>" + q + "<br>";
+        }
+        html += "<center><div class='gameButton' onclick='ProfileMenu.Show();'>Cancel</div></center>";
+        $("#gameMenuPanelContent").html(html);
+    };
+    ProfileMenu.Show = function () {
+        profileMenu.profileDisplayed = true;
+        ProfileMenu.Update();
+    };
+    ProfileMenu.SetQuickslot = function (skillName, slotId) {
+        for (var i = 0; i < 10; i++)
+            if (world.Player.QuickSlot[i] == "S/" + skillName)
+                world.Player.QuickSlot[i] = null;
+        world.Player.QuickSlot[slotId] = "S/" + skillName;
+        world.Player.StoredCompare = world.Player.JSON();
+        world.Player.Save();
+        ProfileMenu.Show();
+    };
+    return ProfileMenu;
+}());
+var messageMenu = new ((function () {
+    function class_19() {
+        this.messageDisplayed = false;
+        this.firstInit = true;
+        this.selectedMessage = null;
+        this.nonRead = 0;
+        this.attachments = null;
+    }
+    return class_19;
+}()));
+var MessageMenu = (function () {
+    function MessageMenu() {
+    }
+    MessageMenu.AdditionalCSS = function () {
+        return "#messageIcon\n\
+{\n\
+    position: absolute;\n\
+    left: -" + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
+    top: 330px;\n\
+}\n\
+#messageIcon .gamePanelContentNoHeader\n\
+{\n\
+    width: 74px;\n\
+}\n\
+";
+    };
+    MessageMenu.Init = function (position) {
+        if (!framework.Preferences['token'] || (world && world.ShowMessage === false) || framework.Preferences['token'] == "demo" || game) {
+            $("#messageIcon").hide();
+            return position;
+        }
+        $("#messageIcon").css("top", position + "px");
+        $("#messageIcon .gamePanelContentNoHeader").html("<img src='/art/tileset2/message_icon.png'><div>10</div>");
+        $("#messageIcon div.gamePanelContentNoHeader > div").html("0").hide();
+        if (messageMenu.firstInit && chat.socket) {
+            messageMenu.firstInit = false;
+            chat.socket.on('new_message', function () {
+                for (var i = 0; i < world.Codes.length; i++) {
+                    if (world.Codes[i].Enabled === false)
+                        continue;
+                    if (!world.Codes[i].code)
+                        world.Codes[i].code = CodeParser.ParseWithParameters(world.Codes[i].Source, world.Codes[i].Parameters);
+                    if (world.Codes[i].code.HasFunction("OnPrivateMessage"))
+                        world.Codes[i].code.ExecuteFunction("OnPrivateMessage", []);
+                }
+                MessageMenu.CheckCounter();
+                MessageMenu.UpdateReceived();
+            });
+        }
+        MessageMenu.CheckCounter();
+        return position + 64 + world.art.panelStyle.topBorder;
+    };
+    MessageMenu.CheckCounter = function () {
+        $.ajax({
+            type: 'POST',
+            url: '/backend/CheckNewGameMessage',
+            data: {
+                game: world.Id,
+                token: framework.Preferences['token'],
+            },
+            success: function (msg) {
+                var data = TryParse(msg);
+                if (data) {
+                    messageMenu.nonRead = data;
+                    $("#messageIcon div.gamePanelContentNoHeader > div").html(data).show();
+                }
+                else {
+                    $("#messageIcon div.gamePanelContentNoHeader > div").html("0").hide();
+                }
+            },
+            error: function (msg) {
+            }
+        });
+    };
+    MessageMenu.Toggle = function () {
+        if (!framework.Preferences['token'] || (world && world.ShowMessage === false) || framework.Preferences['token'] == "demo")
+            return;
+        $("#inventoryIcon").removeClass("openPanelIcon");
+        inventoryMenu.inventoryDisplayed = false;
+        $("#profileIcon").removeClass("openPanelIcon");
+        profileMenu.profileDisplayed = false;
+        $("#journalIcon").removeClass("openPanelIcon");
+        journalMenu.journalDisplayed = false;
+        if (messageMenu.messageDisplayed) {
+            $("#gameMenuPanel").hide();
+            $("#messageIcon").removeClass("openPanelIcon");
+            messageMenu.messageDisplayed = false;
+        }
+        else {
+            messageMenu.messageDisplayed = true;
+            $("#gameMenuPanel").show();
+            $("#messageIcon").addClass("openPanelIcon");
+            MessageMenu.Update();
+        }
+    };
+    MessageMenu.Update = function () {
+        var html = "";
+        html += "<table class='panelContentTableWithHeader'>";
+        html += "<thead><tr><td>Date</td><td>Sender</td><td>Subject</td></tr></thead>";
+        html += "</table>";
+        html += "<div id='messageList'>";
+        html += "</div>";
+        html += "<div id='messageDetails'></div>";
+        $("#gameMenuPanelContent").html(html);
+        MessageMenu.UpdateReceived();
+        MessageMenu.ShowCompose();
+    };
+    MessageMenu.UpdateReceived = function () {
+        if (!messageMenu.messageDisplayed)
+            return;
+        $.ajax({
+            type: 'POST',
+            url: '/backend/GetGameMessageList',
+            data: {
+                game: world.Id,
+                token: framework.Preferences['token'],
+            },
+            success: function (msg) {
+                var data = TryParse(msg);
+                var html = "";
+                if (data) {
+                    html += "<table>";
+                    for (var i = 0; i < data.length; i++) {
+                        html += "<tr onclick='MessageMenu.Read(" + data[i].id + ");' class='" + (data[i].newMessage ? "newMessage" : "") + (messageMenu.selectedMessage == data[i].id ? " panelContentSelected" : "") + "'>";
+                        html += "<td>" + Main.FormatDateTime(data[i].sentDate) + "</td><td>" + data[i].from + "</td><td>" + data[i].subject + "</td>";
+                        html += "</tr>";
+                    }
+                    html += "</table>";
+                }
+                $("#messageList").html(html);
+            },
+            error: function (msg) {
+            }
+        });
+    };
+    MessageMenu.Read = function (id) {
+        messageMenu.selectedMessage = id;
+        $.ajax({
+            type: 'POST',
+            url: '/backend/GetGameMessage',
+            data: {
+                game: world.Id,
+                token: framework.Preferences['token'],
+                id: id
+            },
+            success: function (msg) {
+                var data = TryParse(msg);
+                var html = "";
+                if (data) {
+                    if (data.isNew === true) {
+                        MessageMenu.CheckCounter();
+                        MessageMenu.UpdateReceived();
+                        if (data.attachments) {
+                            var attachments = TryParse(data.attachments);
+                            if (attachments && attachments.length > 0)
+                                for (var i = 0; i < attachments.length; i++) {
+                                    world.Player.AddItem(attachments[i].name, attachments[i].quantity);
+                                }
+                        }
+                    }
+                    html += "<table>";
+                    html += "<tr><td>From:</td><td>" + ("" + data.from).htmlEntities() + "</td></tr>";
+                    html += "<tr><td>To:</td><td>" + ("" + data.to).htmlEntities() + "</td></tr>";
+                    html += "<tr><td>Date:</td><td>" + Main.FormatDateTime(data.sentDate) + "</td></tr>";
+                    html += "<tr><td>Subject:</td><td>" + ("" + data.subject).htmlEntities() + "</td></tr>";
+                    html += "<tr><td>Message:</td><td>" + Main.TextTransform("" + data.message) + "</td></tr>";
+                    if (data.attachments) {
+                        var attachments = TryParse(data.attachments);
+                        if (attachments && attachments.length > 0)
+                            html += "<tr><td>Attachments:</td><td>";
+                        for (var i = 0; i < attachments.length; i++) {
+                            html += "" + attachments[i].quantity + "x " + attachments[i].name + "<br>";
+                        }
+                        html += "</td></tr>";
+                    }
+                    html += "</table>";
+                    html += "<center>";
+                    html += "<div class='gameButton' onclick='MessageMenu.ShowCompose()'>New</div>";
+                    html += "<div class='gameButton' onclick='MessageMenu.Reply(" + id + ")'>Reply</div>";
+                    html += "<div class='gameButton' onclick='MessageMenu.Delete(" + id + ")'>Delete</div>";
+                    html + "</center>";
+                }
+                $("#messageDetails").html(html);
+            },
+            error: function (msg) {
+                var data = TryParse(msg);
+                $("#messageDetails").html("Error: " + (data && data.error ? data.error : msg));
+            }
+        });
+    };
+    MessageMenu.Reply = function (id) {
+        $.ajax({
+            type: 'POST',
+            url: '/backend/GetGameMessage',
+            data: {
+                game: world.Id,
+                token: framework.Preferences['token'],
+                id: id
+            },
+            success: function (msg) {
+                var data = TryParse(msg);
+                var html = "";
+                if (data) {
+                    messageMenu.selectedMessage = null;
+                    MessageMenu.CheckCounter();
+                    MessageMenu.UpdateReceived();
+                    html += "<table>";
+                    var dest = data.to.replace(/,/g, ";").replace(/ /g, "").split(';');
+                    for (var i = 0; i < dest.length; i++)
+                        if (dest[i].toLowerCase() == world.Player.Username.toLowerCase())
+                            dest[i] = data.from;
+                    dest = dest.join(", ");
+                    html += "<tr><td>To:</td><td><input type='text' id='message_to' value='" + dest.htmlEntities() + "' onfocus='play.inField=true;' onblur='play.inField=false;'></td></tr>";
+                    html += "<tr><td>Subject:</td><td><input type='text' id='message_subject' value='" + ("Re: " + data.subject.replace(/^re: /i, "")).htmlEntities() + "' onfocus='play.inField=true;' onblur='play.inField=false;'></td></tr>";
+                    html += "<tr><td>Message:</td><td>&nbsp;</td></tr>";
+                    html += "<tr><td colspan='2'><textarea id='message_text' rows='10' onfocus='play.inField=true;' onblur='play.inField=false;'>\n\n\n" + data.message.replace(/<\//gi, "").replace(/^/gm, "> ") + "</textarea></td></tr>";
+                    html += "<tr><td>Attach:</td><td colspan='2'><select onchange='MessageMenu.Attach()' id='new_attach'><option>-- Select an item to attach --</option>";
+                    for (var i = 0; i < world.Player.Inventory.length; i++) {
+                        var canShow = true;
+                        if (messageMenu.attachments)
+                            for (var j = 0; j < messageMenu.attachments.length; j++) {
+                                if (messageMenu.attachments[j].name == world.Player.Inventory[i].Name) {
+                                    canShow = false;
+                                    break;
+                                }
+                            }
+                        if (!canShow)
+                            continue;
+                        html += "<option value='" + encodeURIComponent(world.Player.Inventory[i].Name) + "'>" + world.Player.Inventory[i].Name + " (" + world.Player.Inventory[i].Count + ")</option>";
+                    }
+                    html += "</select></td></tr>";
+                    html += "</table>";
+                    html += "<center>";
+                    html += "<div class='gameButton' onclick='MessageMenu.ShowCompose()'>New</div>";
+                    html += "<div class='gameButton' onclick='MessageMenu.Send()'>Send</div>";
+                    html += "<div class='gameButton' onclick='MessageMenu.Read(" + id + ")'>Cancel</div>";
+                    html + "</center>";
+                    setTimeout(function () {
+                        $("#message_text").focus();
+                    }, 100);
+                }
+                $("#messageDetails").html(html);
+            },
+            error: function (msg) {
+                var data = TryParse(msg);
+                $("#messageDetails").html("Error: " + (data && data.error ? data.error : msg));
+            }
+        });
+    };
+    MessageMenu.Delete = function (id) {
+        $.ajax({
+            type: 'POST',
+            url: '/backend/DeleteGameMessage',
+            data: {
+                game: world.Id,
+                token: framework.Preferences['token'],
+                id: id
+            },
+            success: function (msg) {
+                messageMenu.selectedMessage = null;
+                MessageMenu.CheckCounter();
+                MessageMenu.UpdateReceived();
+                MessageMenu.ShowCompose();
+            },
+            error: function (msg) {
+                var data = TryParse(msg);
+                $("#messageDetails").html("Error: " + (data && data.error ? data.error : msg));
+            }
+        });
+    };
+    MessageMenu.ShowCompose = function () {
+        messageMenu.selectedMessage = null;
+        MessageMenu.UpdateReceived();
+        var html = "<div id='messageResult'></div><table>";
+        html += "<tr><td>To:</td><td colspan='2'><input type='text' id='message_to' onfocus='play.inField=true;' onblur='play.inField=false;'></td></tr>";
+        html += "<tr><td>Subject:</td><td colspan='2'><input type='text' id='message_subject' onfocus='play.inField=true;' onblur='play.inField=false;'></td></tr>";
+        html += "<tr><td>Message:</td><td colspan='2'>&nbsp;</td></tr>";
+        html += "<tr><td colspan='3'><textarea id='message_text' rows='10' onfocus='play.inField=true;' onblur='play.inField=false;'></textarea></td></tr>";
+        if (messageMenu.attachments && messageMenu.attachments.length > 0) {
+            html += "<tr><td>Attachments:</td><td>&nbsp;</td><td>&nbsp;</td></tr>";
+            for (var i = 0; i < messageMenu.attachments.length; i++) {
+                html += "<tr><td>&nbsp;</td><td>";
+                html += "<div class='removeAttachement' onclick='MessageMenu.RemoveAttachment(" + i + ");'>X</div>";
+                html += messageMenu.attachments[i].name + " (" + world.Player.GetInventoryQuantity(messageMenu.attachments[i].name) + ")</td>";
+                html += "<td><input type='text' id='attach_" + i + "' value='" + messageMenu.attachments[i].quantity + "' onfocus='play.inField=true;' onblur='play.inField=false;' onkeyup='MessageMenu.ChangeAttach(" + i + ")'></tr>";
+            }
+            html += "</td></tr>";
+        }
+        html += "<tr><td>Attach:</td><td colspan='2'><select onchange='MessageMenu.Attach()' id='new_attach'><option>-- Select an item to attach --</option>";
+        for (var i = 0; i < world.Player.Inventory.length; i++) {
+            var canShow = true;
+            if (messageMenu.attachments)
+                for (var j = 0; j < messageMenu.attachments.length; j++) {
+                    if (messageMenu.attachments[j].name == world.Player.Inventory[i].Name) {
+                        canShow = false;
+                        break;
+                    }
+                }
+            if (!canShow)
+                continue;
+            html += "<option value='" + encodeURIComponent(world.Player.Inventory[i].Name) + "'>" + world.Player.Inventory[i].Name + " (" + world.Player.Inventory[i].Count + ")</option>";
+        }
+        html += "</select></td></tr>";
+        html += "</table>";
+        html += "<center><div class='gameButton' onclick='MessageMenu.Send()'>Send</div></center>";
+        $("#messageDetails").html(html);
+        setTimeout(function () {
+            $("#message_to").focus();
+        }, 100);
+    };
+    MessageMenu.RemoveAttachment = function (rowId) {
+        var to = $("#message_to").val();
+        var subject = $("#message_subject").val();
+        var message = $("#message_text").val();
+        messageMenu.attachments.splice(rowId, 1);
+        MessageMenu.ShowCompose();
+        $("#message_to").val(to);
+        $("#message_subject").val(subject);
+        $("#message_text").val(message);
+    };
+    MessageMenu.Attach = function () {
+        var to = $("#message_to").val();
+        var subject = $("#message_subject").val();
+        var message = $("#message_text").val();
+        if (!messageMenu.attachments)
+            messageMenu.attachments = [];
+        messageMenu.attachments.push({
+            name: decodeURIComponent($("#new_attach").val()),
+            quantity: 1
+        });
+        MessageMenu.ShowCompose();
+        $("#message_to").val(to);
+        $("#message_subject").val(subject);
+        $("#message_text").val(message);
+    };
+    MessageMenu.ChangeAttach = function (rowId) {
+        $("#attach_" + rowId).css("background-color", "");
+        var val = 0;
+        try {
+            val = parseInt($("#attach_" + rowId).val());
+        }
+        catch (ex) {
+            $("#attach_" + rowId).css('backgroundColor', '#FFE0E0');
+        }
+        if (val <= 0 || world.Player.GetInventoryQuantity(messageMenu.attachments[rowId].name) < val) {
+            $("#attach_" + rowId).css('backgroundColor', '#FFE0E0');
+            val = 0;
+        }
+        messageMenu.attachments[rowId].quantity = val;
+    };
+    MessageMenu.Send = function () {
+        if (messageMenu.attachments) {
+            for (var i = 0; i < messageMenu.attachments.length; i++) {
+                if (world.Player.GetInventoryQuantity(messageMenu.attachments[i].name) < messageMenu.attachments[i].quantity) {
+                    $("#messageResult").html("Error: you don't have " + messageMenu.attachments[i].quantity + " " + messageMenu.attachments[i].name);
+                    return;
+                }
+            }
+        }
+        $.ajax({
+            type: 'POST',
+            url: '/backend/AddGameMessage',
+            data: {
+                game: world.Id,
+                token: framework.Preferences['token'],
+                to: $("#message_to").val(),
+                subject: $("#message_subject").val() && $("#message_subject").val().trim() != "" ? $("#message_subject").val() : "(no subject)",
+                message: $("#message_text").val(),
+                attachments: JSON.stringify(messageMenu.attachments ? messageMenu.attachments : null)
+            },
+            success: function (msg) {
+                if (messageMenu.attachments && messageMenu.attachments.length > 0) {
+                    $("#messageDetails table tr:nth-child(5)").remove();
+                    for (var i = 0; i < messageMenu.attachments.length; i++) {
+                        world.Player.RemoveItem(messageMenu.attachments[i].name, messageMenu.attachments[i].quantity);
+                        $("#messageDetails table tr:nth-child(5)").remove();
+                    }
+                }
+                messageMenu.attachments = null;
+                $("#messageResult").html("Message sent successfully");
+                $("#message_to").val("");
+                $("#message_subject").val("");
+                $("#message_text").val("");
+            },
+            error: function (msg) {
+                var data = TryParse(msg);
+                $("#messageResult").html("Error: " + (data && data.error ? data.error : msg));
+            }
+        });
+    };
+    MessageMenu.SendMessage = function (destination, subject, message) {
+        if (!framework.Preferences['token'] || (world && world.ShowMessage === false) || framework.Preferences['token'] == "demo" || game) {
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url: '/backend/AddGameMessage',
+            data: {
+                game: world.Id,
+                token: framework.Preferences['token'],
+                to: destination,
+                subject: subject,
+                message: message
+            },
+            success: function (msg) {
+            },
+            error: function (msg) {
+            }
+        });
+    };
+    return MessageMenu;
+}());
+var PublicViewPlayer = (function () {
+    function PublicViewPlayer() {
+    }
+    PublicViewPlayer.Show = function (name) {
+        $.ajax({
+            type: 'POST',
+            url: '/backend/PublicViewPlayer',
+            data: {
+                game: world.Id,
+                name: name
+            },
+            success: function (msg) {
+                var data = TryParse(msg);
+                if (!data)
+                    return;
+                $("#npcDialog").show();
+                $("#npcDialog .gamePanelHeader").html("View: " + name.htmlEntities());
+                var html = "";
+                html += "<table>";
+                html += "<tr><td>Name:</td><td>" + ("" + data.name).htmlEntities() + "</td></tr>";
+                html += "<tr><td>X:</td><td>" + ("" + data.x).htmlEntities() + "</td></tr>";
+                html += "<tr><td>Y:</td><td>" + ("" + data.x).htmlEntities() + "</td></tr>";
+                html += "<tr><td>Zone:</td><td>" + ("" + data.zone).htmlEntities() + "</td></tr>";
+                html += "</table>";
+                html += "<h3>Equiped with</h3>";
+                var items = [];
+                for (var item in data.equipedObjects)
+                    items.push(data.equipedObjects[item]);
+                items.sort();
+                for (var i = 0; i < items.length; i++)
+                    html += ("" + items[i].Name).htmlEntities() + "<br>";
+                html += "<h3>Stats</h3>";
+                html += "<table>";
+                data.stats.sort(function (a, b) {
+                    if (a.Name > b.Name)
+                        return 1;
+                    if (a.Name < b.Name)
+                        return -1;
+                    return 0;
+                });
+                for (var i = 0; i < data.stats.length; i++) {
+                    var stat = world.GetStat(data.stats[i].Name);
+                    if (!stat)
+                        continue;
+                    if (stat.CodeVariable("PlayerVisible") === "false")
+                        continue;
+                    html += "<tr><td>" + ("" + (stat.CodeVariable("DisplayName") ? stat.CodeVariable("DisplayName") : stat.Name)).htmlEntities() + "</td><td>" + ("" + data.stats[i].Value).htmlEntities() + "</td></tr>";
+                }
+                html += "<h3>Skills</h3>";
+                data.skills.sort(function (a, b) {
+                    if (a.Name > b.Name)
+                        return 1;
+                    if (a.Name < b.Name)
+                        return -1;
+                    return 0;
+                });
+                for (var i = 0; i < data.skills.length; i++) {
+                    var skill = world.GetSkill(data.skills[i].Name);
+                    if (!skill)
+                        continue;
+                    html += ("" + (skill.CodeVariable("DisplayName") ? skill.CodeVariable("DisplayName") : skill.Name)).htmlEntities() + "<br>";
+                }
+                $("#dialogSentence").html(html);
+                play.onDialogPaint = [];
+                $("#dialogAnswers").html("<div onclick='PublicViewPlayer.Close();' class='gameButton'>Close</div>");
+            },
+            error: function (msg, textStatus) {
+            }
+        });
+    };
+    PublicViewPlayer.Close = function () {
+        $("#npcDialog").hide();
+    };
+    return PublicViewPlayer;
+}());
+var searchPanel = new ((function () {
+    function class_20() {
+        this.links = [];
+    }
+    return class_20;
+}()));
+var SearchPanel = (function () {
+    function SearchPanel() {
+    }
+    SearchPanel.InitFunction = function () {
+        if (!$("#searchPanel").first())
+            return;
+        if (Main.CheckNW()) {
+            $("#searchPanel").css("top", "0px");
+        }
+        $("#game_Search").bind("click", SearchPanel.ShowHide);
+        $("#generalSearch").bind("keyup", SearchPanel.KeyUp);
+        // Control Q => quick search
+        $(document).bind('keydown', function (e) {
+            if (e.ctrlKey && (e.which == 81)) {
+                e.preventDefault();
+                SearchPanel.ShowHide();
+                return false;
+            }
+        });
+    };
+    SearchPanel.ShowHide = function () {
+        if ($("#searchPanel").is(":visible")) {
+            $("#searchPanel").hide();
+        }
+        else {
+            $("#searchPanel").show();
+            $("#generalSearch").focus();
+            SearchPanel.RenderResult();
+        }
+    };
+    SearchPanel.KeyUp = function (evt) {
+        switch (evt.keyCode) {
+            case 27:
+                $("#generalSearch").blur();
+                $("#searchPanel").hide();
+                break;
+            case 13:
+                if (searchPanel.links && searchPanel.links.length > 0)
+                    document.location.assign(searchPanel.links[0]);
+                break;
+        }
+        SearchPanel.RenderResult();
+    };
+    SearchPanel.Update = function () {
+        SearchPanel.RenderResult();
+    };
+    SearchPanel.RenderResult = function () {
+        if (!$("#searchPanel").is(":visible"))
+            return;
+        var toSearch = $("#generalSearch").val().toLowerCase();
+        searchPanel.links = [];
+        var html = "";
+        var itemsToSearch = [
+            { object: world.art.characters, title: "Characters", action: "ArtCharacterEditor" },
+            { object: world.art.houses, title: "Houses", action: "HouseEditor" },
+            { object: world.art.house_parts, title: "House parts", action: "HousePart" },
+            { object: world.art.objects, title: "Map Objects", action: "ArtObjectEditor" },
+            { object: world.art.sounds, title: "Sounds &amp; Musics", action: "ArtSoundEditor" },
+            { object: world.Codes, title: "Generic Code", action: "GenericCodeEditor" },
+            { object: world.InventorySlots, title: "Inventory Slots", action: "InventorySlotEditor" },
+            { object: world.Monsters, title: "Monsters", action: "MonsterEditor" },
+            { object: world.NPCs, title: "NPCs", action: "NPCEditor" },
+            { object: world.InventoryObjects, title: "Objects", action: "ObjectEditor" },
+            { object: world.InventoryObjectTypes, title: "Object Types", action: "ObjectTypeEditor" },
+            { object: world.ParticleEffects, title: "Particles Effects", action: "ParticleEditor" },
+            { object: world.Quests, title: "Quests", action: "QuestEditor" },
+            { object: world.Skills, title: "Skills", action: "SkillEditor" },
+            { object: world.Stats, title: "Stats", action: "StatEditor" },
+            { object: world.TemporaryEffects, title: "Temporary Effects", action: "TemporaryEffectEditor" },
+            { object: world.Zones, title: "Zones", action: "ZoneEditor" },
+            { object: world.ChatBots, title: "Chat Bots", action: "ChatBotEditor" },
+        ];
+        itemsToSearch.sort(function (a, b) {
+            if (a.title > b.title)
+                return 1;
+            if (a.title < b.title)
+                return -1;
+            return 0;
+        });
+        for (var j = 0; j < itemsToSearch.length; j++) {
+            var items = [];
+            if (itemsToSearch[j].object.length) {
+                for (var i = 0; i < itemsToSearch[j].object.length; i++) {
+                    if (itemsToSearch[j].object[i].Name.toLowerCase().indexOf(toSearch) == -1)
+                        continue;
+                    items.push(itemsToSearch[j].object[i].Name);
+                }
+            }
+            else {
+                for (var item in itemsToSearch[j].object) {
+                    if (item == "contains")
+                        continue;
+                    if (item.toLowerCase().indexOf(toSearch) == -1)
+                        continue;
+                    items.push(item);
+                }
+            }
+            if (items.length > 0) {
+                html += "<span>" + itemsToSearch[j].title + ":</span>";
+                html += "<div>";
+                items.sort();
+                for (var i = 0; i < items.length; i++) {
+                    var link = "#action=" + itemsToSearch[j].action + "&id=" + encodeURIComponent(items[i]);
+                    searchPanel.links.push(link);
+                    html += "<a href='" + link + "'>" + items[i] + "</a>";
+                }
+                html += "</div>";
+            }
+        }
+        $("#generalSearchResult").html(html);
+    };
+    return SearchPanel;
+}());
+var skillBar = new ((function () {
+    function class_21() {
+        this.SkillIcons = {};
+        this.lastCheckInventory = 0;
+    }
+    return class_21;
+}()));
+var SkillBar = (function () {
+    function SkillBar() {
+    }
+    SkillBar.Render = function () {
+        if (!framework.Preferences['token'] && !game && !Main.CheckNW())
+            return;
+        var canvas = document.getElementById("gameCanvas");
+        var height = canvas.height;
+        var width = canvas.width;
+        var ctx = canvas.getContext("2d");
+        if (!skillBar.SlotBar) {
+            skillBar.SlotBar = new Image();
+            skillBar.SlotBar.src = world.art.quickslotStyle.file;
+        }
+        if (!skillBar.StatBar) {
+            skillBar.StatBar = new Image();
+            skillBar.StatBar.src = world.art.statBarStyle.file;
+        }
+        if (!skillBar.SlotBar || !skillBar.SlotBar.width)
+            return;
+        ctx.save();
+        if (world.art.statBarStyle.barsToDisplay === null || world.art.statBarStyle.barsToDisplay === undefined)
+            world.art.statBarStyle.barsToDisplay = 1;
+        if ((world.art.statBarStyle.barsToDisplay == 1 || world.art.statBarStyle.barsToDisplay == 2) && skillBar.StatBar && skillBar.StatBar.width) {
+            var v = world.Player.GetStat('Life');
+            var maxV = world.Player.GetStatMaxValue('Life');
+            v = Math.min(Math.max(v, 0), maxV);
+            var h = Math.round((skillBar.StatBar.height - (world.art.statBarStyle.topBorder + world.art.statBarStyle.bottomBorder)) * (maxV - v) / maxV);
+            //h = Math.min(Math.max(h, 0), 100);
+            ctx.drawImage(skillBar.StatBar, 0, 0, skillBar.StatBar.width / 3, skillBar.StatBar.height, 10, height - (skillBar.StatBar.height + 10), skillBar.StatBar.width / 3, skillBar.StatBar.height);
+            try {
+                ctx.drawImage(skillBar.StatBar, skillBar.StatBar.width / 3, world.art.statBarStyle.topBorder + h, skillBar.StatBar.width / 3, skillBar.StatBar.height - (world.art.statBarStyle.topBorder + world.art.statBarStyle.bottomBorder + h), 10, height - ((skillBar.StatBar.height - (world.art.statBarStyle.topBorder + h)) + 10), skillBar.StatBar.width / 3, skillBar.StatBar.height - (world.art.statBarStyle.topBorder + world.art.statBarStyle.bottomBorder + h));
+            }
+            catch (ex) {
+            }
+        }
+        if ((world.art.statBarStyle.barsToDisplay == 2) && skillBar.StatBar && skillBar.StatBar.width) {
+            var v = world.Player.GetStat('Energy');
+            var maxV = world.Player.GetStatMaxValue('Energy');
+            v = Math.min(Math.max(v, 0), maxV);
+            var h = Math.round((skillBar.StatBar.height - (world.art.statBarStyle.topBorder + world.art.statBarStyle.bottomBorder)) * (maxV - v) / maxV);
+            //h = Math.min(Math.max(h, 0), 100);
+            ctx.drawImage(skillBar.StatBar, 0, 0, skillBar.StatBar.width / 3, skillBar.StatBar.height, 10 + skillBar.StatBar.width / 3, height - (skillBar.StatBar.height + 10), skillBar.StatBar.width / 3, skillBar.StatBar.height);
+            try {
+                ctx.drawImage(skillBar.StatBar, skillBar.StatBar.width * 2 / 3, world.art.statBarStyle.topBorder + h, skillBar.StatBar.width / 3, skillBar.StatBar.height - (world.art.statBarStyle.topBorder + world.art.statBarStyle.bottomBorder + h), 10 + skillBar.StatBar.width / 3, height - ((skillBar.StatBar.height - (world.art.statBarStyle.topBorder + h)) + 10), skillBar.StatBar.width / 3, skillBar.StatBar.height - (world.art.statBarStyle.topBorder + world.art.statBarStyle.bottomBorder + h));
+            }
+            catch (ex) {
+            }
+        }
+        if (world.art.quickslotStyle.quickslotVisible === false) {
+            ctx.restore();
+            return;
+        }
+        var pos = Math.round(width / 2 - skillBar.SlotBar.width / 2);
+        ctx.drawImage(skillBar.SlotBar, pos, height - skillBar.SlotBar.height);
+        pos += world.art.quickslotStyle.leftBorder;
+        for (var i = 0; i < world.Player.QuickSlot.length; i++) {
+            var q = world.Player.QuickSlot[i];
+            if (q == null) {
+                pos += 32 + world.art.quickslotStyle.itemSpacing;
+                continue;
+            }
+            var name = q.substring(2);
+            // Skill quickslot
+            if (q.substring(0, 2) == "S/") {
+                if (!skillBar.SkillIcons[q] && world.GetSkill(name)) {
+                    var skillInfo = world.GetSkill(name);
+                    skillBar.SkillIcons[q] = new Image();
+                    skillBar.SkillIcons[q].src = (skillInfo.CodeVariable("icon") ? skillInfo.CodeVariable("icon") : "/art/tileset2/fist_icon.png");
+                }
+                if (!skillBar.SkillIcons[q])
+                    continue;
+                ctx.drawImage(skillBar.SkillIcons[q], pos, height - skillBar.SlotBar.height + world.art.quickslotStyle.topBorder);
+                var timer = world.Player.GetTimer(name);
+                if (timer && !timer.IsOver()) {
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.globalAlpha = 0.8;
+                    var h = Math.round(Math.max(timer.Length - timer.Ellapsed(), 0) * 32 / timer.Length);
+                    ctx.fillRect(pos, height - skillBar.SlotBar.height + world.art.quickslotStyle.topBorder + (32 - h), 32, h);
+                }
+                if (world.Player.CurrentSkill.toLowerCase() == name.toLowerCase()) {
+                    ctx.strokeStyle = world.art.quickslotStyle.selectedSkillColor;
+                    ctx.globalAlpha = 1;
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.strokeRect(pos, height - skillBar.SlotBar.height + world.art.quickslotStyle.topBorder, 32, 32);
+                    ctx.stroke();
+                }
+            }
+            else if (q.substring(0, 2) == "I/") {
+                var details = world.GetInventoryObject(name);
+                if (skillBar.lastCheckInventory <= 0) {
+                    if (world.Player.GetInventoryQuantity(name) <= 0) {
+                        world.Player.QuickSlot[i] = null;
+                        world.Player.StoredCompare = world.Player.JSON();
+                        world.Player.Save();
+                        continue;
+                    }
+                }
+                if (!skillBar.SkillIcons[q] && details) {
+                    skillBar.SkillIcons[q] = new Image();
+                    skillBar.SkillIcons[q].src = (details.Image ? details.Image : "/art/tileset2/inventory_object.png");
+                }
+                if (!skillBar.SkillIcons[q])
+                    continue;
+                ctx.drawImage(skillBar.SkillIcons[q], pos, height - skillBar.SlotBar.height + world.art.quickslotStyle.topBorder);
+            }
+            pos += 32 + world.art.quickslotStyle.itemSpacing;
+        }
+        ctx.restore();
+        skillBar.lastCheckInventory--;
+        if (skillBar.lastCheckInventory < 0)
+            skillBar.lastCheckInventory = 30;
+    };
+    SkillBar.SelectQuickslot = function (slot) {
+        if (slot == 0)
+            slot = 9;
+        else
+            slot--;
+        if (world.Player.QuickSlot[slot] && world.Player.QuickSlot[slot].substring(0, 2) == "S/") {
+            var oldSkill = world.Player.CurrentSkill;
+            var selectedSkill = world.Player.QuickSlot[slot].substring(2);
+            world.Player.CurrentSkill = selectedSkill;
+            var skill = world.GetSkill(selectedSkill);
+            var res = skill.InvokeFunction("Activate", []);
+            // Prevent selection
+            if (res !== null && res.GetBoolean() === false) {
+                world.Player.CurrentSkill = oldSkill;
+            }
+            world.Player.StoredCompare = world.Player.JSON();
+            world.Player.Save();
+        }
+        else if (world.Player.QuickSlot[slot] && world.Player.QuickSlot[slot].substring(0, 2) == "I/") {
+            var name = world.Player.QuickSlot[slot].substring(2);
+            var details = world.GetInventoryObject(name);
+            if (!details)
+                return;
+            if (world.Player.GetInventoryQuantity(name) > 0) {
+                if (details.CanWear())
+                    world.Player.Wear(name);
+                else if (details.ActionLabel() && details.CanUse())
+                    details.Use();
+            }
+        }
+    };
+    SkillBar.HandleClick = function (x, y) {
+        if (world.art.quickslotStyle.quickslotVisible === false)
+            return false;
+        if (!skillBar.StatBar)
+            return;
+        var canvas = document.getElementById("gameCanvas");
+        y -= $("#gameCanvas").position().top;
+        var width = canvas.width;
+        var height = canvas.height;
+        var barX = Math.round(width / 2 - skillBar.SlotBar.width / 2);
+        var barY = height - skillBar.SlotBar.height;
+        if (x >= barX && x <= barX + skillBar.SlotBar.width && y >= barY && y <= barY + skillBar.SlotBar.height) {
+            var s = Math.floor((x - (barX + world.art.quickslotStyle.leftBorder)) / (32 + world.art.quickslotStyle.itemSpacing));
+            if (s >= 0 && s <= 9) {
+                s = (s + 1) % 10;
+                SkillBar.SelectQuickslot(s);
+            }
+            return true;
+        }
+        return false;
+    };
+    return SkillBar;
+}());
 var About = (function () {
     function About() {
     }
@@ -11253,766 +14865,15 @@ var About = (function () {
     };
     return About;
 }());
-var engineVersion = "1.2.1288";
-var engineBuild = "Mon, 16 Oct 2017 08:51:00 GMT";
-var artCharacterEditor = new ((function () {
-    function class_11() {
-        this.selector = null;
-        this.groundSelection = null;
-        this.previewDirection = 0;
-        this.previewFrame = 0;
-        this.renderLoopCounter = 0;
-        this.frameDirections = "swen";
-    }
-    return class_11;
-}()));
-var ArtCharacterEditor = (function () {
-    function ArtCharacterEditor() {
-    }
-    ArtCharacterEditor.Dispose = function () {
-        if (artCharacterEditor.refresher !== null) {
-            clearInterval(artCharacterEditor.refresher);
-            artCharacterEditor.refresher = null;
-        }
-        if (artCharacterEditor.selector)
-            artCharacterEditor.selector.Dispose();
-        artCharacterEditor.selector = null;
-        artCharacterEditor.characterToDisplay = null;
-    };
-    ArtCharacterEditor.IsAccessible = function () {
-        return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
-    };
-    ArtCharacterEditor.Recover = function () {
-        if (Main.CheckNW()) {
-            $("#helpLink").first().onclick = function () {
-                StandaloneMaker.Help($("#helpLink").prop("href"));
-                return false;
-            };
-            $("#uploadButton").html("Add");
-            $("#characterList").css("top", "5px");
-            $(".imageParameters").css("top", "5px");
-            $("#characterPreviewPanel").css("top", "5px");
-            $("#characterDisplayContainer").css("top", "195px");
-        }
-        if (framework.CurrentUrl.id && !world.art.characters[framework.CurrentUrl.id]) {
-            framework.CurrentUrl.id = null;
-            Framework.SetLocation({
-                action: "ArtCharacterEditor"
-            });
-        }
-        if (framework.CurrentUrl.id)
-            ArtCharacterEditor.SelectCharacter(framework.CurrentUrl.id);
-        artCharacterEditor.selector = new ListSelector("characterList", world.art.characters);
-        artCharacterEditor.selector.OnSelect = ArtCharacterEditor.SelectCharacter;
-        artCharacterEditor.refresher = setInterval(ArtCharacterEditor.UpdateDisplay, 16);
-        $("#characterDisplay").bind("mousedown", ArtCharacterEditor.MouseDown);
-    };
-    ArtCharacterEditor.SelectCharacter = function (characterName) {
-        Framework.SetLocation({
-            action: "ArtCharacterEditor", id: characterName
-        });
-        $("#name").css('backgroundColor', '');
-        ArtCharacterEditor.ResetChangeRow();
-        if (!characterName) {
-            artCharacterEditor.characterName = null;
-            artCharacterEditor.characterToDisplay = null;
-            artCharacterEditor.character = null;
-            $("#name").val("").prop("disabled", true);
-            $("#frames").val("").prop("disabled", true);
-            $("#directions").val("").prop("disabled", true);
-            $("#imageFrameDivider").val("").prop("disabled", true);
-            $("#groundX").val("").prop("disabled", true);
-            $("#groundY").val("").prop("disabled", true);
-            $("#collision").val("").prop("disabled", true);
-            $("#animationCycle").prop("disabled", true);
-            return;
-        }
-        artCharacterEditor.characterName = characterName;
-        artCharacterEditor.characterToDisplay = new Image();
-        artCharacterEditor.character = world.art.characters[characterName];
-        artCharacterEditor.characterToDisplay.src = artCharacterEditor.character.file;
-        $("#name").val(characterName).prop("disabled", false);
-        $("#frames").val("" + artCharacterEditor.character.frames).prop("disabled", false);
-        $("#directions").val("" + artCharacterEditor.character.directions).prop("disabled", false);
-        $("#imageFrameDivider").val("" + artCharacterEditor.character.imageFrameDivider).prop("disabled", false);
-        $("#groundX").val("" + artCharacterEditor.character.groundX).prop("disabled", false);
-        $("#groundY").val("" + artCharacterEditor.character.groundY).prop("disabled", false);
-        $("#collision").val("" + (artCharacterEditor.character.collision ? artCharacterEditor.character.collision.radius : "")).prop("disabled", false);
-        if (artCharacterEditor.character.animationCycle != "simple")
-            $("#animationCycle").val("walkCycle").prop("disabled", false);
-        else
-            $("#animationCycle").val("simple").prop("disabled", false);
-    };
-    ArtCharacterEditor.Rename = function () {
-        var newName = $("#name").val().trim();
-        if ((newName.match(databaseNameRule) || !newName || newName.length < 1) || (world.art.characters[newName] && world.art.characters[newName] != artCharacterEditor.character)) {
-            $("#name").css('backgroundColor', '#FFE0E0');
-            return;
-        }
-        $("#name").css('backgroundColor', '');
-        // Nothing changed => skip
-        if (newName == artCharacterEditor.characterName)
-            return;
-        // Empty names are not valid
-        if (newName == "")
-            return;
-        // The name already exists and therefore is invalid
-        for (var item in world.art.objects)
-            if (item == newName)
-                return;
-        var oldName = artCharacterEditor.characterName;
-        delete world.art.characters[artCharacterEditor.characterName];
-        world.art.characters[newName] = artCharacterEditor.character;
-        artCharacterEditor.selector.UpdateList();
-        artCharacterEditor.selector.Select(newName);
-        SearchPanel.Update();
-        for (var i = 0; i < world.Monsters.length; i++) {
-            if (world.Monsters[i].Art == oldName) {
-                world.Monsters[i].Code.CodeVariables['art'].value = newName;
-                world.Monsters[i].Art = newName;
-            }
-        }
-        if (world.StartLook == oldName)
-            world.StartLook = newName;
-    };
-    ArtCharacterEditor.Clone = function () {
-        var newName = "character_";
-        for (var i = 1;; i++) {
-            if (!world.art.characters["character_" + i]) {
-                newName = "character_" + i;
-                break;
-            }
-        }
-        world.art.characters[newName] = JSON.parse(JSON.stringify(artCharacterEditor.character));
-        artCharacterEditor.selector.UpdateList();
-        artCharacterEditor.selector.Select(newName);
-        SearchPanel.Update();
-    };
-    ArtCharacterEditor.Delete = function () {
-        Framework.Confirm("Are you sure you want to delete this character?", function () {
-            var nb = 0;
-            for (var item in world.art.characters)
-                nb++;
-            if (nb < 2) {
-                Framework.Alert("Cannot remove all the characters.");
-                return;
-            }
-            var oldName = artCharacterEditor.characterName;
-            delete world.art.characters[artCharacterEditor.characterName];
-            artCharacterEditor.selector.UpdateList();
-            var newName = FirstItem(world.art.characters);
-            artCharacterEditor.selector.Select(newName);
-            SearchPanel.Update();
-            for (var i = 0; i < world.Monsters.length; i++) {
-                if (world.Monsters[i].Art == oldName) {
-                    world.Monsters[i].Code.CodeVariables['art'].value = newName;
-                    world.Monsters[i].Art = newName;
-                }
-            }
-            if (world.StartLook == oldName)
-                world.StartLook = newName;
-        });
-    };
-    ArtCharacterEditor.ChangeParameter = function (parameterName, htmlFieldName) {
-        if (!artCharacterEditor.character)
-            return;
-        switch (parameterName) {
-            case "animationCycle":
-                artCharacterEditor.character[parameterName] = $("#" + htmlFieldName).val();
-                break;
-            default:
-                var val = parseInt($("#" + htmlFieldName).val());
-                if (isNaN(val))
-                    val = artCharacterEditor.character[parameterName];
-                artCharacterEditor.character[parameterName] = val;
-        }
-    };
-    ArtCharacterEditor.ChangeCollision = function () {
-        var val = parseInt($("#collision").val());
-        if (isNaN(val))
-            val = null;
-        if (val === null) {
-            if (artCharacterEditor.character.collision)
-                delete artCharacterEditor.character.collision;
-        }
-        else {
-            artCharacterEditor.character.collision = { radius: val };
-        }
-    };
-    ArtCharacterEditor.UpdateDisplay = function () {
-        var canvas = $("#characterDisplay").first();
-        if (artCharacterEditor.characterToDisplay && artCharacterEditor.characterToDisplay.width && artCharacterEditor.character.width == 0)
-            artCharacterEditor.character.width = artCharacterEditor.characterToDisplay.width;
-        if (artCharacterEditor.characterToDisplay && artCharacterEditor.characterToDisplay.height && artCharacterEditor.character.height == 0)
-            artCharacterEditor.character.height = artCharacterEditor.characterToDisplay.height;
-        if (artCharacterEditor.characterToDisplay && (canvas.width != artCharacterEditor.characterToDisplay.width || canvas.height != artCharacterEditor.characterToDisplay.height)) {
-            canvas.width = artCharacterEditor.characterToDisplay.width;
-            canvas.height = artCharacterEditor.characterToDisplay.height;
-        }
-        if (!artCharacterEditor.characterToDisplay)
-            return;
-        var ctx2 = $("#characterPreview").first().getContext("2d");
-        var pw = Math.floor(artCharacterEditor.characterToDisplay.width / artCharacterEditor.character.frames);
-        var ph = Math.floor(artCharacterEditor.characterToDisplay.height / 4);
-        var f = 0;
-        if (artCharacterEditor.character.animationCycle == "walkCycle") {
-            f = Math.floor(artCharacterEditor.previewFrame / artCharacterEditor.character.imageFrameDivider);
-            if (f == artCharacterEditor.character.frames)
-                f = Math.floor(artCharacterEditor.character.frames / 2);
-            artCharacterEditor.previewFrame = (artCharacterEditor.previewFrame + 1) % ((artCharacterEditor.character.frames + 1) * artCharacterEditor.character.imageFrameDivider);
-        }
-        else {
-            f = Math.floor(artCharacterEditor.previewFrame / artCharacterEditor.character.imageFrameDivider);
-            artCharacterEditor.previewFrame = (artCharacterEditor.previewFrame + 1) % (artCharacterEditor.character.frames * artCharacterEditor.character.imageFrameDivider);
-        }
-        ctx2.clearRect(0, 0, 300, 300);
-        ctx2.drawImage(artCharacterEditor.characterToDisplay, f * pw, artCharacterEditor.previewDirection * ph, pw, ph, 0, 0, pw, ph);
-        artCharacterEditor.renderLoopCounter = (artCharacterEditor.renderLoopCounter + 1) % 9;
-        if (artCharacterEditor.renderLoopCounter != 0)
-            return;
-        var ctx = canvas.getContext("2d");
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(artCharacterEditor.characterToDisplay, 0, 0);
-        var w = Math.round(artCharacterEditor.characterToDisplay.width / artCharacterEditor.character.frames);
-        ctx.strokeStyle = "#E00000";
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        for (var i = 1; i < artCharacterEditor.character.frames; i++) {
-            ctx.moveTo(w * i + 0.5, 0);
-            ctx.lineTo(w * i + 0.5, canvas.height);
-        }
-        ctx.stroke();
-        w = Math.round(artCharacterEditor.characterToDisplay.height / artCharacterEditor.character.directions);
-        ctx.strokeStyle = "#E00000";
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        for (var i = 1; i < artCharacterEditor.character.directions; i++) {
-            ctx.moveTo(0, w * i + 0.5);
-            ctx.lineTo(canvas.width, w * i + 0.5);
-        }
-        ctx.stroke();
-        ctx.strokeStyle = "#000000";
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.moveTo(artCharacterEditor.character.groundX + 0.5, artCharacterEditor.character.groundY - 5);
-        ctx.lineTo(artCharacterEditor.character.groundX + 0.5, artCharacterEditor.character.groundY + 5);
-        ctx.moveTo(artCharacterEditor.character.groundX - 5, artCharacterEditor.character.groundY + 0.5);
-        ctx.lineTo(artCharacterEditor.character.groundX + 5, artCharacterEditor.character.groundY + 0.5);
-        ctx.stroke();
-        ctx.strokeStyle = "#E00000";
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(artCharacterEditor.character.groundX + 0.5, artCharacterEditor.character.groundY - 5);
-        ctx.lineTo(artCharacterEditor.character.groundX + 0.5, artCharacterEditor.character.groundY + 5);
-        ctx.moveTo(artCharacterEditor.character.groundX - 5, artCharacterEditor.character.groundY + 0.5);
-        ctx.lineTo(artCharacterEditor.character.groundX + 5, artCharacterEditor.character.groundY + 0.5);
-        ctx.stroke();
-        if (artCharacterEditor.character.collision) {
-            ctx.strokeStyle = "#000000";
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.arc(artCharacterEditor.character.groundX, artCharacterEditor.character.groundY, artCharacterEditor.character.collision.radius, 0, Math.PI * 2);
-            ctx.stroke();
-            ctx.strokeStyle = "#0000E0";
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.arc(artCharacterEditor.character.groundX, artCharacterEditor.character.groundY, artCharacterEditor.character.collision.radius, 0, Math.PI * 2);
-            ctx.stroke();
-        }
-    };
-    ArtCharacterEditor.GroundSelection = function () {
-        artCharacterEditor.groundSelection = {
-            X: 0, Y: 0
-        };
-    };
-    ArtCharacterEditor.MouseDown = function (evt) {
-        if (!artCharacterEditor.character)
-            return;
-        var x = evt.pageX - $("#characterDisplayContainer").position().left + $("#characterDisplayContainer").first().scrollLeft;
-        var y = evt.pageY - $("#characterDisplayContainer").position().top + $("#characterDisplayContainer").first().scrollTop;
-        if (artCharacterEditor.groundSelection != null) {
-            ArtCharacterEditor.HandleGroundSelection(evt);
-            $("#artObjectEditorMouseOverlay").bind("mousemove", ArtCharacterEditor.MouseMove).bind("mouseup", ArtCharacterEditor.MouseUp).show();
-        }
-    };
-    ArtCharacterEditor.MouseUp = function (evt) {
-        artCharacterEditor.groundSelection = null;
-        $("#artObjectEditorMouseOverlay").unbind("mousemove", ArtCharacterEditor.MouseMove).unbind("mouseup", ArtCharacterEditor.MouseUp).hide();
-    };
-    ArtCharacterEditor.MouseMove = function (evt) {
-        if (!artCharacterEditor.character)
-            return;
-        if (artCharacterEditor.groundSelection)
-            ArtCharacterEditor.HandleGroundSelection(evt);
-    };
-    ArtCharacterEditor.HandleGroundSelection = function (evt) {
-        if (!artCharacterEditor.character)
-            return;
-        var x = evt.pageX - $("#characterDisplayContainer").position().left + $("#characterDisplayContainer").first().scrollLeft;
-        var y = evt.pageY - $("#characterDisplayContainer").position().top + $("#characterDisplayContainer").first().scrollTop;
-        artCharacterEditor.character.groundX = artCharacterEditor.groundSelection.X = x;
-        artCharacterEditor.character.groundY = artCharacterEditor.groundSelection.Y = y;
-        $("#groundX").val("" + artCharacterEditor.character.groundX);
-        $("#groundY").val("" + artCharacterEditor.character.groundY);
-    };
-    ArtCharacterEditor.ShowUpload = function () {
-        if (Main.CheckNW()) {
-            $("#fileOpenDialog").prop("accept", ".png");
-            $("#fileOpenDialog").unbind("change");
-            $("#fileOpenDialog").val("").bind("change", ArtCharacterEditor.ImportFileImage).first().click();
-            return;
-        }
-        $("#uploadArtObject").show();
-        $("#uploadGameId").val("" + world.Id);
-        $("#uploadToken").val(framework.Preferences['token']);
-    };
-    ArtCharacterEditor.ImportFileImage = function () {
-        ArtCharacterEditor.FinishImport($("#fileOpenDialog").val());
-        $("#fileOpenDialog").unbind("change", ArtCharacterEditor.ImportFileImage).val("");
-    };
-    ArtCharacterEditor.CloseUpload = function () {
-        $("#uploadArtObject").hide();
-    };
-    ArtCharacterEditor.Upload = function () {
-        $("#uploadArtObject").hide();
-        $("#artObjectUploadForm").submit();
-    };
-    ArtCharacterEditor.Result = function (result) {
-        var data = JSON.parse(result);
-        if (data.error) {
-            Framework.Alert(data.error);
-            return;
-        }
-        else if (data.new_file) {
-            ArtCharacterEditor.FinishImport(data.new_file);
-        }
-    };
-    ArtCharacterEditor.FinishImport = function (filename) {
-        var plainUrl = filename;
-        var fileUrl = filename + "?v=" + Math.round((new Date()).getTime() / 1000);
-        var newName = "character_";
-        for (var i = 1;; i++) {
-            if (!world.art.characters["character_" + i]) {
-                newName = "character_" + i;
-                break;
-            }
-        }
-        for (var item in world.art.characters) {
-            if (world.art.characters[item].file.indexOf(plainUrl) == 0)
-                world.art.characters[item].file = fileUrl;
-        }
-        world.art.characters[newName] = {
-            frames: 3,
-            groundX: 0,
-            groundY: 0,
-            directions: 4,
-            file: fileUrl,
-            width: 0,
-            height: 0,
-            animationCycle: "walkCycle",
-            imageFrameDivider: 10
-        };
-        artCharacterEditor.selector.UpdateList();
-        artCharacterEditor.selector.Select(newName);
-    };
-    ArtCharacterEditor.EditImage = function () {
-        if (!artCharacterEditor.character)
-            return;
-        Framework.SetLocation({
-            action: "PixelEditor", type: "character", file: artCharacterEditor.character.file, frames: artCharacterEditor.character.frames
-        }, false);
-    };
-    ArtCharacterEditor.ShowCreate = function () {
-        var newName = "character_";
-        for (var i = 1;; i++) {
-            if (!world.art.characters["character_" + i]) {
-                newName = "character_" + i;
-                break;
-            }
-        }
-        $("#newArtCharcterDialog").show();
-        $("#newCharName").val(newName).focus();
-    };
-    ArtCharacterEditor.CloseCreate = function () {
-        $("#newArtCharcterDialog").hide();
-    };
-    ArtCharacterEditor.CheckNewCharacterName = function () {
-        var newName = $("#newCharName").val().trim();
-        if ((newName.match(databaseNameRule) || !newName || newName.length < 1) || world.art.characters[newName])
-            $("#name").css('backgroundColor', '#FFE0E0');
-        else
-            $("#name").css('backgroundColor', '');
-    };
-    ArtCharacterEditor.Create = function () {
-        var newName = $("#newCharName").val();
-        var filename = newName.replace(/ /g, "_") + ".png";
-        var frames = parseInt($("#newCharFrames").val());
-        if ((newName.match(databaseNameRule) || !newName || newName.length < 1) || world.art.characters[newName])
-            return;
-        world.art.characters[newName] = {
-            frames: frames,
-            groundX: 0,
-            groundY: 0,
-            directions: 4,
-            file: filename,
-            width: 64,
-            height: 64,
-            animationCycle: "walkCycle",
-            imageFrameDivider: 10
-        };
-        $("#newArtCharcterDialog").hide();
-        Framework.SetLocation({ action: "PixelEditor", type: "character", file: filename, frames: frames }, false);
-        SearchPanel.Update();
-    };
-    ArtCharacterEditor.ResetChangeRow = function () {
-        $("#row_direction_0 div").removeClass("selectedButton");
-        $("#row_direction_1 div").removeClass("selectedButton");
-        $("#row_direction_2 div").removeClass("selectedButton");
-        $("#row_direction_3 div").removeClass("selectedButton");
-        $("#row_0_s").addClass("selectedButton");
-        $("#row_1_w").addClass("selectedButton");
-        $("#row_2_e").addClass("selectedButton");
-        $("#row_3_n").addClass("selectedButton");
-        artCharacterEditor.frameDirections = "swen";
-    };
-    ArtCharacterEditor.ChangeRow = function (direction, row) {
-        $("#row_direction_" + row + " div").removeClass("selectedButton");
-        $("#row_" + row + "_" + direction).addClass("selectedButton");
-        artCharacterEditor.frameDirections = artCharacterEditor.frameDirections.substr(0, row) + direction + artCharacterEditor.frameDirections.substr(row + 1);
-    };
-    ArtCharacterEditor.ApplyRowChange = function () {
-        var destOrder = "swen";
-        if (artCharacterEditor.frameDirections == destOrder)
-            return;
-        for (var i = 0; i < 4; i++) {
-            var p = destOrder.indexOf(artCharacterEditor.frameDirections.charAt(i));
-            if (p == -1) {
-                Framework.Alert("You need to supply the 4 directions");
-                return;
-            }
-        }
-        var canvas = document.createElement("canvas");
-        canvas.width = artCharacterEditor.characterToDisplay.width;
-        canvas.height = artCharacterEditor.characterToDisplay.height;
-        var ctx = canvas.getContext("2d");
-        var h = Math.floor(artCharacterEditor.characterToDisplay.height / 4);
-        var w = artCharacterEditor.characterToDisplay.width;
-        for (var i = 0; i < 4; i++) {
-            var p = artCharacterEditor.frameDirections.indexOf(destOrder.charAt(i));
-            if (p == -1) {
-                Framework.Alert("You need to supply the 4 directions");
-                return;
-            }
-            ctx.drawImage(artCharacterEditor.characterToDisplay, 0, p * h, w, h, 0, i * h, w, h);
-        }
-        $.ajax({
-            type: 'POST',
-            url: '/upload/SaveBase64Art',
-            data: {
-                game: world.Id,
-                token: framework.Preferences['token'],
-                file: PixelEditor.Filename(artCharacterEditor.character.file),
-                data: canvas.toDataURL()
-            },
-            success: function (msg) {
-                var data = TryParse(msg);
-                if (data && data.file) {
-                    var plainUrl = data.file;
-                    var fileUrl = data.file + "?v=" + Math.round((new Date()).getTime() / 1000);
-                    for (var item in world.art.characters) {
-                        if (world.art.characters[item].file.indexOf(plainUrl) == 0)
-                            world.art.characters[item].file = fileUrl;
-                    }
-                    ArtCharacterEditor.SelectCharacter(artCharacterEditor.characterName);
-                }
-            },
-            error: function (msg, textStatus) {
-                Framework.ShowMessage(msg);
-            }
-        });
-    };
-    return ArtCharacterEditor;
-}());
-var artPanelEditor = new ((function () {
-    function class_12() {
-    }
-    return class_12;
-}()));
-var ArtPanelEditor = (function () {
-    function ArtPanelEditor() {
-    }
-    ArtPanelEditor.Dispose = function () {
-        if (artPanelEditor.refreshStyle)
-            clearInterval(artPanelEditor.refreshStyle);
-        artPanelEditor.refreshStyle = null;
-    };
-    ArtPanelEditor.IsAccessible = function () {
-        return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
-    };
-    ArtPanelEditor.Recover = function () {
-        if (Main.CheckNW()) {
-            $("#helpLink").first().onclick = function () {
-                StandaloneMaker.Help($("#helpLink").prop("href"));
-                return false;
-            };
-            $("#panelDetails").css("top", "5px");
-            $("#buttonUpload").html("Change");
-        }
-        artPanelEditor.panelStyle = new Image();
-        artPanelEditor.panelStyle.src = world.art.panelStyle.file;
-        artPanelEditor.refreshStyle = setInterval(ArtPanelEditor.UpdateStyle, 100);
-        $("#leftBorder").val(world.art.panelStyle.leftBorder);
-        $("#rightBorder").val(world.art.panelStyle.rightBorder);
-        $("#topBorder").val(world.art.panelStyle.topBorder);
-        $("#bottomBorder").val(world.art.panelStyle.bottomBorder);
-        $("#headerHeight").val(world.art.panelStyle.header);
-        $("#headerColor").val(world.art.panelStyle.headerColor);
-        $("#contentColor").val(world.art.panelStyle.contentColor);
-        $("#contentHeaderBackgroundColor").val(world.art.panelStyle.contentHeaderBackgroundColor);
-        $("#contentHeaderColor").val(world.art.panelStyle.contentHeaderColor);
-        $("#contentSelectedColor").val(world.art.panelStyle.contentSelectedColor);
-        $("#buttonBorder").val(world.art.panelStyle.buttonBorder);
-        $("#buttonBackground").val(world.art.panelStyle.buttonBackground);
-        $("#buttonBackgroundHover").val(world.art.panelStyle.buttonBackgroundHover);
-        $("#chatPlaceholderColor").val(world.art.panelStyle.chatPlaceholderColor ? world.art.panelStyle.chatPlaceholderColor : "#c7c7cd");
-        $("#chatNormalColor").val(world.art.panelStyle.chatNormalColor ? world.art.panelStyle.chatNormalColor : "#ffffff");
-        $("#chatSeparatorColor").val(world.art.panelStyle.chatSeparatorColor ? world.art.panelStyle.chatSeparatorColor : "#7a7ead");
-        $("#chatSystemMessageColor").val(world.art.panelStyle.chatSystemMessageColor ? world.art.panelStyle.chatSystemMessageColor : "#00e000");
-        Main.GenerateGameStyle();
-    };
-    ArtPanelEditor.ChangeParam = function (fieldName, paramName) {
-        var val = $("#" + fieldName).val();
-        if (typeof world.art.panelStyle[paramName] == "number") {
-            var nVal = parseInt(val);
-            if (!isNaN(nVal))
-                world.art.panelStyle[paramName] = nVal;
-        }
-        else
-            world.art.panelStyle[paramName] = val;
-        Main.GenerateGameStyle();
-    };
-    ArtPanelEditor.UpdateStyle = function () {
-        if (!artPanelEditor.panelStyle || !artPanelEditor.panelStyle.width)
-            return;
-        var canvas = $("#panelStyle").first();
-        if (canvas.width != artPanelEditor.panelStyle.width)
-            canvas.width = artPanelEditor.panelStyle.width;
-        if (canvas.height != artPanelEditor.panelStyle.height)
-            canvas.height = artPanelEditor.panelStyle.height;
-        var ctx = canvas.getContext("2d");
-        ctx.drawImage(artPanelEditor.panelStyle, 0, 0);
-        ctx.strokeStyle = "#E00000";
-        ctx.beginPath();
-        ctx.moveTo(0, world.art.panelStyle.topBorder + 0.5);
-        ctx.lineTo(canvas.width, world.art.panelStyle.topBorder + 0.5);
-        ctx.moveTo(0, world.art.panelStyle.topBorder + world.art.panelStyle.header + 0.5);
-        ctx.lineTo(canvas.width, world.art.panelStyle.topBorder + world.art.panelStyle.header + 0.5);
-        ctx.moveTo(0, canvas.height - world.art.panelStyle.bottomBorder + 0.5);
-        ctx.lineTo(canvas.width, canvas.height - world.art.panelStyle.bottomBorder + 0.5);
-        ctx.moveTo(world.art.panelStyle.leftBorder + 0.5, 0);
-        ctx.lineTo(world.art.panelStyle.leftBorder + 0.5, canvas.height);
-        ctx.moveTo(canvas.width - world.art.panelStyle.leftBorder + 0.5, 0);
-        ctx.lineTo(canvas.width - world.art.panelStyle.leftBorder + 0.5, canvas.height);
-        ctx.stroke();
-    };
-    ArtPanelEditor.GenerateHTML = function (divId) {
-        var html = "";
-        html += "<div id='" + divId + "' class='gamePanel'>\n";
-        html += "<div class='gamePanelTopBorder'></div>\n";
-        html += "<div class='gamePanelHeader'>Test Panel</div>\n";
-        html += "<div class='gamePanelContent'></div>\n";
-        html += "<div class='gamePanelBottomBorder'></div>\n";
-        html += "</div>";
-        return html;
-    };
-    ArtPanelEditor.ShowUpload = function () {
-        if (Main.CheckNW()) {
-            $("#fileOpenDialog").prop("accept", ".png");
-            $("#fileOpenDialog").unbind("change");
-            $("#fileOpenDialog").val("").bind("change", ArtPanelEditor.ImportFileImage).first().click();
-            return;
-        }
-        $("#uploadArtObject").show();
-        $("#uploadGameId").val("" + world.Id);
-        $("#uploadToken").val(framework.Preferences['token']);
-    };
-    ArtPanelEditor.ImportFileImage = function () {
-        ArtPanelEditor.FinishImport($("#fileOpenDialog").val());
-        $("#fileOpenDialog").unbind("change", ArtPanelEditor.ImportFileImage).val("");
-    };
-    ArtPanelEditor.CloseUpload = function () {
-        $("#uploadArtObject").hide();
-    };
-    ArtPanelEditor.Upload = function () {
-        $("#uploadArtObject").hide();
-        $("#artObjectUploadForm").submit();
-    };
-    ArtPanelEditor.Result = function (result) {
-        var data = JSON.parse(result);
-        if (data.error) {
-            Framework.Alert(data.error);
-            return;
-        }
-        else if (data.new_file) {
-            ArtPanelEditor.FinishImport(data.new_file);
-        }
-    };
-    ArtPanelEditor.FinishImport = function (filename) {
-        // Change background, we need to reset all the types, transitions, and world generators.
-        world.art.panelStyle.file = filename + "?v=" + Math.round((new Date()).getTime() / 1000);
-        artPanelEditor.panelStyle = new Image();
-        artPanelEditor.panelStyle.src = world.art.panelStyle.file;
-        artPanelEditor.panelStyle.onload = function () {
-            Main.GenerateGameStyle();
-        };
-        //artPanelEditor.refreshStyle = setInterval(ArtPanelEditor.UpdateStyle, 100);
-    };
-    return ArtPanelEditor;
-}());
-var artQuickslotEditor = new ((function () {
-    function class_13() {
-    }
-    return class_13;
-}()));
-var ArtQuickslotEditor = (function () {
-    function ArtQuickslotEditor() {
-    }
-    ArtQuickslotEditor.Dispose = function () {
-        if (artQuickslotEditor.refreshStyle)
-            clearInterval(artQuickslotEditor.refreshStyle);
-        artQuickslotEditor.refreshStyle = null;
-    };
-    ArtQuickslotEditor.IsAccessible = function () {
-        return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
-    };
-    ArtQuickslotEditor.Recover = function () {
-        if (Main.CheckNW()) {
-            $("#helpLink").first().onclick = function () {
-                StandaloneMaker.Help($("#helpLink").prop("href"));
-                return false;
-            };
-            $("#buttonUpload").html("Change");
-            $("#panelDetails").css("top", "5px");
-        }
-        artQuickslotEditor.quickslotStyle = new Image();
-        artQuickslotEditor.quickslotStyle.src = world.art.quickslotStyle.file;
-        artQuickslotEditor.refreshStyle = setInterval(ArtQuickslotEditor.UpdateQuickslot, 100);
-        if (world.art.quickslotStyle.quickslotVisible === null || world.art.quickslotStyle.quickslotVisible === undefined)
-            world.art.quickslotStyle.quickslotVisible = true;
-        $("#leftBorder").val(world.art.quickslotStyle.leftBorder);
-        $("#topBorder").val(world.art.quickslotStyle.topBorder);
-        $("#itemSpacing").val(world.art.quickslotStyle.itemSpacing);
-        $("#selectedSkillColor").val(world.art.quickslotStyle.selectedSkillColor);
-        $("#quickslotVisible").first().selectedIndex = (world.art.quickslotStyle.quickslotVisible ? 0 : 1);
-    };
-    ArtQuickslotEditor.ChangeParam = function (fieldName, paramName) {
-        var val = $("#" + fieldName).val();
-        if (typeof world.art.quickslotStyle[paramName] == "number") {
-            var nVal = parseInt(val);
-            if (!isNaN(nVal))
-                world.art.quickslotStyle[paramName] = nVal;
-        }
-        else if (typeof world.art.quickslotStyle[paramName] == "boolean") {
-            world.art.quickslotStyle[paramName] = (val == "Yes");
-        }
-        else
-            world.art.quickslotStyle[paramName] = val;
-        Main.GenerateGameStyle();
-    };
-    ArtQuickslotEditor.UpdateQuickslot = function () {
-        if (!artQuickslotEditor.quickslotStyle || !artQuickslotEditor.quickslotStyle.width)
-            return;
-        var canvas = $("#panelStyle").first();
-        if (canvas.width != artQuickslotEditor.quickslotStyle.width)
-            canvas.width = artQuickslotEditor.quickslotStyle.width;
-        if (canvas.height != artQuickslotEditor.quickslotStyle.height)
-            canvas.height = artQuickslotEditor.quickslotStyle.height;
-        var ctx = canvas.getContext("2d");
-        ctx.drawImage(artQuickslotEditor.quickslotStyle, 0, 0);
-        world.art.quickslotStyle.width = artQuickslotEditor.quickslotStyle.width;
-        world.art.quickslotStyle.height = artQuickslotEditor.quickslotStyle.height;
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = "#000000";
-        ctx.beginPath();
-        for (var i = 0; i < 10; i++)
-            ctx.rect(world.art.quickslotStyle.leftBorder + 0.5 + (32 + world.art.quickslotStyle.itemSpacing) * i, world.art.quickslotStyle.topBorder + 0.5, 32, 32);
-        ctx.stroke();
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = "#0000E0";
-        ctx.beginPath();
-        for (var i = 0; i < 10; i++)
-            ctx.rect(world.art.quickslotStyle.leftBorder + 0.5 + (32 + world.art.quickslotStyle.itemSpacing) * i, world.art.quickslotStyle.topBorder + 0.5, 32, 32);
-        ctx.stroke();
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = "#000000";
-        ctx.beginPath();
-        ctx.moveTo(0, world.art.quickslotStyle.topBorder + 0.5);
-        ctx.lineTo(canvas.width, world.art.quickslotStyle.topBorder + 0.5);
-        ctx.moveTo(world.art.quickslotStyle.leftBorder + 0.5, 0);
-        ctx.lineTo(world.art.quickslotStyle.leftBorder + 0.5, canvas.height);
-        ctx.stroke();
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = "#E00000";
-        ctx.beginPath();
-        ctx.moveTo(0, world.art.quickslotStyle.topBorder + 0.5);
-        ctx.lineTo(canvas.width, world.art.quickslotStyle.topBorder + 0.5);
-        ctx.moveTo(world.art.quickslotStyle.leftBorder + 0.5, 0);
-        ctx.lineTo(world.art.quickslotStyle.leftBorder + 0.5, canvas.height);
-        ctx.stroke();
-    };
-    ArtQuickslotEditor.ShowUpload = function () {
-        if (Main.CheckNW()) {
-            $("#fileOpenDialog").prop("accept", ".png");
-            $("#fileOpenDialog").unbind("change");
-            $("#fileOpenDialog").val("").bind("change", ArtQuickslotEditor.ImportFileImage).first().click();
-            return;
-        }
-        $("#uploadArtObject").show();
-        $("#uploadGameId").val("" + world.Id);
-        $("#uploadToken").val(framework.Preferences['token']);
-    };
-    ArtQuickslotEditor.ImportFileImage = function () {
-        ArtQuickslotEditor.FinishImport($("#fileOpenDialog").val());
-        $("#fileOpenDialog").unbind("change", ArtQuickslotEditor.ImportFileImage).val("");
-    };
-    ArtQuickslotEditor.CloseUpload = function () {
-        $("#uploadArtObject").hide();
-    };
-    ArtQuickslotEditor.Upload = function () {
-        $("#uploadArtObject").hide();
-        $("#artObjectUploadForm").submit();
-    };
-    ArtQuickslotEditor.Result = function (result) {
-        var data = JSON.parse(result);
-        if (data.error) {
-            Framework.Alert(data.error);
-            return;
-        }
-        else if (data.new_file) {
-            ArtQuickslotEditor.FinishImport(data.new_file);
-        }
-    };
-    ArtQuickslotEditor.FinishImport = function (filename) {
-        skillBar.SlotBar = null;
-        // Change background, we need to reset all the types, transitions, and world generators.
-        world.art.quickslotStyle.file = filename + "?v=" + Math.round((new Date()).getTime() / 1000);
-        artQuickslotEditor.quickslotStyle = new Image();
-        artQuickslotEditor.quickslotStyle.src = world.art.quickslotStyle.file;
-        artQuickslotEditor.quickslotStyle.onload = function () {
-            world.art.quickslotStyle.width = artQuickslotEditor.quickslotStyle.width;
-            world.art.quickslotStyle.height = artQuickslotEditor.quickslotStyle.height;
-        };
-        //artQuickslotEditor.refreshStyle = setInterval(ArtQuickslotEditor.UpdateQuickslot, 100);
-    };
-    return ArtQuickslotEditor;
-}());
+var engineVersion = "1.2.1311";
+var engineBuild = "Wed, 08 Nov 2017 13:56:56 GMT";
 var artObjectEditor = new ((function () {
-    function class_14() {
+    function class_22() {
         this.selector = null;
         this.positionSelection = null;
         this.groundSelection = null;
     }
-    return class_14;
+    return class_22;
 }()));
 var ArtObjectEditor = (function () {
     function ArtObjectEditor() {
@@ -12739,11 +15600,762 @@ var ArtObjectEditor = (function () {
     };
     return ArtObjectEditor;
 }());
+var artCharacterEditor = new ((function () {
+    function class_23() {
+        this.selector = null;
+        this.groundSelection = null;
+        this.previewDirection = 0;
+        this.previewFrame = 0;
+        this.renderLoopCounter = 0;
+        this.frameDirections = "swen";
+    }
+    return class_23;
+}()));
+var ArtCharacterEditor = (function () {
+    function ArtCharacterEditor() {
+    }
+    ArtCharacterEditor.Dispose = function () {
+        if (artCharacterEditor.refresher !== null) {
+            clearInterval(artCharacterEditor.refresher);
+            artCharacterEditor.refresher = null;
+        }
+        if (artCharacterEditor.selector)
+            artCharacterEditor.selector.Dispose();
+        artCharacterEditor.selector = null;
+        artCharacterEditor.characterToDisplay = null;
+    };
+    ArtCharacterEditor.IsAccessible = function () {
+        return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
+    };
+    ArtCharacterEditor.Recover = function () {
+        if (Main.CheckNW()) {
+            $("#helpLink").first().onclick = function () {
+                StandaloneMaker.Help($("#helpLink").prop("href"));
+                return false;
+            };
+            $("#uploadButton").html("Add");
+            $("#characterList").css("top", "5px");
+            $(".imageParameters").css("top", "5px");
+            $("#characterPreviewPanel").css("top", "5px");
+            $("#characterDisplayContainer").css("top", "195px");
+        }
+        if (framework.CurrentUrl.id && !world.art.characters[framework.CurrentUrl.id]) {
+            framework.CurrentUrl.id = null;
+            Framework.SetLocation({
+                action: "ArtCharacterEditor"
+            });
+        }
+        if (framework.CurrentUrl.id)
+            ArtCharacterEditor.SelectCharacter(framework.CurrentUrl.id);
+        artCharacterEditor.selector = new ListSelector("characterList", world.art.characters);
+        artCharacterEditor.selector.OnSelect = ArtCharacterEditor.SelectCharacter;
+        artCharacterEditor.refresher = setInterval(ArtCharacterEditor.UpdateDisplay, 16);
+        $("#characterDisplay").bind("mousedown", ArtCharacterEditor.MouseDown);
+    };
+    ArtCharacterEditor.SelectCharacter = function (characterName) {
+        Framework.SetLocation({
+            action: "ArtCharacterEditor", id: characterName
+        });
+        $("#name").css('backgroundColor', '');
+        ArtCharacterEditor.ResetChangeRow();
+        if (!characterName) {
+            artCharacterEditor.characterName = null;
+            artCharacterEditor.characterToDisplay = null;
+            artCharacterEditor.character = null;
+            $("#name").val("").prop("disabled", true);
+            $("#frames").val("").prop("disabled", true);
+            $("#directions").val("").prop("disabled", true);
+            $("#imageFrameDivider").val("").prop("disabled", true);
+            $("#groundX").val("").prop("disabled", true);
+            $("#groundY").val("").prop("disabled", true);
+            $("#collision").val("").prop("disabled", true);
+            $("#animationCycle").prop("disabled", true);
+            return;
+        }
+        artCharacterEditor.characterName = characterName;
+        artCharacterEditor.characterToDisplay = new Image();
+        artCharacterEditor.character = world.art.characters[characterName];
+        artCharacterEditor.characterToDisplay.src = artCharacterEditor.character.file;
+        $("#name").val(characterName).prop("disabled", false);
+        $("#frames").val("" + artCharacterEditor.character.frames).prop("disabled", false);
+        $("#directions").val("" + artCharacterEditor.character.directions).prop("disabled", false);
+        $("#imageFrameDivider").val("" + artCharacterEditor.character.imageFrameDivider).prop("disabled", false);
+        $("#groundX").val("" + artCharacterEditor.character.groundX).prop("disabled", false);
+        $("#groundY").val("" + artCharacterEditor.character.groundY).prop("disabled", false);
+        $("#collision").val("" + (artCharacterEditor.character.collision ? artCharacterEditor.character.collision.radius : "")).prop("disabled", false);
+        if (artCharacterEditor.character.animationCycle != "simple")
+            $("#animationCycle").val("walkCycle").prop("disabled", false);
+        else
+            $("#animationCycle").val("simple").prop("disabled", false);
+    };
+    ArtCharacterEditor.Rename = function () {
+        var newName = $("#name").val().trim();
+        if ((newName.match(databaseNameRule) || !newName || newName.length < 1) || (world.art.characters[newName] && world.art.characters[newName] != artCharacterEditor.character)) {
+            $("#name").css('backgroundColor', '#FFE0E0');
+            return;
+        }
+        $("#name").css('backgroundColor', '');
+        // Nothing changed => skip
+        if (newName == artCharacterEditor.characterName)
+            return;
+        // Empty names are not valid
+        if (newName == "")
+            return;
+        // The name already exists and therefore is invalid
+        for (var item in world.art.objects)
+            if (item == newName)
+                return;
+        var oldName = artCharacterEditor.characterName;
+        delete world.art.characters[artCharacterEditor.characterName];
+        world.art.characters[newName] = artCharacterEditor.character;
+        artCharacterEditor.selector.UpdateList();
+        artCharacterEditor.selector.Select(newName);
+        SearchPanel.Update();
+        for (var i = 0; i < world.Monsters.length; i++) {
+            if (world.Monsters[i].Art == oldName) {
+                world.Monsters[i].Code.CodeVariables['art'].value = newName;
+                world.Monsters[i].Art = newName;
+            }
+        }
+        if (world.StartLook == oldName)
+            world.StartLook = newName;
+    };
+    ArtCharacterEditor.Clone = function () {
+        var newName = "character_";
+        for (var i = 1;; i++) {
+            if (!world.art.characters["character_" + i]) {
+                newName = "character_" + i;
+                break;
+            }
+        }
+        world.art.characters[newName] = JSON.parse(JSON.stringify(artCharacterEditor.character));
+        artCharacterEditor.selector.UpdateList();
+        artCharacterEditor.selector.Select(newName);
+        SearchPanel.Update();
+    };
+    ArtCharacterEditor.Delete = function () {
+        Framework.Confirm("Are you sure you want to delete this character?", function () {
+            var nb = 0;
+            for (var item in world.art.characters)
+                nb++;
+            if (nb < 2) {
+                Framework.Alert("Cannot remove all the characters.");
+                return;
+            }
+            var oldName = artCharacterEditor.characterName;
+            delete world.art.characters[artCharacterEditor.characterName];
+            artCharacterEditor.selector.UpdateList();
+            var newName = FirstItem(world.art.characters);
+            artCharacterEditor.selector.Select(newName);
+            SearchPanel.Update();
+            for (var i = 0; i < world.Monsters.length; i++) {
+                if (world.Monsters[i].Art == oldName) {
+                    world.Monsters[i].Code.CodeVariables['art'].value = newName;
+                    world.Monsters[i].Art = newName;
+                }
+            }
+            if (world.StartLook == oldName)
+                world.StartLook = newName;
+        });
+    };
+    ArtCharacterEditor.ChangeParameter = function (parameterName, htmlFieldName) {
+        if (!artCharacterEditor.character)
+            return;
+        switch (parameterName) {
+            case "animationCycle":
+                artCharacterEditor.character[parameterName] = $("#" + htmlFieldName).val();
+                break;
+            default:
+                var val = parseInt($("#" + htmlFieldName).val());
+                if (isNaN(val))
+                    val = artCharacterEditor.character[parameterName];
+                artCharacterEditor.character[parameterName] = val;
+        }
+    };
+    ArtCharacterEditor.ChangeCollision = function () {
+        var val = parseInt($("#collision").val());
+        if (isNaN(val))
+            val = null;
+        if (val === null) {
+            if (artCharacterEditor.character.collision)
+                delete artCharacterEditor.character.collision;
+        }
+        else {
+            artCharacterEditor.character.collision = { radius: val };
+        }
+    };
+    ArtCharacterEditor.UpdateDisplay = function () {
+        var canvas = $("#characterDisplay").first();
+        if (artCharacterEditor.characterToDisplay && artCharacterEditor.characterToDisplay.width && artCharacterEditor.character.width == 0)
+            artCharacterEditor.character.width = artCharacterEditor.characterToDisplay.width;
+        if (artCharacterEditor.characterToDisplay && artCharacterEditor.characterToDisplay.height && artCharacterEditor.character.height == 0)
+            artCharacterEditor.character.height = artCharacterEditor.characterToDisplay.height;
+        if (artCharacterEditor.characterToDisplay && (canvas.width != artCharacterEditor.characterToDisplay.width || canvas.height != artCharacterEditor.characterToDisplay.height)) {
+            canvas.width = artCharacterEditor.characterToDisplay.width;
+            canvas.height = artCharacterEditor.characterToDisplay.height;
+        }
+        if (!artCharacterEditor.characterToDisplay)
+            return;
+        var ctx2 = $("#characterPreview").first().getContext("2d");
+        var pw = Math.floor(artCharacterEditor.characterToDisplay.width / artCharacterEditor.character.frames);
+        var ph = Math.floor(artCharacterEditor.characterToDisplay.height / 4);
+        var f = 0;
+        if (artCharacterEditor.character.animationCycle == "walkCycle") {
+            f = Math.floor(artCharacterEditor.previewFrame / artCharacterEditor.character.imageFrameDivider);
+            if (f == artCharacterEditor.character.frames)
+                f = Math.floor(artCharacterEditor.character.frames / 2);
+            artCharacterEditor.previewFrame = (artCharacterEditor.previewFrame + 1) % ((artCharacterEditor.character.frames + 1) * artCharacterEditor.character.imageFrameDivider);
+        }
+        else {
+            f = Math.floor(artCharacterEditor.previewFrame / artCharacterEditor.character.imageFrameDivider);
+            artCharacterEditor.previewFrame = (artCharacterEditor.previewFrame + 1) % (artCharacterEditor.character.frames * artCharacterEditor.character.imageFrameDivider);
+        }
+        ctx2.clearRect(0, 0, 300, 300);
+        ctx2.drawImage(artCharacterEditor.characterToDisplay, f * pw, artCharacterEditor.previewDirection * ph, pw, ph, 0, 0, pw, ph);
+        artCharacterEditor.renderLoopCounter = (artCharacterEditor.renderLoopCounter + 1) % 9;
+        if (artCharacterEditor.renderLoopCounter != 0)
+            return;
+        var ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(artCharacterEditor.characterToDisplay, 0, 0);
+        var w = Math.round(artCharacterEditor.characterToDisplay.width / artCharacterEditor.character.frames);
+        ctx.strokeStyle = "#E00000";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        for (var i = 1; i < artCharacterEditor.character.frames; i++) {
+            ctx.moveTo(w * i + 0.5, 0);
+            ctx.lineTo(w * i + 0.5, canvas.height);
+        }
+        ctx.stroke();
+        w = Math.round(artCharacterEditor.characterToDisplay.height / artCharacterEditor.character.directions);
+        ctx.strokeStyle = "#E00000";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        for (var i = 1; i < artCharacterEditor.character.directions; i++) {
+            ctx.moveTo(0, w * i + 0.5);
+            ctx.lineTo(canvas.width, w * i + 0.5);
+        }
+        ctx.stroke();
+        ctx.strokeStyle = "#000000";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(artCharacterEditor.character.groundX + 0.5, artCharacterEditor.character.groundY - 5);
+        ctx.lineTo(artCharacterEditor.character.groundX + 0.5, artCharacterEditor.character.groundY + 5);
+        ctx.moveTo(artCharacterEditor.character.groundX - 5, artCharacterEditor.character.groundY + 0.5);
+        ctx.lineTo(artCharacterEditor.character.groundX + 5, artCharacterEditor.character.groundY + 0.5);
+        ctx.stroke();
+        ctx.strokeStyle = "#E00000";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(artCharacterEditor.character.groundX + 0.5, artCharacterEditor.character.groundY - 5);
+        ctx.lineTo(artCharacterEditor.character.groundX + 0.5, artCharacterEditor.character.groundY + 5);
+        ctx.moveTo(artCharacterEditor.character.groundX - 5, artCharacterEditor.character.groundY + 0.5);
+        ctx.lineTo(artCharacterEditor.character.groundX + 5, artCharacterEditor.character.groundY + 0.5);
+        ctx.stroke();
+        if (artCharacterEditor.character.collision) {
+            ctx.strokeStyle = "#000000";
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(artCharacterEditor.character.groundX, artCharacterEditor.character.groundY, artCharacterEditor.character.collision.radius, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.strokeStyle = "#0000E0";
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.arc(artCharacterEditor.character.groundX, artCharacterEditor.character.groundY, artCharacterEditor.character.collision.radius, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+    };
+    ArtCharacterEditor.GroundSelection = function () {
+        artCharacterEditor.groundSelection = {
+            X: 0, Y: 0
+        };
+    };
+    ArtCharacterEditor.MouseDown = function (evt) {
+        if (!artCharacterEditor.character)
+            return;
+        var x = evt.pageX - $("#characterDisplayContainer").position().left + $("#characterDisplayContainer").first().scrollLeft;
+        var y = evt.pageY - $("#characterDisplayContainer").position().top + $("#characterDisplayContainer").first().scrollTop;
+        if (artCharacterEditor.groundSelection != null) {
+            ArtCharacterEditor.HandleGroundSelection(evt);
+            $("#artObjectEditorMouseOverlay").bind("mousemove", ArtCharacterEditor.MouseMove).bind("mouseup", ArtCharacterEditor.MouseUp).show();
+        }
+    };
+    ArtCharacterEditor.MouseUp = function (evt) {
+        artCharacterEditor.groundSelection = null;
+        $("#artObjectEditorMouseOverlay").unbind("mousemove", ArtCharacterEditor.MouseMove).unbind("mouseup", ArtCharacterEditor.MouseUp).hide();
+    };
+    ArtCharacterEditor.MouseMove = function (evt) {
+        if (!artCharacterEditor.character)
+            return;
+        if (artCharacterEditor.groundSelection)
+            ArtCharacterEditor.HandleGroundSelection(evt);
+    };
+    ArtCharacterEditor.HandleGroundSelection = function (evt) {
+        if (!artCharacterEditor.character)
+            return;
+        var x = evt.pageX - $("#characterDisplayContainer").position().left + $("#characterDisplayContainer").first().scrollLeft;
+        var y = evt.pageY - $("#characterDisplayContainer").position().top + $("#characterDisplayContainer").first().scrollTop;
+        artCharacterEditor.character.groundX = artCharacterEditor.groundSelection.X = x;
+        artCharacterEditor.character.groundY = artCharacterEditor.groundSelection.Y = y;
+        $("#groundX").val("" + artCharacterEditor.character.groundX);
+        $("#groundY").val("" + artCharacterEditor.character.groundY);
+    };
+    ArtCharacterEditor.ShowUpload = function () {
+        if (Main.CheckNW()) {
+            $("#fileOpenDialog").prop("accept", ".png");
+            $("#fileOpenDialog").unbind("change");
+            $("#fileOpenDialog").val("").bind("change", ArtCharacterEditor.ImportFileImage).first().click();
+            return;
+        }
+        $("#uploadArtObject").show();
+        $("#uploadGameId").val("" + world.Id);
+        $("#uploadToken").val(framework.Preferences['token']);
+    };
+    ArtCharacterEditor.ImportFileImage = function () {
+        ArtCharacterEditor.FinishImport($("#fileOpenDialog").val());
+        $("#fileOpenDialog").unbind("change", ArtCharacterEditor.ImportFileImage).val("");
+    };
+    ArtCharacterEditor.CloseUpload = function () {
+        $("#uploadArtObject").hide();
+    };
+    ArtCharacterEditor.Upload = function () {
+        $("#uploadArtObject").hide();
+        $("#artObjectUploadForm").submit();
+    };
+    ArtCharacterEditor.Result = function (result) {
+        var data = JSON.parse(result);
+        if (data.error) {
+            Framework.Alert(data.error);
+            return;
+        }
+        else if (data.new_file) {
+            ArtCharacterEditor.FinishImport(data.new_file);
+        }
+    };
+    ArtCharacterEditor.FinishImport = function (filename) {
+        var plainUrl = filename;
+        var fileUrl = filename + "?v=" + Math.round((new Date()).getTime() / 1000);
+        var newName = "character_";
+        for (var i = 1;; i++) {
+            if (!world.art.characters["character_" + i]) {
+                newName = "character_" + i;
+                break;
+            }
+        }
+        for (var item in world.art.characters) {
+            if (world.art.characters[item].file.indexOf(plainUrl) == 0)
+                world.art.characters[item].file = fileUrl;
+        }
+        world.art.characters[newName] = {
+            frames: 3,
+            groundX: 0,
+            groundY: 0,
+            directions: 4,
+            file: fileUrl,
+            width: 0,
+            height: 0,
+            animationCycle: "walkCycle",
+            imageFrameDivider: 10
+        };
+        artCharacterEditor.selector.UpdateList();
+        artCharacterEditor.selector.Select(newName);
+    };
+    ArtCharacterEditor.EditImage = function () {
+        if (!artCharacterEditor.character)
+            return;
+        Framework.SetLocation({
+            action: "PixelEditor", type: "character", file: artCharacterEditor.character.file, frames: artCharacterEditor.character.frames
+        }, false);
+    };
+    ArtCharacterEditor.ShowCreate = function () {
+        var newName = "character_";
+        for (var i = 1;; i++) {
+            if (!world.art.characters["character_" + i]) {
+                newName = "character_" + i;
+                break;
+            }
+        }
+        $("#newArtCharcterDialog").show();
+        $("#newCharName").val(newName).focus();
+    };
+    ArtCharacterEditor.CloseCreate = function () {
+        $("#newArtCharcterDialog").hide();
+    };
+    ArtCharacterEditor.CheckNewCharacterName = function () {
+        var newName = $("#newCharName").val().trim();
+        if ((newName.match(databaseNameRule) || !newName || newName.length < 1) || world.art.characters[newName])
+            $("#name").css('backgroundColor', '#FFE0E0');
+        else
+            $("#name").css('backgroundColor', '');
+    };
+    ArtCharacterEditor.Create = function () {
+        var newName = $("#newCharName").val();
+        var filename = newName.replace(/ /g, "_") + ".png";
+        var frames = parseInt($("#newCharFrames").val());
+        if ((newName.match(databaseNameRule) || !newName || newName.length < 1) || world.art.characters[newName])
+            return;
+        world.art.characters[newName] = {
+            frames: frames,
+            groundX: 0,
+            groundY: 0,
+            directions: 4,
+            file: filename,
+            width: 64,
+            height: 64,
+            animationCycle: "walkCycle",
+            imageFrameDivider: 10
+        };
+        $("#newArtCharcterDialog").hide();
+        Framework.SetLocation({ action: "PixelEditor", type: "character", file: filename, frames: frames }, false);
+        SearchPanel.Update();
+    };
+    ArtCharacterEditor.ResetChangeRow = function () {
+        $("#row_direction_0 div").removeClass("selectedButton");
+        $("#row_direction_1 div").removeClass("selectedButton");
+        $("#row_direction_2 div").removeClass("selectedButton");
+        $("#row_direction_3 div").removeClass("selectedButton");
+        $("#row_0_s").addClass("selectedButton");
+        $("#row_1_w").addClass("selectedButton");
+        $("#row_2_e").addClass("selectedButton");
+        $("#row_3_n").addClass("selectedButton");
+        artCharacterEditor.frameDirections = "swen";
+    };
+    ArtCharacterEditor.ChangeRow = function (direction, row) {
+        $("#row_direction_" + row + " div").removeClass("selectedButton");
+        $("#row_" + row + "_" + direction).addClass("selectedButton");
+        artCharacterEditor.frameDirections = artCharacterEditor.frameDirections.substr(0, row) + direction + artCharacterEditor.frameDirections.substr(row + 1);
+    };
+    ArtCharacterEditor.ApplyRowChange = function () {
+        var destOrder = "swen";
+        if (artCharacterEditor.frameDirections == destOrder)
+            return;
+        for (var i = 0; i < 4; i++) {
+            var p = destOrder.indexOf(artCharacterEditor.frameDirections.charAt(i));
+            if (p == -1) {
+                Framework.Alert("You need to supply the 4 directions");
+                return;
+            }
+        }
+        var canvas = document.createElement("canvas");
+        canvas.width = artCharacterEditor.characterToDisplay.width;
+        canvas.height = artCharacterEditor.characterToDisplay.height;
+        var ctx = canvas.getContext("2d");
+        var h = Math.floor(artCharacterEditor.characterToDisplay.height / 4);
+        var w = artCharacterEditor.characterToDisplay.width;
+        for (var i = 0; i < 4; i++) {
+            var p = artCharacterEditor.frameDirections.indexOf(destOrder.charAt(i));
+            if (p == -1) {
+                Framework.Alert("You need to supply the 4 directions");
+                return;
+            }
+            ctx.drawImage(artCharacterEditor.characterToDisplay, 0, p * h, w, h, 0, i * h, w, h);
+        }
+        $.ajax({
+            type: 'POST',
+            url: '/upload/SaveBase64Art',
+            data: {
+                game: world.Id,
+                token: framework.Preferences['token'],
+                file: PixelEditor.Filename(artCharacterEditor.character.file),
+                data: canvas.toDataURL()
+            },
+            success: function (msg) {
+                var data = TryParse(msg);
+                if (data && data.file) {
+                    var plainUrl = data.file;
+                    var fileUrl = data.file + "?v=" + Math.round((new Date()).getTime() / 1000);
+                    for (var item in world.art.characters) {
+                        if (world.art.characters[item].file.indexOf(plainUrl) == 0)
+                            world.art.characters[item].file = fileUrl;
+                    }
+                    ArtCharacterEditor.SelectCharacter(artCharacterEditor.characterName);
+                }
+            },
+            error: function (msg, textStatus) {
+                Framework.ShowMessage(msg);
+            }
+        });
+    };
+    return ArtCharacterEditor;
+}());
+var artPanelEditor = new ((function () {
+    function class_24() {
+    }
+    return class_24;
+}()));
+var ArtPanelEditor = (function () {
+    function ArtPanelEditor() {
+    }
+    ArtPanelEditor.Dispose = function () {
+        if (artPanelEditor.refreshStyle)
+            clearInterval(artPanelEditor.refreshStyle);
+        artPanelEditor.refreshStyle = null;
+    };
+    ArtPanelEditor.IsAccessible = function () {
+        return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
+    };
+    ArtPanelEditor.Recover = function () {
+        if (Main.CheckNW()) {
+            $("#helpLink").first().onclick = function () {
+                StandaloneMaker.Help($("#helpLink").prop("href"));
+                return false;
+            };
+            $("#panelDetails").css("top", "5px");
+            $("#buttonUpload").html("Change");
+        }
+        artPanelEditor.panelStyle = new Image();
+        artPanelEditor.panelStyle.src = world.art.panelStyle.file;
+        artPanelEditor.refreshStyle = setInterval(ArtPanelEditor.UpdateStyle, 100);
+        $("#leftBorder").val(world.art.panelStyle.leftBorder);
+        $("#rightBorder").val(world.art.panelStyle.rightBorder);
+        $("#topBorder").val(world.art.panelStyle.topBorder);
+        $("#bottomBorder").val(world.art.panelStyle.bottomBorder);
+        $("#headerHeight").val(world.art.panelStyle.header);
+        $("#headerColor").val(world.art.panelStyle.headerColor);
+        $("#contentColor").val(world.art.panelStyle.contentColor);
+        $("#contentHeaderBackgroundColor").val(world.art.panelStyle.contentHeaderBackgroundColor);
+        $("#contentHeaderColor").val(world.art.panelStyle.contentHeaderColor);
+        $("#contentSelectedColor").val(world.art.panelStyle.contentSelectedColor);
+        $("#buttonBorder").val(world.art.panelStyle.buttonBorder);
+        $("#buttonBackground").val(world.art.panelStyle.buttonBackground);
+        $("#buttonBackgroundHover").val(world.art.panelStyle.buttonBackgroundHover);
+        $("#chatPlaceholderColor").val(world.art.panelStyle.chatPlaceholderColor ? world.art.panelStyle.chatPlaceholderColor : "#c7c7cd");
+        $("#chatNormalColor").val(world.art.panelStyle.chatNormalColor ? world.art.panelStyle.chatNormalColor : "#ffffff");
+        $("#chatSeparatorColor").val(world.art.panelStyle.chatSeparatorColor ? world.art.panelStyle.chatSeparatorColor : "#7a7ead");
+        $("#chatSystemMessageColor").val(world.art.panelStyle.chatSystemMessageColor ? world.art.panelStyle.chatSystemMessageColor : "#00e000");
+        Main.GenerateGameStyle();
+    };
+    ArtPanelEditor.ChangeParam = function (fieldName, paramName) {
+        var val = $("#" + fieldName).val();
+        if (typeof world.art.panelStyle[paramName] == "number") {
+            var nVal = parseInt(val);
+            if (!isNaN(nVal))
+                world.art.panelStyle[paramName] = nVal;
+        }
+        else
+            world.art.panelStyle[paramName] = val;
+        Main.GenerateGameStyle();
+    };
+    ArtPanelEditor.UpdateStyle = function () {
+        if (!artPanelEditor.panelStyle || !artPanelEditor.panelStyle.width)
+            return;
+        var canvas = $("#panelStyle").first();
+        if (canvas.width != artPanelEditor.panelStyle.width)
+            canvas.width = artPanelEditor.panelStyle.width;
+        if (canvas.height != artPanelEditor.panelStyle.height)
+            canvas.height = artPanelEditor.panelStyle.height;
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(artPanelEditor.panelStyle, 0, 0);
+        ctx.strokeStyle = "#E00000";
+        ctx.beginPath();
+        ctx.moveTo(0, world.art.panelStyle.topBorder + 0.5);
+        ctx.lineTo(canvas.width, world.art.panelStyle.topBorder + 0.5);
+        ctx.moveTo(0, world.art.panelStyle.topBorder + world.art.panelStyle.header + 0.5);
+        ctx.lineTo(canvas.width, world.art.panelStyle.topBorder + world.art.panelStyle.header + 0.5);
+        ctx.moveTo(0, canvas.height - world.art.panelStyle.bottomBorder + 0.5);
+        ctx.lineTo(canvas.width, canvas.height - world.art.panelStyle.bottomBorder + 0.5);
+        ctx.moveTo(world.art.panelStyle.leftBorder + 0.5, 0);
+        ctx.lineTo(world.art.panelStyle.leftBorder + 0.5, canvas.height);
+        ctx.moveTo(canvas.width - world.art.panelStyle.leftBorder + 0.5, 0);
+        ctx.lineTo(canvas.width - world.art.panelStyle.leftBorder + 0.5, canvas.height);
+        ctx.stroke();
+    };
+    ArtPanelEditor.GenerateHTML = function (divId) {
+        var html = "";
+        html += "<div id='" + divId + "' class='gamePanel'>\n";
+        html += "<div class='gamePanelTopBorder'></div>\n";
+        html += "<div class='gamePanelHeader'>Test Panel</div>\n";
+        html += "<div class='gamePanelContent'></div>\n";
+        html += "<div class='gamePanelBottomBorder'></div>\n";
+        html += "</div>";
+        return html;
+    };
+    ArtPanelEditor.ShowUpload = function () {
+        if (Main.CheckNW()) {
+            $("#fileOpenDialog").prop("accept", ".png");
+            $("#fileOpenDialog").unbind("change");
+            $("#fileOpenDialog").val("").bind("change", ArtPanelEditor.ImportFileImage).first().click();
+            return;
+        }
+        $("#uploadArtObject").show();
+        $("#uploadGameId").val("" + world.Id);
+        $("#uploadToken").val(framework.Preferences['token']);
+    };
+    ArtPanelEditor.ImportFileImage = function () {
+        ArtPanelEditor.FinishImport($("#fileOpenDialog").val());
+        $("#fileOpenDialog").unbind("change", ArtPanelEditor.ImportFileImage).val("");
+    };
+    ArtPanelEditor.CloseUpload = function () {
+        $("#uploadArtObject").hide();
+    };
+    ArtPanelEditor.Upload = function () {
+        $("#uploadArtObject").hide();
+        $("#artObjectUploadForm").submit();
+    };
+    ArtPanelEditor.Result = function (result) {
+        var data = JSON.parse(result);
+        if (data.error) {
+            Framework.Alert(data.error);
+            return;
+        }
+        else if (data.new_file) {
+            ArtPanelEditor.FinishImport(data.new_file);
+        }
+    };
+    ArtPanelEditor.FinishImport = function (filename) {
+        // Change background, we need to reset all the types, transitions, and world generators.
+        world.art.panelStyle.file = filename + "?v=" + Math.round((new Date()).getTime() / 1000);
+        artPanelEditor.panelStyle = new Image();
+        artPanelEditor.panelStyle.src = world.art.panelStyle.file;
+        artPanelEditor.panelStyle.onload = function () {
+            Main.GenerateGameStyle();
+        };
+        //artPanelEditor.refreshStyle = setInterval(ArtPanelEditor.UpdateStyle, 100);
+    };
+    return ArtPanelEditor;
+}());
+var artQuickslotEditor = new ((function () {
+    function class_25() {
+    }
+    return class_25;
+}()));
+var ArtQuickslotEditor = (function () {
+    function ArtQuickslotEditor() {
+    }
+    ArtQuickslotEditor.Dispose = function () {
+        if (artQuickslotEditor.refreshStyle)
+            clearInterval(artQuickslotEditor.refreshStyle);
+        artQuickslotEditor.refreshStyle = null;
+    };
+    ArtQuickslotEditor.IsAccessible = function () {
+        return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
+    };
+    ArtQuickslotEditor.Recover = function () {
+        if (Main.CheckNW()) {
+            $("#helpLink").first().onclick = function () {
+                StandaloneMaker.Help($("#helpLink").prop("href"));
+                return false;
+            };
+            $("#buttonUpload").html("Change");
+            $("#panelDetails").css("top", "5px");
+        }
+        artQuickslotEditor.quickslotStyle = new Image();
+        artQuickslotEditor.quickslotStyle.src = world.art.quickslotStyle.file;
+        artQuickslotEditor.refreshStyle = setInterval(ArtQuickslotEditor.UpdateQuickslot, 100);
+        if (world.art.quickslotStyle.quickslotVisible === null || world.art.quickslotStyle.quickslotVisible === undefined)
+            world.art.quickslotStyle.quickslotVisible = true;
+        $("#leftBorder").val(world.art.quickslotStyle.leftBorder);
+        $("#topBorder").val(world.art.quickslotStyle.topBorder);
+        $("#itemSpacing").val(world.art.quickslotStyle.itemSpacing);
+        $("#selectedSkillColor").val(world.art.quickslotStyle.selectedSkillColor);
+        $("#quickslotVisible").first().selectedIndex = (world.art.quickslotStyle.quickslotVisible ? 0 : 1);
+    };
+    ArtQuickslotEditor.ChangeParam = function (fieldName, paramName) {
+        var val = $("#" + fieldName).val();
+        if (typeof world.art.quickslotStyle[paramName] == "number") {
+            var nVal = parseInt(val);
+            if (!isNaN(nVal))
+                world.art.quickslotStyle[paramName] = nVal;
+        }
+        else if (typeof world.art.quickslotStyle[paramName] == "boolean") {
+            world.art.quickslotStyle[paramName] = (val == "Yes");
+        }
+        else
+            world.art.quickslotStyle[paramName] = val;
+        Main.GenerateGameStyle();
+    };
+    ArtQuickslotEditor.UpdateQuickslot = function () {
+        if (!artQuickslotEditor.quickslotStyle || !artQuickslotEditor.quickslotStyle.width)
+            return;
+        var canvas = $("#panelStyle").first();
+        if (canvas.width != artQuickslotEditor.quickslotStyle.width)
+            canvas.width = artQuickslotEditor.quickslotStyle.width;
+        if (canvas.height != artQuickslotEditor.quickslotStyle.height)
+            canvas.height = artQuickslotEditor.quickslotStyle.height;
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(artQuickslotEditor.quickslotStyle, 0, 0);
+        world.art.quickslotStyle.width = artQuickslotEditor.quickslotStyle.width;
+        world.art.quickslotStyle.height = artQuickslotEditor.quickslotStyle.height;
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = "#000000";
+        ctx.beginPath();
+        for (var i = 0; i < 10; i++)
+            ctx.rect(world.art.quickslotStyle.leftBorder + 0.5 + (32 + world.art.quickslotStyle.itemSpacing) * i, world.art.quickslotStyle.topBorder + 0.5, 32, 32);
+        ctx.stroke();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "#0000E0";
+        ctx.beginPath();
+        for (var i = 0; i < 10; i++)
+            ctx.rect(world.art.quickslotStyle.leftBorder + 0.5 + (32 + world.art.quickslotStyle.itemSpacing) * i, world.art.quickslotStyle.topBorder + 0.5, 32, 32);
+        ctx.stroke();
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = "#000000";
+        ctx.beginPath();
+        ctx.moveTo(0, world.art.quickslotStyle.topBorder + 0.5);
+        ctx.lineTo(canvas.width, world.art.quickslotStyle.topBorder + 0.5);
+        ctx.moveTo(world.art.quickslotStyle.leftBorder + 0.5, 0);
+        ctx.lineTo(world.art.quickslotStyle.leftBorder + 0.5, canvas.height);
+        ctx.stroke();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "#E00000";
+        ctx.beginPath();
+        ctx.moveTo(0, world.art.quickslotStyle.topBorder + 0.5);
+        ctx.lineTo(canvas.width, world.art.quickslotStyle.topBorder + 0.5);
+        ctx.moveTo(world.art.quickslotStyle.leftBorder + 0.5, 0);
+        ctx.lineTo(world.art.quickslotStyle.leftBorder + 0.5, canvas.height);
+        ctx.stroke();
+    };
+    ArtQuickslotEditor.ShowUpload = function () {
+        if (Main.CheckNW()) {
+            $("#fileOpenDialog").prop("accept", ".png");
+            $("#fileOpenDialog").unbind("change");
+            $("#fileOpenDialog").val("").bind("change", ArtQuickslotEditor.ImportFileImage).first().click();
+            return;
+        }
+        $("#uploadArtObject").show();
+        $("#uploadGameId").val("" + world.Id);
+        $("#uploadToken").val(framework.Preferences['token']);
+    };
+    ArtQuickslotEditor.ImportFileImage = function () {
+        ArtQuickslotEditor.FinishImport($("#fileOpenDialog").val());
+        $("#fileOpenDialog").unbind("change", ArtQuickslotEditor.ImportFileImage).val("");
+    };
+    ArtQuickslotEditor.CloseUpload = function () {
+        $("#uploadArtObject").hide();
+    };
+    ArtQuickslotEditor.Upload = function () {
+        $("#uploadArtObject").hide();
+        $("#artObjectUploadForm").submit();
+    };
+    ArtQuickslotEditor.Result = function (result) {
+        var data = JSON.parse(result);
+        if (data.error) {
+            Framework.Alert(data.error);
+            return;
+        }
+        else if (data.new_file) {
+            ArtQuickslotEditor.FinishImport(data.new_file);
+        }
+    };
+    ArtQuickslotEditor.FinishImport = function (filename) {
+        skillBar.SlotBar = null;
+        // Change background, we need to reset all the types, transitions, and world generators.
+        world.art.quickslotStyle.file = filename + "?v=" + Math.round((new Date()).getTime() / 1000);
+        artQuickslotEditor.quickslotStyle = new Image();
+        artQuickslotEditor.quickslotStyle.src = world.art.quickslotStyle.file;
+        artQuickslotEditor.quickslotStyle.onload = function () {
+            world.art.quickslotStyle.width = artQuickslotEditor.quickslotStyle.width;
+            world.art.quickslotStyle.height = artQuickslotEditor.quickslotStyle.height;
+        };
+        //artQuickslotEditor.refreshStyle = setInterval(ArtQuickslotEditor.UpdateQuickslot, 100);
+    };
+    return ArtQuickslotEditor;
+}());
 var artSoundEditor = new ((function () {
-    function class_15() {
+    function class_26() {
         this.selector = null;
     }
-    return class_15;
+    return class_26;
 }()));
 var musics = [
     "/Sounds/Anomaly_Looping.mp3",
@@ -12966,11 +16578,130 @@ var ArtSoundEditor = (function () {
     };
     return ArtSoundEditor;
 }());
+var artStartBarEditor = new ((function () {
+    function class_27() {
+    }
+    return class_27;
+}()));
+var ArtStartBarEditor = (function () {
+    function ArtStartBarEditor() {
+    }
+    ArtStartBarEditor.Dispose = function () {
+        if (artStartBarEditor.refreshStyle)
+            clearInterval(artStartBarEditor.refreshStyle);
+        artStartBarEditor.refreshStyle = null;
+    };
+    ArtStartBarEditor.IsAccessible = function () {
+        return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
+    };
+    ArtStartBarEditor.Recover = function () {
+        if (Main.CheckNW()) {
+            $("#helpLink").first().onclick = function () {
+                StandaloneMaker.Help($("#helpLink").prop("href"));
+                return false;
+            };
+            $("#panelDetails").css("top", "5px");
+            $("#buttonUpload").html("Change");
+        }
+        artStartBarEditor.statbarStyle = new Image();
+        artStartBarEditor.statbarStyle.src = world.art.statBarStyle.file;
+        artStartBarEditor.refreshStyle = setInterval(ArtStartBarEditor.UpdateQuickslot, 100);
+        $("#topBorder").val(world.art.statBarStyle.topBorder);
+        $("#bottomBorder").val(world.art.statBarStyle.bottomBorder);
+        if (world.art.statBarStyle.barsToDisplay == null || world.art.statBarStyle.barsToDisplay == undefined)
+            world.art.statBarStyle.barsToDisplay = 1;
+        $("#barsToDisplay").val("" + world.art.statBarStyle.barsToDisplay);
+    };
+    ArtStartBarEditor.ChangeParam = function (fieldName, paramName) {
+        var val = $("#" + fieldName).val();
+        if (typeof world.art.statBarStyle[paramName] == "number") {
+            var nVal = parseInt(val);
+            if (!isNaN(nVal))
+                world.art.statBarStyle[paramName] = nVal;
+        }
+        else
+            world.art.statBarStyle[paramName] = val;
+        Main.GenerateGameStyle();
+    };
+    ArtStartBarEditor.UpdateQuickslot = function () {
+        if (!artStartBarEditor.statbarStyle || !artStartBarEditor.statbarStyle.width)
+            return;
+        var canvas = $("#panelStyle").first();
+        if (canvas.width != artStartBarEditor.statbarStyle.width)
+            canvas.width = artStartBarEditor.statbarStyle.width;
+        if (canvas.height != artStartBarEditor.statbarStyle.height)
+            canvas.height = artStartBarEditor.statbarStyle.height;
+        var ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(artStartBarEditor.statbarStyle, 0, 0);
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = "#000000";
+        ctx.beginPath();
+        ctx.moveTo(0, world.art.statBarStyle.topBorder + 0.5);
+        ctx.lineTo(canvas.width, world.art.statBarStyle.topBorder + 0.5);
+        ctx.moveTo(0, artStartBarEditor.statbarStyle.height - world.art.statBarStyle.bottomBorder + 0.5);
+        ctx.lineTo(canvas.width, artStartBarEditor.statbarStyle.height - world.art.statBarStyle.bottomBorder + 0.5);
+        ctx.stroke();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "#E00000";
+        ctx.beginPath();
+        ctx.moveTo(0, world.art.statBarStyle.topBorder + 0.5);
+        ctx.lineTo(canvas.width, world.art.statBarStyle.topBorder + 0.5);
+        ctx.moveTo(0, artStartBarEditor.statbarStyle.height - world.art.statBarStyle.bottomBorder + 0.5);
+        ctx.lineTo(canvas.width, artStartBarEditor.statbarStyle.height - world.art.statBarStyle.bottomBorder + 0.5);
+        ctx.stroke();
+    };
+    ArtStartBarEditor.ShowUpload = function () {
+        if (Main.CheckNW()) {
+            $("#fileOpenDialog").prop("accept", ".png");
+            $("#fileOpenDialog").unbind("change");
+            $("#fileOpenDialog").val("").bind("change", ArtStartBarEditor.ImportFileImage).first().click();
+            return;
+        }
+        $("#uploadArtObject").show();
+        $("#uploadGameId").val("" + world.Id);
+        $("#uploadToken").val(framework.Preferences['token']);
+    };
+    ArtStartBarEditor.ImportFileImage = function () {
+        ArtStartBarEditor.FinishImport($("#fileOpenDialog").val());
+        $("#fileOpenDialog").unbind("change", ArtStartBarEditor.ImportFileImage).val("");
+    };
+    ArtStartBarEditor.CloseUpload = function () {
+        $("#uploadArtObject").hide();
+    };
+    ArtStartBarEditor.Upload = function () {
+        $("#uploadArtObject").hide();
+        $("#artObjectUploadForm").submit();
+    };
+    ArtStartBarEditor.Result = function (result) {
+        var data = JSON.parse(result);
+        if (data.error) {
+            Framework.Alert(data.error);
+            return;
+        }
+        else if (data.new_file) {
+            ArtStartBarEditor.FinishImport(data.new_file);
+        }
+    };
+    ArtStartBarEditor.FinishImport = function (filename) {
+        skillBar.StatBar = null;
+        // Change background, we need to reset all the types, transitions, and world generators.
+        world.art.statBarStyle.file = filename;
+        artStartBarEditor.statbarStyle = new Image();
+        artStartBarEditor.statbarStyle.src = world.art.statBarStyle.file + "?v=" + Math.round((new Date()).getTime() / 1000);
+        artStartBarEditor.statbarStyle.onload = function () {
+            world.art.statBarStyle.width = artStartBarEditor.statbarStyle.width;
+            world.art.statBarStyle.height = artStartBarEditor.statbarStyle.height;
+        };
+        //artStartBarEditor.refreshStyle = setInterval(ArtStartBarEditor.UpdateQuickslot, 100);
+    };
+    return ArtStartBarEditor;
+}());
 var artTileEditor = new ((function () {
-    function class_16() {
+    function class_28() {
         this.loaded = false;
     }
-    return class_16;
+    return class_28;
 }()));
 var ArtTileEditor = (function () {
     function ArtTileEditor() {
@@ -13603,130 +17334,11 @@ var ArtTileEditor = (function () {
     };
     return ArtTileEditor;
 }());
-var artStartBarEditor = new ((function () {
-    function class_17() {
-    }
-    return class_17;
-}()));
-var ArtStartBarEditor = (function () {
-    function ArtStartBarEditor() {
-    }
-    ArtStartBarEditor.Dispose = function () {
-        if (artStartBarEditor.refreshStyle)
-            clearInterval(artStartBarEditor.refreshStyle);
-        artStartBarEditor.refreshStyle = null;
-    };
-    ArtStartBarEditor.IsAccessible = function () {
-        return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
-    };
-    ArtStartBarEditor.Recover = function () {
-        if (Main.CheckNW()) {
-            $("#helpLink").first().onclick = function () {
-                StandaloneMaker.Help($("#helpLink").prop("href"));
-                return false;
-            };
-            $("#panelDetails").css("top", "5px");
-            $("#buttonUpload").html("Change");
-        }
-        artStartBarEditor.statbarStyle = new Image();
-        artStartBarEditor.statbarStyle.src = world.art.statBarStyle.file;
-        artStartBarEditor.refreshStyle = setInterval(ArtStartBarEditor.UpdateQuickslot, 100);
-        $("#topBorder").val(world.art.statBarStyle.topBorder);
-        $("#bottomBorder").val(world.art.statBarStyle.bottomBorder);
-        if (world.art.statBarStyle.barsToDisplay == null || world.art.statBarStyle.barsToDisplay == undefined)
-            world.art.statBarStyle.barsToDisplay = 1;
-        $("#barsToDisplay").val("" + world.art.statBarStyle.barsToDisplay);
-    };
-    ArtStartBarEditor.ChangeParam = function (fieldName, paramName) {
-        var val = $("#" + fieldName).val();
-        if (typeof world.art.statBarStyle[paramName] == "number") {
-            var nVal = parseInt(val);
-            if (!isNaN(nVal))
-                world.art.statBarStyle[paramName] = nVal;
-        }
-        else
-            world.art.statBarStyle[paramName] = val;
-        Main.GenerateGameStyle();
-    };
-    ArtStartBarEditor.UpdateQuickslot = function () {
-        if (!artStartBarEditor.statbarStyle || !artStartBarEditor.statbarStyle.width)
-            return;
-        var canvas = $("#panelStyle").first();
-        if (canvas.width != artStartBarEditor.statbarStyle.width)
-            canvas.width = artStartBarEditor.statbarStyle.width;
-        if (canvas.height != artStartBarEditor.statbarStyle.height)
-            canvas.height = artStartBarEditor.statbarStyle.height;
-        var ctx = canvas.getContext("2d");
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(artStartBarEditor.statbarStyle, 0, 0);
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = "#000000";
-        ctx.beginPath();
-        ctx.moveTo(0, world.art.statBarStyle.topBorder + 0.5);
-        ctx.lineTo(canvas.width, world.art.statBarStyle.topBorder + 0.5);
-        ctx.moveTo(0, artStartBarEditor.statbarStyle.height - world.art.statBarStyle.bottomBorder + 0.5);
-        ctx.lineTo(canvas.width, artStartBarEditor.statbarStyle.height - world.art.statBarStyle.bottomBorder + 0.5);
-        ctx.stroke();
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = "#E00000";
-        ctx.beginPath();
-        ctx.moveTo(0, world.art.statBarStyle.topBorder + 0.5);
-        ctx.lineTo(canvas.width, world.art.statBarStyle.topBorder + 0.5);
-        ctx.moveTo(0, artStartBarEditor.statbarStyle.height - world.art.statBarStyle.bottomBorder + 0.5);
-        ctx.lineTo(canvas.width, artStartBarEditor.statbarStyle.height - world.art.statBarStyle.bottomBorder + 0.5);
-        ctx.stroke();
-    };
-    ArtStartBarEditor.ShowUpload = function () {
-        if (Main.CheckNW()) {
-            $("#fileOpenDialog").prop("accept", ".png");
-            $("#fileOpenDialog").unbind("change");
-            $("#fileOpenDialog").val("").bind("change", ArtStartBarEditor.ImportFileImage).first().click();
-            return;
-        }
-        $("#uploadArtObject").show();
-        $("#uploadGameId").val("" + world.Id);
-        $("#uploadToken").val(framework.Preferences['token']);
-    };
-    ArtStartBarEditor.ImportFileImage = function () {
-        ArtStartBarEditor.FinishImport($("#fileOpenDialog").val());
-        $("#fileOpenDialog").unbind("change", ArtStartBarEditor.ImportFileImage).val("");
-    };
-    ArtStartBarEditor.CloseUpload = function () {
-        $("#uploadArtObject").hide();
-    };
-    ArtStartBarEditor.Upload = function () {
-        $("#uploadArtObject").hide();
-        $("#artObjectUploadForm").submit();
-    };
-    ArtStartBarEditor.Result = function (result) {
-        var data = JSON.parse(result);
-        if (data.error) {
-            Framework.Alert(data.error);
-            return;
-        }
-        else if (data.new_file) {
-            ArtStartBarEditor.FinishImport(data.new_file);
-        }
-    };
-    ArtStartBarEditor.FinishImport = function (filename) {
-        skillBar.StatBar = null;
-        // Change background, we need to reset all the types, transitions, and world generators.
-        world.art.statBarStyle.file = filename;
-        artStartBarEditor.statbarStyle = new Image();
-        artStartBarEditor.statbarStyle.src = world.art.statBarStyle.file + "?v=" + Math.round((new Date()).getTime() / 1000);
-        artStartBarEditor.statbarStyle.onload = function () {
-            world.art.statBarStyle.width = artStartBarEditor.statbarStyle.width;
-            world.art.statBarStyle.height = artStartBarEditor.statbarStyle.height;
-        };
-        //artStartBarEditor.refreshStyle = setInterval(ArtStartBarEditor.UpdateQuickslot, 100);
-    };
-    return ArtStartBarEditor;
-}());
 var chatBotEditor = new ((function () {
-    function class_18() {
+    function class_29() {
         this.editor = null;
     }
-    return class_18;
+    return class_29;
 }()));
 var ChatBotEditor = (function () {
     function ChatBotEditor() {
@@ -13958,250 +17570,6 @@ var ChatBotEditor = (function () {
     };
     return ChatBotEditor;
 }());
-var gameList = new ((function () {
-    function class_19() {
-    }
-    return class_19;
-}()));
-var GameList = (function () {
-    function GameList() {
-    }
-    GameList.Dispose = function () {
-    };
-    GameList.Recover = function () {
-        if (Main.CheckNW())
-            $("#helpLink").first().onclick = function () {
-                StandaloneMaker.Help($("#helpLink").prop("href"));
-                return false;
-            };
-        GameList.Search();
-    };
-    GameList.Search = function () {
-        if (gameList.searchTimeout)
-            clearTimeout(gameList.searchTimeout);
-        gameList.searchTimeout = setTimeout(GameList.DoSearch, 500);
-    };
-    GameList.DoSearch = function () {
-        gameList.searchTimeout = null;
-        $.ajax({
-            type: 'POST',
-            url: '/backend/GameList',
-            data: {
-                token: framework.Preferences['token'],
-                search: $("#searchGame").val().trim()
-            },
-            success: function (msg) {
-                var data = TryParse(msg);
-                gameList.data = data.games;
-                GameList.ShowList();
-            },
-            error: function (msg) {
-                var data = TryParse(msg);
-                if (data && data.error)
-                    $("#gameList").html(data.error);
-                else
-                    $("#gameList").html(("" + msg).htmlEntities());
-            }
-        });
-    };
-    GameList.ShowList = function () {
-        var html = "";
-        html += "<table>";
-        html += "<thead>";
-        html += "<tr><td>&nbsp;</td><td>Name</td><td>Description</td></tr>";
-        html += "</thead>";
-        html += "<tbody>";
-        for (var i = 0; i < gameList.data.length; i++) {
-            html += "<tr>";
-            html += "<td>";
-            if (gameList.data[i].can_edit == 'Y')
-                html += "<a class='button' href='/maker.html?game=" + gameList.data[i].name.replace(/ /g, "_") + "'>Manage</a>";
-            else
-                html += "<a class='button' href='/play.html?game=" + gameList.data[i].name.replace(/ /g, "_") + "'>Play</a>";
-            html += "</td>";
-            html += "<td>" + (gameList.data[i].name ? gameList.data[i].name.htmlEntities() : "") + "</td>";
-            html += "<td>" + Main.TextTransform(gameList.data[i].description ? gameList.data[i].description : "") + "</td>";
-            html += "</tr>";
-        }
-        html += "</tbody>";
-        html += "</table>";
-        $("#gameList").html(html);
-    };
-    GameList.ShowCreateGame = function () {
-        $("#showCreateGame").show();
-    };
-    GameList.HideCreateGame = function () {
-        $("#showCreateGame").hide();
-    };
-    GameList.CreateGame = function () {
-        var name = $("#newGameName").val().trim();
-        if (name.replace(/[a-z 0-9]+/gi, "").length > 0) {
-            Framework.Alert("Only letters, numbers and spaces are allowed within a game name");
-            return;
-        }
-        $.ajax({
-            type: 'POST',
-            url: '/backend/OwnerCreateGame',
-            data: {
-                token: framework.Preferences['token'],
-                name: name
-            },
-            success: function (msg) {
-                var data = TryParse(msg);
-                if (data.error) {
-                    $("#result").html(data.error);
-                    return;
-                }
-                document.location.replace("/maker.html?id=" + data.id);
-            },
-            error: function (msg) {
-                var data = TryParse(msg);
-                if (data.error)
-                    $("#result").html(data.error);
-                else
-                    $("#result").html(("" + msg).htmlEntities());
-            }
-        });
-    };
-    return GameList;
-}());
-var FileExplorer = (function () {
-    function FileExplorer() {
-    }
-    FileExplorer.Dispose = function () {
-    };
-    FileExplorer.IsAccessible = function () {
-        return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
-    };
-    FileExplorer.Recover = function () {
-        if (Main.CheckNW())
-            $("#helpLink").first().onclick = function () {
-                StandaloneMaker.Help($("#helpLink").prop("href"));
-                return false;
-            };
-        FileExplorer.ReadDir();
-    };
-    FileExplorer.ReadDir = function () {
-        $.ajax({
-            type: 'POST',
-            url: '/backend/DirectoryList',
-            data: {
-                game: world.Id,
-                token: framework.Preferences['token']
-            },
-            success: function (msg) {
-                var data = TryParse(msg);
-                if (!data) {
-                    $("#fileList").html();
-                    return;
-                }
-                var html = "";
-                if (selfHosted) {
-                    html += "Used space: " + FileExplorer.FormatSize(data.totalSize);
-                }
-                else {
-                    html = "Available space: " + FileExplorer.FormatSize(data.usableSize) + ", Used space: " + FileExplorer.FormatSize(data.totalSize) + ", Free space: " + FileExplorer.FormatSize(data.usableSize - data.totalSize) + " (" + Math.max(0, (Math.round((data.usableSize - data.totalSize) * 1000 / data.usableSize) / 10)) + "%)";
-                    if (data.tillWhen)
-                        html += "<br>Space rented till " + Main.FormatDate(data.tillWhen) + " then will have " + FileExplorer.FormatSize(data.baseSize);
-                    else
-                        html += "<br>Further space can be rented if needed.";
-                }
-                $("#fileUsage").html(html);
-                var html = "<table>";
-                html += "<thead><tr><td>Name</td><td>Size</td><td>Used on</td><td style='width: 1px;'>&nbsp;</td><td style='width: 1px;'>&nbsp;</td></tr></thead>";
-                html += "<tbody>";
-                for (var i = 0; i < data.files.length; i++) {
-                    html += "<tr><td>" + data.files[i].name.htmlEntities() + "</td>";
-                    html += "<td>" + FileExplorer.FormatSize(data.files[i].size) + "</td>";
-                    var usedOn = FileExplorer.UsedOn(data.userDirectory + "/" + data.files[i].name);
-                    if (usedOn == "Pixel Art Work file")
-                        usedOn = usedOn + "</td><td><a href='#action=PixelEditor&file=" + data.files[i].name.replace(/.work$/, "").htmlEntities() + "' class='button'>Edit</a></td><td><span class='button' onclick='FileExplorer.Delete(\"" + data.files[i].name.htmlEntities() + "\");'>Delete</span>";
-                    else if (!usedOn)
-                        usedOn = "Not used</td><td>&nbsp;</td><td><span class='button' onclick='FileExplorer.Delete(\"" + data.files[i].name.htmlEntities() + "\");'>Delete</span>";
-                    html += "<td>" + usedOn + "</td></tr>";
-                }
-                html += "<tbody></table>";
-                $("#fileList").html(html);
-            },
-            error: function (msg) {
-                var data = TryParse(msg);
-                if (data && data.error)
-                    $("#fileList").html(data.error);
-                else
-                    $("#fileList").html(("" + msg).htmlEntities());
-            }
-        });
-    };
-    FileExplorer.Delete = function (filename) {
-        Framework.Confirm("Are you sure you want to delete this file?", function () {
-            $.ajax({
-                type: 'POST',
-                url: '/backend/DeleteFile',
-                data: {
-                    game: world.Id,
-                    token: framework.Preferences['token'],
-                    filename: filename
-                },
-                success: function (msg) {
-                    FileExplorer.ReadDir();
-                    Framework.ShowMessage("File deleted");
-                },
-                error: function (msg) {
-                    var data = TryParse(msg);
-                    if (data && data.error)
-                        $("#fileList").html(data.error);
-                    else
-                        $("#fileList").html(("" + msg).htmlEntities());
-                }
-            });
-        });
-    };
-    FileExplorer.FormatSize = function (size) {
-        if (size > 1024 * 1024)
-            return "" + (Math.round(size / (1024 * 1024 / 100)) / 100) + " Mb";
-        else if (size > 1024)
-            return "" + (Math.round(size / (1024 / 100)) / 100) + " Kb";
-        else
-            return "" + size + " bytes";
-    };
-    FileExplorer.UsedOn = function (filename) {
-        if (filename.indexOf(".work") == filename.length - 5)
-            return "Pixel Art Work file";
-        if (world.art.background.file.indexOf(filename) == 0)
-            return "Background tiles";
-        if (world.art.splashImage && world.art.splashImage.indexOf(filename) == 0)
-            return "Splash image";
-        if (world.art.panelStyle.file.indexOf(filename) == 0)
-            return "Panel style";
-        if (world.art.statBarStyle.file.indexOf(filename) == 0)
-            return "Stat bars";
-        if (world.art.quickslotStyle.file.indexOf(filename) == 0)
-            return "Quickslots";
-        for (var item in world.art.characters) {
-            if (world.art.characters[item].file.indexOf(filename) == 0)
-                return "Character " + item;
-        }
-        for (var item in world.art.objects) {
-            if (world.art.objects[item].file.indexOf(filename) == 0)
-                return "Map object " + item;
-        }
-        for (var item in world.art.house_parts) {
-            if (world.art.house_parts[item].file.indexOf(filename) == 0)
-                return "House part " + item;
-        }
-        for (var item in world.art.sounds) {
-            if (world.art.sounds[item].mp3.indexOf(filename) == 0)
-                return "Sound " + item;
-        }
-        for (var i = 0; i < world.Skills.length; i++) {
-            var iconFile = world.Skills[i].CodeVariable("icon");
-            if (iconFile && iconFile.indexOf(filename) == 0)
-                return "Skill icon " + world.Skills[i].Name;
-        }
-        return null;
-    };
-    return FileExplorer;
-}());
 var GameEditor = (function () {
     function GameEditor() {
     }
@@ -14352,129 +17720,142 @@ var GameEditor = (function () {
     };
     return GameEditor;
 }());
-var gameNews = new ((function () {
-    function class_20() {
+var FileExplorer = (function () {
+    function FileExplorer() {
     }
-    return class_20;
-}()));
-var GameNews = (function () {
-    function GameNews() {
-    }
-    GameNews.Dispose = function () {
-        if (gameNews.selector)
-            gameNews.selector.Dispose();
-        gameNews.selector = null;
+    FileExplorer.Dispose = function () {
     };
-    GameNews.IsAccessible = function () {
+    FileExplorer.IsAccessible = function () {
         return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
     };
-    GameNews.Recover = function () {
+    FileExplorer.Recover = function () {
         if (Main.CheckNW())
             $("#helpLink").first().onclick = function () {
                 StandaloneMaker.Help($("#helpLink").prop("href"));
                 return false;
             };
-        GameNews.UpdateList();
+        FileExplorer.ReadDir();
     };
-    GameNews.UpdateList = function () {
+    FileExplorer.ReadDir = function () {
         $.ajax({
             type: 'POST',
-            url: '/backend/GameNews',
-            data: {
-                game: world.Id
-            },
-            success: function (msg) {
-                var data = TryParse(msg);
-                if (!data)
-                    return;
-                gameNews.data = data;
-                if (gameNews.selector) {
-                    gameNews.selector.UpdateList(gameNews.data);
-                }
-                else {
-                    gameNews.selector = new ListSelector("newsList", gameNews.data, "postedOn");
-                    gameNews.selector.OnSelect = GameNews.Select;
-                }
-            },
-            error: function (msg, textStatus) {
-            }
-        });
-    };
-    GameNews.Select = function (rowId) {
-        gameNews.selectedRow = rowId;
-        if (rowId === null) {
-            GameNews.Add();
-            return;
-        }
-        var html = "";
-        html += "<h3>Update News:</h3>";
-        html += "<textarea id='news_content' rows='30' style='width: 100%; resize: none;'>" + ("" + gameNews.data[rowId].news).htmlEntities() + "</textarea>";
-        html += "<center><span class='button' onclick='GameNews.SaveUpdate();'>Save</span><span class='button' onclick='GameNews.Delete();'>Delete</span></center>";
-        $("#newsParameters").html(html);
-    };
-    GameNews.Add = function () {
-        var html = "";
-        html += "<h3>Add News:</h3>";
-        html += "<textarea id='news_content' rows='30' style='width: 100%; resize: none;'></textarea>";
-        html += "<center><span class='button' onclick='GameNews.DoAdd();'>Save</span></center>";
-        $("#newsParameters").html(html);
-    };
-    GameNews.DoAdd = function () {
-        $.ajax({
-            type: 'POST',
-            url: '/backend/AddGameNews',
+            url: '/backend/DirectoryList',
             data: {
                 game: world.Id,
-                token: framework.Preferences['token'],
-                news: $("#news_content").val()
-            },
-            success: function (msg) {
-                GameNews.UpdateList();
-                gameNews.selector.Select(null);
-                GameNews.Add();
-            },
-            error: function (msg, textStatus) {
-            }
-        });
-    };
-    GameNews.SaveUpdate = function () {
-        $.ajax({
-            type: 'POST',
-            url: '/backend/UpdateGameNews',
-            data: {
-                game: world.Id,
-                id: gameNews.data[gameNews.selectedRow].id,
-                token: framework.Preferences['token'],
-                news: $("#news_content").val()
-            },
-            success: function (msg) {
-                GameNews.UpdateList();
-                gameNews.selector.Select(null);
-                GameNews.Add();
-            },
-            error: function (msg, textStatus) {
-            }
-        });
-    };
-    GameNews.Delete = function () {
-        $.ajax({
-            type: 'POST',
-            url: '/backend/DeleteGameNews',
-            data: {
-                game: world.Id,
-                id: gameNews.data[gameNews.selectedRow].id,
                 token: framework.Preferences['token']
             },
             success: function (msg) {
-                GameNews.UpdateList();
-                gameNews.selector.Select(null);
-                GameNews.Add();
+                var data = TryParse(msg);
+                if (!data) {
+                    $("#fileList").html();
+                    return;
+                }
+                var html = "";
+                if (selfHosted) {
+                    html += "Used space: " + FileExplorer.FormatSize(data.totalSize);
+                }
+                else {
+                    html = "Available space: " + FileExplorer.FormatSize(data.usableSize) + ", Used space: " + FileExplorer.FormatSize(data.totalSize) + ", Free space: " + FileExplorer.FormatSize(data.usableSize - data.totalSize) + " (" + Math.max(0, (Math.round((data.usableSize - data.totalSize) * 1000 / data.usableSize) / 10)) + "%)";
+                    if (data.tillWhen)
+                        html += "<br>Space rented till " + Main.FormatDate(data.tillWhen) + " then will have " + FileExplorer.FormatSize(data.baseSize);
+                    else
+                        html += "<br>Further space can be rented if needed.";
+                }
+                $("#fileUsage").html(html);
+                var html = "<table>";
+                html += "<thead><tr><td>Name</td><td>Size</td><td>Used on</td><td style='width: 1px;'>&nbsp;</td><td style='width: 1px;'>&nbsp;</td></tr></thead>";
+                html += "<tbody>";
+                for (var i = 0; i < data.files.length; i++) {
+                    html += "<tr><td>" + data.files[i].name.htmlEntities() + "</td>";
+                    html += "<td>" + FileExplorer.FormatSize(data.files[i].size) + "</td>";
+                    var usedOn = FileExplorer.UsedOn(data.userDirectory + "/" + data.files[i].name);
+                    if (usedOn == "Pixel Art Work file")
+                        usedOn = usedOn + "</td><td><a href='#action=PixelEditor&file=" + data.files[i].name.replace(/.work$/, "").htmlEntities() + "' class='button'>Edit</a></td><td><span class='button' onclick='FileExplorer.Delete(\"" + data.files[i].name.htmlEntities() + "\");'>Delete</span>";
+                    else if (!usedOn)
+                        usedOn = "Not used</td><td>&nbsp;</td><td><span class='button' onclick='FileExplorer.Delete(\"" + data.files[i].name.htmlEntities() + "\");'>Delete</span>";
+                    html += "<td>" + usedOn + "</td></tr>";
+                }
+                html += "<tbody></table>";
+                $("#fileList").html(html);
             },
-            error: function (msg, textStatus) {
+            error: function (msg) {
+                var data = TryParse(msg);
+                if (data && data.error)
+                    $("#fileList").html(data.error);
+                else
+                    $("#fileList").html(("" + msg).htmlEntities());
             }
         });
     };
-    return GameNews;
+    FileExplorer.Delete = function (filename) {
+        Framework.Confirm("Are you sure you want to delete this file?", function () {
+            $.ajax({
+                type: 'POST',
+                url: '/backend/DeleteFile',
+                data: {
+                    game: world.Id,
+                    token: framework.Preferences['token'],
+                    filename: filename
+                },
+                success: function (msg) {
+                    FileExplorer.ReadDir();
+                    Framework.ShowMessage("File deleted");
+                },
+                error: function (msg) {
+                    var data = TryParse(msg);
+                    if (data && data.error)
+                        $("#fileList").html(data.error);
+                    else
+                        $("#fileList").html(("" + msg).htmlEntities());
+                }
+            });
+        });
+    };
+    FileExplorer.FormatSize = function (size) {
+        if (size > 1024 * 1024)
+            return "" + (Math.round(size / (1024 * 1024 / 100)) / 100) + " Mb";
+        else if (size > 1024)
+            return "" + (Math.round(size / (1024 / 100)) / 100) + " Kb";
+        else
+            return "" + size + " bytes";
+    };
+    FileExplorer.UsedOn = function (filename) {
+        if (filename.indexOf(".work") == filename.length - 5)
+            return "Pixel Art Work file";
+        if (world.art.background.file.indexOf(filename) == 0)
+            return "Background tiles";
+        if (world.art.splashImage && world.art.splashImage.indexOf(filename) == 0)
+            return "Splash image";
+        if (world.art.panelStyle.file.indexOf(filename) == 0)
+            return "Panel style";
+        if (world.art.statBarStyle.file.indexOf(filename) == 0)
+            return "Stat bars";
+        if (world.art.quickslotStyle.file.indexOf(filename) == 0)
+            return "Quickslots";
+        for (var item in world.art.characters) {
+            if (world.art.characters[item].file.indexOf(filename) == 0)
+                return "Character " + item;
+        }
+        for (var item in world.art.objects) {
+            if (world.art.objects[item].file.indexOf(filename) == 0)
+                return "Map object " + item;
+        }
+        for (var item in world.art.house_parts) {
+            if (world.art.house_parts[item].file.indexOf(filename) == 0)
+                return "House part " + item;
+        }
+        for (var item in world.art.sounds) {
+            if (world.art.sounds[item].mp3.indexOf(filename) == 0)
+                return "Sound " + item;
+        }
+        for (var i = 0; i < world.Skills.length; i++) {
+            var iconFile = world.Skills[i].CodeVariable("icon");
+            if (iconFile && iconFile.indexOf(filename) == 0)
+                return "Skill icon " + world.Skills[i].Name;
+        }
+        return null;
+    };
+    return FileExplorer;
 }());
 var GameReset = (function () {
     function GameReset() {
@@ -14716,7 +18097,7 @@ var GameReset = (function () {
     return GameReset;
 }());
 var gameStats = new ((function () {
-    function class_21() {
+    function class_30() {
         this.currentStat = 1;
         this.currentView = "Month";
         this.months = ["January",
@@ -14745,7 +18126,7 @@ var gameStats = new ((function () {
             31];
         this.weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
     }
-    return class_21;
+    return class_30;
 }()));
 var GameStats = (function () {
     function GameStats() {
@@ -15005,738 +18386,137 @@ var GameStats = (function () {
     };
     return GameStats;
 }());
-/// <reference path="../../Logic/World/WorldRender.ts" />
-var houseEditor = new ((function () {
-    function class_22() {
-        this.housePartImages = {};
-        this.sticky = true;
-        this.glueDistance = 5;
-        this.keys = [];
-        this.multiSelection = null;
-        this.collisionSelection = null;
+var gameNews = new ((function () {
+    function class_31() {
     }
-    return class_22;
+    return class_31;
 }()));
-var HouseEditor = (function () {
-    function HouseEditor() {
+var GameNews = (function () {
+    function GameNews() {
     }
-    HouseEditor.Dispose = function () {
-        houseEditor.listHouses.Dispose();
-        houseEditor.listHouses = null;
-        houseEditor.listParts.Dispose();
-        houseEditor.listParts = null;
-        houseEditor.housePartImages = null;
-        $(window).unbind("resize", HouseEditor.Resize);
-        $(window).unbind("keydown", HouseEditor.KeyDown);
-        $(window).unbind("keyup", HouseEditor.KeyUp);
+    GameNews.Dispose = function () {
+        if (gameNews.selector)
+            gameNews.selector.Dispose();
+        gameNews.selector = null;
     };
-    HouseEditor.IsAccessible = function () {
+    GameNews.IsAccessible = function () {
         return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
     };
-    HouseEditor.Recover = function () {
-        if (Main.CheckNW()) {
+    GameNews.Recover = function () {
+        if (Main.CheckNW())
             $("#helpLink").first().onclick = function () {
                 StandaloneMaker.Help($("#helpLink").prop("href"));
                 return false;
             };
-            $("#listHouses").css("top", "5px");
-            $("#houseDetailsContainer").css("top", "5px");
-        }
-        houseEditor.keys = [];
-        houseEditor.partSelected = null;
-        houseEditor.multiSelection = null;
-        houseEditor.housePartImages = {};
-        houseEditor.listHouses = new ListSelector("listHouses", world.Houses);
-        houseEditor.listHouses.OnSelect = function (houseName) {
-            Framework.SetLocation({
-                action: "HouseEditor", id: houseName
-            });
-            if (!houseName) {
-                $("#houseTitle").html("");
-                houseEditor.currentHouse = houseEditor.currentHouseName = null;
-                $("#houseName").css('backgroundColor', '').val("").prop("disabled", true);
-                $("#houseCollisionX").val("").prop("disabled", true);
-                $("#houseCollisionY").val("").prop("disabled", true);
-                $("#houseCollisionWidth").val("").prop("disabled", true);
-                $("#houseCollisionHeight").val("").prop("disabled", true);
-            }
-            else {
-                $("#houseTitle").html("Details " + houseName);
-                houseEditor.currentHouseName = houseName;
-                houseEditor.currentHouse = world.Houses[houseEditor.currentHouseName];
-                $("#houseName").css('backgroundColor', '').val(houseEditor.currentHouseName).prop("disabled", false);
-                $("#houseCollisionX").val("" + houseEditor.currentHouse.collisionX).prop("disabled", false);
-                $("#houseCollisionY").val("" + houseEditor.currentHouse.collisionY).prop("disabled", false);
-                $("#houseCollisionWidth").val("" + houseEditor.currentHouse.collisionWidth).prop("disabled", false);
-                $("#houseCollisionHeight").val("" + houseEditor.currentHouse.collisionHeight).prop("disabled", false);
-            }
-        };
-        var firstHouse = null;
-        for (var item in world.Houses) {
-            firstHouse = item;
-            break;
-        }
-        houseEditor.listParts = new ListSelector("houseParts", world.art.house_parts);
-        houseEditor.listParts.OnSelect = function (partName) {
-            if (!partName)
-                return;
-            houseEditor.listParts.Select(null);
-            if (!houseEditor.currentHouse)
-                return;
-            houseEditor.currentHouse.parts.push({ part: partName, x: 0, y: 0 });
-            houseEditor.partSelected = [houseEditor.currentHouse[houseEditor.currentHouse.parts.length - 1]];
-        };
-        if (framework.CurrentUrl.id) {
-            if (!world.GetHouse(framework.CurrentUrl.id)) {
-                Framework.SetLocation({
-                    action: "HouseEditor"
-                });
-                houseEditor.listHouses.Select(null);
-            }
-            else
-                houseEditor.listHouses.Select(framework.CurrentUrl.id);
-        }
-        else if (firstHouse)
-            houseEditor.listHouses.Select(firstHouse);
-        else
-            houseEditor.listHouses.Select(null);
-        $(window).bind("resize", HouseEditor.Resize);
-        HouseEditor.Resize();
-        HouseEditor.Draw();
-        $("#houseEditor").bind("mousedown", HouseEditor.MouseDown);
-        $(window).bind("keydown", HouseEditor.KeyDown);
-        $(window).bind("keyup", HouseEditor.KeyUp);
-        if (framework.Preferences['houseSticky'] === false) {
-            houseEditor.sticky = false;
-            $("#stickyButton").removeClass("selectedButton");
-        }
+        GameNews.UpdateList();
     };
-    HouseEditor.ChangeName = function () {
-        var newName = $("#houseName").val().trim();
-        if ((newName.match(databaseNameRule) || !newName || newName.length < 1) || (world.Houses[newName] && world.Houses[newName] != world.Houses[houseEditor.currentHouseName])) {
-            $("#houseName").css('backgroundColor', '#FFE0E0');
-            return;
-        }
-        $("#houseName").css('backgroundColor', '');
-        if (newName == "" || newName == houseEditor.currentHouseName || world.Houses[newName])
-            return;
-        var oldName = houseEditor.currentHouseName;
-        delete world.Houses[houseEditor.currentHouseName];
-        world.Houses[newName] = houseEditor.currentHouse;
-        houseEditor.currentHouseName = newName;
-        //houseEditor.listHouses.UpdateList();
-        HouseEditor.UpdateHouseList();
-        SearchPanel.Update();
-        for (var i = 0; i < world.Zones.length; i++) {
-            var zone = world.Zones[i];
-            for (var j = 0; j < zone.MapFragments.length; j++) {
-                var fragment = zone.MapFragments[i].Modifications;
-                for (var k = 0; k < fragment.length; k++)
-                    if (fragment[k].Action == "house" && fragment[k].Value == oldName)
-                        fragment[k].Value = newName;
-            }
-        }
-        MapUtilities.Modify("house", oldName, newName);
-    };
-    HouseEditor.UpdateHouseList = function () {
-        houseEditor.listHouses.UpdateList();
-        houseEditor.listHouses.Select(houseEditor.currentHouseName);
-    };
-    HouseEditor.ChangeCollisionX = function () {
-        houseEditor.currentHouse.collisionX = parseInt($("#houseCollisionX").val());
-    };
-    HouseEditor.ChangeCollisionY = function () {
-        houseEditor.currentHouse.collisionY = parseInt($("#houseCollisionY").val());
-    };
-    HouseEditor.ChangeCollisionWidth = function () {
-        houseEditor.currentHouse.collisionWidth = parseInt($("#houseCollisionWidth").val());
-    };
-    HouseEditor.ChangeCollisionHeight = function () {
-        houseEditor.currentHouse.collisionHeight = parseInt($("#houseCollisionHeight").val());
-    };
-    HouseEditor.CollisionSelection = function () {
-        houseEditor.collisionSelection = { X: 0, Y: 0, Width: 1, Height: 1 };
-    };
-    HouseEditor.MouseDown = function (evt) {
-        if (!houseEditor.currentHouse)
-            return;
-        var x = evt.pageX - $("#houseEditor").position().left + $("#houseEditorContainer").first().scrollLeft;
-        var y = evt.pageY - $("#houseEditor").position().top + $("#houseEditorContainer").first().scrollTop;
-        if (houseEditor.collisionSelection != null) {
-            houseEditor.mouseOffset = { X: x, Y: y };
-            houseEditor.collisionSelection = { X: x, Y: y, Width: 1, Height: 1 };
-            HouseEditor.HandleCollisionSelection(evt);
-        }
-        else {
-            var newSelection = null;
-            for (var i = 0; i < houseEditor.currentHouse.parts.length; i++) {
-                var item = houseEditor.currentHouse.parts[i];
-                var partInfo = world.art.house_parts[item.part];
-                if (x >= item.x && x <= item.x + partInfo.width && y >= item.y && y <= item.y + partInfo.height) {
-                    newSelection = [item];
-                    houseEditor.mouseOffset = { X: x - item.x, Y: y - item.y };
+    GameNews.UpdateList = function () {
+        $.ajax({
+            type: 'POST',
+            url: '/backend/GameNews',
+            data: {
+                game: world.Id
+            },
+            success: function (msg) {
+                var data = TryParse(msg);
+                if (!data)
+                    return;
+                gameNews.data = data;
+                if (gameNews.selector) {
+                    gameNews.selector.UpdateList(gameNews.data);
                 }
-            }
-            if (newSelection && houseEditor.partSelected && houseEditor.partSelected.indexOf(newSelection[0]) != -1)
-                houseEditor.mouseOffset = { X: x - houseEditor.partSelected[0].x, Y: y - houseEditor.partSelected[0].y };
-            else
-                houseEditor.partSelected = newSelection;
-            if (!houseEditor.partSelected) {
-                houseEditor.multiSelection = { X: x, Y: y, Width: 1, Height: 1 };
-                houseEditor.mouseOffset = { X: x, Y: y };
-            }
-        }
-        $("#houseEditorMouseOverlay").bind("mouseup", HouseEditor.MouseUp).bind("mousemove", HouseEditor.MouseMove).show();
-    };
-    HouseEditor.MouseUp = function (evt) {
-        houseEditor.multiSelection = null;
-        houseEditor.collisionSelection = null;
-        $("#houseEditorMouseOverlay").unbind("mousemove", HouseEditor.MouseMove).unbind("mouseup", HouseEditor.MouseUp).hide();
-    };
-    HouseEditor.MouseMove = function (evt) {
-        if (!houseEditor.currentHouse)
-            return;
-        if (houseEditor.collisionSelection)
-            HouseEditor.HandleCollisionSelection(evt);
-        else if (houseEditor.partSelected && houseEditor.partSelected.length > 0 && !houseEditor.multiSelection)
-            HouseEditor.MoveItems(evt);
-        else
-            HouseEditor.HandleMultiSelect(evt);
-    };
-    HouseEditor.HandleCollisionSelection = function (evt) {
-        if (!houseEditor.currentHouse)
-            return;
-        var x = evt.pageX - $("#houseEditor").position().left + $("#houseEditorContainer").first().scrollLeft;
-        var y = evt.pageY - $("#houseEditor").position().top + $("#houseEditorContainer").first().scrollTop;
-        houseEditor.currentHouse.collisionWidth = houseEditor.collisionSelection.Width = Math.abs(x - houseEditor.mouseOffset.X);
-        houseEditor.currentHouse.collisionHeight = houseEditor.collisionSelection.Height = Math.abs(y - houseEditor.mouseOffset.Y);
-        houseEditor.currentHouse.collisionX = houseEditor.collisionSelection.X = Math.min(houseEditor.mouseOffset.X, x);
-        houseEditor.currentHouse.collisionY = houseEditor.collisionSelection.Y = Math.min(houseEditor.mouseOffset.Y, y);
-        $("#houseCollisionX").val("" + houseEditor.currentHouse.collisionX);
-        $("#houseCollisionY").val("" + houseEditor.currentHouse.collisionY);
-        $("#houseCollisionWidth").val("" + houseEditor.currentHouse.collisionWidth);
-        $("#houseCollisionHeight").val("" + houseEditor.currentHouse.collisionHeight);
-    };
-    HouseEditor.HandleMultiSelect = function (evt) {
-        if (!houseEditor.currentHouse)
-            return;
-        var x = evt.pageX - $("#houseEditor").position().left + $("#houseEditorContainer").first().scrollLeft;
-        var y = evt.pageY - $("#houseEditor").position().top + $("#houseEditorContainer").first().scrollTop;
-        houseEditor.multiSelection.Width = Math.abs(x - houseEditor.mouseOffset.X);
-        houseEditor.multiSelection.Height = Math.abs(y - houseEditor.mouseOffset.Y);
-        houseEditor.multiSelection.X = Math.min(houseEditor.mouseOffset.X, x);
-        houseEditor.multiSelection.Y = Math.min(houseEditor.mouseOffset.Y, y);
-        var a = houseEditor.multiSelection.X;
-        var b = houseEditor.multiSelection.Y;
-        var c = houseEditor.multiSelection.X + houseEditor.multiSelection.Width;
-        var d = houseEditor.multiSelection.Y + houseEditor.multiSelection.Height;
-        houseEditor.partSelected = [];
-        for (var i = 0; i < houseEditor.currentHouse.parts.length; i++) {
-            var item = houseEditor.currentHouse.parts[i];
-            var partInfo = world.art.house_parts[item.part];
-            if (!(item.x + partInfo.width < a || item.x > c || item.y + partInfo.height < b || item.y > d))
-                houseEditor.partSelected.push(item);
-        }
-        if (houseEditor.partSelected.length == 0)
-            houseEditor.partSelected = null;
-    };
-    HouseEditor.MoveItems = function (evt) {
-        var partInfo = world.art.house_parts[houseEditor.partSelected[0].part];
-        var x = evt.pageX - $("#houseEditor").position().left + $("#houseEditorContainer").first().scrollLeft - houseEditor.mouseOffset.X;
-        var y = evt.pageY - $("#houseEditor").position().top + $("#houseEditorContainer").first().scrollTop - houseEditor.mouseOffset.Y;
-        /*var x = (evt.pageX - $("#houseEditor").position().left) - houseEditor.mouseOffset.X;
-        var y = (evt.pageY - $("#houseEditor").position().top) - houseEditor.mouseOffset.Y;*/
-        if (houseEditor.sticky) {
-            // Search others to glue
-            var gluedX = false;
-            var gluedY = false;
-            for (var i = 0; i < houseEditor.currentHouse.parts.length && !(gluedX && gluedY); i++) {
-                var other = houseEditor.currentHouse.parts[i];
-                // Don't glue on myself
-                if (houseEditor.partSelected.indexOf(other) != -1)
-                    continue;
-                var otherInfo = world.art.house_parts[other.part];
-                var a = Math.abs(other.x - x);
-                var b = Math.abs(other.y - y);
-                var c = Math.abs((other.x + otherInfo.width) - x);
-                var d = Math.abs((other.y + otherInfo.height) - y);
-                var e = Math.abs(other.x - (x + partInfo.width));
-                var f = Math.abs(other.y - (y + partInfo.height));
-                var g = Math.abs((other.x + otherInfo.width) - (x + partInfo.width));
-                var h = Math.abs((other.y + otherInfo.height) - (y + partInfo.height));
-                if (a <= houseEditor.glueDistance && gluedX == false) {
-                    x = other.x;
-                    gluedX = true;
+                else {
+                    gameNews.selector = new ListSelector("newsList", gameNews.data, "postedOn");
+                    gameNews.selector.OnSelect = GameNews.Select;
                 }
-                if (b <= houseEditor.glueDistance && gluedY == false) {
-                    y = other.y;
-                    gluedY = true;
-                }
-                if (c <= houseEditor.glueDistance && gluedX == false) {
-                    x = other.x + otherInfo.width;
-                    gluedX = true;
-                }
-                if (d <= houseEditor.glueDistance && gluedY == false) {
-                    y = other.y + otherInfo.height;
-                    gluedY = true;
-                }
-                if (e <= houseEditor.glueDistance && gluedX == false) {
-                    x = other.x - partInfo.width;
-                    gluedX = true;
-                }
-                if (f <= houseEditor.glueDistance && gluedY == false) {
-                    y = other.y - partInfo.height;
-                    gluedY = true;
-                }
-                if (g <= houseEditor.glueDistance && gluedX == false) {
-                    x = other.x + otherInfo.width - partInfo.width;
-                    gluedX = true;
-                }
-                if (h <= houseEditor.glueDistance && gluedY == false) {
-                    y = other.y + otherInfo.height - partInfo.height;
-                    gluedY = true;
-                }
-            }
-        }
-        x = Math.max(0, Math.min(x, 500 - partInfo.width));
-        y = Math.max(0, Math.min(y, 500 - partInfo.height));
-        var dx = x - houseEditor.partSelected[0].x;
-        var dy = y - houseEditor.partSelected[0].y;
-        for (var i = 0; i < houseEditor.partSelected.length; i++) {
-            houseEditor.partSelected[i].x += dx;
-            houseEditor.partSelected[i].y += dy;
-        }
-    };
-    HouseEditor.Draw = function () {
-        if (!houseEditor.housePartImages)
-            return;
-        if (window['mozRequestAnimationFrame'])
-            window['mozRequestAnimationFrame'](HouseEditor.Draw);
-        else if (window['requestAnimationFrame'])
-            window['requestAnimationFrame'](HouseEditor.Draw);
-        else
-            setTimeout(HouseEditor.Draw, 16);
-        var ctx = $("#houseEditor").first().getContext("2d");
-        ctx.fillStyle = "#000000";
-        ctx.fillRect(0, 0, 500, 500);
-        if (!houseEditor.currentHouse)
-            return;
-        for (var i = 0; i < houseEditor.currentHouse.parts.length; i++) {
-            var item = houseEditor.currentHouse.parts[i];
-            var part = HouseEditor.GetPart(item.part);
-            if (!part)
-                continue;
-            var partInfo = world.art.house_parts[item.part];
-            ctx.drawImage(part, partInfo.x, partInfo.y, partInfo.width, partInfo.height, item.x, item.y, partInfo.width, partInfo.height);
-        }
-        // Highlight selected parts
-        if (houseEditor.partSelected && houseEditor.partSelected.length)
-            for (var i = 0; i < houseEditor.currentHouse.parts.length; i++) {
-                var item = houseEditor.currentHouse.parts[i];
-                if (houseEditor.partSelected.indexOf(item) != -1) {
-                    var partInfo = world.art.house_parts[item.part];
-                    ctx.strokeStyle = "#8080FF";
-                    ctx.strokeRect(item.x + 0.5, item.y + 0.5, partInfo.width, partInfo.height);
-                }
-            }
-        if (houseEditor.multiSelection) {
-            ctx.strokeStyle = "#8080FF";
-            ctx.strokeRect(houseEditor.multiSelection.X + 0.5, houseEditor.multiSelection.Y + 0.5, houseEditor.multiSelection.Width, houseEditor.multiSelection.Height);
-        }
-        ctx.strokeStyle = "#FF0000";
-        ctx.strokeRect(houseEditor.currentHouse.collisionX + 0.5, houseEditor.currentHouse.collisionY + 0.5, houseEditor.currentHouse.collisionWidth, houseEditor.currentHouse.collisionHeight);
-    };
-    HouseEditor.GetPart = function (name) {
-        if (!world.art.house_parts[name])
-            return null;
-        var file = world.art.house_parts[name].file;
-        if (!houseEditor.housePartImages[file]) {
-            houseEditor.housePartImages[file] = new Image();
-            houseEditor.housePartImages[file].src = file;
-        }
-        return houseEditor.housePartImages[file];
-    };
-    HouseEditor.Resize = function () {
-        var w = $("#houseEditorContainer").width();
-        var h = $("#houseEditorContainer").height();
-    };
-    HouseEditor.SwitchSticky = function () {
-        if (houseEditor.sticky)
-            $("#stickyButton").removeClass("selectedButton");
-        else
-            $("#stickyButton").addClass("selectedButton");
-        houseEditor.sticky = !houseEditor.sticky;
-        framework.Preferences['houseSticky'] = houseEditor.sticky;
-        Framework.SavePreferences();
-    };
-    HouseEditor.DeleteSelected = function () {
-        if (!houseEditor.partSelected)
-            return;
-        for (var i = 0; i < houseEditor.currentHouse.parts.length;) {
-            if (houseEditor.partSelected.indexOf(houseEditor.currentHouse.parts[i]) != -1)
-                houseEditor.currentHouse.parts.splice(i, 1);
-            else
-                i++;
-        }
-    };
-    HouseEditor.ToFront = function () {
-        if (!houseEditor.partSelected)
-            return;
-        HouseEditor.DeleteSelected();
-        for (var i = 0; i < houseEditor.partSelected.length; i++)
-            houseEditor.currentHouse.parts.push(houseEditor.partSelected[i]);
-    };
-    HouseEditor.ToBack = function () {
-        if (!houseEditor.partSelected)
-            return;
-        HouseEditor.DeleteSelected();
-        for (var i = 0; i < houseEditor.partSelected.length; i++)
-            houseEditor.currentHouse.parts.unshift(houseEditor.partSelected[i]);
-    };
-    HouseEditor.KeyDown = function (evt) {
-        houseEditor.keys[evt.keyCode] = true;
-        //console.log(evt.keyCode);
-        HouseEditor.HandleKeys();
-    };
-    HouseEditor.KeyUp = function (evt) {
-        houseEditor.keys[evt.keyCode] = false;
-    };
-    HouseEditor.HandleKeys = function () {
-        // Up key
-        if (houseEditor.keys[38] === true || houseEditor.keys[87] === true) {
-            if (houseEditor.partSelected)
-                for (var i = 0; i < houseEditor.partSelected.length; i++)
-                    houseEditor.partSelected[i].y -= (houseEditor.keys[16] ? 5 : 1);
-        }
-        // Left key
-        if (houseEditor.keys[37] === true || houseEditor.keys[65] === true) {
-            if (houseEditor.partSelected)
-                for (var i = 0; i < houseEditor.partSelected.length; i++)
-                    houseEditor.partSelected[i].x -= (houseEditor.keys[16] ? 5 : 1);
-        }
-        // Right key
-        if (houseEditor.keys[39] === true || houseEditor.keys[68] === true) {
-            if (houseEditor.partSelected)
-                for (var i = 0; i < houseEditor.partSelected.length; i++)
-                    houseEditor.partSelected[i].x += (houseEditor.keys[16] ? 5 : 1);
-        }
-        // Down key
-        if (houseEditor.keys[40] === true || houseEditor.keys[83] === true) {
-            if (houseEditor.partSelected)
-                for (var i = 0; i < houseEditor.partSelected.length; i++)
-                    houseEditor.partSelected[i].y += (houseEditor.keys[16] ? 5 : 1);
-        }
-    };
-    HouseEditor.NewHouse = function () {
-        var nextId = 1;
-        while (world.Houses["house_" + nextId])
-            nextId++;
-        world.Houses["house_" + nextId] = {
-            collisionX: 0,
-            collisionY: 0,
-            collisionWidth: 0,
-            collisionHeight: 0,
-            parts: []
-        };
-        houseEditor.currentHouse = world.Houses["house_" + nextId];
-        houseEditor.currentHouseName = "house_" + nextId;
-        houseEditor.partSelected = [];
-        HouseEditor.UpdateHouseList();
-        SearchPanel.Update();
-    };
-    HouseEditor.DeleteHouse = function () {
-        Framework.Confirm("Are you sure you want to delete this house?", function () {
-            var oldName = houseEditor.currentHouseName;
-            delete world.Houses[houseEditor.currentHouseName];
-            houseEditor.listHouses.Select(null);
-            HouseEditor.UpdateHouseList();
-            SearchPanel.Update();
-            for (var i = 0; i < world.Zones.length; i++) {
-                var zone = world.Zones[i];
-                for (var j = 0; j < zone.MapFragments.length; j++) {
-                    var fragment = zone.MapFragments[i].Modifications;
-                    for (var k = 0; k < fragment.length;) {
-                        if (fragment[k].Action == "house" && fragment[k].Value == oldName)
-                            fragment.splice(k, 1);
-                        else
-                            k++;
-                    }
-                }
-            }
-            MapUtilities.Modify("house", oldName, null);
-        });
-    };
-    HouseEditor.CloneHouse = function () {
-        var nextId = 1;
-        while (world.Houses["house_" + nextId])
-            nextId++;
-        world.Houses["house_" + nextId] = JSON.parse(JSON.stringify(world.Houses[houseEditor.currentHouseName]));
-        houseEditor.currentHouse = world.Houses["house_" + nextId];
-        houseEditor.currentHouseName = "house_" + nextId;
-        houseEditor.partSelected = [];
-        HouseEditor.UpdateHouseList();
-        SearchPanel.Update();
-    };
-    return HouseEditor;
-}());
-var housePart = new ((function () {
-    function class_23() {
-        this.listParts = null;
-        this.currentHousePart = null;
-        this.currentHousePartImage = null;
-        this.refresher = null;
-    }
-    return class_23;
-}()));
-var HousePart = (function () {
-    function HousePart() {
-    }
-    HousePart.Dispose = function () {
-        if (!housePart.refresher)
-            clearInterval(housePart.refresher);
-        housePart.refresher = null;
-        if (!housePart.listParts)
-            housePart.listParts.Dispose();
-        housePart.listParts = null;
-        $("#housePartEditor").unbind("mousedown", HousePart.MouseDown);
-    };
-    HousePart.IsAccessible = function () {
-        return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
-    };
-    HousePart.Recover = function () {
-        if (Main.CheckNW()) {
-            $("#helpLink").first().onclick = function () {
-                StandaloneMaker.Help($("#helpLink").prop("href"));
-                return false;
-            };
-            $("#listHouseParts").css("top", "5px");
-            $("#housePartContainer").css("top", "5px");
-            $("#houseDetails").css("top", "0px");
-            $("#housePartEditorContainer").css("top", "95px");
-            $("#buttonUpload").html("Add");
-        }
-        housePart.listParts = new ListSelector("listHouseParts", world.art.house_parts);
-        housePart.listParts.OnSelect = function (partName) {
-            Framework.SetLocation({ action: "HousePart", id: partName });
-            housePart.currentHousePart = partName;
-            if (!partName) {
-                $("#housePartName").css('backgroundColor', '').prop("disabled", true).val("");
-                $("#housePartX").prop("disabled", true).val("");
-                $("#housePartY").prop("disabled", true).val("");
-                $("#housePartWidth").prop("disabled", true).val("");
-                $("#housePartHeight").prop("disabled", true).val("");
-                return;
-            }
-            $("#housePartName").css('backgroundColor', '').prop("disabled", false).val(partName);
-            $("#housePartX").prop("disabled", false).val("" + world.art.house_parts[partName].x);
-            $("#housePartY").prop("disabled", false).val("" + world.art.house_parts[partName].y);
-            $("#housePartWidth").prop("disabled", false).val("" + world.art.house_parts[partName].width);
-            $("#housePartHeight").prop("disabled", false).val("" + world.art.house_parts[partName].height);
-            if (housePart.currentHousePartImage && housePart.currentHousePartImage.src != world.art.house_parts[partName].file)
-                housePart.currentHousePartImage = null;
-        };
-        housePart.refresher = setInterval(HousePart.UpdateDisplay, 100);
-        $("#housePartEditor").bind("mousedown", HousePart.MouseDown);
-        if (framework.CurrentUrl.id) {
-            if (!world.art.house_parts[framework.CurrentUrl.id]) {
-                Framework.SetLocation({
-                    action: "HousePart"
-                });
-                housePart.listParts.Select(null);
-            }
-            else
-                housePart.listParts.Select(framework.CurrentUrl.id);
-        }
-        else
-            housePart.listParts.Select(null);
-    };
-    HousePart.ChangeValue = function (propName, fieldName) {
-        if (!housePart.currentHousePart)
-            return;
-        var part = world.art.house_parts[housePart.currentHousePart];
-        var val = parseInt($("#" + fieldName).val());
-        if (!isNaN(val))
-            part[propName] = val;
-    };
-    HousePart.UpdateDisplay = function () {
-        var canvas = $("#housePartEditor").first();
-        if (!canvas)
-            return;
-        var ctx = canvas.getContext("2d");
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        if (!housePart.currentHousePart)
-            return;
-        var part = world.art.house_parts[housePart.currentHousePart];
-        if (!housePart.currentHousePartImage) {
-            housePart.currentHousePartImage = new Image();
-            housePart.currentHousePartImage.src = part.file;
-        }
-        ctx.drawImage(housePart.currentHousePartImage, 0, 0);
-        ctx.strokeStyle = "#000000";
-        ctx.lineWidth = 3;
-        ctx.strokeRect(part.x + 0.5, part.y + 0.5, part.width, part.height);
-        ctx.strokeStyle = "#E00000";
-        ctx.lineWidth = 1;
-        ctx.strokeRect(part.x + 0.5, part.y + 0.5, part.width, part.height);
-    };
-    HousePart.MouseDown = function (evt) {
-        if (!housePart.currentHousePart)
-            return;
-        var x = evt.pageX - $("#housePartEditor").position().left + $("#housePartEditorContainer").first().scrollLeft;
-        var y = evt.pageY - $("#housePartEditor").position().top + $("#housePartEditorContainer").first().scrollTop;
-        housePart.mouseOffset = { X: x, Y: y };
-        $("#houseEditorMouseOverlay").bind("mouseup", HousePart.MouseUp).bind("mousemove", HousePart.MouseMove).show();
-    };
-    HousePart.MouseUp = function (evt) {
-        $("#houseEditorMouseOverlay").unbind("mousemove", HousePart.MouseMove).unbind("mouseup", HousePart.MouseUp).hide();
-    };
-    HousePart.MouseMove = function (evt) {
-        if (!housePart.currentHousePart)
-            return;
-        var x = evt.pageX - $("#housePartEditor").position().left + $("#housePartEditorContainer").first().scrollLeft;
-        var y = evt.pageY - $("#housePartEditor").position().top + $("#housePartEditorContainer").first().scrollTop;
-        var part = world.art.house_parts[housePart.currentHousePart];
-        part.width = Math.abs(x - housePart.mouseOffset.X);
-        part.height = Math.abs(y - housePart.mouseOffset.Y);
-        part.x = Math.min(housePart.mouseOffset.X, x);
-        part.y = Math.min(housePart.mouseOffset.Y, y);
-        $("#housePartX").val("" + part.x);
-        $("#housePartY").val("" + part.y);
-        $("#housePartWidth").val("" + part.width);
-        $("#housePartHeight").val("" + part.height);
-    };
-    HousePart.ChangeName = function () {
-        if (!housePart.currentHousePart)
-            return;
-        var newName = $("#housePartName").val();
-        if ((newName.match(databaseNameRule) || !newName || newName.length < 1) || (world.art.house_parts[newName] && world.art.house_parts[newName] != world.art.house_parts[housePart.currentHousePart])) {
-            $("#housePartName").css('backgroundColor', '#FFE0E0');
-            return;
-        }
-        $("#housePartName").css('backgroundColor', '');
-        if (!newName || newName.trim() == "")
-            return;
-        if (newName == housePart.currentHousePart)
-            return;
-        if (world.art.house_parts[newName])
-            return;
-        var oldName = housePart.currentHousePart;
-        var part = world.art.house_parts[housePart.currentHousePart];
-        delete world.art.house_parts[housePart.currentHousePart];
-        world.art.house_parts[newName] = part;
-        housePart.listParts.UpdateList();
-        housePart.listParts.Select(newName);
-        SearchPanel.Update();
-        for (var item in world.Houses) {
-            for (var i = 0; i < world.Houses[item].parts.length; i++) {
-                if (world.Houses[item].parts[i].part == oldName)
-                    world.Houses[item].parts[i].part = newName;
-            }
-        }
-        for (var item in world.art.houses) {
-            for (var i = 0; i < world.art.houses[item].parts.length; i++) {
-                if (world.art.houses[item].parts[i].part == oldName)
-                    world.art.houses[item].parts[i].part = newName;
-            }
-        }
-    };
-    HousePart.Clone = function () {
-        if (!housePart.currentHousePart)
-            return;
-        var id = 1;
-        while (world.art.house_parts["part_" + id])
-            id++;
-        var newName = "part_" + id;
-        var part = JSON.parse(JSON.stringify(world.art.house_parts[housePart.currentHousePart]));
-        world.art.house_parts[newName] = part;
-        housePart.listParts.UpdateList();
-        housePart.listParts.Select(newName);
-        SearchPanel.Update();
-    };
-    HousePart.Delete = function () {
-        if (!housePart.currentHousePart)
-            return;
-        Framework.Confirm("Are you sure you want to delete this house part?", function () {
-            var oldName = housePart.currentHousePart;
-            delete world.art.house_parts[housePart.currentHousePart];
-            housePart.listParts.UpdateList();
-            housePart.listParts.Select(null);
-            SearchPanel.Update();
-            for (var item in world.Houses) {
-                for (var i = 0; i < world.Houses[item].parts.length;) {
-                    if (world.Houses[item].parts[i].part == oldName)
-                        world.Houses[item].parts.splice(i, 1);
-                    else
-                        i++;
-                }
-            }
-            for (var item in world.art.houses) {
-                for (var i = 0; i < world.art.houses[item].parts.length;) {
-                    if (world.art.houses[item].parts[i].part == oldName)
-                        world.art.houses[item].parts.splice(i, 1);
-                    else
-                        i++;
-                }
+            },
+            error: function (msg, textStatus) {
             }
         });
     };
-    HousePart.ShowUpload = function () {
-        if (Main.CheckNW()) {
-            $("#fileOpenDialog").prop("accept", ".png");
-            $("#fileOpenDialog").unbind("change");
-            $("#fileOpenDialog").val("").bind("change", HousePart.ImportFileImage).first().click();
+    GameNews.Select = function (rowId) {
+        gameNews.selectedRow = rowId;
+        if (rowId === null) {
+            GameNews.Add();
             return;
         }
-        $("#uploadHousePart").show();
-        $("#uploadGameId").val("" + world.Id);
-        $("#uploadToken").val(framework.Preferences['token']);
+        var html = "";
+        html += "<h3>Update News:</h3>";
+        html += "<textarea id='news_content' rows='30' style='width: 100%; resize: none;'>" + ("" + gameNews.data[rowId].news).htmlEntities() + "</textarea>";
+        html += "<center><span class='button' onclick='GameNews.SaveUpdate();'>Save</span><span class='button' onclick='GameNews.Delete();'>Delete</span></center>";
+        $("#newsParameters").html(html);
     };
-    HousePart.ImportFileImage = function () {
-        HousePart.FinishImport($("#fileOpenDialog").val());
-        $("#fileOpenDialog").unbind("change", HousePart.ImportFileImage).val("");
+    GameNews.Add = function () {
+        var html = "";
+        html += "<h3>Add News:</h3>";
+        html += "<textarea id='news_content' rows='30' style='width: 100%; resize: none;'></textarea>";
+        html += "<center><span class='button' onclick='GameNews.DoAdd();'>Save</span></center>";
+        $("#newsParameters").html(html);
     };
-    HousePart.Upload = function () {
-        $("#uploadHousePart").hide();
-        $("#artHousePartUploadForm").submit();
+    GameNews.DoAdd = function () {
+        $.ajax({
+            type: 'POST',
+            url: '/backend/AddGameNews',
+            data: {
+                game: world.Id,
+                token: framework.Preferences['token'],
+                news: $("#news_content").val()
+            },
+            success: function (msg) {
+                GameNews.UpdateList();
+                gameNews.selector.Select(null);
+                GameNews.Add();
+            },
+            error: function (msg, textStatus) {
+            }
+        });
     };
-    HousePart.CloseUpload = function () {
-        $("#uploadHousePart").hide();
+    GameNews.SaveUpdate = function () {
+        $.ajax({
+            type: 'POST',
+            url: '/backend/UpdateGameNews',
+            data: {
+                game: world.Id,
+                id: gameNews.data[gameNews.selectedRow].id,
+                token: framework.Preferences['token'],
+                news: $("#news_content").val()
+            },
+            success: function (msg) {
+                GameNews.UpdateList();
+                gameNews.selector.Select(null);
+                GameNews.Add();
+            },
+            error: function (msg, textStatus) {
+            }
+        });
     };
-    HousePart.Result = function (result) {
-        var data = JSON.parse(result);
-        if (data.error) {
-            Framework.Alert(data.error);
-            return;
-        }
-        else if (data.new_file) {
-            HousePart.FinishImport(data.new_file);
-        }
+    GameNews.Delete = function () {
+        $.ajax({
+            type: 'POST',
+            url: '/backend/DeleteGameNews',
+            data: {
+                game: world.Id,
+                id: gameNews.data[gameNews.selectedRow].id,
+                token: framework.Preferences['token']
+            },
+            success: function (msg) {
+                GameNews.UpdateList();
+                gameNews.selector.Select(null);
+                GameNews.Add();
+            },
+            error: function (msg, textStatus) {
+            }
+        });
     };
-    HousePart.FinishImport = function (filename) {
-        var plainUrl = filename;
-        var fileUrl = filename + "?v=" + Math.round((new Date()).getTime() / 1000);
-        var id = 1;
-        while (world.art.house_parts["part_" + id])
-            id++;
-        var newName = "part_" + id;
-        for (var item in world.art.house_parts) {
-            if (world.art.house_parts[item].file.indexOf(plainUrl) == 0)
-                world.art.house_parts[item].file = fileUrl;
-        }
-        world.art.house_parts[newName] = { x: 0, y: 0, width: 0, height: 0, file: fileUrl };
-        housePart.listParts.UpdateList();
-        housePart.listParts.Select(newName);
-        SearchPanel.Update();
-    };
-    return HousePart;
+    return GameNews;
 }());
 var genericCodeEditor = new ((function () {
-    function class_24() {
+    function class_32() {
         this.selector = null;
         //editor: CodeMirror.EditorFromTextArea = null;
         this.editor = null;
     }
-    return class_24;
+    return class_32;
 }()));
 var GenericCodeEditor = (function () {
     function GenericCodeEditor() {
@@ -16417,67 +19197,368 @@ var GenericCodeEditor = (function () {
     };
     return GenericCodeEditor;
 }());
-var ImportExport = (function () {
-    function ImportExport() {
+var housePart = new ((function () {
+    function class_33() {
+        this.listParts = null;
+        this.currentHousePart = null;
+        this.currentHousePartImage = null;
+        this.refresher = null;
     }
-    ImportExport.Dispose = function () {
+    return class_33;
+}()));
+var HousePart = (function () {
+    function HousePart() {
+    }
+    HousePart.Dispose = function () {
+        if (!housePart.refresher)
+            clearInterval(housePart.refresher);
+        housePart.refresher = null;
+        if (!housePart.listParts)
+            housePart.listParts.Dispose();
+        housePart.listParts = null;
+        $("#housePartEditor").unbind("mousedown", HousePart.MouseDown);
     };
-    ImportExport.IsAccessible = function () {
+    HousePart.IsAccessible = function () {
         return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
     };
-    ImportExport.Recover = function () {
+    HousePart.Recover = function () {
+        if (Main.CheckNW()) {
+            $("#helpLink").first().onclick = function () {
+                StandaloneMaker.Help($("#helpLink").prop("href"));
+                return false;
+            };
+            $("#listHouseParts").css("top", "5px");
+            $("#housePartContainer").css("top", "5px");
+            $("#houseDetails").css("top", "0px");
+            $("#housePartEditorContainer").css("top", "95px");
+            $("#buttonUpload").html("Add");
+        }
+        housePart.listParts = new ListSelector("listHouseParts", world.art.house_parts);
+        housePart.listParts.OnSelect = function (partName) {
+            Framework.SetLocation({ action: "HousePart", id: partName });
+            housePart.currentHousePart = partName;
+            if (!partName) {
+                $("#housePartName").css('backgroundColor', '').prop("disabled", true).val("");
+                $("#housePartX").prop("disabled", true).val("");
+                $("#housePartY").prop("disabled", true).val("");
+                $("#housePartWidth").prop("disabled", true).val("");
+                $("#housePartHeight").prop("disabled", true).val("");
+                return;
+            }
+            $("#housePartName").css('backgroundColor', '').prop("disabled", false).val(partName);
+            $("#housePartX").prop("disabled", false).val("" + world.art.house_parts[partName].x);
+            $("#housePartY").prop("disabled", false).val("" + world.art.house_parts[partName].y);
+            $("#housePartWidth").prop("disabled", false).val("" + world.art.house_parts[partName].width);
+            $("#housePartHeight").prop("disabled", false).val("" + world.art.house_parts[partName].height);
+            if (housePart.currentHousePartImage && housePart.currentHousePartImage.src != world.art.house_parts[partName].file)
+                housePart.currentHousePartImage = null;
+        };
+        housePart.refresher = setInterval(HousePart.UpdateDisplay, 100);
+        $("#housePartEditor").bind("mousedown", HousePart.MouseDown);
+        if (framework.CurrentUrl.id) {
+            if (!world.art.house_parts[framework.CurrentUrl.id]) {
+                Framework.SetLocation({
+                    action: "HousePart"
+                });
+                housePart.listParts.Select(null);
+            }
+            else
+                housePart.listParts.Select(framework.CurrentUrl.id);
+        }
+        else
+            housePart.listParts.Select(null);
+    };
+    HousePart.ChangeValue = function (propName, fieldName) {
+        if (!housePart.currentHousePart)
+            return;
+        var part = world.art.house_parts[housePart.currentHousePart];
+        var val = parseInt($("#" + fieldName).val());
+        if (!isNaN(val))
+            part[propName] = val;
+    };
+    HousePart.UpdateDisplay = function () {
+        var canvas = $("#housePartEditor").first();
+        if (!canvas)
+            return;
+        var ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (!housePart.currentHousePart)
+            return;
+        var part = world.art.house_parts[housePart.currentHousePart];
+        if (!housePart.currentHousePartImage) {
+            housePart.currentHousePartImage = new Image();
+            housePart.currentHousePartImage.src = part.file;
+        }
+        ctx.drawImage(housePart.currentHousePartImage, 0, 0);
+        ctx.strokeStyle = "#000000";
+        ctx.lineWidth = 3;
+        ctx.strokeRect(part.x + 0.5, part.y + 0.5, part.width, part.height);
+        ctx.strokeStyle = "#E00000";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(part.x + 0.5, part.y + 0.5, part.width, part.height);
+    };
+    HousePart.MouseDown = function (evt) {
+        if (!housePart.currentHousePart)
+            return;
+        var x = evt.pageX - $("#housePartEditor").position().left + $("#housePartEditorContainer").first().scrollLeft;
+        var y = evt.pageY - $("#housePartEditor").position().top + $("#housePartEditorContainer").first().scrollTop;
+        housePart.mouseOffset = { X: x, Y: y };
+        $("#houseEditorMouseOverlay").bind("mouseup", HousePart.MouseUp).bind("mousemove", HousePart.MouseMove).show();
+    };
+    HousePart.MouseUp = function (evt) {
+        $("#houseEditorMouseOverlay").unbind("mousemove", HousePart.MouseMove).unbind("mouseup", HousePart.MouseUp).hide();
+    };
+    HousePart.MouseMove = function (evt) {
+        if (!housePart.currentHousePart)
+            return;
+        var x = evt.pageX - $("#housePartEditor").position().left + $("#housePartEditorContainer").first().scrollLeft;
+        var y = evt.pageY - $("#housePartEditor").position().top + $("#housePartEditorContainer").first().scrollTop;
+        var part = world.art.house_parts[housePart.currentHousePart];
+        part.width = Math.abs(x - housePart.mouseOffset.X);
+        part.height = Math.abs(y - housePart.mouseOffset.Y);
+        part.x = Math.min(housePart.mouseOffset.X, x);
+        part.y = Math.min(housePart.mouseOffset.Y, y);
+        $("#housePartX").val("" + part.x);
+        $("#housePartY").val("" + part.y);
+        $("#housePartWidth").val("" + part.width);
+        $("#housePartHeight").val("" + part.height);
+    };
+    HousePart.ChangeName = function () {
+        if (!housePart.currentHousePart)
+            return;
+        var newName = $("#housePartName").val();
+        if ((newName.match(databaseNameRule) || !newName || newName.length < 1) || (world.art.house_parts[newName] && world.art.house_parts[newName] != world.art.house_parts[housePart.currentHousePart])) {
+            $("#housePartName").css('backgroundColor', '#FFE0E0');
+            return;
+        }
+        $("#housePartName").css('backgroundColor', '');
+        if (!newName || newName.trim() == "")
+            return;
+        if (newName == housePart.currentHousePart)
+            return;
+        if (world.art.house_parts[newName])
+            return;
+        var oldName = housePart.currentHousePart;
+        var part = world.art.house_parts[housePart.currentHousePart];
+        delete world.art.house_parts[housePart.currentHousePart];
+        world.art.house_parts[newName] = part;
+        housePart.listParts.UpdateList();
+        housePart.listParts.Select(newName);
+        SearchPanel.Update();
+        for (var item in world.Houses) {
+            for (var i = 0; i < world.Houses[item].parts.length; i++) {
+                if (world.Houses[item].parts[i].part == oldName)
+                    world.Houses[item].parts[i].part = newName;
+            }
+        }
+        for (var item in world.art.houses) {
+            for (var i = 0; i < world.art.houses[item].parts.length; i++) {
+                if (world.art.houses[item].parts[i].part == oldName)
+                    world.art.houses[item].parts[i].part = newName;
+            }
+        }
+    };
+    HousePart.Clone = function () {
+        if (!housePart.currentHousePart)
+            return;
+        var id = 1;
+        while (world.art.house_parts["part_" + id])
+            id++;
+        var newName = "part_" + id;
+        var part = JSON.parse(JSON.stringify(world.art.house_parts[housePart.currentHousePart]));
+        world.art.house_parts[newName] = part;
+        housePart.listParts.UpdateList();
+        housePart.listParts.Select(newName);
+        SearchPanel.Update();
+    };
+    HousePart.Delete = function () {
+        if (!housePart.currentHousePart)
+            return;
+        Framework.Confirm("Are you sure you want to delete this house part?", function () {
+            var oldName = housePart.currentHousePart;
+            delete world.art.house_parts[housePart.currentHousePart];
+            housePart.listParts.UpdateList();
+            housePart.listParts.Select(null);
+            SearchPanel.Update();
+            for (var item in world.Houses) {
+                for (var i = 0; i < world.Houses[item].parts.length;) {
+                    if (world.Houses[item].parts[i].part == oldName)
+                        world.Houses[item].parts.splice(i, 1);
+                    else
+                        i++;
+                }
+            }
+            for (var item in world.art.houses) {
+                for (var i = 0; i < world.art.houses[item].parts.length;) {
+                    if (world.art.houses[item].parts[i].part == oldName)
+                        world.art.houses[item].parts.splice(i, 1);
+                    else
+                        i++;
+                }
+            }
+        });
+    };
+    HousePart.ShowUpload = function () {
+        if (Main.CheckNW()) {
+            $("#fileOpenDialog").prop("accept", ".png");
+            $("#fileOpenDialog").unbind("change");
+            $("#fileOpenDialog").val("").bind("change", HousePart.ImportFileImage).first().click();
+            return;
+        }
+        $("#uploadHousePart").show();
+        $("#uploadGameId").val("" + world.Id);
+        $("#uploadToken").val(framework.Preferences['token']);
+    };
+    HousePart.ImportFileImage = function () {
+        HousePart.FinishImport($("#fileOpenDialog").val());
+        $("#fileOpenDialog").unbind("change", HousePart.ImportFileImage).val("");
+    };
+    HousePart.Upload = function () {
+        $("#uploadHousePart").hide();
+        $("#artHousePartUploadForm").submit();
+    };
+    HousePart.CloseUpload = function () {
+        $("#uploadHousePart").hide();
+    };
+    HousePart.Result = function (result) {
+        var data = JSON.parse(result);
+        if (data.error) {
+            Framework.Alert(data.error);
+            return;
+        }
+        else if (data.new_file) {
+            HousePart.FinishImport(data.new_file);
+        }
+    };
+    HousePart.FinishImport = function (filename) {
+        var plainUrl = filename;
+        var fileUrl = filename + "?v=" + Math.round((new Date()).getTime() / 1000);
+        var id = 1;
+        while (world.art.house_parts["part_" + id])
+            id++;
+        var newName = "part_" + id;
+        for (var item in world.art.house_parts) {
+            if (world.art.house_parts[item].file.indexOf(plainUrl) == 0)
+                world.art.house_parts[item].file = fileUrl;
+        }
+        world.art.house_parts[newName] = { x: 0, y: 0, width: 0, height: 0, file: fileUrl };
+        housePart.listParts.UpdateList();
+        housePart.listParts.Select(newName);
+        SearchPanel.Update();
+    };
+    return HousePart;
+}());
+var gameList = new ((function () {
+    function class_34() {
+    }
+    return class_34;
+}()));
+var GameList = (function () {
+    function GameList() {
+    }
+    GameList.Dispose = function () {
+    };
+    GameList.Recover = function () {
         if (Main.CheckNW())
             $("#helpLink").first().onclick = function () {
                 StandaloneMaker.Help($("#helpLink").prop("href"));
                 return false;
             };
-        if (selfHosted) {
-            $("#html5export").hide();
-            $("#apkexport").hide();
+        GameList.Search();
+    };
+    GameList.Search = function () {
+        if (gameList.searchTimeout)
+            clearTimeout(gameList.searchTimeout);
+        gameList.searchTimeout = setTimeout(GameList.DoSearch, 500);
+    };
+    GameList.DoSearch = function () {
+        gameList.searchTimeout = null;
+        $.ajax({
+            type: 'POST',
+            url: '/backend/GameList',
+            data: {
+                token: framework.Preferences['token'],
+                search: $("#searchGame").val().trim()
+            },
+            success: function (msg) {
+                var data = TryParse(msg);
+                gameList.data = data.games;
+                GameList.ShowList();
+            },
+            error: function (msg) {
+                var data = TryParse(msg);
+                if (data && data.error)
+                    $("#gameList").html(data.error);
+                else
+                    $("#gameList").html(("" + msg).htmlEntities());
+            }
+        });
+    };
+    GameList.ShowList = function () {
+        var html = "";
+        html += "<table>";
+        html += "<thead>";
+        html += "<tr><td>&nbsp;</td><td>Name</td><td>Description</td></tr>";
+        html += "</thead>";
+        html += "<tbody>";
+        for (var i = 0; i < gameList.data.length; i++) {
+            html += "<tr>";
+            html += "<td>";
+            if (gameList.data[i].can_edit == 'Y')
+                html += "<a class='button' href='/maker.html?game=" + gameList.data[i].name.replace(/ /g, "_") + "'>Manage</a>";
+            else
+                html += "<a class='button' href='/play.html?game=" + gameList.data[i].name.replace(/ /g, "_") + "'>Play</a>";
+            html += "</td>";
+            html += "<td>" + (gameList.data[i].name ? gameList.data[i].name.htmlEntities() : "") + "</td>";
+            html += "<td>" + Main.TextTransform(gameList.data[i].description ? gameList.data[i].description : "") + "</td>";
+            html += "</tr>";
         }
+        html += "</tbody>";
+        html += "</table>";
+        $("#gameList").html(html);
     };
-    ImportExport.ExportJSON = function () {
-        $("#importExportFrame").prop("src", "/backend/ExportJson?game=" + world.Id + "&token=" + framework.Preferences['token']);
+    GameList.ShowCreateGame = function () {
+        $("#showCreateGame").show();
     };
-    ImportExport.ExportGame = function () {
-        $("#importExportFrame").prop("src", "/backend/ExportGame?game=" + world.Id + "&token=" + framework.Preferences['token']);
+    GameList.HideCreateGame = function () {
+        $("#showCreateGame").hide();
     };
-    ImportExport.AndroidAPK = function () {
-        $("#importExportFrame").prop("src", "/backend/ExportAndroidApp?game=" + world.Id + "&token=" + framework.Preferences['token']);
-    };
-    ImportExport.ImportJSON = function () {
-        $("#uploadImportData").show();
-        $("#uploadGameId").val("" + world.Id);
-        $("#uploadToken").val(framework.Preferences['token']);
-        $("#fileUpload").prop("accept", ".json");
-        $("#uploadFormData").prop("action", "/upload/ImportJson");
-    };
-    ImportExport.Upload = function () {
-        $("#uploadImportData").hide();
-        $("#uploadFormData").submit();
-    };
-    ImportExport.CloseUpload = function () {
-        $("#uploadImportData").hide();
-    };
-    ImportExport.Result = function (data) {
-        data = JSON.parse(data);
-        if (data.error)
-            Framework.Alert(data.error);
-        else {
-            Framework.Alert("Import done, press ok to reload the page.", function () {
-                document.location.reload(true);
-            });
+    GameList.CreateGame = function () {
+        var name = $("#newGameName").val().trim();
+        if (name.replace(/[a-z 0-9]+/gi, "").length > 0) {
+            Framework.Alert("Only letters, numbers and spaces are allowed within a game name");
+            return;
         }
+        $.ajax({
+            type: 'POST',
+            url: '/backend/OwnerCreateGame',
+            data: {
+                token: framework.Preferences['token'],
+                name: name
+            },
+            success: function (msg) {
+                var data = TryParse(msg);
+                if (data.error) {
+                    $("#result").html(data.error);
+                    return;
+                }
+                document.location.replace("/maker.html?id=" + data.id);
+            },
+            error: function (msg) {
+                var data = TryParse(msg);
+                if (data.error)
+                    $("#result").html(data.error);
+                else
+                    $("#result").html(("" + msg).htmlEntities());
+            }
+        });
     };
-    ImportExport.Html5 = function () {
-        $("#importExportFrame").prop("src", "/backend/ExportHtml5?game=" + world.Id + "&token=" + framework.Preferences['token']);
-    };
-    return ImportExport;
+    return GameList;
 }());
 var inventorySlotEditor = new ((function () {
-    function class_25() {
+    function class_35() {
     }
-    return class_25;
+    return class_35;
 }()));
 var InventorySlotEditor = (function () {
     function InventorySlotEditor() {
@@ -16611,6 +19692,25 @@ var InventorySlotEditor = (function () {
         });
     };
     return InventorySlotEditor;
+}());
+var Logout = (function () {
+    function Logout() {
+    }
+    Logout.Dispose = function () {
+    };
+    Logout.Recover = function () {
+        delete framework.Preferences['token'];
+        delete framework.Preferences['user'];
+        Framework.SavePreferences();
+        var query = Framework.ParseQuery();
+        if (selfHosted)
+            document.location.assign("/");
+        else if (("" + document.location).indexOf("/maker.html?") != -1)
+            document.location.assign("/");
+        else
+            document.location.assign("/play.html?game=" + query.game);
+    };
+    return Logout;
 }());
 var MapEditor = (function () {
     function MapEditor() {
@@ -18597,7 +21697,7 @@ var MapEditor = (function () {
     return MapEditor;
 }());
 var mapEditor = new ((function () {
-    function class_26() {
+    function class_36() {
         this.currentCellTile = 0;
         this.currentCellType = "water";
         this.currentObject = "flower_1";
@@ -18619,31 +21719,12 @@ var mapEditor = new ((function () {
         this.renderRectrangle = null;
         this.repeatTimer = 0;
     }
-    return class_26;
+    return class_36;
 }()));
-var Logout = (function () {
-    function Logout() {
-    }
-    Logout.Dispose = function () {
-    };
-    Logout.Recover = function () {
-        delete framework.Preferences['token'];
-        delete framework.Preferences['user'];
-        Framework.SavePreferences();
-        var query = Framework.ParseQuery();
-        if (selfHosted)
-            document.location.assign("/");
-        else if (("" + document.location).indexOf("/maker.html?") != -1)
-            document.location.assign("/");
-        else
-            document.location.assign("/play.html?game=" + query.game);
-    };
-    return Logout;
-}());
 var moduleManager = new ((function () {
-    function class_27() {
+    function class_37() {
     }
-    return class_27;
+    return class_37;
 }()));
 var ModuleManager = (function () {
     function ModuleManager() {
@@ -18961,7 +22042,7 @@ var ModuleManager = (function () {
 }());
 /// <reference path="../../Libs/codemirror.d.ts" />
 var monsterEditor = new ((function () {
-    function class_28() {
+    function class_38() {
         this.selectedMonster = null;
         this.selector = null;
         this.editor = null;
@@ -18973,7 +22054,7 @@ var monsterEditor = new ((function () {
             "Art",
             "Life"];
     }
-    return class_28;
+    return class_38;
 }()));
 var MonsterEditor = (function () {
     function MonsterEditor() {
@@ -19307,9 +22388,9 @@ var MonsterEditor = (function () {
     return MonsterEditor;
 }());
 var npcEditor = new ((function () {
-    function class_29() {
+    function class_39() {
     }
-    return class_29;
+    return class_39;
 }()));
 var NPCEditor = (function () {
     function NPCEditor() {
@@ -19753,350 +22834,11 @@ var NPCShopEditor = (function () {
     };
     return NPCShopEditor;
 }());
-var objectTypeEditor = new ((function () {
-    function class_30() {
-        this.editor = null;
-    }
-    return class_30;
-}()));
-var ObjectTypeEditor = (function () {
-    function ObjectTypeEditor() {
-    }
-    ObjectTypeEditor.Dispose = function () {
-        if (objectTypeEditor.listObjectType)
-            objectTypeEditor.listObjectType.Dispose();
-        objectTypeEditor.listObjectType = null;
-        $(window).unbind("resize", ObjectTypeEditor.Resize);
-    };
-    ObjectTypeEditor.IsAccessible = function () {
-        return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
-    };
-    ObjectTypeEditor.Recover = function () {
-        if (Main.CheckNW()) {
-            $("#helpLink").first().onclick = function () {
-                StandaloneMaker.Help($("#helpLink").prop("href"));
-                return false;
-            };
-            $("#listObjectType").css("top", "5px");
-            $("#objectTypeDetails").css("top", "5px");
-        }
-        objectTypeEditor.listObjectType = new ListSelector("listObjectType", world.InventoryObjectTypes, "Name");
-        objectTypeEditor.listObjectType.OnSelect = ObjectTypeEditor.Select;
-        $(window).bind("resize", ObjectTypeEditor.Resize);
-        dialogCondition.currentEditor = "ObjectTypeEditor";
-        dialogAction.currentEditor = "ObjectTypeEditor";
-        if (framework.CurrentUrl.id) {
-            var found = false;
-            for (var i = 0; i < world.InventoryObjectTypes.length; i++) {
-                if (world.InventoryObjectTypes[i].Name == framework.CurrentUrl.id) {
-                    objectTypeEditor.listObjectType.Select(i);
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                Framework.SetLocation({
-                    action: "ObjectTypeEditor"
-                });
-                objectTypeEditor.listObjectType.Select(null);
-                return;
-            }
-        }
-        else
-            objectTypeEditor.listObjectType.Select(null);
-    };
-    ObjectTypeEditor.Resize = function () {
-        try {
-            $("#obj_codecontainer").width($("#objectTypeDetails table tr > td:nth-child(2)").width() - 3);
-        }
-        catch (ex) {
-        }
-    };
-    ObjectTypeEditor.Select = function (rowId) {
-        Framework.SetLocation({
-            action: "ObjectTypeEditor", id: rowId === null ? null : world.InventoryObjectTypes[rowId].Name
-        });
-        if (rowId < 0 || rowId === null) {
-            objectTypeEditor.selected = null;
-            $("#objectTypeDetails").html("");
-            return;
-        }
-        objectTypeEditor.selected = rowId;
-        ObjectTypeEditor.Display();
-    };
-    ObjectTypeEditor.Display = function () {
-        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
-        var html = "";
-        html = "<h1>" + objectType.Name + "</h1>";
-        html += "<table>";
-        html += "<tr><td>Name:</td><td><input type='text' id='obj_name' value='" + objectType.Name.htmlEntities() + "' onkeyup='ObjectTypeEditor.Change(\"Name\")'></td></tr>";
-        html += "<tr><td>Group:</td><td><input type='text' id='obj_group' value='" + objectType.Group.htmlEntities() + "' onkeyup='ObjectTypeEditor.Change(\"Group\")'></td></tr>";
-        for (var i = 0; i < objectType.Parameters.length; i++) {
-            html += "<tr><td><input id='param_name_" + i + "' type='text' value='" + objectType.Parameters[i].Name + "' onkeyup='ObjectTypeEditor.ChangeParam(" + i + ",\"Name\");'></td>";
-            html += "<td><input  id='param_defaultvalue_" + i + "' type='text' value='" + objectType.Parameters[i].DefaultValue + "' onkeyup='ObjectTypeEditor.ChangeParam(" + i + ",\"DefaultValue\");'></td>";
-            html += "<td><div class='button' onclick='ObjectTypeEditor.RemoveParameter(" + i + ");'>Remove</div></td>";
-            html += "</tr>";
-        }
-        html += "<tr><td>Action Name:</td><td><input type='text' id='obj_action' value='" + (objectType.Action ? objectType.Action : "").htmlEntities() + "' onkeyup='ObjectTypeEditor.Change(\"Action\")'></td></tr>";
-        if (world.SimplifiedObjectLogic) {
-            var conditions = [];
-            for (var item in dialogCondition.code)
-                conditions.push(item);
-            conditions.sort();
-            var actions = [];
-            for (var item in dialogAction.code)
-                actions.push(item);
-            actions.sort();
-            //---------------------- WEAR CONDITION
-            html += "<tr><td>Wear Conditions:</td><td>&nbsp;</td>";
-            for (var i = 0; i < objectType.WearConditions.length; i++) {
-                var cond = objectType.WearConditions[i];
-                html += "<tr><td>" + cond.Name.title() + ": <span class='dialogBlockDelete' onclick='ObjectTypeEditor.DeleteWearCondition(" + i + ")'>X</span></td>";
-                html += "<td>" + dialogCondition.code[cond.Name].Display(i, cond.Values, "ChangeWearCondition") + "</td></tr>";
-            }
-            html += "<tr><td colspan='2'><select id='add_wear_condition' onchange='ObjectTypeEditor.AddWearCondition()'>";
-            html += "<option value=''>- Add new condition --</option>";
-            for (var i = 0; i < conditions.length; i++)
-                html += "<option value='" + conditions[i] + "'>" + conditions[i].title() + "</option>";
-            html += "</select></td></tr>";
-            //---------------------- UNWEAR CONDITION
-            html += "<tr><td>Unwear Conditions:</td><td>&nbsp;</td>";
-            for (var i = 0; i < objectType.UnwearConditions.length; i++) {
-                var cond = objectType.UnwearConditions[i];
-                html += "<tr><td>" + cond.Name.title() + ": <span class='dialogBlockDelete' onclick='ObjectTypeEditor.DeleteUnwearCondition(" + i + ")'>X</span></td>";
-                html += "<td>" + dialogCondition.code[cond.Name].Display(i, cond.Values, "ChangeUnwearCondition") + "</td></tr>";
-            }
-            html += "<tr><td colspan='2'><select id='add_unwear_condition' onchange='ObjectTypeEditor.AddUnwearCondition()'>";
-            html += "<option value=''>- Add new condition --</option>";
-            for (var i = 0; i < conditions.length; i++)
-                html += "<option value='" + conditions[i] + "'>" + conditions[i].title() + "</option>";
-            html += "</select></td></tr>";
-            //---------------------- DROP CONDITION
-            html += "<tr><td>Drop Conditions:</td><td>&nbsp;</td>";
-            for (var i = 0; i < objectType.DropConditions.length; i++) {
-                var cond = objectType.DropConditions[i];
-                html += "<tr><td>" + cond.Name.title() + ": <span class='dialogBlockDelete' onclick='ObjectTypeEditor.DeleteDropCondition(" + i + ")'>X</span></td>";
-                html += "<td>" + dialogCondition.code[cond.Name].Display(i, cond.Values, "ChangeDropCondition") + "</td></tr>";
-            }
-            html += "<tr><td colspan='2'><select id='add_drop_condition' onchange='ObjectTypeEditor.AddDropCondition()'>";
-            html += "<option value=''>- Add new condition --</option>";
-            for (var i = 0; i < conditions.length; i++)
-                html += "<option value='" + conditions[i] + "'>" + conditions[i].title() + "</option>";
-            html += "</select></td></tr>";
-            //---------------------- USAGE CONDITION
-            html += "<tr><td>Usage Conditions:</td><td>&nbsp;</td>";
-            for (var i = 0; i < objectType.UsageConditions.length; i++) {
-                var cond = objectType.UsageConditions[i];
-                html += "<tr><td>" + cond.Name.title() + ": <span class='dialogBlockDelete' onclick='ObjectTypeEditor.DeleteUsageCondition(" + i + ")'>X</span></td>";
-                html += "<td>" + dialogCondition.code[cond.Name].Display(i, cond.Values, "ChangeUsageCondition") + "</td></tr>";
-            }
-            html += "<tr><td colspan='2'><select id='add_usage_condition' onchange='ObjectTypeEditor.AddUsageCondition()'>";
-            html += "<option value=''>- Add new condition --</option>";
-            for (var i = 0; i < conditions.length; i++)
-                html += "<option value='" + conditions[i] + "'>" + conditions[i].title() + "</option>";
-            html += "</select></td></tr>";
-            //---------------------- USAGE ACTION
-            html += "<tr><td>Usage Action:</td><td>&nbsp;</td>";
-            for (var i = 0; i < objectType.UsageActions.length; i++) {
-                var action = objectType.UsageActions[i];
-                html += "<tr><td>" + action.Name.title() + ": <span class='dialogBlockDelete' onclick='ObjectTypeEditor.DeleteUsageAction(" + i + ")'>X</span></td>";
-                html += "<td>" + dialogAction.code[action.Name].Display(i, action.Values, "ChangeUsageAction") + "</td></tr>";
-            }
-            html += "<tr><td colspan='2'><select id='add_usage_action' onchange='ObjectTypeEditor.AddUsageAction()'>";
-            html += "<option value=''>- Add new action --</option>";
-            for (var i = 0; i < actions.length; i++)
-                html += "<option value='" + actions[i] + "'>" + actions[i].title() + "</option>";
-            html += "</select></td></tr>";
-        }
-        else
-            html += "<tr><td>Action Code:</td><td><div id='obj_codecontainer'><textarea type='text' id='obj_actioncode' rows='10' onkeyup='ObjectTypeEditor.Change(\"ActionCode\")'>" + (objectType.ActionCode ? objectType.ActionCode : "").htmlEntities() + "</textarea></div></td></tr>";
-        html += "</table>";
-        $("#objectTypeDetails").html(html);
-        if (!world.SimplifiedObjectLogic) {
-            objectEditor.editor = CodeMirror.fromTextArea($("#obj_actioncode").first(), {
-                lineNumbers: true,
-                matchBrackets: true,
-                continueComments: "Enter",
-                tabSize: 4,
-                indentUnit: 4,
-                extraKeys: { "Ctrl-Q": "toggleComment" }
-            });
-            objectEditor.editor.on('change', ObjectTypeEditor.ChangeCode);
-        }
-        $("#obj_codecontainer").width($("#objectTypeDetails table tr > td:nth-child(2)").width() - 3);
-    };
-    ObjectTypeEditor.ChangeWearCondition = function (id, pos) {
-        world.InventoryObjectTypes[objectTypeEditor.selected].WearConditions[id].Values[pos] = $("#ChangeWearCondition_" + id + "_" + pos).val();
-    };
-    ObjectTypeEditor.DeleteWearCondition = function (rowId) {
-        world.InventoryObjectTypes[objectTypeEditor.selected].WearConditions.splice(rowId, 1);
-        ObjectTypeEditor.Display();
-    };
-    ObjectTypeEditor.AddWearCondition = function () {
-        var condition = $("#add_wear_condition").val();
-        $("#add_wear_condition").first().selectedIndex = 0;
-        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
-        objectType.WearConditions.push({ Name: condition, Values: [] });
-        ObjectTypeEditor.Display();
-    };
-    ObjectTypeEditor.ChangeUnwearCondition = function (id, pos) {
-        world.InventoryObjectTypes[objectTypeEditor.selected].UnwearConditions[id].Values[pos] = $("#ChangeUnwearCondition_" + id + "_" + pos).val();
-    };
-    ObjectTypeEditor.DeleteUnwearCondition = function (rowId) {
-        world.InventoryObjectTypes[objectTypeEditor.selected].UnwearConditions.splice(rowId, 1);
-        ObjectTypeEditor.Display();
-    };
-    ObjectTypeEditor.AddUnwearCondition = function () {
-        var condition = $("#add_unwear_condition").val();
-        $("#add_unwear_condition").first().selectedIndex = 0;
-        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
-        objectType.UnwearConditions.push({ Name: condition, Values: [] });
-        ObjectTypeEditor.Display();
-    };
-    ObjectTypeEditor.ChangeDropCondition = function (id, pos) {
-        world.InventoryObjectTypes[objectTypeEditor.selected].DropConditions[id].Values[pos] = $("#ChangeDropCondition_" + id + "_" + pos).val();
-    };
-    ObjectTypeEditor.DeleteDropCondition = function (rowId) {
-        world.InventoryObjectTypes[objectTypeEditor.selected].DropConditions.splice(rowId, 1);
-        ObjectTypeEditor.Display();
-    };
-    ObjectTypeEditor.AddDropCondition = function () {
-        var condition = $("#add_drop_condition").val();
-        $("#add_drop_condition").first().selectedIndex = 0;
-        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
-        objectType.DropConditions.push({ Name: condition, Values: [] });
-        ObjectTypeEditor.Display();
-    };
-    ObjectTypeEditor.ChangeUsageAction = function (id, pos) {
-        world.InventoryObjectTypes[objectTypeEditor.selected].UsageActions[id].Values[pos] = $("#ChangeUsageAction_" + id + "_" + pos).val();
-    };
-    ObjectTypeEditor.DeleteUsageAction = function (rowId) {
-        world.InventoryObjectTypes[objectTypeEditor.selected].UsageActions.splice(rowId, 1);
-        ObjectTypeEditor.Display();
-    };
-    ObjectTypeEditor.AddUsageAction = function () {
-        var condition = $("#add_usage_action").val();
-        $("#add_usage_action").first().selectedIndex = 0;
-        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
-        objectType.UsageActions.push({ Name: condition, Values: [] });
-        ObjectTypeEditor.Display();
-    };
-    ObjectTypeEditor.ChangeUsageCondition = function (id, pos) {
-        world.InventoryObjectTypes[objectTypeEditor.selected].UsageConditions[id].Values[pos] = $("#ChangeUsageCondition_" + id + "_" + pos).val();
-    };
-    ObjectTypeEditor.DeleteUsageCondition = function (rowId) {
-        world.InventoryObjectTypes[objectTypeEditor.selected].UsageConditions.splice(rowId, 1);
-        ObjectTypeEditor.Display();
-    };
-    ObjectTypeEditor.AddUsageCondition = function () {
-        var condition = $("#add_usage_condition").val();
-        $("#add_usage_condition").first().selectedIndex = 0;
-        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
-        objectType.UsageConditions.push({ Name: condition, Values: [] });
-        ObjectTypeEditor.Display();
-    };
-    ObjectTypeEditor.AddParameter = function () {
-        if (!objectTypeEditor.selected)
-            return;
-        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
-        objectType.Parameters.push(new ObjectDefinedParameter("Param" + (objectType.Parameters.length + 1), "1"));
-        ObjectTypeEditor.Display();
-    };
-    ObjectTypeEditor.RemoveParameter = function (id) {
-        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
-        objectType.Parameters.splice(id, 1);
-        ObjectTypeEditor.Display();
-    };
-    ObjectTypeEditor.ChangeCode = function () {
-        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
-        objectType.ActionCode = objectEditor.editor.getValue();
-    };
-    ObjectTypeEditor.ChangeParam = function (id, param) {
-        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
-        objectType.Parameters[id][param] = $("#param_" + param.toLowerCase() + "_" + id).val();
-    };
-    ObjectTypeEditor.Change = function (param) {
-        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
-        var oldName = objectType.Name;
-        if (param == 'Name') {
-            var newName = $("#obj_" + param.toLowerCase()).val();
-            if ((newName.match(databaseNameRule) || !newName || newName.length < 1) || (world.GetInventoryObjectType(newName) && world.GetInventoryObjectType(newName) != world.InventoryObjectTypes[objectTypeEditor.selected])) {
-                $("#obj_" + param.toLowerCase()).css('backgroundColor', '#FFE0E0');
-                return;
-            }
-            $("#obj_" + param.toLowerCase()).css('backgroundColor', '');
-        }
-        objectType[param] = $("#obj_" + param.toLowerCase()).val();
-        if (param == "Name") {
-            objectTypeEditor.listObjectType.UpdateList();
-            for (var i = 0; i < world.InventoryObjects.length; i++)
-                if (world.InventoryObjects[i].ObjectType == oldName)
-                    world.InventoryObjects[i].ObjectType = objectType.Name;
-            SearchPanel.Update();
-        }
-    };
-    ObjectTypeEditor.New = function () {
-        var newObjectType = new ObjectType("ObjType " + world.InventoryObjectTypes.length, "Group", null, null, []);
-        newObjectType.ActionCode = "// Uncomment the functions you want to define.\n\
-\n\
-// Checks if the player can unwear the item\n\
-// function CanUnwear(itemName)\n\
-// {\n\
-//      return true;\n\
-// }\n\
-\n\
-// Checks if the player can wear the item\n\
-// function CanWear(itemName)\n\
-// {\n\
-//      return true;\n\
-// }\n\
-\n\
-// Checks if the player can use the item\n\
-// function CanUse(itemName)\n\
-// {\n\
-//      return true;\n\
-// }\n\
-\n\
-// Checks if the player can drop the item\n\
-// function CanDrop(itemName)\n\
-// {\n\
-//      return true;\n\
-// }\n\
-\n\
-// Executed when the player uses the item\n\
-// function Use(itemName)\n\
-// {\n\
-// }\n\
-";
-        world.InventoryObjectTypes.push(newObjectType);
-        objectTypeEditor.listObjectType.UpdateList();
-        objectTypeEditor.listObjectType.Select(world.InventoryObjectTypes.length - 1);
-        SearchPanel.Update();
-    };
-    ObjectTypeEditor.Delete = function () {
-        if (objectTypeEditor.selected == null)
-            return;
-        Framework.Confirm("Are you sure you want to delete this object type and all the objects using it?", function () {
-            var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
-            for (var i = 0; i < world.InventoryObjects.length;) {
-                if (world.InventoryObjects[i].ObjectType == objectType.Name)
-                    world.InventoryObjects.splice(i, 1);
-                else
-                    i++;
-            }
-            world.InventoryObjectTypes.splice(objectTypeEditor.selected, 1);
-            objectTypeEditor.listObjectType.UpdateList();
-            objectTypeEditor.listObjectType.Select(-1);
-            SearchPanel.Update();
-        });
-    };
-    return ObjectTypeEditor;
-}());
 var objectEditor = new ((function () {
-    function class_31() {
+    function class_40() {
         this.editor = null;
     }
-    return class_31;
+    return class_40;
 }()));
 var ObjectEditor = (function () {
     function ObjectEditor() {
@@ -20526,11 +23268,350 @@ var ObjectEditor = (function () {
     };
     return ObjectEditor;
 }());
+var objectTypeEditor = new ((function () {
+    function class_41() {
+        this.editor = null;
+    }
+    return class_41;
+}()));
+var ObjectTypeEditor = (function () {
+    function ObjectTypeEditor() {
+    }
+    ObjectTypeEditor.Dispose = function () {
+        if (objectTypeEditor.listObjectType)
+            objectTypeEditor.listObjectType.Dispose();
+        objectTypeEditor.listObjectType = null;
+        $(window).unbind("resize", ObjectTypeEditor.Resize);
+    };
+    ObjectTypeEditor.IsAccessible = function () {
+        return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
+    };
+    ObjectTypeEditor.Recover = function () {
+        if (Main.CheckNW()) {
+            $("#helpLink").first().onclick = function () {
+                StandaloneMaker.Help($("#helpLink").prop("href"));
+                return false;
+            };
+            $("#listObjectType").css("top", "5px");
+            $("#objectTypeDetails").css("top", "5px");
+        }
+        objectTypeEditor.listObjectType = new ListSelector("listObjectType", world.InventoryObjectTypes, "Name");
+        objectTypeEditor.listObjectType.OnSelect = ObjectTypeEditor.Select;
+        $(window).bind("resize", ObjectTypeEditor.Resize);
+        dialogCondition.currentEditor = "ObjectTypeEditor";
+        dialogAction.currentEditor = "ObjectTypeEditor";
+        if (framework.CurrentUrl.id) {
+            var found = false;
+            for (var i = 0; i < world.InventoryObjectTypes.length; i++) {
+                if (world.InventoryObjectTypes[i].Name == framework.CurrentUrl.id) {
+                    objectTypeEditor.listObjectType.Select(i);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                Framework.SetLocation({
+                    action: "ObjectTypeEditor"
+                });
+                objectTypeEditor.listObjectType.Select(null);
+                return;
+            }
+        }
+        else
+            objectTypeEditor.listObjectType.Select(null);
+    };
+    ObjectTypeEditor.Resize = function () {
+        try {
+            $("#obj_codecontainer").width($("#objectTypeDetails table tr > td:nth-child(2)").width() - 3);
+        }
+        catch (ex) {
+        }
+    };
+    ObjectTypeEditor.Select = function (rowId) {
+        Framework.SetLocation({
+            action: "ObjectTypeEditor", id: rowId === null ? null : world.InventoryObjectTypes[rowId].Name
+        });
+        if (rowId < 0 || rowId === null) {
+            objectTypeEditor.selected = null;
+            $("#objectTypeDetails").html("");
+            return;
+        }
+        objectTypeEditor.selected = rowId;
+        ObjectTypeEditor.Display();
+    };
+    ObjectTypeEditor.Display = function () {
+        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
+        var html = "";
+        html = "<h1>" + objectType.Name + "</h1>";
+        html += "<table>";
+        html += "<tr><td>Name:</td><td><input type='text' id='obj_name' value='" + objectType.Name.htmlEntities() + "' onkeyup='ObjectTypeEditor.Change(\"Name\")'></td></tr>";
+        html += "<tr><td>Group:</td><td><input type='text' id='obj_group' value='" + objectType.Group.htmlEntities() + "' onkeyup='ObjectTypeEditor.Change(\"Group\")'></td></tr>";
+        for (var i = 0; i < objectType.Parameters.length; i++) {
+            html += "<tr><td><input id='param_name_" + i + "' type='text' value='" + objectType.Parameters[i].Name + "' onkeyup='ObjectTypeEditor.ChangeParam(" + i + ",\"Name\");'></td>";
+            html += "<td><input  id='param_defaultvalue_" + i + "' type='text' value='" + objectType.Parameters[i].DefaultValue + "' onkeyup='ObjectTypeEditor.ChangeParam(" + i + ",\"DefaultValue\");'></td>";
+            html += "<td><div class='button' onclick='ObjectTypeEditor.RemoveParameter(" + i + ");'>Remove</div></td>";
+            html += "</tr>";
+        }
+        html += "<tr><td>Action Name:</td><td><input type='text' id='obj_action' value='" + (objectType.Action ? objectType.Action : "").htmlEntities() + "' onkeyup='ObjectTypeEditor.Change(\"Action\")'></td></tr>";
+        if (world.SimplifiedObjectLogic) {
+            var conditions = [];
+            for (var item in dialogCondition.code)
+                conditions.push(item);
+            conditions.sort();
+            var actions = [];
+            for (var item in dialogAction.code)
+                actions.push(item);
+            actions.sort();
+            //---------------------- WEAR CONDITION
+            html += "<tr><td>Wear Conditions:</td><td>&nbsp;</td>";
+            for (var i = 0; i < objectType.WearConditions.length; i++) {
+                var cond = objectType.WearConditions[i];
+                html += "<tr><td>" + cond.Name.title() + ": <span class='dialogBlockDelete' onclick='ObjectTypeEditor.DeleteWearCondition(" + i + ")'>X</span></td>";
+                html += "<td>" + dialogCondition.code[cond.Name].Display(i, cond.Values, "ChangeWearCondition") + "</td></tr>";
+            }
+            html += "<tr><td colspan='2'><select id='add_wear_condition' onchange='ObjectTypeEditor.AddWearCondition()'>";
+            html += "<option value=''>- Add new condition --</option>";
+            for (var i = 0; i < conditions.length; i++)
+                html += "<option value='" + conditions[i] + "'>" + conditions[i].title() + "</option>";
+            html += "</select></td></tr>";
+            //---------------------- UNWEAR CONDITION
+            html += "<tr><td>Unwear Conditions:</td><td>&nbsp;</td>";
+            for (var i = 0; i < objectType.UnwearConditions.length; i++) {
+                var cond = objectType.UnwearConditions[i];
+                html += "<tr><td>" + cond.Name.title() + ": <span class='dialogBlockDelete' onclick='ObjectTypeEditor.DeleteUnwearCondition(" + i + ")'>X</span></td>";
+                html += "<td>" + dialogCondition.code[cond.Name].Display(i, cond.Values, "ChangeUnwearCondition") + "</td></tr>";
+            }
+            html += "<tr><td colspan='2'><select id='add_unwear_condition' onchange='ObjectTypeEditor.AddUnwearCondition()'>";
+            html += "<option value=''>- Add new condition --</option>";
+            for (var i = 0; i < conditions.length; i++)
+                html += "<option value='" + conditions[i] + "'>" + conditions[i].title() + "</option>";
+            html += "</select></td></tr>";
+            //---------------------- DROP CONDITION
+            html += "<tr><td>Drop Conditions:</td><td>&nbsp;</td>";
+            for (var i = 0; i < objectType.DropConditions.length; i++) {
+                var cond = objectType.DropConditions[i];
+                html += "<tr><td>" + cond.Name.title() + ": <span class='dialogBlockDelete' onclick='ObjectTypeEditor.DeleteDropCondition(" + i + ")'>X</span></td>";
+                html += "<td>" + dialogCondition.code[cond.Name].Display(i, cond.Values, "ChangeDropCondition") + "</td></tr>";
+            }
+            html += "<tr><td colspan='2'><select id='add_drop_condition' onchange='ObjectTypeEditor.AddDropCondition()'>";
+            html += "<option value=''>- Add new condition --</option>";
+            for (var i = 0; i < conditions.length; i++)
+                html += "<option value='" + conditions[i] + "'>" + conditions[i].title() + "</option>";
+            html += "</select></td></tr>";
+            //---------------------- USAGE CONDITION
+            html += "<tr><td>Usage Conditions:</td><td>&nbsp;</td>";
+            for (var i = 0; i < objectType.UsageConditions.length; i++) {
+                var cond = objectType.UsageConditions[i];
+                html += "<tr><td>" + cond.Name.title() + ": <span class='dialogBlockDelete' onclick='ObjectTypeEditor.DeleteUsageCondition(" + i + ")'>X</span></td>";
+                html += "<td>" + dialogCondition.code[cond.Name].Display(i, cond.Values, "ChangeUsageCondition") + "</td></tr>";
+            }
+            html += "<tr><td colspan='2'><select id='add_usage_condition' onchange='ObjectTypeEditor.AddUsageCondition()'>";
+            html += "<option value=''>- Add new condition --</option>";
+            for (var i = 0; i < conditions.length; i++)
+                html += "<option value='" + conditions[i] + "'>" + conditions[i].title() + "</option>";
+            html += "</select></td></tr>";
+            //---------------------- USAGE ACTION
+            html += "<tr><td>Usage Action:</td><td>&nbsp;</td>";
+            for (var i = 0; i < objectType.UsageActions.length; i++) {
+                var action = objectType.UsageActions[i];
+                html += "<tr><td>" + action.Name.title() + ": <span class='dialogBlockDelete' onclick='ObjectTypeEditor.DeleteUsageAction(" + i + ")'>X</span></td>";
+                html += "<td>" + dialogAction.code[action.Name].Display(i, action.Values, "ChangeUsageAction") + "</td></tr>";
+            }
+            html += "<tr><td colspan='2'><select id='add_usage_action' onchange='ObjectTypeEditor.AddUsageAction()'>";
+            html += "<option value=''>- Add new action --</option>";
+            for (var i = 0; i < actions.length; i++)
+                html += "<option value='" + actions[i] + "'>" + actions[i].title() + "</option>";
+            html += "</select></td></tr>";
+        }
+        else
+            html += "<tr><td>Action Code:</td><td><div id='obj_codecontainer'><textarea type='text' id='obj_actioncode' rows='10' onkeyup='ObjectTypeEditor.Change(\"ActionCode\")'>" + (objectType.ActionCode ? objectType.ActionCode : "").htmlEntities() + "</textarea></div></td></tr>";
+        html += "</table>";
+        $("#objectTypeDetails").html(html);
+        if (!world.SimplifiedObjectLogic) {
+            objectEditor.editor = CodeMirror.fromTextArea($("#obj_actioncode").first(), {
+                lineNumbers: true,
+                matchBrackets: true,
+                continueComments: "Enter",
+                tabSize: 4,
+                indentUnit: 4,
+                extraKeys: { "Ctrl-Q": "toggleComment" }
+            });
+            objectEditor.editor.on('change', ObjectTypeEditor.ChangeCode);
+        }
+        $("#obj_codecontainer").width($("#objectTypeDetails table tr > td:nth-child(2)").width() - 3);
+    };
+    ObjectTypeEditor.ChangeWearCondition = function (id, pos) {
+        world.InventoryObjectTypes[objectTypeEditor.selected].WearConditions[id].Values[pos] = $("#ChangeWearCondition_" + id + "_" + pos).val();
+    };
+    ObjectTypeEditor.DeleteWearCondition = function (rowId) {
+        world.InventoryObjectTypes[objectTypeEditor.selected].WearConditions.splice(rowId, 1);
+        ObjectTypeEditor.Display();
+    };
+    ObjectTypeEditor.AddWearCondition = function () {
+        var condition = $("#add_wear_condition").val();
+        $("#add_wear_condition").first().selectedIndex = 0;
+        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
+        objectType.WearConditions.push({ Name: condition, Values: [] });
+        ObjectTypeEditor.Display();
+    };
+    ObjectTypeEditor.ChangeUnwearCondition = function (id, pos) {
+        world.InventoryObjectTypes[objectTypeEditor.selected].UnwearConditions[id].Values[pos] = $("#ChangeUnwearCondition_" + id + "_" + pos).val();
+    };
+    ObjectTypeEditor.DeleteUnwearCondition = function (rowId) {
+        world.InventoryObjectTypes[objectTypeEditor.selected].UnwearConditions.splice(rowId, 1);
+        ObjectTypeEditor.Display();
+    };
+    ObjectTypeEditor.AddUnwearCondition = function () {
+        var condition = $("#add_unwear_condition").val();
+        $("#add_unwear_condition").first().selectedIndex = 0;
+        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
+        objectType.UnwearConditions.push({ Name: condition, Values: [] });
+        ObjectTypeEditor.Display();
+    };
+    ObjectTypeEditor.ChangeDropCondition = function (id, pos) {
+        world.InventoryObjectTypes[objectTypeEditor.selected].DropConditions[id].Values[pos] = $("#ChangeDropCondition_" + id + "_" + pos).val();
+    };
+    ObjectTypeEditor.DeleteDropCondition = function (rowId) {
+        world.InventoryObjectTypes[objectTypeEditor.selected].DropConditions.splice(rowId, 1);
+        ObjectTypeEditor.Display();
+    };
+    ObjectTypeEditor.AddDropCondition = function () {
+        var condition = $("#add_drop_condition").val();
+        $("#add_drop_condition").first().selectedIndex = 0;
+        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
+        objectType.DropConditions.push({ Name: condition, Values: [] });
+        ObjectTypeEditor.Display();
+    };
+    ObjectTypeEditor.ChangeUsageAction = function (id, pos) {
+        world.InventoryObjectTypes[objectTypeEditor.selected].UsageActions[id].Values[pos] = $("#ChangeUsageAction_" + id + "_" + pos).val();
+    };
+    ObjectTypeEditor.DeleteUsageAction = function (rowId) {
+        world.InventoryObjectTypes[objectTypeEditor.selected].UsageActions.splice(rowId, 1);
+        ObjectTypeEditor.Display();
+    };
+    ObjectTypeEditor.AddUsageAction = function () {
+        var condition = $("#add_usage_action").val();
+        $("#add_usage_action").first().selectedIndex = 0;
+        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
+        objectType.UsageActions.push({ Name: condition, Values: [] });
+        ObjectTypeEditor.Display();
+    };
+    ObjectTypeEditor.ChangeUsageCondition = function (id, pos) {
+        world.InventoryObjectTypes[objectTypeEditor.selected].UsageConditions[id].Values[pos] = $("#ChangeUsageCondition_" + id + "_" + pos).val();
+    };
+    ObjectTypeEditor.DeleteUsageCondition = function (rowId) {
+        world.InventoryObjectTypes[objectTypeEditor.selected].UsageConditions.splice(rowId, 1);
+        ObjectTypeEditor.Display();
+    };
+    ObjectTypeEditor.AddUsageCondition = function () {
+        var condition = $("#add_usage_condition").val();
+        $("#add_usage_condition").first().selectedIndex = 0;
+        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
+        objectType.UsageConditions.push({ Name: condition, Values: [] });
+        ObjectTypeEditor.Display();
+    };
+    ObjectTypeEditor.AddParameter = function () {
+        if (!objectTypeEditor.selected)
+            return;
+        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
+        objectType.Parameters.push(new ObjectDefinedParameter("Param" + (objectType.Parameters.length + 1), "1"));
+        ObjectTypeEditor.Display();
+    };
+    ObjectTypeEditor.RemoveParameter = function (id) {
+        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
+        objectType.Parameters.splice(id, 1);
+        ObjectTypeEditor.Display();
+    };
+    ObjectTypeEditor.ChangeCode = function () {
+        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
+        objectType.ActionCode = objectEditor.editor.getValue();
+    };
+    ObjectTypeEditor.ChangeParam = function (id, param) {
+        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
+        objectType.Parameters[id][param] = $("#param_" + param.toLowerCase() + "_" + id).val();
+    };
+    ObjectTypeEditor.Change = function (param) {
+        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
+        var oldName = objectType.Name;
+        if (param == 'Name') {
+            var newName = $("#obj_" + param.toLowerCase()).val();
+            if ((newName.match(databaseNameRule) || !newName || newName.length < 1) || (world.GetInventoryObjectType(newName) && world.GetInventoryObjectType(newName) != world.InventoryObjectTypes[objectTypeEditor.selected])) {
+                $("#obj_" + param.toLowerCase()).css('backgroundColor', '#FFE0E0');
+                return;
+            }
+            $("#obj_" + param.toLowerCase()).css('backgroundColor', '');
+        }
+        objectType[param] = $("#obj_" + param.toLowerCase()).val();
+        if (param == "Name") {
+            objectTypeEditor.listObjectType.UpdateList();
+            for (var i = 0; i < world.InventoryObjects.length; i++)
+                if (world.InventoryObjects[i].ObjectType == oldName)
+                    world.InventoryObjects[i].ObjectType = objectType.Name;
+            SearchPanel.Update();
+        }
+    };
+    ObjectTypeEditor.New = function () {
+        var newObjectType = new ObjectType("ObjType " + world.InventoryObjectTypes.length, "Group", null, null, []);
+        newObjectType.ActionCode = "// Uncomment the functions you want to define.\n\
+\n\
+// Checks if the player can unwear the item\n\
+// function CanUnwear(itemName)\n\
+// {\n\
+//      return true;\n\
+// }\n\
+\n\
+// Checks if the player can wear the item\n\
+// function CanWear(itemName)\n\
+// {\n\
+//      return true;\n\
+// }\n\
+\n\
+// Checks if the player can use the item\n\
+// function CanUse(itemName)\n\
+// {\n\
+//      return true;\n\
+// }\n\
+\n\
+// Checks if the player can drop the item\n\
+// function CanDrop(itemName)\n\
+// {\n\
+//      return true;\n\
+// }\n\
+\n\
+// Executed when the player uses the item\n\
+// function Use(itemName)\n\
+// {\n\
+// }\n\
+";
+        world.InventoryObjectTypes.push(newObjectType);
+        objectTypeEditor.listObjectType.UpdateList();
+        objectTypeEditor.listObjectType.Select(world.InventoryObjectTypes.length - 1);
+        SearchPanel.Update();
+    };
+    ObjectTypeEditor.Delete = function () {
+        if (objectTypeEditor.selected == null)
+            return;
+        Framework.Confirm("Are you sure you want to delete this object type and all the objects using it?", function () {
+            var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
+            for (var i = 0; i < world.InventoryObjects.length;) {
+                if (world.InventoryObjects[i].ObjectType == objectType.Name)
+                    world.InventoryObjects.splice(i, 1);
+                else
+                    i++;
+            }
+            world.InventoryObjectTypes.splice(objectTypeEditor.selected, 1);
+            objectTypeEditor.listObjectType.UpdateList();
+            objectTypeEditor.listObjectType.Select(-1);
+            SearchPanel.Update();
+        });
+    };
+    return ObjectTypeEditor;
+}());
 var particleEditor = new ((function () {
-    function class_32() {
+    function class_42() {
         this.refreshInterval = null;
     }
-    return class_32;
+    return class_42;
 }()));
 var ParticleEditor = (function () {
     function ParticleEditor() {
@@ -23109,7 +26190,7 @@ var PixelEditorColorChooser = (function () {
     return PixelEditorColorChooser;
 }());
 var pixelEditor = new ((function () {
-    function class_33() {
+    function class_43() {
         this.colorPickerItem = null;
         this.colorPositionX = 1;
         this.colorPositionY = 0;
@@ -23134,7 +26215,7 @@ var pixelEditor = new ((function () {
         this.startSelection = null;
         this.inPanel = false;
     }
-    return class_33;
+    return class_43;
 }()));
 var PixelEditorLayers = (function () {
     function PixelEditorLayers() {
@@ -23435,165 +26516,9 @@ var PixelEditorLayers = (function () {
     };
     return PixelEditorLayers;
 }());
-var questEditor = new ((function () {
-    function class_34() {
-        this.selectedQuest = null;
-    }
-    return class_34;
-}()));
-var QuestEditor = (function () {
-    function QuestEditor() {
-    }
-    QuestEditor.Dispose = function () {
-        questEditor.selector.Dispose();
-        questEditor.selector = null;
-    };
-    QuestEditor.IsAccessible = function () {
-        return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
-    };
-    QuestEditor.Recover = function () {
-        if (Main.CheckNW()) {
-            $("#helpLink").first().onclick = function () {
-                StandaloneMaker.Help($("#helpLink").prop("href"));
-                return false;
-            };
-            $("#questList").css("top", "5px");
-            $("#questDetails").css("top", "5px");
-            $("#questJournalEntries").css("top", "210px");
-        }
-        questEditor.selector = new ListSelector("questList", world.Quests, "Name");
-        questEditor.selector.OnSelect = (function (rowId) {
-            Framework.SetLocation({
-                action: "QuestEditor", id: rowId === null ? null : world.Quests[rowId].Name
-            });
-            if (rowId === null)
-                questEditor.selectedQuest = null;
-            else
-                questEditor.selectedQuest = world.Quests[rowId];
-            QuestEditor.Display();
-        });
-        if (framework.CurrentUrl.id) {
-            var found = false;
-            for (var i = 0; i < world.Quests.length; i++) {
-                if (world.Quests[i].Name == framework.CurrentUrl.id) {
-                    questEditor.selector.Select(i);
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                Framework.SetLocation({
-                    action: "QuestEditor"
-                });
-                questEditor.selector.Select(null);
-                return;
-            }
-        }
-        else
-            questEditor.selector.Select(null);
-    };
-    QuestEditor.Display = function () {
-        $("#questName").css("backgroundColor", "");
-        if (questEditor.selectedQuest === null) {
-            $("#questName").val("").prop("disabled", true);
-            $("#questDescription").val("").prop("disabled", true);
-            $("#questJournalEntries").html("");
-            return;
-        }
-        $("#questName").val(questEditor.selectedQuest.Name).prop("disabled", false).focus();
-        $("#questDescription").val(questEditor.selectedQuest.Description).prop("disabled", false);
-        QuestEditor.UpdateJournalEntries();
-    };
-    QuestEditor.UpdateJournalEntries = function () {
-        var html = "";
-        if (questEditor.selectedQuest !== null) {
-            for (var i = 0; i < questEditor.selectedQuest.JournalEntries.length; i++) {
-                html += "<div class='button' onclick='QuestEditor.DeleteJournalEntry(" + i + ")'>Remove</div> ";
-                html += "<b>Entry #" + questEditor.selectedQuest.JournalEntries[i].Id + "</b><br>";
-                html += "<textarea id='entry_" + i + "' onkeyup='QuestEditor.ChangeJournalEntry(" + i + ");'>" + ("" + questEditor.selectedQuest.JournalEntries[i].Entry).htmlEntities() + "</textarea><br>";
-            }
-        }
-        $("#questJournalEntries").html(html);
-    };
-    QuestEditor.DeleteJournalEntry = function (id) {
-        questEditor.selectedQuest.JournalEntries.splice(id, 1);
-        QuestEditor.UpdateJournalEntries();
-    };
-    QuestEditor.ChangeJournalEntry = function (id) {
-        questEditor.selectedQuest.JournalEntries[id].Entry = $("#entry_" + id).val();
-    };
-    QuestEditor.AddQuest = function () {
-        var nextId = 1;
-        while (world.GetQuest("quest_" + nextId))
-            nextId++;
-        var quest = new KnownQuest();
-        quest.Name = "quest_" + nextId;
-        quest.Description = "This quest doesn't have any description. How sad...";
-        quest.JournalEntries = [];
-        world.Quests.push(quest);
-        questEditor.selector.UpdateList();
-        questEditor.selector.Select(world.Quests.length - 1);
-        SearchPanel.Update();
-    };
-    QuestEditor.CloneQuest = function () {
-        if (questEditor.selectedQuest === null)
-            return;
-        var nextId = 1;
-        while (world.GetQuest("quest_" + nextId))
-            nextId++;
-        var quest = JSON.parse(JSON.stringify(questEditor.selectedQuest));
-        quest.Name = "quest_" + nextId;
-        world.Quests.push(quest);
-        questEditor.selector.UpdateList();
-        questEditor.selector.Select(world.Quests.length - 1);
-        SearchPanel.Update();
-    };
-    QuestEditor.DeleteQuest = function () {
-        if (questEditor.selectedQuest === null)
-            return;
-        Framework.Confirm("Are you sure you want to delete this quest?", function () {
-            for (var i = 0; i < world.Quests.length; i++) {
-                if (world.Quests[i].Name == questEditor.selectedQuest.Name) {
-                    world.Quests.splice(i, 1);
-                    questEditor.selector.UpdateList();
-                    questEditor.selector.Select(null);
-                    SearchPanel.Update();
-                    return;
-                }
-            }
-        });
-    };
-    QuestEditor.ChangeName = function () {
-        var newName = $("#questName").val();
-        if ((newName.match(databaseNameRule) || !newName || newName.length < 1) || (world.GetQuest(newName) && world.GetQuest(newName) != questEditor.selectedQuest)) {
-            $("#questName").css('backgroundColor', '#FFE0E0');
-            return;
-        }
-        $("#questName").css('backgroundColor', '');
-        questEditor.selectedQuest.Name = newName;
-        questEditor.selector.UpdateList();
-        SearchPanel.Update();
-    };
-    QuestEditor.ChangeDescription = function () {
-        questEditor.selectedQuest.Description = $("#questDescription").val();
-    };
-    QuestEditor.AddJournalEntry = function () {
-        if (questEditor.selectedQuest === null)
-            return;
-        var journalEntry = new JournalEntry();
-        var nextId = 1;
-        for (var i = 0; i < questEditor.selectedQuest.JournalEntries.length; i++)
-            nextId = Math.max(questEditor.selectedQuest.JournalEntries[i].Id + 1, nextId);
-        journalEntry.Entry = "Entry...";
-        journalEntry.Id = nextId;
-        questEditor.selectedQuest.JournalEntries.push(journalEntry);
-        QuestEditor.UpdateJournalEntries();
-    };
-    return QuestEditor;
-}());
 ///<reference path="../../Logic/MovingActors/PathSolver.ts" />
 var play = new ((function () {
-    function class_35() {
+    function class_44() {
         this.keys = [];
         this.path = null;
         this.mouseDown = false;
@@ -23615,7 +26540,7 @@ var play = new ((function () {
         this.showMinimap = false;
         this.onDialogPaint = [];
     }
-    return class_35;
+    return class_44;
 }()));
 var Play = (function () {
     function Play() {
@@ -24275,14 +27200,170 @@ var Play = (function () {
     };
     return Play;
 }());
+var questEditor = new ((function () {
+    function class_45() {
+        this.selectedQuest = null;
+    }
+    return class_45;
+}()));
+var QuestEditor = (function () {
+    function QuestEditor() {
+    }
+    QuestEditor.Dispose = function () {
+        questEditor.selector.Dispose();
+        questEditor.selector = null;
+    };
+    QuestEditor.IsAccessible = function () {
+        return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
+    };
+    QuestEditor.Recover = function () {
+        if (Main.CheckNW()) {
+            $("#helpLink").first().onclick = function () {
+                StandaloneMaker.Help($("#helpLink").prop("href"));
+                return false;
+            };
+            $("#questList").css("top", "5px");
+            $("#questDetails").css("top", "5px");
+            $("#questJournalEntries").css("top", "210px");
+        }
+        questEditor.selector = new ListSelector("questList", world.Quests, "Name");
+        questEditor.selector.OnSelect = (function (rowId) {
+            Framework.SetLocation({
+                action: "QuestEditor", id: rowId === null ? null : world.Quests[rowId].Name
+            });
+            if (rowId === null)
+                questEditor.selectedQuest = null;
+            else
+                questEditor.selectedQuest = world.Quests[rowId];
+            QuestEditor.Display();
+        });
+        if (framework.CurrentUrl.id) {
+            var found = false;
+            for (var i = 0; i < world.Quests.length; i++) {
+                if (world.Quests[i].Name == framework.CurrentUrl.id) {
+                    questEditor.selector.Select(i);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                Framework.SetLocation({
+                    action: "QuestEditor"
+                });
+                questEditor.selector.Select(null);
+                return;
+            }
+        }
+        else
+            questEditor.selector.Select(null);
+    };
+    QuestEditor.Display = function () {
+        $("#questName").css("backgroundColor", "");
+        if (questEditor.selectedQuest === null) {
+            $("#questName").val("").prop("disabled", true);
+            $("#questDescription").val("").prop("disabled", true);
+            $("#questJournalEntries").html("");
+            return;
+        }
+        $("#questName").val(questEditor.selectedQuest.Name).prop("disabled", false).focus();
+        $("#questDescription").val(questEditor.selectedQuest.Description).prop("disabled", false);
+        QuestEditor.UpdateJournalEntries();
+    };
+    QuestEditor.UpdateJournalEntries = function () {
+        var html = "";
+        if (questEditor.selectedQuest !== null) {
+            for (var i = 0; i < questEditor.selectedQuest.JournalEntries.length; i++) {
+                html += "<div class='button' onclick='QuestEditor.DeleteJournalEntry(" + i + ")'>Remove</div> ";
+                html += "<b>Entry #" + questEditor.selectedQuest.JournalEntries[i].Id + "</b><br>";
+                html += "<textarea id='entry_" + i + "' onkeyup='QuestEditor.ChangeJournalEntry(" + i + ");'>" + ("" + questEditor.selectedQuest.JournalEntries[i].Entry).htmlEntities() + "</textarea><br>";
+            }
+        }
+        $("#questJournalEntries").html(html);
+    };
+    QuestEditor.DeleteJournalEntry = function (id) {
+        questEditor.selectedQuest.JournalEntries.splice(id, 1);
+        QuestEditor.UpdateJournalEntries();
+    };
+    QuestEditor.ChangeJournalEntry = function (id) {
+        questEditor.selectedQuest.JournalEntries[id].Entry = $("#entry_" + id).val();
+    };
+    QuestEditor.AddQuest = function () {
+        var nextId = 1;
+        while (world.GetQuest("quest_" + nextId))
+            nextId++;
+        var quest = new KnownQuest();
+        quest.Name = "quest_" + nextId;
+        quest.Description = "This quest doesn't have any description. How sad...";
+        quest.JournalEntries = [];
+        world.Quests.push(quest);
+        questEditor.selector.UpdateList();
+        questEditor.selector.Select(world.Quests.length - 1);
+        SearchPanel.Update();
+    };
+    QuestEditor.CloneQuest = function () {
+        if (questEditor.selectedQuest === null)
+            return;
+        var nextId = 1;
+        while (world.GetQuest("quest_" + nextId))
+            nextId++;
+        var quest = JSON.parse(JSON.stringify(questEditor.selectedQuest));
+        quest.Name = "quest_" + nextId;
+        world.Quests.push(quest);
+        questEditor.selector.UpdateList();
+        questEditor.selector.Select(world.Quests.length - 1);
+        SearchPanel.Update();
+    };
+    QuestEditor.DeleteQuest = function () {
+        if (questEditor.selectedQuest === null)
+            return;
+        Framework.Confirm("Are you sure you want to delete this quest?", function () {
+            for (var i = 0; i < world.Quests.length; i++) {
+                if (world.Quests[i].Name == questEditor.selectedQuest.Name) {
+                    world.Quests.splice(i, 1);
+                    questEditor.selector.UpdateList();
+                    questEditor.selector.Select(null);
+                    SearchPanel.Update();
+                    return;
+                }
+            }
+        });
+    };
+    QuestEditor.ChangeName = function () {
+        var newName = $("#questName").val();
+        if ((newName.match(databaseNameRule) || !newName || newName.length < 1) || (world.GetQuest(newName) && world.GetQuest(newName) != questEditor.selectedQuest)) {
+            $("#questName").css('backgroundColor', '#FFE0E0');
+            return;
+        }
+        $("#questName").css('backgroundColor', '');
+        questEditor.selectedQuest.Name = newName;
+        questEditor.selector.UpdateList();
+        SearchPanel.Update();
+    };
+    QuestEditor.ChangeDescription = function () {
+        questEditor.selectedQuest.Description = $("#questDescription").val();
+    };
+    QuestEditor.AddJournalEntry = function () {
+        if (questEditor.selectedQuest === null)
+            return;
+        var journalEntry = new JournalEntry();
+        var nextId = 1;
+        for (var i = 0; i < questEditor.selectedQuest.JournalEntries.length; i++)
+            nextId = Math.max(questEditor.selectedQuest.JournalEntries[i].Id + 1, nextId);
+        journalEntry.Entry = "Entry...";
+        journalEntry.Id = nextId;
+        questEditor.selectedQuest.JournalEntries.push(journalEntry);
+        QuestEditor.UpdateJournalEntries();
+    };
+    return QuestEditor;
+}());
 ///<reference path="../../../Common/Libs/MiniQuery.ts" />
 var skillEditor = new ((function () {
-    function class_36() {
+    function class_46() {
         this.selectedSkill = null;
         this.editor = null;
         this.FixedParams = ["name", "displayname", "autoreceive", "quickslot", "quicksloteditable", "icon"];
     }
-    return class_36;
+    return class_46;
 }()));
 var SkillEditor = (function () {
     function SkillEditor() {
@@ -24524,13 +27605,13 @@ var SkillEditor = (function () {
 }());
 ///<reference path="../../../Common/Libs/MiniQuery.ts" />
 var statEditor = new ((function () {
-    function class_37() {
+    function class_47() {
         this.selectedStat = null;
         this.selector = null;
         this.editor = null;
         this.FixedParams = ["name", "displayname", "playervisible", "defaultvalue", "monsterstat"];
     }
-    return class_37;
+    return class_47;
 }()));
 var StatEditor = (function () {
     function StatEditor() {
@@ -24810,68 +27891,12 @@ var StorageExplorer = (function () {
     return StorageExplorer;
 }());
 ///<reference path="../../../Common/Libs/MiniQuery.ts" />
-var tilesetExplorer = new ((function () {
-    function class_38() {
-    }
-    return class_38;
-}()));
-var TilesetExplorer = (function () {
-    function TilesetExplorer() {
-    }
-    TilesetExplorer.Dispose = function () {
-        tilesetExplorer.imagePreview = null;
-    };
-    TilesetExplorer.IsAccessible = function () {
-        return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
-    };
-    TilesetExplorer.Recover = function () {
-        tilesetExplorer.tileSetDefinition = world.art;
-        tilesetExplorer.imagePreview = new Image();
-        tilesetExplorer.imagePreview.src = tilesetExplorer.tileSetDefinition.background.file;
-        tilesetExplorer.imagePreview.onload = TilesetExplorer.Render;
-        TilesetExplorer.Render();
-    };
-    TilesetExplorer.Render = function () {
-        document.getElementById("gameCanvas").width = tilesetExplorer.imagePreview.width;
-        document.getElementById("gameCanvas").height = tilesetExplorer.imagePreview.height;
-        document.getElementById("gameCanvas").style.width = tilesetExplorer.imagePreview.width + "px";
-        document.getElementById("gameCanvas").style.height = tilesetExplorer.imagePreview.height + "px";
-        var ctx = document.getElementById("gameCanvas").getContext("2d");
-        ctx.clearRect(0, 0, tilesetExplorer.imagePreview.width, tilesetExplorer.imagePreview.height);
-        var tileWidth = tilesetExplorer.tileSetDefinition.background.width;
-        var tileHeight = tilesetExplorer.tileSetDefinition.background.width;
-        ctx.drawImage(tilesetExplorer.imagePreview, 0, 0, tilesetExplorer.imagePreview.width, tilesetExplorer.imagePreview.height, 0, 0, tilesetExplorer.imagePreview.width, tilesetExplorer.imagePreview.height);
-        ctx.strokeStyle = "#80FF80";
-        ctx.beginPath();
-        for (var x = tileWidth; x < tilesetExplorer.imagePreview.width; x += tileWidth) {
-            ctx.moveTo(x + 0.5, 0);
-            ctx.lineTo(x + 0.5, tilesetExplorer.imagePreview.height);
-        }
-        for (var y = tileHeight; y < tilesetExplorer.imagePreview.height; y += tileHeight) {
-            ctx.moveTo(0, y + 0.5);
-            ctx.lineTo(tilesetExplorer.imagePreview.width, y + 0.5);
-        }
-        ctx.stroke();
-        var nbw = Math.floor(tilesetExplorer.imagePreview.width / tileWidth);
-        var nbh = Math.floor(tilesetExplorer.imagePreview.height / tileHeight);
-        for (var x = 0; x < nbw; x++) {
-            for (var y = 0; y < nbh; y++) {
-                ctx.fillStyle = "#000000";
-                ctx.fillText("" + (x + y * nbw), x * tileWidth + 5.5, y * tileHeight + 15.5);
-                ctx.fillStyle = "#FFFFFF";
-                ctx.fillText("" + (x + y * nbw), x * tileWidth + 6.5, y * tileHeight + 16.5);
-            }
-        }
-    };
-    return TilesetExplorer;
-}());
-///<reference path="../../../Common/Libs/MiniQuery.ts" />
 var temporaryEffectEditor = new ((function () {
-    function class_39() {
+    function class_48() {
         this.selectedEffect = null;
         this.selector = null;
     }
-    return class_39;
+    return class_48;
 }()));
 var TemporaryEffectEditor = (function () {
     function TemporaryEffectEditor() {
@@ -25082,169 +28107,61 @@ var TemporaryEffectEditor = (function () {
     };
     return TemporaryEffectEditor;
 }());
-var viewPlayer = new ((function () {
-    function class_40() {
+///<reference path="../../../Common/Libs/MiniQuery.ts" />
+var tilesetExplorer = new ((function () {
+    function class_49() {
     }
-    return class_40;
+    return class_49;
 }()));
-var ViewPlayer = (function () {
-    function ViewPlayer() {
+var TilesetExplorer = (function () {
+    function TilesetExplorer() {
     }
-    ViewPlayer.Dispose = function () {
-        if (viewPlayer.selector)
-            viewPlayer.selector.Dispose();
-        viewPlayer.selector = null;
-        if (viewPlayer.refreshTimeout)
-            clearTimeout(viewPlayer.refreshTimeout);
-        viewPlayer.refreshTimeout = null;
+    TilesetExplorer.Dispose = function () {
+        tilesetExplorer.imagePreview = null;
     };
-    ViewPlayer.IsAccessible = function () {
+    TilesetExplorer.IsAccessible = function () {
         return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
     };
-    ViewPlayer.Recover = function () {
-        $.ajax({
-            type: 'POST',
-            url: '/backend/OwnerPlayers',
-            data: {
-                game: world.Id,
-                token: framework.Preferences['token'],
-            },
-            success: function (msg) {
-                var data = TryParse(msg);
-                if (!data)
-                    return;
-                data = data.map(function (c) { return { Name: c }; });
-                viewPlayer.selector = new ListSelector("userList", data, "Name");
-                viewPlayer.selector.OnSelect = function (rowId) {
-                    viewPlayer.selectedUser = data[rowId].Name;
-                    ViewPlayer.View();
-                };
-            },
-            error: function (msg, textStatus) {
+    TilesetExplorer.Recover = function () {
+        tilesetExplorer.tileSetDefinition = world.art;
+        tilesetExplorer.imagePreview = new Image();
+        tilesetExplorer.imagePreview.src = tilesetExplorer.tileSetDefinition.background.file;
+        tilesetExplorer.imagePreview.onload = TilesetExplorer.Render;
+        TilesetExplorer.Render();
+    };
+    TilesetExplorer.Render = function () {
+        document.getElementById("gameCanvas").width = tilesetExplorer.imagePreview.width;
+        document.getElementById("gameCanvas").height = tilesetExplorer.imagePreview.height;
+        document.getElementById("gameCanvas").style.width = tilesetExplorer.imagePreview.width + "px";
+        document.getElementById("gameCanvas").style.height = tilesetExplorer.imagePreview.height + "px";
+        var ctx = document.getElementById("gameCanvas").getContext("2d");
+        ctx.clearRect(0, 0, tilesetExplorer.imagePreview.width, tilesetExplorer.imagePreview.height);
+        var tileWidth = tilesetExplorer.tileSetDefinition.background.width;
+        var tileHeight = tilesetExplorer.tileSetDefinition.background.width;
+        ctx.drawImage(tilesetExplorer.imagePreview, 0, 0, tilesetExplorer.imagePreview.width, tilesetExplorer.imagePreview.height, 0, 0, tilesetExplorer.imagePreview.width, tilesetExplorer.imagePreview.height);
+        ctx.strokeStyle = "#80FF80";
+        ctx.beginPath();
+        for (var x = tileWidth; x < tilesetExplorer.imagePreview.width; x += tileWidth) {
+            ctx.moveTo(x + 0.5, 0);
+            ctx.lineTo(x + 0.5, tilesetExplorer.imagePreview.height);
+        }
+        for (var y = tileHeight; y < tilesetExplorer.imagePreview.height; y += tileHeight) {
+            ctx.moveTo(0, y + 0.5);
+            ctx.lineTo(tilesetExplorer.imagePreview.width, y + 0.5);
+        }
+        ctx.stroke();
+        var nbw = Math.floor(tilesetExplorer.imagePreview.width / tileWidth);
+        var nbh = Math.floor(tilesetExplorer.imagePreview.height / tileHeight);
+        for (var x = 0; x < nbw; x++) {
+            for (var y = 0; y < nbh; y++) {
+                ctx.fillStyle = "#000000";
+                ctx.fillText("" + (x + y * nbw), x * tileWidth + 5.5, y * tileHeight + 15.5);
+                ctx.fillStyle = "#FFFFFF";
+                ctx.fillText("" + (x + y * nbw), x * tileWidth + 6.5, y * tileHeight + 16.5);
             }
-        });
+        }
     };
-    ViewPlayer.View = function () {
-        clearTimeout(viewPlayer.refreshTimeout);
-        viewPlayer.refreshTimeout = null;
-        if (!viewPlayer.selectedUser)
-            return;
-        $.ajax({
-            type: 'POST',
-            url: '/backend/OwnerViewPlayer',
-            data: {
-                game: world.Id,
-                user: viewPlayer.selectedUser,
-                token: framework.Preferences['token'],
-            },
-            success: function (msg) {
-                var data = TryParse(msg);
-                if (!data)
-                    return;
-                ViewPlayer.DisplayData(data);
-                viewPlayer.refreshTimeout = setTimeout(ViewPlayer.View, 5000);
-            },
-            error: function (msg, textStatus) {
-            }
-        });
-    };
-    ViewPlayer.DisplayData = function (data) {
-        var html = "";
-        var user = TryParse(data.data);
-        html += "<h3>Base information:</h3>";
-        html += "<table>";
-        html += "<tr><td>Username:</td><td>" + viewPlayer.selectedUser.htmlEntities() + "</td>";
-        html += "<tr><td>Position:</td><td>" + data.x + ", " + data.y + ", " + data.zone.htmlEntities() + " <span class='button' onclick='ViewPlayer.Recall();'>Respawn</span></td></tr>";
-        html += "<tr><td>Look:</td><td>" + user.name.htmlEntities() + "</td></tr>";
-        html += "</table>";
-        html += "<h3>Stats:</h3>";
-        user.stats.sort(function (a, b) {
-            if (a.Name > b.Name)
-                return 1;
-            if (a.Name < b.Name)
-                return -1;
-            return 0;
-        });
-        html += "<table>";
-        for (var i = 0; i < user.stats.length; i++)
-            html += "<tr><td>" + user.stats[i].Name.title().htmlEntities() + "</td><td>" + user.stats[i].Value + "</td></tr>";
-        html += "</table>";
-        html += "<h3>Skills:</h3>";
-        user.skills.sort(function (a, b) {
-            if (a.Name > b.Name)
-                return 1;
-            if (a.Name < b.Name)
-                return -1;
-            return 0;
-        });
-        html += "<table>";
-        for (var i = 0; i < user.skills.length; i++)
-            html += "<tr><td>" + user.skills[i].Name.title().htmlEntities() + "</td><td>" + (user.skills[i].Level ? user.skills[i].Level : "&nbsp;") + "</td></tr>";
-        html += "</table>";
-        html += "<h3>Inventory:</h3>";
-        user.inventory.sort(function (a, b) {
-            if (a.Name > b.Name)
-                return 1;
-            if (a.Name < b.Name)
-                return -1;
-            return 0;
-        });
-        html += "<table>";
-        for (var i = 0; i < user.inventory.length; i++)
-            html += "<tr><td>" + user.inventory[i].Name.title().htmlEntities() + "</td><td>" + ("" + user.inventory[i].Count).htmlEntities() + "</td></tr>";
-        html += "</table>";
-        html += "<h3>Equipped:</h3>";
-        var items = [];
-        for (var item in user.equipedObjects)
-            items.push(user.equipedObjects[item].Name);
-        items.sort();
-        html += "<table>";
-        for (var i = 0; i < items.length; i++)
-            html += "<tr><td>" + items[i].htmlEntities() + "</td></tr>";
-        html += "</table>";
-        html += "<br>";
-        html += "<center><span class='button' onclick='ViewPlayer.Reset();'>Reset</span></center>";
-        $("#userParameters").html(html);
-    };
-    ViewPlayer.Recall = function () {
-        $.ajax({
-            type: 'POST',
-            url: '/backend/OwnerRecallPlayer',
-            data: {
-                game: world.Id,
-                user: viewPlayer.selectedUser,
-                token: framework.Preferences['token'],
-            },
-            success: function (msg) {
-                var data = TryParse(msg);
-                if (data === true)
-                    Framework.ShowMessage("Player has been respwaned (if he/she is currently online)");
-            },
-            error: function (msg, textStatus) {
-            }
-        });
-    };
-    ViewPlayer.Reset = function () {
-        Framework.Confirm("Are you sure you want to reset this player? He/she will lose all the progress.", function () {
-            $.ajax({
-                type: 'POST',
-                url: '/backend/OwnerResetPlayer',
-                data: {
-                    game: world.Id,
-                    user: viewPlayer.selectedUser,
-                    token: framework.Preferences['token'],
-                },
-                success: function (msg) {
-                    var data = TryParse(msg);
-                    if (data === true)
-                        Framework.ShowMessage("Player has been reset");
-                },
-                error: function (msg, textStatus) {
-                }
-            });
-        });
-    };
-    return ViewPlayer;
+    return TilesetExplorer;
 }());
 var ZoneEditor = (function () {
     function ZoneEditor() {
@@ -25611,7 +28528,7 @@ var ZoneEditor = (function () {
     return ZoneEditor;
 }());
 var zoneEditor = new ((function () {
-    function class_41() {
+    function class_50() {
         this.selectedZone = null;
         this.selector = null;
         this.tempWorld = null;
@@ -25619,8 +28536,172 @@ var zoneEditor = new ((function () {
         this.renderInterval = null;
         this.rebuildRender = null;
     }
-    return class_41;
+    return class_50;
 }()));
+var viewPlayer = new ((function () {
+    function class_51() {
+    }
+    return class_51;
+}()));
+var ViewPlayer = (function () {
+    function ViewPlayer() {
+    }
+    ViewPlayer.Dispose = function () {
+        if (viewPlayer.selector)
+            viewPlayer.selector.Dispose();
+        viewPlayer.selector = null;
+        if (viewPlayer.refreshTimeout)
+            clearTimeout(viewPlayer.refreshTimeout);
+        viewPlayer.refreshTimeout = null;
+    };
+    ViewPlayer.IsAccessible = function () {
+        return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
+    };
+    ViewPlayer.Recover = function () {
+        $.ajax({
+            type: 'POST',
+            url: '/backend/OwnerPlayers',
+            data: {
+                game: world.Id,
+                token: framework.Preferences['token'],
+            },
+            success: function (msg) {
+                var data = TryParse(msg);
+                if (!data)
+                    return;
+                data = data.map(function (c) { return { Name: c }; });
+                viewPlayer.selector = new ListSelector("userList", data, "Name");
+                viewPlayer.selector.OnSelect = function (rowId) {
+                    viewPlayer.selectedUser = data[rowId].Name;
+                    ViewPlayer.View();
+                };
+            },
+            error: function (msg, textStatus) {
+            }
+        });
+    };
+    ViewPlayer.View = function () {
+        clearTimeout(viewPlayer.refreshTimeout);
+        viewPlayer.refreshTimeout = null;
+        if (!viewPlayer.selectedUser)
+            return;
+        $.ajax({
+            type: 'POST',
+            url: '/backend/OwnerViewPlayer',
+            data: {
+                game: world.Id,
+                user: viewPlayer.selectedUser,
+                token: framework.Preferences['token'],
+            },
+            success: function (msg) {
+                var data = TryParse(msg);
+                if (!data)
+                    return;
+                ViewPlayer.DisplayData(data);
+                viewPlayer.refreshTimeout = setTimeout(ViewPlayer.View, 5000);
+            },
+            error: function (msg, textStatus) {
+            }
+        });
+    };
+    ViewPlayer.DisplayData = function (data) {
+        var html = "";
+        var user = TryParse(data.data);
+        html += "<h3>Base information:</h3>";
+        html += "<table>";
+        html += "<tr><td>Username:</td><td>" + viewPlayer.selectedUser.htmlEntities() + "</td>";
+        html += "<tr><td>Position:</td><td>" + data.x + ", " + data.y + ", " + data.zone.htmlEntities() + " <span class='button' onclick='ViewPlayer.Recall();'>Respawn</span></td></tr>";
+        html += "<tr><td>Look:</td><td>" + user.name.htmlEntities() + "</td></tr>";
+        html += "</table>";
+        html += "<h3>Stats:</h3>";
+        user.stats.sort(function (a, b) {
+            if (a.Name > b.Name)
+                return 1;
+            if (a.Name < b.Name)
+                return -1;
+            return 0;
+        });
+        html += "<table>";
+        for (var i = 0; i < user.stats.length; i++)
+            html += "<tr><td>" + user.stats[i].Name.title().htmlEntities() + "</td><td>" + user.stats[i].Value + "</td></tr>";
+        html += "</table>";
+        html += "<h3>Skills:</h3>";
+        user.skills.sort(function (a, b) {
+            if (a.Name > b.Name)
+                return 1;
+            if (a.Name < b.Name)
+                return -1;
+            return 0;
+        });
+        html += "<table>";
+        for (var i = 0; i < user.skills.length; i++)
+            html += "<tr><td>" + user.skills[i].Name.title().htmlEntities() + "</td><td>" + (user.skills[i].Level ? user.skills[i].Level : "&nbsp;") + "</td></tr>";
+        html += "</table>";
+        html += "<h3>Inventory:</h3>";
+        user.inventory.sort(function (a, b) {
+            if (a.Name > b.Name)
+                return 1;
+            if (a.Name < b.Name)
+                return -1;
+            return 0;
+        });
+        html += "<table>";
+        for (var i = 0; i < user.inventory.length; i++)
+            html += "<tr><td>" + user.inventory[i].Name.title().htmlEntities() + "</td><td>" + ("" + user.inventory[i].Count).htmlEntities() + "</td></tr>";
+        html += "</table>";
+        html += "<h3>Equipped:</h3>";
+        var items = [];
+        for (var item in user.equipedObjects)
+            items.push(user.equipedObjects[item].Name);
+        items.sort();
+        html += "<table>";
+        for (var i = 0; i < items.length; i++)
+            html += "<tr><td>" + items[i].htmlEntities() + "</td></tr>";
+        html += "</table>";
+        html += "<br>";
+        html += "<center><span class='button' onclick='ViewPlayer.Reset();'>Reset</span></center>";
+        $("#userParameters").html(html);
+    };
+    ViewPlayer.Recall = function () {
+        $.ajax({
+            type: 'POST',
+            url: '/backend/OwnerRecallPlayer',
+            data: {
+                game: world.Id,
+                user: viewPlayer.selectedUser,
+                token: framework.Preferences['token'],
+            },
+            success: function (msg) {
+                var data = TryParse(msg);
+                if (data === true)
+                    Framework.ShowMessage("Player has been respwaned (if he/she is currently online)");
+            },
+            error: function (msg, textStatus) {
+            }
+        });
+    };
+    ViewPlayer.Reset = function () {
+        Framework.Confirm("Are you sure you want to reset this player? He/she will lose all the progress.", function () {
+            $.ajax({
+                type: 'POST',
+                url: '/backend/OwnerResetPlayer',
+                data: {
+                    game: world.Id,
+                    user: viewPlayer.selectedUser,
+                    token: framework.Preferences['token'],
+                },
+                success: function (msg) {
+                    var data = TryParse(msg);
+                    if (data === true)
+                        Framework.ShowMessage("Player has been reset");
+                },
+                error: function (msg, textStatus) {
+                }
+            });
+        });
+    };
+    return ViewPlayer;
+}());
 ///<reference path="../MovingActor.ts" />
 var MapMessage = (function (_super) {
     __extends(MapMessage, _super);
@@ -26192,7 +29273,7 @@ var Answer = (function () {
     return Answer;
 }());
 var npcNames = new ((function () {
-    function class_42() {
+    function class_52() {
         this.firstNames = ["Adelaide", "Aleida", "Alexia", "Alianor", "Alice", "Althalos", "Amelia", "Anastas", "Angmar", "Anne", "Arabella", "Ariana",
             "Arthur", "Asher", "Atheena", "Ayleth", "Barda", "Beatrix", "Benedict", "Benevolence", "Berinon", "Borin", "Brangian", "Brom",
             "Brunhild", "Bryce", "Carac", "Cassius", "Catherine", "Catrain", "Cedany", "Cedric", "Charles", "Clifton", "Cornwallis", "Cristiana",
@@ -26216,7 +29297,7 @@ var npcNames = new ((function () {
             "shoulder", "skin", "skull", "sole", "spine", "stomach", "sternum", "teeth", "throat", "tibia", "waist", "wrist"];
         this.lastNames = [];
     }
-    return class_42;
+    return class_52;
 }()));
 var NPC = (function () {
     function NPC() {
@@ -26248,9 +29329,9 @@ var NPC = (function () {
 }());
 /// <reference path="../MovingActor.ts" />
 var npc = new ((function () {
-    function class_43() {
+    function class_53() {
     }
-    return class_43;
+    return class_53;
 }()));
 var NPCActor = (function (_super) {
     __extends(NPCActor, _super);
@@ -26549,9 +29630,9 @@ var OtherPlayer = (function (_super) {
 }(MovingActor));
 ///<reference path="../MovingActor.ts" />
 var playerEffects = new ((function () {
-    function class_44() {
+    function class_54() {
     }
-    return class_44;
+    return class_54;
 }()));
 var EmotesArt;
 (function (EmotesArt) {
@@ -27374,315 +30455,6 @@ var Player = (function (_super) {
     };
     return Player;
 }(MovingActor));
-/// <reference path="ExecutionCode.ts" />
-var AddCode = (function () {
-    function AddCode() {
-    }
-    AddCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        var b = env.Pop();
-        if (a === null && b === null) {
-            env.Push(new VariableValue(null));
-            return;
-        }
-        if (a === null || a === undefined)
-            a = new VariableValue("(null)");
-        if (b === null || b === undefined)
-            b = new VariableValue("(null)");
-        var aType = a.Type;
-        var bType = b.Type;
-        if (aType == ValueType.String) {
-            var aValue = a.GetString();
-            if (!isNaN(parseFloat(aValue)) && ("" + parseFloat(aValue)) == aValue)
-                aType = ValueType.Number;
-        }
-        if (bType == ValueType.String) {
-            var bValue = b.GetString();
-            if (!isNaN(parseFloat(bValue)) && ("" + parseFloat(bValue)) == bValue)
-                bType = ValueType.Number;
-        }
-        if (aType == ValueType.String || bType == ValueType.String)
-            env.Push(new VariableValue(a.GetString() + b.GetString()));
-        else
-            env.Push(new VariableValue(a.GetNumber() + b.GetNumber()));
-        env.CodeLine++;
-    };
-    return AddCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var AndCode = (function () {
-    function AndCode() {
-    }
-    AndCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        var b = env.Pop();
-        env.Push(new VariableValue(a.GetBoolean() && b.GetBoolean()));
-        env.CodeLine++;
-    };
-    return AndCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var AssignCode = (function () {
-    function AssignCode(name, index) {
-        if (index === void 0) { index = false; }
-        this.Index = false;
-        this.Name = name;
-        this.Index = index;
-    }
-    AssignCode.prototype.Execute = function (env) {
-        if (this.Index == false) {
-            var a = env.Pop();
-            env.SetVariable(this.Name, a);
-        }
-        else {
-            var idx = env.Pop().GetNumber();
-            var a = env.Pop();
-            var v = env.GetVariable(this.Name);
-            v.Value[idx] = a;
-        }
-        env.CodeLine++;
-    };
-    return AssignCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var CompareCode = (function () {
-    function CompareCode(operation) {
-        this.Operation = operation;
-    }
-    CompareCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        var b = env.Pop();
-        if (!a)
-            a = new VariableValue(null);
-        if (!b)
-            b = new VariableValue(null);
-        switch (this.Operation) {
-            case "==":
-                if (a.Type == ValueType.Null || b.Type == ValueType.Null)
-                    env.Push(new VariableValue(a.Value === b.Value));
-                else
-                    env.Push(new VariableValue(a.Value == b.Value));
-                break;
-            case "!=":
-                if (a.Type == ValueType.Null || b.Type == ValueType.Null)
-                    env.Push(new VariableValue(a.Value !== b.Value));
-                else
-                    env.Push(new VariableValue(a.Value != b.Value));
-                break;
-            case "<=":
-                env.Push(new VariableValue(a.Value <= b.Value));
-                break;
-            case "<":
-                env.Push(new VariableValue(a.Value < b.Value));
-                break;
-            case ">=":
-                env.Push(new VariableValue(a.Value >= b.Value));
-                break;
-            case ">":
-                env.Push(new VariableValue(a.Value > b.Value));
-                break;
-            default:
-                throw "Unknown operator " + this.Operation;
-        }
-        env.CodeLine++;
-    };
-    return CompareCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var DivideCode = (function () {
-    function DivideCode() {
-    }
-    DivideCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        var b = env.Pop();
-        if (a === null || b === null)
-            env.Push(new VariableValue(null));
-        else
-            env.Push(new VariableValue(a.GetNumber() / b.GetNumber()));
-        env.CodeLine++;
-    };
-    return DivideCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var FlushVariableStackCode = (function () {
-    function FlushVariableStackCode() {
-    }
-    FlushVariableStackCode.prototype.Execute = function (env) {
-        env.Flush();
-        env.CodeLine++;
-    };
-    return FlushVariableStackCode;
-}());
-/// <refe/rence path="ExecutionCode.ts" />
-var FunctionCallCode = (function () {
-    function FunctionCallCode(name, parametersCount) {
-        this.Name = name;
-        this.ParametersCount = parametersCount;
-    }
-    FunctionCallCode.prototype.Execute = function (env) {
-        var values = [];
-        for (var i = this.ParametersCount - 1; i >= 0; i--)
-            values[i] = env.Pop();
-        env.CodeLine++;
-        if (!this.type) {
-            var parts = this.Name.split('.');
-            if (parts.length == 2 && env.HasWrapper(this.Name))
-                this.type = "wrapper";
-            else if (parts.length == 1 || parts.length == 3)
-                this.type = "sub";
-            else
-                this.type = "api";
-        }
-        switch (this.type) {
-            case "wrapper":
-                env.ExecuteWrapperFunctionCode(this.Name, values);
-                break;
-            case "sub":
-                env.ExecuteSubFunctionCode(this.Name, values);
-                break;
-            case "api":
-                var a = env.ExecuteFunction(this.Name, values);
-                if (a !== null)
-                    env.Push(a);
-                break;
-        }
-    };
-    return FunctionCallCode;
-}());
-var FunctionDefinitionCode = (function () {
-    function FunctionDefinitionCode() {
-        this.Code = [];
-        this.LoopExitStack = [];
-    }
-    return FunctionDefinitionCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var IfCode = (function () {
-    function IfCode(trueJump, falseJump) {
-        this.TrueJump = trueJump;
-        this.FalseJump = falseJump;
-    }
-    IfCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        if (a.GetBoolean() === true)
-            env.CodeLine = this.TrueJump;
-        else
-            env.CodeLine = this.FalseJump;
-    };
-    return IfCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var JumpCode = (function () {
-    function JumpCode(jumpLine) {
-        this.JumpLine = jumpLine;
-    }
-    JumpCode.prototype.Execute = function (env) {
-        env.CodeLine = this.JumpLine;
-    };
-    return JumpCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var MultiplyCode = (function () {
-    function MultiplyCode() {
-    }
-    MultiplyCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        var b = env.Pop();
-        if (a === null || b === null)
-            env.Push(new VariableValue(null));
-        else
-            env.Push(new VariableValue(a.GetNumber() * b.GetNumber()));
-        env.CodeLine++;
-    };
-    return MultiplyCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var NewArrayCode = (function () {
-    function NewArrayCode() {
-    }
-    NewArrayCode.prototype.Execute = function (env) {
-        env.Push(new VariableValue([]));
-        env.CodeLine++;
-    };
-    return NewArrayCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var NotCode = (function () {
-    function NotCode() {
-    }
-    NotCode.prototype.Execute = function (env) {
-        env.Push(new VariableValue(!(env.Pop().GetBoolean())));
-        env.CodeLine++;
-    };
-    return NotCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var OrCode = (function () {
-    function OrCode() {
-    }
-    OrCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        var b = env.Pop();
-        env.Push(new VariableValue(a.GetBoolean() || b.GetBoolean()));
-        env.CodeLine++;
-    };
-    return OrCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var PushCode = (function () {
-    function PushCode(value) {
-        this.Value = value;
-    }
-    PushCode.prototype.Execute = function (env) {
-        env.Push(new VariableValue(this.Value));
-        env.CodeLine++;
-    };
-    return PushCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var ReadCode = (function () {
-    function ReadCode(name, index) {
-        if (index === void 0) { index = false; }
-        this.Index = false;
-        this.Name = name;
-        this.Index = index;
-    }
-    ReadCode.prototype.Execute = function (env) {
-        if (this.Index == false)
-            env.Push(env.GetVariable(this.Name));
-        else {
-            var idx = env.Pop().GetNumber();
-            var v = env.GetVariable(this.Name);
-            env.Push(v.Value[idx]);
-        }
-        env.CodeLine++;
-    };
-    return ReadCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var ReturnCode = (function () {
-    function ReturnCode() {
-    }
-    ReturnCode.prototype.Execute = function (env) {
-        env.CodeLine = -1;
-    };
-    return ReturnCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var SubstractCode = (function () {
-    function SubstractCode() {
-    }
-    SubstractCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        var b = env.Pop();
-        if (a === null || b === null)
-            env.Push(new VariableValue(null));
-        else
-            env.Push(new VariableValue(a.GetNumber() - b.GetNumber()));
-        env.CodeLine++;
-    };
-    return SubstractCode;
-}());
 /// <reference path="../CodeEnvironement.ts" />
 var EngineActor = (function () {
     function EngineActor() {
@@ -28272,12 +31044,12 @@ EngineChat = __decorate([
 ], EngineChat);
 /// <reference path="../CodeEnvironement.ts" />
 var engineDisplay = new ((function () {
-    function class_45() {
+    function class_55() {
         this.dialogSideButtons = [];
         this.dialogButtons = [];
         this.canRestartInline = false;
     }
-    return class_45;
+    return class_55;
 }()));
 var EngineDisplay = EngineDisplay_1 = (function () {
     function EngineDisplay() {
@@ -28772,11 +31544,11 @@ EngineGame = EngineGame_1 = __decorate([
 var EngineGame_1;
 /// <reference path="../CodeEnvironement.ts" />
 var engineGraphics = new ((function () {
-    function class_46() {
+    function class_56() {
         this.currentCanvas = null;
         this.imageCache = {};
     }
-    return class_46;
+    return class_56;
 }()));
 var EngineGraphics = EngineGraphics_1 = (function () {
     function EngineGraphics() {
@@ -30270,7 +33042,7 @@ EngineSound = __decorate([
 ], EngineSound);
 /// <reference path="../CodeEnvironement.ts" />
 var engineStorage = new ((function () {
-    function class_47() {
+    function class_57() {
         this.lastRowId = null;
         this.nextQueryId = 1;
         this.openQueries = [];
@@ -30278,7 +33050,7 @@ var engineStorage = new ((function () {
         this.tableList = [];
         this.columnList = [];
     }
-    return class_47;
+    return class_57;
 }()));
 var charsRegex = /[\0\b\t\n\r\x1a\"\'\\]/g;
 var charsMap = {
@@ -30824,514 +33596,315 @@ EngineStorage = EngineStorage_1 = __decorate([
     ApiClass
 ], EngineStorage);
 var EngineStorage_1;
-/// <reference path="../CodeParser.ts" />
-var TokenAnd = (function (_super) {
-    __extends(TokenAnd, _super);
-    function TokenAnd() {
-        return _super !== null && _super.apply(this, arguments) || this;
+/// <reference path="ExecutionCode.ts" />
+var AddCode = (function () {
+    function AddCode() {
     }
-    TokenAnd.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (parser.PeekChar() == "&" && parser.PeekChar(1) == "&");
+    AddCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        var b = env.Pop();
+        if (a === null && b === null) {
+            env.Push(new VariableValue(null));
+            return;
+        }
+        if (a === null || a === undefined)
+            a = new VariableValue("(null)");
+        if (b === null || b === undefined)
+            b = new VariableValue("(null)");
+        var aType = a.Type;
+        var bType = b.Type;
+        if (aType == ValueType.String) {
+            var aValue = a.GetString();
+            if (!isNaN(parseFloat(aValue)) && ("" + parseFloat(aValue)) == aValue)
+                aType = ValueType.Number;
+        }
+        if (bType == ValueType.String) {
+            var bValue = b.GetString();
+            if (!isNaN(parseFloat(bValue)) && ("" + parseFloat(bValue)) == bValue)
+                bType = ValueType.Number;
+        }
+        if (aType == ValueType.String || bType == ValueType.String)
+            env.Push(new VariableValue(a.GetString() + b.GetString()));
+        else
+            env.Push(new VariableValue(a.GetNumber() + b.GetNumber()));
+        env.CodeLine++;
     };
-    TokenAnd.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        return parser.NextChar() + parser.NextChar();
-    };
-    return TokenAnd;
-}(CodeToken));
-TokenAnd = __decorate([
-    Token
-], TokenAnd);
-/// <reference path="../CodeParser.ts" />
-var TokenAssign = (function (_super) {
-    __extends(TokenAssign, _super);
-    function TokenAssign() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    return AddCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var AndCode = (function () {
+    function AndCode() {
     }
-    TokenAssign.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (parser.PeekChar() == "=" && parser.PeekChar(1) != "=");
+    AndCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        var b = env.Pop();
+        env.Push(new VariableValue(a.GetBoolean() && b.GetBoolean()));
+        env.CodeLine++;
     };
-    TokenAssign.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        return parser.NextChar();
-    };
-    return TokenAssign;
-}(CodeToken));
-TokenAssign = __decorate([
-    Token
-], TokenAssign);
-/// <reference path="../CodeParser.ts" />
-var TokenCloseParenthesis = (function (_super) {
-    __extends(TokenCloseParenthesis, _super);
-    function TokenCloseParenthesis() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    return AndCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var AssignCode = (function () {
+    function AssignCode(name, index) {
+        if (index === void 0) { index = false; }
+        this.Index = false;
+        this.Name = name;
+        this.Index = index;
     }
-    TokenCloseParenthesis.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (parser.PeekChar() == ")");
+    AssignCode.prototype.Execute = function (env) {
+        if (this.Index == false) {
+            var a = env.Pop();
+            env.SetVariable(this.Name, a);
+        }
+        else {
+            var idx = env.Pop().GetNumber();
+            var a = env.Pop();
+            var v = env.GetVariable(this.Name);
+            v.Value[idx] = a;
+        }
+        env.CodeLine++;
     };
-    TokenCloseParenthesis.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        return parser.NextChar();
-    };
-    return TokenCloseParenthesis;
-}(CodeToken));
-TokenCloseParenthesis = __decorate([
-    Token
-], TokenCloseParenthesis);
-/// <reference path="../CodeParser.ts" />
-var TokenCloseSquareBracket = (function (_super) {
-    __extends(TokenCloseSquareBracket, _super);
-    function TokenCloseSquareBracket() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    return AssignCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var CompareCode = (function () {
+    function CompareCode(operation) {
+        this.Operation = operation;
     }
-    TokenCloseSquareBracket.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (parser.PeekChar() == "]");
+    CompareCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        var b = env.Pop();
+        if (!a)
+            a = new VariableValue(null);
+        if (!b)
+            b = new VariableValue(null);
+        switch (this.Operation) {
+            case "==":
+                if (a.Type == ValueType.Null || b.Type == ValueType.Null)
+                    env.Push(new VariableValue(a.Value === b.Value));
+                else
+                    env.Push(new VariableValue(a.Value == b.Value));
+                break;
+            case "!=":
+                if (a.Type == ValueType.Null || b.Type == ValueType.Null)
+                    env.Push(new VariableValue(a.Value !== b.Value));
+                else
+                    env.Push(new VariableValue(a.Value != b.Value));
+                break;
+            case "<=":
+                env.Push(new VariableValue(a.Value <= b.Value));
+                break;
+            case "<":
+                env.Push(new VariableValue(a.Value < b.Value));
+                break;
+            case ">=":
+                env.Push(new VariableValue(a.Value >= b.Value));
+                break;
+            case ">":
+                env.Push(new VariableValue(a.Value > b.Value));
+                break;
+            default:
+                throw "Unknown operator " + this.Operation;
+        }
+        env.CodeLine++;
     };
-    TokenCloseSquareBracket.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        return parser.NextChar();
-    };
-    return TokenCloseSquareBracket;
-}(CodeToken));
-TokenCloseSquareBracket = __decorate([
-    Token
-], TokenCloseSquareBracket);
-/// <reference path="../CodeParser.ts" />
-var TokenCodeVariable = (function (_super) {
-    __extends(TokenCodeVariable, _super);
-    function TokenCodeVariable() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    return CompareCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var DivideCode = (function () {
+    function DivideCode() {
     }
-    TokenCodeVariable.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (parser.PeekChar() == "@");
+    DivideCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        var b = env.Pop();
+        if (a === null || b === null)
+            env.Push(new VariableValue(null));
+        else
+            env.Push(new VariableValue(a.GetNumber() / b.GetNumber()));
+        env.CodeLine++;
     };
-    TokenCodeVariable.prototype.Extract = function (parser) {
-        var extracted = parser.NextChar();
-        while (parser.HasChar()) {
-            var c = parser.NextChar();
-            extracted += c;
-            if (c == extracted.charAt(0))
+    return DivideCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var FlushVariableStackCode = (function () {
+    function FlushVariableStackCode() {
+    }
+    FlushVariableStackCode.prototype.Execute = function (env) {
+        env.Flush();
+        env.CodeLine++;
+    };
+    return FlushVariableStackCode;
+}());
+/// <refe/rence path="ExecutionCode.ts" />
+var FunctionCallCode = (function () {
+    function FunctionCallCode(name, parametersCount) {
+        this.Name = name;
+        this.ParametersCount = parametersCount;
+    }
+    FunctionCallCode.prototype.Execute = function (env) {
+        var values = [];
+        for (var i = this.ParametersCount - 1; i >= 0; i--)
+            values[i] = env.Pop();
+        env.CodeLine++;
+        if (!this.type) {
+            var parts = this.Name.split('.');
+            if (parts.length == 2 && env.HasWrapper(this.Name))
+                this.type = "wrapper";
+            else if (parts.length == 1 || parts.length == 3)
+                this.type = "sub";
+            else
+                this.type = "api";
+        }
+        switch (this.type) {
+            case "wrapper":
+                env.ExecuteWrapperFunctionCode(this.Name, values);
+                break;
+            case "sub":
+                env.ExecuteSubFunctionCode(this.Name, values);
+                break;
+            case "api":
+                var a = env.ExecuteFunction(this.Name, values);
+                if (a !== null)
+                    env.Push(a);
                 break;
         }
-        return extracted.substr(1, extracted.length - 2);
     };
-    ;
-    return TokenCodeVariable;
-}(CodeToken));
-TokenCodeVariable = __decorate([
-    Token
-], TokenCodeVariable);
-/// <reference path="../CodeToken.ts" />
-/// <reference path="../CodeParser.ts" />
-var TokenComment = (function (_super) {
-    __extends(TokenComment, _super);
-    function TokenComment() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    return FunctionCallCode;
+}());
+var FunctionDefinitionCode = (function () {
+    function FunctionDefinitionCode() {
+        this.Code = [];
+        this.LoopExitStack = [];
     }
-    TokenComment.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        if (parser.PeekChar() == "/" && parser.PeekChar(1) == "/")
-            return true;
-        if (parser.PeekChar() == "/" && parser.PeekChar(1) == "*")
-            return true;
+    return FunctionDefinitionCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var IfCode = (function () {
+    function IfCode(trueJump, falseJump) {
+        this.TrueJump = trueJump;
+        this.FalseJump = falseJump;
+    }
+    IfCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        if (a.GetBoolean() === true)
+            env.CodeLine = this.TrueJump;
+        else
+            env.CodeLine = this.FalseJump;
     };
-    TokenComment.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        // Skip the two slashes
-        parser.SkipChar();
-        var secondChar = parser.NextChar();
-        var extracted = "";
-        // Multi line comment
-        if (secondChar == "*") {
-            while (parser.HasChar()) {
-                if (parser.PeekChar() == "*" && parser.PeekChar(1) == "/") {
-                    parser.NextChar();
-                    parser.NextChar();
-                    return extracted;
-                }
-                extracted += parser.NextChar();
-            }
+    return IfCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var JumpCode = (function () {
+    function JumpCode(jumpLine) {
+        this.JumpLine = jumpLine;
+    }
+    JumpCode.prototype.Execute = function (env) {
+        env.CodeLine = this.JumpLine;
+    };
+    return JumpCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var MultiplyCode = (function () {
+    function MultiplyCode() {
+    }
+    MultiplyCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        var b = env.Pop();
+        if (a === null || b === null)
+            env.Push(new VariableValue(null));
+        else
+            env.Push(new VariableValue(a.GetNumber() * b.GetNumber()));
+        env.CodeLine++;
+    };
+    return MultiplyCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var NewArrayCode = (function () {
+    function NewArrayCode() {
+    }
+    NewArrayCode.prototype.Execute = function (env) {
+        env.Push(new VariableValue([]));
+        env.CodeLine++;
+    };
+    return NewArrayCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var NotCode = (function () {
+    function NotCode() {
+    }
+    NotCode.prototype.Execute = function (env) {
+        env.Push(new VariableValue(!(env.Pop().GetBoolean())));
+        env.CodeLine++;
+    };
+    return NotCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var OrCode = (function () {
+    function OrCode() {
+    }
+    OrCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        var b = env.Pop();
+        env.Push(new VariableValue(a.GetBoolean() || b.GetBoolean()));
+        env.CodeLine++;
+    };
+    return OrCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var PushCode = (function () {
+    function PushCode(value) {
+        this.Value = value;
+    }
+    PushCode.prototype.Execute = function (env) {
+        env.Push(new VariableValue(this.Value));
+        env.CodeLine++;
+    };
+    return PushCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var ReadCode = (function () {
+    function ReadCode(name, index) {
+        if (index === void 0) { index = false; }
+        this.Index = false;
+        this.Name = name;
+        this.Index = index;
+    }
+    ReadCode.prototype.Execute = function (env) {
+        if (this.Index == false)
+            env.Push(env.GetVariable(this.Name));
+        else {
+            var idx = env.Pop().GetNumber();
+            var v = env.GetVariable(this.Name);
+            env.Push(v.Value[idx]);
         }
-        // Single line comment
-        while (parser.HasChar()) {
-            if (parser.PeekChar() == "\n" || parser.PeekChar() == "\r")
-                break;
-            extracted += parser.NextChar();
-        }
-        return extracted;
+        env.CodeLine++;
     };
-    return TokenComment;
-}(CodeToken));
-TokenComment = __decorate([
-    Token
-], TokenComment);
-/// <reference path="../CodeParser.ts" />
-var TokenCompare = (function (_super) {
-    __extends(TokenCompare, _super);
-    function TokenCompare() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    return ReadCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var ReturnCode = (function () {
+    function ReturnCode() {
     }
-    TokenCompare.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return ((parser.PeekChar() == "=" && parser.PeekChar(1) == "=") ||
-            parser.PeekChar() == "<" ||
-            parser.PeekChar() == ">" ||
-            (parser.PeekChar() == "!" && parser.PeekChar(1) == "="));
+    ReturnCode.prototype.Execute = function (env) {
+        env.CodeLine = -1;
     };
-    TokenCompare.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        if ((parser.PeekChar() == "<" || parser.PeekChar() == ">") && parser.PeekChar(1) != "=")
-            return parser.NextChar();
-        return parser.NextChar() + parser.NextChar();
-    };
-    return TokenCompare;
-}(CodeToken));
-TokenCompare = __decorate([
-    Token
-], TokenCompare);
-/// <reference path="../CodeParser.ts" />
-var TokenDecrement = (function (_super) {
-    __extends(TokenDecrement, _super);
-    function TokenDecrement() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    return ReturnCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var SubstractCode = (function () {
+    function SubstractCode() {
     }
-    TokenDecrement.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (parser.PeekChar() == "-" && parser.PeekChar(1) == "-");
+    SubstractCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        var b = env.Pop();
+        if (a === null || b === null)
+            env.Push(new VariableValue(null));
+        else
+            env.Push(new VariableValue(a.GetNumber() - b.GetNumber()));
+        env.CodeLine++;
     };
-    TokenDecrement.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        return parser.NextChar() + parser.NextChar();
-    };
-    return TokenDecrement;
-}(CodeToken));
-TokenDecrement = __decorate([
-    Token
-], TokenDecrement);
-/// <reference path="../CodeParser.ts" />
-var TokenDot = (function (_super) {
-    __extends(TokenDot, _super);
-    function TokenDot() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.numberChar = "0123456789";
-        return _this;
-    }
-    TokenDot.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (parser.PeekChar() == "." && this.numberChar.indexOf(parser.PeekChar(1)) == -1);
-    };
-    TokenDot.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        return parser.NextChar();
-    };
-    return TokenDot;
-}(CodeToken));
-TokenDot = __decorate([
-    Token
-], TokenDot);
-/// <reference path="../CodeParser.ts" />
-var TokenEndBlock = (function (_super) {
-    __extends(TokenEndBlock, _super);
-    function TokenEndBlock() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    TokenEndBlock.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (parser.PeekChar() == "}");
-    };
-    TokenEndBlock.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        return parser.NextChar();
-    };
-    return TokenEndBlock;
-}(CodeToken));
-TokenEndBlock = __decorate([
-    Token
-], TokenEndBlock);
-/// <reference path="../CodeParser.ts" />
-var TokenEndLine = (function (_super) {
-    __extends(TokenEndLine, _super);
-    function TokenEndLine() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    TokenEndLine.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (parser.PeekChar() == ";");
-    };
-    TokenEndLine.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        return parser.NextChar();
-    };
-    return TokenEndLine;
-}(CodeToken));
-TokenEndLine = __decorate([
-    Token
-], TokenEndLine);
-/// <reference path="../CodeParser.ts" />
-var TokenIncrement = (function (_super) {
-    __extends(TokenIncrement, _super);
-    function TokenIncrement() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    TokenIncrement.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (parser.PeekChar() == "+" && parser.PeekChar(1) == "+");
-    };
-    TokenIncrement.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        return parser.NextChar() + parser.NextChar();
-    };
-    return TokenIncrement;
-}(CodeToken));
-TokenIncrement = __decorate([
-    Token
-], TokenIncrement);
-/// <reference path="../CodeParser.ts" />
-var TokenName = (function (_super) {
-    __extends(TokenName, _super);
-    function TokenName() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.allowedChar = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_";
-        _this.secondChar = "0123456789";
-        return _this;
-    }
-    TokenName.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return this.allowedChar.indexOf(parser.PeekChar()) != -1;
-    };
-    TokenName.prototype.Extract = function (parser) {
-        var extracted = "";
-        parser.SkipSpaces();
-        while (parser.HasChar()) {
-            if (extracted.length > 0 && this.allowedChar.indexOf(parser.PeekChar()) == -1 && this.secondChar.indexOf(parser.PeekChar()) == -1)
-                break;
-            else if (extracted.length == 0 && this.allowedChar.indexOf(parser.PeekChar()) == -1)
-                break;
-            extracted += parser.NextChar();
-        }
-        return extracted;
-    };
-    return TokenName;
-}(CodeToken));
-TokenName = __decorate([
-    Token
-], TokenName);
-/// <reference path="../CodeParser.ts" />
-var TokenNot = (function (_super) {
-    __extends(TokenNot, _super);
-    function TokenNot() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    TokenNot.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (parser.PeekChar() == "!" && parser.PeekChar(1) != "=");
-    };
-    TokenNot.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        return parser.NextChar();
-    };
-    return TokenNot;
-}(CodeToken));
-TokenNot = __decorate([
-    Token
-], TokenNot);
-/// <reference path="../CodeParser.ts" />
-var TokenNumber = (function (_super) {
-    __extends(TokenNumber, _super);
-    function TokenNumber() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.allowedChar = "0123456789";
-        return _this;
-    }
-    TokenNumber.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        if (parser.PeekChar() == "." && this.allowedChar.indexOf(parser.PeekChar(1)) != -1)
-            return true;
-        return this.allowedChar.indexOf(parser.PeekChar()) != -1 && parser.PeekChar() != ".";
-    };
-    TokenNumber.prototype.Extract = function (parser) {
-        var extracted = "";
-        parser.SkipSpaces();
-        while (parser.HasChar()) {
-            if (this.allowedChar.indexOf(parser.PeekChar()) == -1 && parser.PeekChar() != ".")
-                break;
-            extracted += parser.NextChar();
-        }
-        return extracted;
-    };
-    return TokenNumber;
-}(CodeToken));
-TokenNumber = __decorate([
-    Token
-], TokenNumber);
-/// <reference path="../CodeParser.ts" />
-var TokenOpenParenthesis = (function (_super) {
-    __extends(TokenOpenParenthesis, _super);
-    function TokenOpenParenthesis() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    TokenOpenParenthesis.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (parser.PeekChar() == "(");
-    };
-    TokenOpenParenthesis.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        return parser.NextChar();
-    };
-    return TokenOpenParenthesis;
-}(CodeToken));
-TokenOpenParenthesis = __decorate([
-    Token
-], TokenOpenParenthesis);
-/// <reference path="../CodeParser.ts" />
-var TokenOpenSquareBracket = (function (_super) {
-    __extends(TokenOpenSquareBracket, _super);
-    function TokenOpenSquareBracket() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    TokenOpenSquareBracket.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (parser.PeekChar() == "[");
-    };
-    TokenOpenSquareBracket.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        return parser.NextChar();
-    };
-    return TokenOpenSquareBracket;
-}(CodeToken));
-TokenOpenSquareBracket = __decorate([
-    Token
-], TokenOpenSquareBracket);
-/// <reference path="../CodeParser.ts" />
-var TokenOperator = (function (_super) {
-    __extends(TokenOperator, _super);
-    function TokenOperator() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.allowedChar = "+-*/";
-        return _this;
-    }
-    TokenOperator.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (this.allowedChar.indexOf(parser.PeekChar()) != -1 && this.allowedChar.indexOf(parser.PeekChar(1)) == -1 && parser.PeekChar(1) != "=");
-    };
-    TokenOperator.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        return parser.NextChar();
-    };
-    return TokenOperator;
-}(CodeToken));
-TokenOperator = __decorate([
-    Token
-], TokenOperator);
-/// <reference path="../CodeParser.ts" />
-var TokenOperatorAssign = (function (_super) {
-    __extends(TokenOperatorAssign, _super);
-    function TokenOperatorAssign() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.allowedChar = "+-*/";
-        return _this;
-    }
-    TokenOperatorAssign.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (this.allowedChar.indexOf(parser.PeekChar()) != -1 && this.allowedChar.indexOf(parser.PeekChar(1)) == -1 && parser.PeekChar(1) == "=");
-    };
-    TokenOperatorAssign.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        return parser.NextChar() + parser.NextChar();
-    };
-    return TokenOperatorAssign;
-}(CodeToken));
-TokenOperatorAssign = __decorate([
-    Token
-], TokenOperatorAssign);
-/// <reference path="../CodeParser.ts" />
-var TokenOr = (function (_super) {
-    __extends(TokenOr, _super);
-    function TokenOr() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    TokenOr.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (parser.PeekChar() == "|" && parser.PeekChar(1) == "|");
-    };
-    TokenOr.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        return parser.NextChar() + parser.NextChar();
-    };
-    return TokenOr;
-}(CodeToken));
-TokenOr = __decorate([
-    Token
-], TokenOr);
-/// <reference path="../CodeParser.ts" />
-var TokenSplitParameter = (function (_super) {
-    __extends(TokenSplitParameter, _super);
-    function TokenSplitParameter() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    TokenSplitParameter.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (parser.PeekChar() == ",");
-    };
-    TokenSplitParameter.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        return parser.NextChar();
-    };
-    return TokenSplitParameter;
-}(CodeToken));
-TokenSplitParameter = __decorate([
-    Token
-], TokenSplitParameter);
-/// <reference path="../CodeParser.ts" />
-var TokenStartBlock = (function (_super) {
-    __extends(TokenStartBlock, _super);
-    function TokenStartBlock() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    TokenStartBlock.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (parser.PeekChar() == "{");
-    };
-    TokenStartBlock.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        return parser.NextChar();
-    };
-    return TokenStartBlock;
-}(CodeToken));
-TokenStartBlock = __decorate([
-    Token
-], TokenStartBlock);
-/// <reference path="../CodeParser.ts" />
-var TokenString = (function (_super) {
-    __extends(TokenString, _super);
-    function TokenString() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    TokenString.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (parser.PeekChar() == "\"" || parser.PeekChar() == "'");
-    };
-    TokenString.prototype.Extract = function (parser) {
-        var extracted = parser.NextChar();
-        while (parser.HasChar()) {
-            var c = parser.NextChar();
-            extracted += c;
-            if (c == extracted.charAt(0))
-                break;
-        }
-        return extracted.substr(1, extracted.length - 2);
-    };
-    ;
-    return TokenString;
-}(CodeToken));
-TokenString = __decorate([
-    Token
-], TokenString);
+    return SubstractCode;
+}());
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['Add'] = { help: "Add two values and return the result. If one of the two is a string a concatenation will be made.", params: [{ name: 'AStatement', type: 'CodeStatement' }, { name: 'BStatement', type: 'CodeStatement' }] };
 var AddStatement = (function (_super) {
@@ -32465,6 +35038,514 @@ WhileStatement = WhileStatement_1 = __decorate([
     StatementClass
 ], WhileStatement);
 var WhileStatement_1;
+/// <reference path="../CodeParser.ts" />
+var TokenAnd = (function (_super) {
+    __extends(TokenAnd, _super);
+    function TokenAnd() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TokenAnd.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (parser.PeekChar() == "&" && parser.PeekChar(1) == "&");
+    };
+    TokenAnd.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        return parser.NextChar() + parser.NextChar();
+    };
+    return TokenAnd;
+}(CodeToken));
+TokenAnd = __decorate([
+    Token
+], TokenAnd);
+/// <reference path="../CodeParser.ts" />
+var TokenAssign = (function (_super) {
+    __extends(TokenAssign, _super);
+    function TokenAssign() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TokenAssign.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (parser.PeekChar() == "=" && parser.PeekChar(1) != "=");
+    };
+    TokenAssign.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        return parser.NextChar();
+    };
+    return TokenAssign;
+}(CodeToken));
+TokenAssign = __decorate([
+    Token
+], TokenAssign);
+/// <reference path="../CodeParser.ts" />
+var TokenCloseParenthesis = (function (_super) {
+    __extends(TokenCloseParenthesis, _super);
+    function TokenCloseParenthesis() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TokenCloseParenthesis.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (parser.PeekChar() == ")");
+    };
+    TokenCloseParenthesis.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        return parser.NextChar();
+    };
+    return TokenCloseParenthesis;
+}(CodeToken));
+TokenCloseParenthesis = __decorate([
+    Token
+], TokenCloseParenthesis);
+/// <reference path="../CodeParser.ts" />
+var TokenCloseSquareBracket = (function (_super) {
+    __extends(TokenCloseSquareBracket, _super);
+    function TokenCloseSquareBracket() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TokenCloseSquareBracket.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (parser.PeekChar() == "]");
+    };
+    TokenCloseSquareBracket.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        return parser.NextChar();
+    };
+    return TokenCloseSquareBracket;
+}(CodeToken));
+TokenCloseSquareBracket = __decorate([
+    Token
+], TokenCloseSquareBracket);
+/// <reference path="../CodeParser.ts" />
+var TokenCodeVariable = (function (_super) {
+    __extends(TokenCodeVariable, _super);
+    function TokenCodeVariable() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TokenCodeVariable.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (parser.PeekChar() == "@");
+    };
+    TokenCodeVariable.prototype.Extract = function (parser) {
+        var extracted = parser.NextChar();
+        while (parser.HasChar()) {
+            var c = parser.NextChar();
+            extracted += c;
+            if (c == extracted.charAt(0))
+                break;
+        }
+        return extracted.substr(1, extracted.length - 2);
+    };
+    ;
+    return TokenCodeVariable;
+}(CodeToken));
+TokenCodeVariable = __decorate([
+    Token
+], TokenCodeVariable);
+/// <reference path="../CodeToken.ts" />
+/// <reference path="../CodeParser.ts" />
+var TokenComment = (function (_super) {
+    __extends(TokenComment, _super);
+    function TokenComment() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TokenComment.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        if (parser.PeekChar() == "/" && parser.PeekChar(1) == "/")
+            return true;
+        if (parser.PeekChar() == "/" && parser.PeekChar(1) == "*")
+            return true;
+    };
+    TokenComment.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        // Skip the two slashes
+        parser.SkipChar();
+        var secondChar = parser.NextChar();
+        var extracted = "";
+        // Multi line comment
+        if (secondChar == "*") {
+            while (parser.HasChar()) {
+                if (parser.PeekChar() == "*" && parser.PeekChar(1) == "/") {
+                    parser.NextChar();
+                    parser.NextChar();
+                    return extracted;
+                }
+                extracted += parser.NextChar();
+            }
+        }
+        // Single line comment
+        while (parser.HasChar()) {
+            if (parser.PeekChar() == "\n" || parser.PeekChar() == "\r")
+                break;
+            extracted += parser.NextChar();
+        }
+        return extracted;
+    };
+    return TokenComment;
+}(CodeToken));
+TokenComment = __decorate([
+    Token
+], TokenComment);
+/// <reference path="../CodeParser.ts" />
+var TokenCompare = (function (_super) {
+    __extends(TokenCompare, _super);
+    function TokenCompare() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TokenCompare.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return ((parser.PeekChar() == "=" && parser.PeekChar(1) == "=") ||
+            parser.PeekChar() == "<" ||
+            parser.PeekChar() == ">" ||
+            (parser.PeekChar() == "!" && parser.PeekChar(1) == "="));
+    };
+    TokenCompare.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        if ((parser.PeekChar() == "<" || parser.PeekChar() == ">") && parser.PeekChar(1) != "=")
+            return parser.NextChar();
+        return parser.NextChar() + parser.NextChar();
+    };
+    return TokenCompare;
+}(CodeToken));
+TokenCompare = __decorate([
+    Token
+], TokenCompare);
+/// <reference path="../CodeParser.ts" />
+var TokenDecrement = (function (_super) {
+    __extends(TokenDecrement, _super);
+    function TokenDecrement() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TokenDecrement.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (parser.PeekChar() == "-" && parser.PeekChar(1) == "-");
+    };
+    TokenDecrement.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        return parser.NextChar() + parser.NextChar();
+    };
+    return TokenDecrement;
+}(CodeToken));
+TokenDecrement = __decorate([
+    Token
+], TokenDecrement);
+/// <reference path="../CodeParser.ts" />
+var TokenDot = (function (_super) {
+    __extends(TokenDot, _super);
+    function TokenDot() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.numberChar = "0123456789";
+        return _this;
+    }
+    TokenDot.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (parser.PeekChar() == "." && this.numberChar.indexOf(parser.PeekChar(1)) == -1);
+    };
+    TokenDot.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        return parser.NextChar();
+    };
+    return TokenDot;
+}(CodeToken));
+TokenDot = __decorate([
+    Token
+], TokenDot);
+/// <reference path="../CodeParser.ts" />
+var TokenEndBlock = (function (_super) {
+    __extends(TokenEndBlock, _super);
+    function TokenEndBlock() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TokenEndBlock.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (parser.PeekChar() == "}");
+    };
+    TokenEndBlock.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        return parser.NextChar();
+    };
+    return TokenEndBlock;
+}(CodeToken));
+TokenEndBlock = __decorate([
+    Token
+], TokenEndBlock);
+/// <reference path="../CodeParser.ts" />
+var TokenEndLine = (function (_super) {
+    __extends(TokenEndLine, _super);
+    function TokenEndLine() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TokenEndLine.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (parser.PeekChar() == ";");
+    };
+    TokenEndLine.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        return parser.NextChar();
+    };
+    return TokenEndLine;
+}(CodeToken));
+TokenEndLine = __decorate([
+    Token
+], TokenEndLine);
+/// <reference path="../CodeParser.ts" />
+var TokenIncrement = (function (_super) {
+    __extends(TokenIncrement, _super);
+    function TokenIncrement() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TokenIncrement.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (parser.PeekChar() == "+" && parser.PeekChar(1) == "+");
+    };
+    TokenIncrement.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        return parser.NextChar() + parser.NextChar();
+    };
+    return TokenIncrement;
+}(CodeToken));
+TokenIncrement = __decorate([
+    Token
+], TokenIncrement);
+/// <reference path="../CodeParser.ts" />
+var TokenName = (function (_super) {
+    __extends(TokenName, _super);
+    function TokenName() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.allowedChar = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_";
+        _this.secondChar = "0123456789";
+        return _this;
+    }
+    TokenName.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return this.allowedChar.indexOf(parser.PeekChar()) != -1;
+    };
+    TokenName.prototype.Extract = function (parser) {
+        var extracted = "";
+        parser.SkipSpaces();
+        while (parser.HasChar()) {
+            if (extracted.length > 0 && this.allowedChar.indexOf(parser.PeekChar()) == -1 && this.secondChar.indexOf(parser.PeekChar()) == -1)
+                break;
+            else if (extracted.length == 0 && this.allowedChar.indexOf(parser.PeekChar()) == -1)
+                break;
+            extracted += parser.NextChar();
+        }
+        return extracted;
+    };
+    return TokenName;
+}(CodeToken));
+TokenName = __decorate([
+    Token
+], TokenName);
+/// <reference path="../CodeParser.ts" />
+var TokenNot = (function (_super) {
+    __extends(TokenNot, _super);
+    function TokenNot() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TokenNot.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (parser.PeekChar() == "!" && parser.PeekChar(1) != "=");
+    };
+    TokenNot.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        return parser.NextChar();
+    };
+    return TokenNot;
+}(CodeToken));
+TokenNot = __decorate([
+    Token
+], TokenNot);
+/// <reference path="../CodeParser.ts" />
+var TokenNumber = (function (_super) {
+    __extends(TokenNumber, _super);
+    function TokenNumber() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.allowedChar = "0123456789";
+        return _this;
+    }
+    TokenNumber.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        if (parser.PeekChar() == "." && this.allowedChar.indexOf(parser.PeekChar(1)) != -1)
+            return true;
+        return this.allowedChar.indexOf(parser.PeekChar()) != -1 && parser.PeekChar() != ".";
+    };
+    TokenNumber.prototype.Extract = function (parser) {
+        var extracted = "";
+        parser.SkipSpaces();
+        while (parser.HasChar()) {
+            if (this.allowedChar.indexOf(parser.PeekChar()) == -1 && parser.PeekChar() != ".")
+                break;
+            extracted += parser.NextChar();
+        }
+        return extracted;
+    };
+    return TokenNumber;
+}(CodeToken));
+TokenNumber = __decorate([
+    Token
+], TokenNumber);
+/// <reference path="../CodeParser.ts" />
+var TokenOpenParenthesis = (function (_super) {
+    __extends(TokenOpenParenthesis, _super);
+    function TokenOpenParenthesis() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TokenOpenParenthesis.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (parser.PeekChar() == "(");
+    };
+    TokenOpenParenthesis.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        return parser.NextChar();
+    };
+    return TokenOpenParenthesis;
+}(CodeToken));
+TokenOpenParenthesis = __decorate([
+    Token
+], TokenOpenParenthesis);
+/// <reference path="../CodeParser.ts" />
+var TokenOpenSquareBracket = (function (_super) {
+    __extends(TokenOpenSquareBracket, _super);
+    function TokenOpenSquareBracket() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TokenOpenSquareBracket.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (parser.PeekChar() == "[");
+    };
+    TokenOpenSquareBracket.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        return parser.NextChar();
+    };
+    return TokenOpenSquareBracket;
+}(CodeToken));
+TokenOpenSquareBracket = __decorate([
+    Token
+], TokenOpenSquareBracket);
+/// <reference path="../CodeParser.ts" />
+var TokenOperator = (function (_super) {
+    __extends(TokenOperator, _super);
+    function TokenOperator() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.allowedChar = "+-*/";
+        return _this;
+    }
+    TokenOperator.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (this.allowedChar.indexOf(parser.PeekChar()) != -1 && this.allowedChar.indexOf(parser.PeekChar(1)) == -1 && parser.PeekChar(1) != "=");
+    };
+    TokenOperator.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        return parser.NextChar();
+    };
+    return TokenOperator;
+}(CodeToken));
+TokenOperator = __decorate([
+    Token
+], TokenOperator);
+/// <reference path="../CodeParser.ts" />
+var TokenOperatorAssign = (function (_super) {
+    __extends(TokenOperatorAssign, _super);
+    function TokenOperatorAssign() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.allowedChar = "+-*/";
+        return _this;
+    }
+    TokenOperatorAssign.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (this.allowedChar.indexOf(parser.PeekChar()) != -1 && this.allowedChar.indexOf(parser.PeekChar(1)) == -1 && parser.PeekChar(1) == "=");
+    };
+    TokenOperatorAssign.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        return parser.NextChar() + parser.NextChar();
+    };
+    return TokenOperatorAssign;
+}(CodeToken));
+TokenOperatorAssign = __decorate([
+    Token
+], TokenOperatorAssign);
+/// <reference path="../CodeParser.ts" />
+var TokenOr = (function (_super) {
+    __extends(TokenOr, _super);
+    function TokenOr() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TokenOr.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (parser.PeekChar() == "|" && parser.PeekChar(1) == "|");
+    };
+    TokenOr.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        return parser.NextChar() + parser.NextChar();
+    };
+    return TokenOr;
+}(CodeToken));
+TokenOr = __decorate([
+    Token
+], TokenOr);
+/// <reference path="../CodeParser.ts" />
+var TokenSplitParameter = (function (_super) {
+    __extends(TokenSplitParameter, _super);
+    function TokenSplitParameter() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TokenSplitParameter.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (parser.PeekChar() == ",");
+    };
+    TokenSplitParameter.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        return parser.NextChar();
+    };
+    return TokenSplitParameter;
+}(CodeToken));
+TokenSplitParameter = __decorate([
+    Token
+], TokenSplitParameter);
+/// <reference path="../CodeParser.ts" />
+var TokenStartBlock = (function (_super) {
+    __extends(TokenStartBlock, _super);
+    function TokenStartBlock() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TokenStartBlock.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (parser.PeekChar() == "{");
+    };
+    TokenStartBlock.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        return parser.NextChar();
+    };
+    return TokenStartBlock;
+}(CodeToken));
+TokenStartBlock = __decorate([
+    Token
+], TokenStartBlock);
+/// <reference path="../CodeParser.ts" />
+var TokenString = (function (_super) {
+    __extends(TokenString, _super);
+    function TokenString() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TokenString.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (parser.PeekChar() == "\"" || parser.PeekChar() == "'");
+    };
+    TokenString.prototype.Extract = function (parser) {
+        var extracted = parser.NextChar();
+        while (parser.HasChar()) {
+            var c = parser.NextChar();
+            extracted += c;
+            if (c == extracted.charAt(0))
+                break;
+        }
+        return extracted.substr(1, extracted.length - 2);
+    };
+    ;
+    return TokenString;
+}(CodeToken));
+TokenString = __decorate([
+    Token
+], TokenString);
 ///<reference path="../TilesetInformation.ts" />
 defaultTilesets['tileset2'] = {
     "background": { "file": "/art/tileset2/background.png?v=2", "height": 32, "width": 32, "types": { "grass": [43, 61], "dark_grass": [51], "water": [7], "sand": [25, 33], "empty": [115], "dirt": [64] }, "mainType": "grass", "nbColumns": 6, "nonWalkable": [7, 0, 1, 2, 8, 14, 13, 12, 6, 3, 9, 4, 5, 11, 17, 35, 53, 69, 83, 101, 107, 106, 125, 112, 118, 124, 123, 143, 142, 141, 117, 111, 110, 116, 122, 121, 115, 109, 108, 114, 120, 119, 113, 15], "lastTile": 144, "paths": { "grass_path": [126, 139, 140, 133, 134, 131, 132, 129, 130, 127, 128, 135, 136, 137, 138] }, "transitions": [{ "from": "water", "to": "grass", "size": 12, "transition": [5, 3, 11, 9, 14, 12, 2, 0, 13, 8, 6, 1] }, { "from": "grass", "to": "sand", "size": 12, "transition": [18, 20, 30, 32, 27, 29, 21, 23, 19, 24, 26, 31] }, { "from": "dark_grass", "to": "grass", "size": 12, "transition": [36, 38, 48, 50, 45, 47, 39, 41, 37, 42, 44, 49] }, { "from": "grass", "to": "grass", "size": 12, "transition": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] }, { "from": "grass", "to": "dirt", "size": 12, "transition": [59, 57, 65, 63, 68, 66, 56, 54, 67, 62, 60, 55] }, { "from": "empty", "to": "dirt", "size": 12, "transition": [113, 111, 119, 117, 122, 120, 110, 108, 121, 116, 114, 109] }] },
@@ -32835,3547 +35916,536 @@ defaultTilesets['tileset2'] = {
         }
     }
 };
-var chat = new ((function () {
-    function class_48() {
-        this.intervalCounter = 0;
-        this.chatNewMessage = false;
-        this.wasHidden = false;
-        this.onMapChat = false;
-        this.channels = {};
-        this.smilies_txt = [[":-)", ":)"], [":-P", ":P", ":-p", ":p"], [":O", ":o", ":-o", ":-O"], [":-(", ":("], [":-/"], [";-)",
-                ";)"], [":D", ":-D"], ["8)", "8-)"], ["B)", "B-)"], ["XD", "xD", "X-D"], ["T.T"], ["^^'", "^.^'"], ["^^", "^.^"], ["O.O", "o.o"],
-            ["8|", "8-|"], ["\M/"], ["&gt;.&lt;"], ["XP", "X-P"], ["oO", "o.O", "o0", "o.0"], ["-.-"], ["(:&lt;"], ["'W'"], [":S", ":-S"],
-            ["*.*"], [":X"], ["X.X", "x.x"], ["$.$"], ["o@@o"], ["9.9"], ["O:&lt;"], ["B|"], ["B("], ["B0"], ["@.@"], ["^**^"], ["9.6"],
-            ["/.O"], ["d.b"], ["&gt;.&gt;"], ["=^_^="]];
+var ImportExport = (function () {
+    function ImportExport() {
     }
-    return class_48;
-}()));
-var Chat = (function () {
-    function Chat() {
-    }
-    Chat.AdditionalCSS = function () {
-        var r = parseInt(Main.EnsureColor(world.art.panelStyle.buttonBackground).substr(1, 2), 16);
-        var g = parseInt(Main.EnsureColor(world.art.panelStyle.buttonBackground).substr(3, 2), 16);
-        var b = parseInt(Main.EnsureColor(world.art.panelStyle.buttonBackground).substr(5, 2), 16);
-        return "#chatEntry\n\
-{\n\
-    width: calc(100% - " + (95 + world.art.panelStyle.leftBorder) + "px);\n\
-    top: " + (("" + document.location).indexOf("maker.html") != -1 ? "35px" : "5px") + ";\n\
-}\n\
-#chatEntryLine {\n\
-    background-color: rgba(" + r + "," + g + "," + b + ",0.6);\n\
-    color: " + Main.EnsureColor(world.art.panelStyle.contentColor) + ";\n\
-    border: solid 1px " + Main.EnsureColor(world.art.panelStyle.buttonBorder) + ";\n\
-}\n\
-#chatContainer {\n\
-    width: calc(100% - 95px);\n\
-    top: " + (("" + document.location).indexOf("maker.html") != -1 ? "65px" : "35px") + ";\n\
-}\n\
-@media (min-width: 1000px)\n\
-{\n\
-    #chatContainer {\n\
-        left: calc(50% + " + (parseInt("" + world.art.quickslotStyle.width) / 2 + 5) + "px);\n\
-        top: auto;\n\
-        bottom: 40px;\n\
-        width: auto;\n\
-    }\n\
-    #chatEntry\n\
-    {\n\
-        left: calc(50% + " + (parseInt("" + world.art.quickslotStyle.width) / 2 + 5) + "px);\n\
-        width: auto;\n\
-        top: auto;\n\
-        bottom: 5px;\n\
-    }\n\
-}\n\
-#chatChannels div {\n\
-    border: solid 1px " + Main.EnsureColor(world.art.panelStyle.buttonBorder) + ";\n\
-}\n\
-.selectedChannel {\n\
-    background-color: " + Main.EnsureColor(world.art.panelStyle.buttonBorder) + ";\n\
-}";
-    };
-    Chat.Init = function () {
-        if (!framework.Preferences['token'] || world.Edition == EditorEdition.Demo || framework.Preferences['token'] == "demo" || window['io'] == undefined || window['io'] == null || world.ChatEnabled === false) {
-            $("#chatEntry").hide();
-            return;
-        }
-        if (world.Player.ChatBannedTill && typeof world.Player.ChatBannedTill == "string")
-            world.Player.ChatBannedTill = new Date(world.Player.ChatBannedTill);
-        if (world.Player.ChatMutedTill && typeof world.Player.ChatMutedTill == "string")
-            world.Player.ChatMutedTill = new Date(world.Player.ChatMutedTill);
-        if (world.Player.ChatBannedTill && world.Player.ChatBannedTill.getTime() < (new Date()).getTime())
-            world.Player.ChatBannedTill = null;
-        if (world.Player.ChatMutedTill && world.Player.ChatMutedTill.getTime() < (new Date()).getTime())
-            world.Player.ChatMutedTill = null;
-        if (world.Player.ChatBannedTill && world.Player.ChatBannedTill.getTime() > (new Date()).getTime()) {
-            $("#chatContainer").hide();
-            $("#chatEntry").hide();
-            return;
-        }
-        chat.socket = window['io']();
-        chat.socket.on('connect', Chat.Connect);
-        chat.socket.on('chat', Chat.Receive);
-        chat.socket.on('join', Chat.Join);
-        chat.socket.on('leave', Chat.Leave);
-        chat.socket.on('channelUserList', Chat.ChannelUserList);
-        chat.socket.on('chatBot', Chat.BotLine);
-        chat.socket.on('mute', function (till) {
-            world.Player.ChatMutedTill = new Date(till);
-            world.Player.StoredCompare = world.Player.JSON();
-            Framework.ShowMessage("You have been chat muted till " + world.Player.ChatMutedTill);
-        });
-        chat.socket.on('ban', function (till) {
-            world.Player.ChatBannedTill = new Date(till);
-            world.Player.StoredCompare = world.Player.JSON();
-            Framework.ShowMessage("You have been chat banned till " + world.Player.ChatBannedTill);
-            $("#chatContainer").hide();
-            $("#chatEntry").hide();
-        });
-        $("#chatTitle").bind("click", Chat.ShowHide);
-        $("#chatCollapsed").bind("click", Chat.ShowHide);
-        if (!chat.chatInterval)
-            chat.chatInterval = setInterval(Chat.ChatInterval, 500);
-    };
-    Chat.ChatInterval = function () {
-        if (world.Player.ChatBannedTill && world.Player.ChatBannedTill.getTime() > (new Date()).getTime()) {
-            $("#chatContainer").hide();
-            $("#chatEntry").hide();
-            return;
-        }
-        // We entered in a zone
-        if (play.renderer && !chat.channels[world.Player.Zone.replace(/\./g, "_")]) {
-            chat.socket.emit('join', world.Id, framework.Preferences['token'], world.Player.Zone.replace(/\./g, "_"));
-            var items = [];
-            for (var item in chat.channels)
-                items.push(item);
-            chat.channels[world.Player.Zone.replace(/\./g, "_")] = { newMessage: false, messages: [], users: [] };
-            for (var i = 0; i < items.length; i++) {
-                var item = items[i];
-                if (item == "#global" || item == world.Player.Zone.replace(/\./g, "_"))
-                    continue;
-                chat.socket.emit('leave', world.Id, framework.Preferences['token'], item.replace(/\./g, "_"));
-                delete chat.channels[item];
-            }
-            Chat.UpdateChannels();
-            if (chat.currentChannel != "#global" || items.length == 1)
-                Chat.SelectChannel(world.Player.Zone.replace(/\./g, "_"));
-        }
-        // We left the play page
-        if (!play.renderer) {
-            var updated = false;
-            var items = [];
-            for (var item in chat.channels)
-                items.push(item);
-            for (var i = 0; i < items.length; i++) {
-                var item = items[i];
-                if (item == "#global")
-                    continue;
-                updated = true;
-                delete chat.channels[item];
-                chat.socket.emit('leave', world.Id, framework.Preferences['token'], item);
-            }
-            if (updated)
-                Chat.UpdateChannels();
-            Chat.SelectChannel("#global");
-        }
-        if (play.renderer && chat.onMapChat === false) {
-            chat.onMapChat = true;
-            $("#chatEntry").show();
-            $("#chatLine").hide();
-            $("#chatScroll").addClass("fullChatScroll");
-            $("#chatUserList").addClass("fullChatScroll");
-        }
-        else if (!play.renderer && chat.onMapChat === true) {
-            chat.onMapChat = false;
-            $("#chatEntry").hide();
-            $("#chatLine").show();
-            $("#chatScroll").removeClass("fullChatScroll");
-            $("#chatUserList").removeClass("fullChatScroll");
-        }
-        if ($("#chatCollapsed").is(":visible") && chat.chatNewMessage) {
-            if (chat.intervalCounter % 2)
-                $("#chatCollapsed .gamePanelContentNoHeader > div").html("- New message -");
-            else
-                $("#chatCollapsed .gamePanelContentNoHeader > div").html("Click to chat");
-        }
-        for (var item in chat.channels) {
-            if (chat.channels[item].newMessage) {
-                Chat.UpdateChannels();
-                break;
-            }
-        }
-        chat.intervalCounter = 1 - chat.intervalCounter;
-    };
-    Chat.Connect = function () {
-        if (!framework.Preferences['token'] || world.Edition == EditorEdition.Demo || framework.Preferences['token'] == "demo" || window['io'] == undefined || window['io'] == null)
-            return;
-        chat.socket.emit('join', world.Id, framework.Preferences['token'], "#global");
-        chat.channels["#global"] = { newMessage: false, messages: [], users: [] };
-        Chat.UpdateChannels();
-        Chat.SelectChannel("#global");
-        if (framework.Preferences["ChatVisible"] === false) {
-            $("#chatContainer").hide();
-            $("#chatCollapsed").show();
-        }
-        else {
-            $("#chatContainer").show();
-            $("#chatCollapsed").hide();
-        }
-        if (world.Player.ChatBannedTill && world.Player.ChatBannedTill.getTime() > (new Date()).getTime()) {
-            $("#chatContainer").hide();
-            $("#chatEntry").hide();
-            return;
-        }
-    };
-    Chat.Key = function (evt, field) {
-        switch (evt.keyCode) {
-            case 13:
-                Chat.SendLine($("#" + field).val());
-                $("#" + field).val("");
-                break;
-            case 27:
-                $("#" + field).blur();
-                if (chat.wasHidden == true)
-                    Chat.ShowHide();
-                break;
-            default:
-                break;
-        }
-    };
-    Chat.SelectChannel = function (channel) {
-        if (!chat.channels[channel])
-            return;
-        chat.currentChannel = channel;
-        chat.channels[channel].newMessage = false;
-        Chat.RedrawUserList();
-        Chat.RedrawChannelHistory();
-        /*$("#chatChannels div").removeClass("selectedChannel");
-        $("#" + channel.id()).addClass("selectedChannel");*/
-        Chat.UpdateChannels();
-    };
-    Chat.UpdateChannels = function () {
-        var html = "<span>Channels:</span>";
-        for (var item in chat.channels)
-            html += "<div onclick=\"Chat.SelectChannel('" + item.replace(/'/g, "\\'") + "');\" id=\"" + item.id() + "\" class='" + (item == chat.currentChannel ? " selectedChannel" : "") + (chat.channels[item].newMessage && chat.intervalCounter % 2 ? " channelNewMessage" : "") + "'>" + item + "</div>";
-        $("#chatChannels").html(html);
-    };
-    Chat.UpdateAllChannelsUserList = function () {
-        for (var i in chat.channels) {
-            Chat.UpdateChannelUserList(i);
-        }
-    };
-    Chat.UpdateChannelUserList = function (channel) {
-        chat.socket.emit('getChannelUserList', world.Id, channel);
-    };
-    Chat.ChannelUserList = function (channel, users) {
-        if (!chat.channels[channel])
-            return;
-        for (var i = 0; i < world.ChatBots.length; i++) {
-            // Skip the invisible bots
-            if (world.ChatBots[i].Name[0] == "~")
-                continue;
-            if (world.ChatBots[i].Channel == "*" || world.ChatBots[i].Channel == "" || world.ChatBots[i].Channel.toLowerCase() == channel.toLowerCase())
-                users.push(world.ChatBots[i].Name);
-        }
-        chat.channels[channel].users = users;
-        if (chat.currentChannel == channel)
-            Chat.RedrawUserList();
-    };
-    Chat.Join = function (user, channel) {
-        Chat.AddChatLine("", channel, "<b class='chatSystemMessage'>" + user + " joined " + channel + "</b>");
-        Chat.UpdateChannelUserList(channel);
-    };
-    Chat.Leave = function (user, channel) {
-        Chat.AddChatLine("", channel, "<b class='chatSystemMessage'>" + user + " left " + channel + "</b>");
-        Chat.UpdateChannelUserList(channel);
-    };
-    Chat.BotLine = function (botname, fromUser, channel, line) {
-        if (botname[0] == "~")
-            Chat.AddChatLine(null, channel, line.htmlEntities(false).replace(/\n/g, "<br />"));
-        else
-            Chat.AddChatLine(botname, channel, line.htmlEntities(false).replace(/\n/g, "<br />"));
-    };
-    Chat.SendBotLine = function (botname, channel, line) {
-        if (framework.Preferences['token'] == "demo") {
-            Chat.AddChatLine(null, chat.currentChannel, "The chat is disabled in the demo.");
-            return;
-        }
-        if (!chat || !chat.socket)
-            return;
-        if (!world.Player.ChatMutedTill || world.Player.ChatMutedTill.getTime() < (new Date()).getTime())
-            chat.socket.emit('bot', botname, channel, line);
-    };
-    Chat.SendLine = function (line, channel) {
-        if (channel === void 0) { channel = null; }
-        if (world.Player.ChatMutedTill && world.Player.ChatMutedTill.getTime() >= (new Date()).getTime()) {
-            Chat.AddChatLine(null, chat.currentChannel, "<b>!! you are chat muted till " + world.Player.ChatMutedTill + " !!</b>");
-            return;
-        }
-        if (world.Player.ChatBannedTill && world.Player.ChatBannedTill.getTime() >= (new Date()).getTime()) {
-            Chat.AddChatLine(null, chat.currentChannel, "<b>!! you are chat banned till " + world.Player.ChatBannedTill + " !!</b>");
-            return;
-        }
-        if (!chat || !chat.socket)
-            return;
-        if (framework.Preferences['token'] == "demo") {
-            Chat.AddChatLine(null, chat.currentChannel, "The chat is disabled in the demo.");
-            return;
-        }
-        var line = line.trim();
-        if (!line || line == "")
-            return;
-        var botToRun = 0;
-        var botHandled = false;
-        var normalHandling = function () {
-            if (botHandled == true || botToRun > 0)
-                return;
-            if (line.toLowerCase().indexOf("/e ") == 0 || line.toLowerCase().indexOf("/emote ") == 0) {
-                var emote = "--";
-                try {
-                    emote = line.split(' ')[1].toLowerCase();
-                }
-                catch (ex) {
-                }
-                if (EmotesArt[emote] !== undefined) {
-                    world.Player.EmoteTimer = 0;
-                    world.Player.CurrentEmote = EmotesArt[emote];
-                }
-                else
-                    Chat.AddChatLine(null, channel ? channel : chat.currentChannel, "Unknown emote.");
-            }
-            else if (line.toLowerCase().indexOf("/") == 0 && line.toLowerCase().indexOf("/me ") != 0) {
-                Chat.AddChatLine(null, channel ? channel : chat.currentChannel, "Unknown command.");
-            }
-            else
-                chat.socket.emit('send', channel ? channel : chat.currentChannel, line);
-        };
-        var toExecute = [];
-        for (var i = 0; i < world.ChatBots.length; i++) {
-            if (!(world.ChatBots[i].Channel == "*" || world.ChatBots[i].Channel == "" || world.ChatBots[i].Channel.toLowerCase() == channel.toLowerCase()))
-                continue;
-            botToRun++;
-        }
-        if (world.ChatBots.length > 0)
-            for (var i = 0; i < world.ChatBots.length; i++) {
-                if (!(world.ChatBots[i].Channel == "*" || world.ChatBots[i].Channel == "" || world.ChatBots[i].Channel.toLowerCase() == channel.toLowerCase()))
-                    continue;
-                var a = function () {
-                    var bot = world.ChatBots[i];
-                    bot.HandleChat(line, function (res) {
-                        botToRun--;
-                        if (res) {
-                            //Chat.AddChatLine(username, chat.currentChannel, line);
-                            //Chat.AddChatLine(world.ChatBots[i].Name, chat.currentChannel, res);
-                            if (res[0] == "/")
-                                chat.socket.emit('bot', bot.Name, channel ? channel : chat.currentChannel, "/" + res);
-                            else if (res[0] == "!")
-                                Chat.AddChatLine(bot.Name[0] == "~" ? null : bot.Name, channel ? channel : chat.currentChannel, res.substr(1).htmlEntities(false).replace(/\n/g, "<br />"));
-                            else {
-                                chat.socket.emit('send', channel ? channel : chat.currentChannel, line);
-                                chat.socket.emit('bot', bot.Name, channel ? channel : chat.currentChannel, res);
-                            }
-                            botHandled = true;
-                        }
-                        else
-                            normalHandling();
-                    });
-                }();
-            }
-        else
-            normalHandling();
-    };
-    Chat.Receive = function (sender, channel, message) {
-        if (!chat.channels[channel])
-            return;
-        if ($("#chatCollapsed").is(":visible"))
-            chat.chatNewMessage = true;
-        if (chat.currentChannel != channel)
-            chat.channels[channel].newMessage = true;
-        Chat.AddChatLine(sender, channel, message);
-    };
-    Chat.UrlChanger = function (str) {
-        return str.replace(/(^|\s|\>)(http[s]{0,1}:\/\/[a-zA-Z0-9\/\-\+:\.\?=_\&\#\;\%\,~]{1,30})([a-zA-Z0-9\/\-\+:\.\?=_\&\#\;\%\,~]*)/g, "$1[<A HREF='$2$3' TARGET='_BLANK'>$2 ...</A>]");
-    };
-    Chat.Smilies = function (str) {
-        if (!chat.smiliesDb) {
-            chat.smiliesDb = [];
-            for (var i = 0; i < chat.smilies_txt.length; i++) {
-                for (var j = 0; j < chat.smilies_txt[i].length; j++) {
-                    var e = chat.smilies_txt[i][j].replace(/([\.\+\|\\\$\^\(\)\:\?\*\/])/g, '\\$1');
-                    chat.smiliesDb.push({ regexp: new RegExp("(^|\\s|\\>)" + e + "(\\s|\\<|$)", "g"), html: "$1<div style='background-image: url(\"/art/tileset2/smilies.png\"); display: inline-block; width: 20px; height: 16px; background-position: -" + (i * 20) + "px 0px;'></div>$2" });
-                }
-            }
-        }
-        for (var i = 0; i < chat.smiliesDb.length; i++)
-            str = str.replace(chat.smiliesDb[i].regexp, chat.smiliesDb[i].html);
-        return str;
-    };
-    Chat.AddChatLine = function (sender, channel, message) {
-        if (!chat.channels[channel])
-            return;
-        //chat.channels[channel] = [];
-        chat.channels[channel].messages.push({ sender: sender, message: message });
-        while (chat.channels[channel].messages.length > 100)
-            chat.channels[channel].messages.shift();
-        if (channel == chat.currentChannel)
-            Chat.AddChatScrollLine(sender, message);
-    };
-    Chat.AddChatScrollLine = function (sender, message) {
-        if (!message || message.length == 0)
-            return;
-        if (message.toLowerCase().indexOf("/me ") == 0) {
-            message = "<b>-- " + ("" + sender).htmlEntities(false) + " " + message.substr(3).trim().htmlEntities(false) + " --</b>";
-            sender = null;
-        }
-        else if (message.indexOf("//") == 0 && sender != null) {
-            return;
-        }
-        else if (message.indexOf("//") == 0) {
-            message = "<b>** " + message.substr(2).trim() + " **</b>";
-            sender = null;
-        }
-        if (sender != null && sender != "")
-            message = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        if (world.ChatSmilies)
-            message = Chat.Smilies(message);
-        if (world.ChatLink)
-            message = Chat.UrlChanger(message);
-        var chatScroll = $("#chatScroll").first();
-        while (chatScroll.children.length > 100)
-            chatScroll.removeChild(chatScroll.children[0]);
-        $("#chatScroll").html($("#chatScroll").html() + "<div><div" + (sender ? " onclick='PublicViewPlayer.Show(\"" + sender + "\");'" : "") + ">" + (!sender || sender == "" ? "&nbsp;" : sender.htmlEntities(false)) + "</div><div>" + message + "</div></div>");
-        $("#chatScroll").scrollTop($("#chatScroll").scrollTop() + 60000);
-    };
-    Chat.RedrawUserList = function () {
-        var html = "";
-        var users = chat.channels[chat.currentChannel].users;
-        if (users) {
-            users.sort();
-            for (var i = 0; i < users.length; i++) {
-                html += "<div>" + users[i] + "</div>";
-            }
-        }
-        $("#chatUserList").html(html);
-    };
-    Chat.RedrawChannelHistory = function () {
-        $("#chatScroll").html("");
-        for (var i = 0; i < chat.channels[chat.currentChannel].messages.length; i++)
-            Chat.AddChatScrollLine(chat.channels[chat.currentChannel].messages[i].sender, chat.channels[chat.currentChannel].messages[i].message);
-    };
-    Chat.Focus = function () {
-        if ($("#chatCollapsed").is(":visible")) {
-            chat.wasHidden = true;
-            Chat.ShowHide();
-        }
-        else
-            chat.wasHidden = false;
-        if (chat.onMapChat)
-            $("#chatEntryLine").focus();
-        else
-            $("#chatLine").focus();
-    };
-    Chat.ShowHide = function () {
-        if ($("#chatCollapsed").is(":visible")) {
-            $("#chatContainer").show();
-            $("#chatCollapsed").hide();
-            chat.chatNewMessage = false;
-            $("#chatCollapsed .gamePanelContentNoHeader > div").html("Click to chat");
-        }
-        else {
-            $("#chatContainer").hide();
-            $("#chatCollapsed").show();
-        }
-        framework.Preferences["ChatVisible"] = !$("#chatCollapsed").is(":visible");
-        Framework.SavePreferences();
-    };
-    return Chat;
-}());
-var codeEditor = new ((function () {
-    function class_49() {
-        this.hideHelpTimer = null;
-        this.currentEditor = null;
-        this.currentSelection = null;
-        this.currentList = null;
-        this.currentSelectedCompletion = null;
-        this.currentTextToTheEnd = null;
-    }
-    return class_49;
-}()));
-var CodeEditor = (function () {
-    function CodeEditor() {
-    }
-    CodeEditor.Create = function (element) {
-        var editor = CodeMirror.fromTextArea($("#" + element).first(), {
-            lineNumbers: true,
-            matchBrackets: true,
-            continueComments: "Enter",
-            showCursorWhenSelecting: true,
-            tabSize: 4,
-            indentUnit: 4
-        });
-        codeEditor.currentEditor = editor;
-        editor.on("blur", function () {
-            if (codeEditor.hideHelpTimer) {
-                clearTimeout(codeEditor.hideHelpTimer);
-                codeEditor.hideHelpTimer = null;
-            }
-            codeEditor.hideHelpTimer = setTimeout(function () { CodeEditor.HideHelp(element); }, 500);
-        });
-        editor.setOption("extraKeys", {
-            "Enter": function () {
-                if (codeEditor.currentList && codeEditor.currentSelectedCompletion !== null) {
-                    CodeEditor.Add(codeEditor.currentList[codeEditor.currentSelectedCompletion]);
-                    event.preventDefault();
-                    event.stopPropagation();
-                    return false;
-                }
-                return CodeMirror.Pass;
-            },
-            "Tab": function () {
-                if (codeEditor.currentList && codeEditor.currentSelectedCompletion !== null) {
-                    CodeEditor.Add(codeEditor.currentList[codeEditor.currentSelectedCompletion]);
-                    event.preventDefault();
-                    event.stopPropagation();
-                    return false;
-                }
-                return CodeMirror.Pass;
-            },
-            "Up": function () {
-                if (codeEditor.currentList && codeEditor.currentSelectedCompletion !== null && codeEditor.currentList[0].indexOf(".") != -1) {
-                    codeEditor.currentSelectedCompletion--;
-                    if (codeEditor.currentSelectedCompletion < 0)
-                        codeEditor.currentSelectedCompletion = codeEditor.currentList.length - 1;
-                    CodeEditor.UpdateList(element);
-                    $("#codeHelp_" + element + " .selectedInsertion").first().scrollIntoView();
-                    return false;
-                }
-                return CodeMirror.Pass;
-            },
-            "Down": function () {
-                if (codeEditor.currentList && codeEditor.currentSelectedCompletion !== null && codeEditor.currentList[0].indexOf(".") != -1) {
-                    codeEditor.currentSelectedCompletion++;
-                    if (codeEditor.currentSelectedCompletion >= codeEditor.currentList.length)
-                        codeEditor.currentSelectedCompletion = 0;
-                    CodeEditor.UpdateList(element);
-                    $("#codeHelp_" + element + " .selectedInsertion").first().scrollIntoView();
-                    return false;
-                }
-                return CodeMirror.Pass;
-            },
-            "Esc": function () {
-                if (codeEditor.hideHelpTimer) {
-                    if (codeEditor.hideHelpTimer) {
-                        clearTimeout(codeEditor.hideHelpTimer);
-                        codeEditor.hideHelpTimer = null;
-                    }
-                    CodeEditor.HideHelp(element);
-                    return false;
-                }
-                return CodeMirror.Pass;
-            },
-            "Ctrl-Q": "toggleComment"
-        });
-        editor.on("cursorActivity", function () {
-            codeEditor.currentList = null;
-            codeEditor.currentSelectedCompletion = null;
-            if (codeEditor.hideHelpTimer) {
-                clearTimeout(codeEditor.hideHelpTimer);
-                codeEditor.hideHelpTimer = null;
-            }
-            var line = editor.getCursor().line;
-            var char = editor.getCursor().ch;
-            var code = editor.getValue();
-            var lines = code.split('\n');
-            if (lines[line]) {
-                var allowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._";
-                var overText = "";
-                var toTheEnd = 0;
-                char--;
-                for (var i = char; i >= 0; i--) {
-                    //var c = lines[line].charAt(i);
-                    var c = CodeEditor.GetCharAt(line, i);
-                    if (allowedChars.indexOf(c) == -1)
-                        break;
-                    overText = c + overText;
-                }
-                if (overText.length > 0)
-                    for (var i = char + 1; i < lines[line].length; i++) {
-                        var c = CodeEditor.GetCharAt(line, i);
-                        if (allowedChars.indexOf(c) == -1)
-                            break;
-                        overText += c;
-                        toTheEnd++;
-                    }
-                codeEditor.currentTextToTheEnd = toTheEnd;
-                codeEditor.currentSelection = overText;
-                var foundApi = GetApiDescription(overText);
-                if (foundApi) {
-                    var domLine = $(".CodeMirror-line").eq(line + 1);
-                    var coords = codeEditor.currentEditor.cursorCoords(true, "page");
-                    var y = coords.top;
-                    var x = coords.left - 150;
-                    $("#codeHelp_" + element).show();
-                    if (y + 200 > window.innerHeight - 35)
-                        $("#codeHelp_" + element).css("top", "" + (y - 110) + "px");
-                    else
-                        $("#codeHelp_" + element).css("top", "" + (y + 20) + "px");
-                    if (x < 0)
-                        x = 0;
-                    if (x > window.innerHeight - 310)
-                        x = window.innerHeight - 310;
-                    $("#codeHelp_" + element).css("left", "" + x + "px");
-                    $("#codeHelp_" + element).html(GetApiSignature(overText) + foundApi);
-                    codeEditor.hideHelpTimer = setTimeout(function () { CodeEditor.HideHelp(element); }, 5000);
-                }
-                else {
-                    // We still have to choose an API
-                    var list = [];
-                    if (overText != "") {
-                        if (overText.indexOf(".") == -1) {
-                            var last = null;
-                            for (var i = 0; i < apiFunctions.length; i++) {
-                                var f = apiFunctions[i].name.split('.')[0];
-                                if (last == f)
-                                    continue;
-                                if (f.toLowerCase().indexOf(overText.toLowerCase()) == 0)
-                                    list.push(f);
-                                last = f;
-                            }
-                        }
-                        else {
-                            for (var i = 0; i < apiFunctions.length; i++)
-                                if (apiFunctions[i].name.toLowerCase().indexOf(overText.toLowerCase()) == 0)
-                                    list.push(apiFunctions[i].name);
-                        }
-                        list.sort();
-                    }
-                    if (list && list.length > 0) {
-                        codeEditor.currentList = list;
-                        codeEditor.currentSelectedCompletion = 0;
-                        CodeEditor.UpdateList(element);
-                        var domLine = $(".CodeMirror-line").eq(line + 1);
-                        var coords = codeEditor.currentEditor.cursorCoords(true, "page");
-                        var y = coords.top;
-                        var x = coords.left - 150;
-                        $("#codeHelp_" + element).show();
-                        if (y + 200 > window.innerHeight - 35)
-                            $("#codeHelp_" + element).css("top", "" + (y - 110) + "px");
-                        else
-                            $("#codeHelp_" + element).css("top", "" + (y + 20) + "px");
-                        if (x < 0)
-                            x = 0;
-                        if (x > window.innerHeight - 310)
-                            x = window.innerHeight - 310;
-                        $("#codeHelp_" + element).css("left", "" + x + "px");
-                    }
-                    else
-                        CodeEditor.HideHelp(element);
-                }
-            }
-            else
-                CodeEditor.HideHelp(element);
-        });
-        editor.on('change', function () {
-            $("#codeError_" + element).hide();
-            var nblines = editor.getDoc().lineCount();
-            for (var i = 0; i < nblines; i++)
-                editor.removeLineClass(i, 'background', "line-error");
-            var code = editor.getValue();
-            try {
-                CodeParser.Parse(code.replace(/\@[a-z0-9_]+\@/gi, "1"));
-            }
-            catch (ex) {
-                var m = ("" + ex).match(/ ([0-9]+):([0-9]+)/);
-                if (m != null)
-                    editor.addLineClass(parseInt(m[1]) - 1, 'background', "line-error");
-                setTimeout(function () { $("#codeError_" + element).show().html(ex); }, 10);
-            }
-        });
-        return editor;
-    };
-    CodeEditor.GetCharAt = function (line, col) {
-        return codeEditor.currentEditor.getRange({ line: line, ch: col }, { line: line, ch: col + 1 });
-    };
-    CodeEditor.UpdateList = function (element) {
-        if (codeEditor.hideHelpTimer) {
-            clearTimeout(codeEditor.hideHelpTimer);
-            codeEditor.hideHelpTimer = null;
-        }
-        var html = "";
-        for (var i = 0; i < codeEditor.currentList.length; i++) {
-            html += "<div onclick='CodeEditor.Add(\"" + codeEditor.currentList[i] + "\");'" + (codeEditor.currentSelectedCompletion == i ? " class='selectedInsertion'" : "") + ">" + codeEditor.currentList[i] + "</div>";
-        }
-        $("#codeHelp_" + element).html(html);
-        codeEditor.hideHelpTimer = setTimeout(function () { CodeEditor.HideHelp(element); }, 5000);
-    };
-    CodeEditor.Add = function (text) {
-        if (codeEditor.hideHelpTimer) {
-            clearTimeout(codeEditor.hideHelpTimer);
-            codeEditor.hideHelpTimer = null;
-        }
-        if (text.indexOf('.') == -1)
-            text += '.';
-        else {
-            var api = GetApiSignature(text).replace(/<.{0,1}span[^>]*>/gi, "").replace(";", "");
-            text += api.substr(text.length);
-        }
-        var pos = codeEditor.currentEditor.getCursor();
-        codeEditor.currentEditor.replaceRange(text.substr(codeEditor.currentSelection.length), { line: pos.line, ch: pos.ch + (codeEditor.currentTextToTheEnd > 0 ? codeEditor.currentTextToTheEnd + 1 : 0) });
-    };
-    CodeEditor.HideHelp = function (element) {
-        $("#codeHelp_" + element).hide();
-        codeEditor.hideHelpTimer = null;
-        codeEditor.currentList = null;
-        codeEditor.currentSelectedCompletion = null;
-    };
-    return CodeEditor;
-}());
-var CodeGraphEditor = (function () {
-    function CodeGraphEditor(element, isGenericCode, tab) {
-        if (isGenericCode === void 0) { isGenericCode = false; }
-        if (tab === void 0) { tab = null; }
-        var _this = this;
-        this.expandedBlocks = [];
-        this.OnChange = null;
-        this.inUpdate = false;
-        this.isGenericCode = false;
-        var hasHelp = false;
-        this.element = element;
-        this.isGenericCode = isGenericCode;
-        this.parent = $("#" + element).first().parentElement.id;
-        var elemHtml = $("#" + element).first().outerHTML;
-        $("#" + element).first().outerHTML = "<div id='codeError_" + element + "' class='elementCodeWarning' style='position: absolute; left: 0px; right: 0px; top: 0px; width: auto;'>Error!</div><div class='codeGraphTextContainer'>" + elemHtml + "</div>";
-        var html = "<div id='graph_" + this.element + "' class='codeGraphArea' path=''></div>";
-        html += "<input type='text' id='search_graph_" + this.element + "' placeholder='Search...' class='codeGraphSearchNodes'>";
-        html += "<div id='selector_" + this.element + "' class='codeGraphSelector'></div>";
-        if ($($("#" + element).first().parentElement).height() > 400) {
-            html += "<div id='node_help_" + this.element + "' class='codeGraphNodeHelp'></div>";
-            hasHelp = true;
-        }
-        //if (("" + document.location).indexOf("localhost") != -1 || ("" + document.location).indexOf("test_grapheditor") != -1)
-        html += "<div class='codeGraphTabs'><span id='btn_" + element + "_text'>Text</span><span id='btn_" + element + "_node'>Node</span></div>";
-        html += "<div id='codeHelp_" + this.element + "' class='codeHelp'></div>";
-        Framework.ReloadPreferences();
-        //if (("" + document.location).indexOf("localhost") != -1 || ("" + document.location).indexOf("test_grapheditor") != -1)
-        if (framework.Preferences && framework.Preferences['codeGraphEditor_help'] !== false && tab == null) {
-            html += "<div id='codeGraphEditorHelp'>";
-            html += "The code editor allows to edit the logic of the game, however a full flexible logic requires a complete scripting engine. ";
-            html += "To help you with the task you can either type it if you are already a skilled developer, or you can use the node view. ";
-            html += "At any time you can switch from one view to the other using the tabs under the editor (text / node).";
-            html += "<br><br>";
-            html += "While working with the nodes, simply drag drop the nodes to add, remove or change the orders. Clicking on the header of a node expands it.";
-            html += "<br><br>";
-            html += "<center><a href='/Help/node_script.html' target='engineHelp' class='button'>Help</a> <span class='button' onclick='CodeGraphEditor.HideWelcome()'>Hide</span></center></div>";
-        }
-        $("#" + this.parent).append(html);
-        this.code = $("#" + element).val();
-        this.editor = CodeEditor.Create(element);
-        this.editor.on("change", function () {
-            if (_this.inUpdate)
-                return;
-            // Currently we have the text editor as main one.
-            if ($("#" + _this.parent + " .codeGraphTextContainer").is(":visible"))
-                _this.statements = null;
-            if (_this.OnChange)
-                _this.OnChange();
-        });
-        this.statements = [];
-        try {
-            var parser = new CodeParser(this.code);
-            this.statements = parser.GetAllStatements();
-        }
-        catch (ex) {
-        }
-        $("#search_graph_" + this.element).bind("keyup", function () {
-            _this.RenderSelector();
-        });
-        $("#graph_" + this.element).bind("dragover", function (evt) {
-            evt.preventDefault();
-            evt.dataTransfer.dropEffect = "move";
-        }).bind("drop", function (evt) {
-            evt.preventDefault();
-            var data = JSON.parse(evt.dataTransfer.getData("text"));
-            if (data.type == "existing") {
-                _this.DeleteNode(data.call);
-                _this.FromNodeToCode();
-                _this.RenderNodes();
-            }
-            else {
-                _this.DropOnEmpty(evt);
-            }
-        });
-        $("#btn_" + element + "_text").bind("click", function () {
-            $("#btn_" + element + "_node").removeClass("codeGraphActiveTab");
-            $("#btn_" + element + "_text").addClass("codeGraphActiveTab");
-            framework.Preferences['codeGraphEditor_tab'] = 'text';
-            Framework.SavePreferences();
-            $("#" + _this.parent + " .codeGraphTextContainer").show();
-            _this.editor.refresh();
-            $("#graph_" + _this.element).hide();
-            $("#selector_" + _this.element).hide();
-            $("#search_graph_" + _this.element).hide();
-            $("#node_help_" + _this.element).hide();
-        });
-        $("#btn_" + element + "_node").bind("click", function () {
-            $("#btn_" + element + "_text").removeClass("codeGraphActiveTab");
-            $("#btn_" + element + "_node").addClass("codeGraphActiveTab");
-            framework.Preferences['codeGraphEditor_tab'] = 'node';
-            Framework.SavePreferences();
-            $("#" + _this.parent + " .codeGraphTextContainer").hide();
-            $("#codeError_" + element).hide();
-            if (!_this.statements) {
-                _this.code = _this.editor.getValue();
-                _this.statements = [];
-                try {
-                    var parser = new CodeParser(_this.code);
-                    _this.statements = parser.GetAllStatements();
-                }
-                catch (ex) {
-                }
-                _this.RenderNodes();
-            }
-            $("#graph_" + _this.element).show();
-            $("#selector_" + _this.element).show();
-            $("#search_graph_" + _this.element).show();
-            $("#node_help_" + _this.element).show();
-        });
-        if ((framework.Preferences['codeGraphEditor_tab'] === 'text' || tab === "text") && (tab !== "node" || !tab)) {
-            $("#graph_" + this.element).hide();
-            $("#selector_" + this.element).hide();
-            $("#search_graph_" + this.element).hide();
-            $("#node_help_" + this.element).hide();
-            $("#btn_" + element + "_text").addClass("codeGraphActiveTab");
-        }
-        else {
-            $("#" + this.parent + " .codeGraphTextContainer").hide();
-            $("#btn_" + element + "_node").addClass("codeGraphActiveTab");
-        }
-        //}
-        this.RenderNodes();
-        this.RenderSelector();
-        if (!hasHelp)
-            $("#selector_" + this.element).css("bottom", "16px");
-    }
-    CodeGraphEditor.prototype.GetNode = function (path) {
-        var p = path.split('.');
-        var result = this.statements;
-        while (p.length > 0) {
-            var currentPath = p.shift();
-            // Must be a number => it's an index of an array
-            if (currentPath.match(/^[0-9]+$/)) {
-                if (result.constructor == BlockStatement)
-                    result = result.Statements[parseInt(currentPath)];
-                else
-                    result = result[parseInt(currentPath)];
-            }
-            else
-                result = result[currentPath];
-        }
-        return result;
-    };
-    CodeGraphEditor.prototype.SetNode = function (path, value) {
-        var p = path.split('.');
-        var node = this.statements;
-        while (p.length > 1) {
-            var currentPath = p.shift();
-            // Must be a number => it's an index of an array
-            if (currentPath.match(/^[0-9]+$/)) {
-                if (node.constructor == BlockStatement)
-                    node = node.Statements[parseInt(currentPath)];
-                else
-                    node = node[parseInt(currentPath)];
-            }
-            else
-                node = node[currentPath];
-        }
-        var className = ("" + node.constructor).match(/function ([^\(]+)\(/)[1];
-        var info = statementEditorInfo[className.replace(/Statement$/, "")];
-        if (typeof value !== "string")
-            node[p[0]] = value;
-        else if (info) {
-            var found = false;
-            for (var i = 0; i < info.params.length; i++) {
-                if (info.params[i].name == p[0]) {
-                    if (info.params[i].type == "VariableValue" && info.params[i].valueType == "number") {
-                        var val = parseFloat(value);
-                        if (!isNaN(val))
-                            node[p[0]] = new VariableValue(val);
-                    }
-                    else if (info.params[i].type == "VariableValue")
-                        node[p[0]] = new VariableValue(value);
-                    else
-                        node[p[0]] = value;
-                    found = true;
-                    break;
-                }
-            }
-            if (!found)
-                node[p[0]] = value;
-        }
-        else
-            node[p[0]] = value;
-    };
-    CodeGraphEditor.prototype.DeleteNode = function (path) {
-        var p = path.split('.');
-        var node = this.statements;
-        while (p.length > 1) {
-            var currentPath = p.shift();
-            // Must be a number => it's an index of an array
-            if (currentPath.match(/^[0-9]+$/)) {
-                if (node.constructor == BlockStatement)
-                    node = node.Statements[parseInt(currentPath)];
-                else
-                    node = node[parseInt(currentPath)];
-            }
-            else
-                node = node[currentPath];
-        }
-        if (p[0].match(/^[0-9]+$/)) {
-            if (node.constructor == BlockStatement)
-                return node.Statements.splice(parseInt(p[0]), 1)[0];
-            else if (path.endsWith(".values." + p[0])) {
-                var val = node[parseInt(p[0])];
-                node[parseInt(p[0])] = null;
-                return val;
-            }
-            else
-                return node.splice(parseInt(p[0]), 1)[0];
-        }
-        else {
-            var result = node[p[0]];
-            node[p[0]] = null;
-            return result;
-        }
-    };
-    CodeGraphEditor.prototype.RenderNodes = function () {
-        var _this = this;
-        var html = "";
-        for (var i = 0; i < this.statements.length; i++) {
-            html += this.statements[i].HTMLBlocks("" + i, this.statements);
-            if (this.statements[i].constructor == FunctionDefinitionStatement)
-                html += "<div class='codeBlockSeparator'></div>";
-        }
-        html += "<span class='emptyBlock' path=''>Empty</span>";
-        $("#graph_" + this.element).html(html);
-        $("#graph_" + this.element + " .emptyBlock").bind("dragover", function (evt) {
-            evt.preventDefault();
-            // Set the dropEffect to move
-            evt.dataTransfer.dropEffect = "move";
-        });
-        // Allow to drop new items on an empty block
-        $("#graph_" + this.element + " .emptyBlock").bind("drop", function (evt) { _this.DropOnEmpty(evt); });
-        // Highlight the block
-        $("#graph_" + this.element + " .codeBlock").addClass("collapsedBlock").bind("mouseover", function (evt) { _this.MouseOver(evt); }).bind("mouseout", function (evt) { _this.MouseOut(evt); });
-        // Expand / contract a block
-        $("#graph_" + this.element + " .blockType, #graph_" + this.element + " .simpleBlockType").prop("draggable", true)
-            .bind("dragstart", function (evt) { _this.Collapse(evt); evt.dataTransfer.setData("text", JSON.stringify({ type: "existing", call: evt.target.parentElement.id.substr(3).replace(/_/g, ".") })); })
-            .bind("drop", function (evt) { _this.DropOnStatement(evt); })
-            .bind("mousedown", function (evt) { _this.Collapse(evt); });
-        $("#graph_" + this.element + " .endBlock").bind("mousedown", function (evt) { _this.Collapse(evt); });
-        // Prevent expand / contract while clicking on a field
-        $("#graph_" + this.element + " input").bind("mousedown", function (evt) { evt.cancelBubble = true; return false; }).bind("keyup", function (evt) { _this.UpdateField(evt); });
-        // Boolean click => reverse it
-        var booleanClick = function (evt) {
-            var id = evt.target.parentElement.id;
-            var path = id.substr(3).replace(/_/g, ".");
-            var node = _this.GetNode(path);
-            node.value = new VariableValue(!node.value.GetBoolean());
-            $("#" + id).first().outerHTML = node.HTMLBlocks(path);
-            $("#" + id).bind("mousedown", booleanClick);
-            $("#" + id + " .simpleBlockType").prop("draggable", true)
-                .bind("dragstart", function (evt) { _this.Collapse(evt); evt.dataTransfer.setData("text", JSON.stringify({ type: "existing", call: evt.target.parentElement.id.substr(3).replace(/_/g, ".") })); })
-                .bind("drop", function (evt) { _this.DropOnStatement(evt); })
-                .bind("mousedown", function (evt) { _this.Collapse(evt); });
-            _this.FromNodeToCode();
-            evt.cancelBubble = true;
-            return false;
-        };
-        $("#graph_" + this.element + " span[block='boolean']").bind("mousedown", booleanClick);
-        $("#graph_" + this.element + " .blockDeleteArrayEntry").bind("mousedown", function (evt) {
-            var path = evt.target.getAttribute("path");
-            var p = path.split('.');
-            var entry = p.pop();
-            var node = _this.GetNode(p.join('.'));
-            node.splice(parseInt(entry), 1);
-            _this.RenderNodes();
-            _this.FromNodeToCode();
-        });
-        $("#graph_" + this.element + " .blockAddArrayEntry").bind("mousedown", function (evt) {
-            var path = evt.target.getAttribute("path");
-            var node = _this.GetNode(path);
-            node.push("");
-            _this.RenderNodes();
-            _this.FromNodeToCode();
-        });
-        for (var i = 0; i < this.expandedBlocks.length; i++)
-            $("#" + this.expandedBlocks[i]).removeClass("collapsedBlock");
-    };
-    CodeGraphEditor.prototype.UpdateField = function (evt) {
-        var val = $(evt.target).val();
-        var path = evt.target.getAttribute("path");
-        this.SetNode(path, val);
-        this.FromNodeToCode();
-        var p = path.split('.');
-        p.pop();
-        var parentNode = this.GetNode(p.join('.'));
-        if (parentNode.constructor == FunctionDefinitionStatement)
-            this.RenderSelector();
-    };
-    CodeGraphEditor.prototype.DropOnStatement = function (evt) {
-        evt.cancelBubble = true;
-        evt.preventDefault();
-        var path = evt.target.parentElement.id.substr(3).replace(/_/g, ".");
-        if (!path)
-            return;
-        var p = path.split('.');
-        var lastPath = p.pop();
-        var parentPath = p.join(".");
-        var node = this.GetNode(parentPath);
-        if (parentPath == "")
-            node = this.statements;
-        // Get the id of the target and add the moved element to the target's DOM
-        var data = JSON.parse(evt.dataTransfer.getData("text"));
-        evt.dataTransfer.clearData();
-        var newNode = null;
-        switch (data.type) {
-            case "base":
-                newNode = new window[data.call]();
-                break;
-            case "api":
-                var params = [];
-                for (var i = 0; i < apiFunctions.length; i++) {
-                    if (apiFunctions[i].name.toLowerCase() == data.call.toLowerCase()) {
-                        for (var j = 0; j < apiFunctions[i].parameters.length; j++)
-                            params.push(null);
-                        break;
-                    }
-                }
-                newNode = new FunctionCallStatement(data.call, params, 0, 0);
-                break;
-            case "existing":
-                newNode = this.DeleteNode(data.call);
-                break;
-        }
-        if (!newNode)
-            return;
-        if (node && node.constructor === BlockStatement)
-            node = node.Statements;
-        if (path.endsWith(".values." + lastPath))
-            node[parseInt(lastPath)] = newNode;
-        else if (node && node.constructor === Array)
-            node.splice(parseInt(lastPath), 0, newNode);
-        else
-            this.SetNode(parentPath, newNode);
-        this.FromNodeToCode();
-        this.RenderNodes();
-    };
-    CodeGraphEditor.prototype.DropOnEmpty = function (evt) {
-        evt.cancelBubble = true;
-        evt.preventDefault();
-        var path = evt.target.getAttribute("path");
-        var node = null;
-        if (path === "")
-            node = this.statements;
-        else
-            node = this.GetNode(path);
-        // Get the id of the target and add the moved element to the target's DOM
-        var data = JSON.parse(evt.dataTransfer.getData("text"));
-        evt.dataTransfer.clearData();
-        var newNode = null;
-        switch (data.type) {
-            case "base":
-                newNode = new window[data.call]();
-                break;
-            case "api":
-                var params = [];
-                for (var i = 0; i < apiFunctions.length; i++) {
-                    if (apiFunctions[i].name.toLowerCase() == data.call.toLowerCase()) {
-                        for (var j = 0; j < apiFunctions[i].parameters.length; j++)
-                            params.push(null);
-                        break;
-                    }
-                }
-                newNode = new FunctionCallStatement(data.call, params, 0, 0);
-                break;
-            case "existing":
-                newNode = this.DeleteNode(data.call);
-                break;
-        }
-        if (node === this.statements) {
-            if (newNode.constructor != CommentStatement && newNode.constructor != FunctionDefinitionStatement) {
-                Framework.ShowMessage("Only comments and functions definitions can be placed on the top level.");
-                return;
-            }
-        }
-        else if (newNode.constructor == FunctionDefinitionStatement) {
-            Framework.ShowMessage("Function definitions can be placed only on the top level.");
-            return;
-        }
-        if (node && node.constructor === BlockStatement) {
-            var className = ("" + newNode.constructor).match(/function ([^\(]+)\(/)[1];
-            if (!topBlockStatements.contains(className)) {
-                Framework.ShowMessage("This block cannot be placed here.");
-                return;
-            }
-        }
-        if (!newNode)
-            return;
-        if (node && node.constructor === BlockStatement)
-            node.Statements.push(newNode);
-        else if (node && node.constructor === Array)
-            node.push(newNode);
-        else
-            this.SetNode(path, newNode);
-        this.FromNodeToCode();
-        this.RenderNodes();
-        if (newNode.constructor == FunctionDefinitionStatement)
-            this.RenderSelector();
-        //console.log("Dragged: " + data);
-        //ev.target.appendChild(document.getElementById(data));
-    };
-    CodeGraphEditor.prototype.RenderSelector = function () {
-        var _this = this;
-        var search = $("#search_graph_" + this.element).val().toLowerCase();
-        var html = "";
-        var isFirst = true;
-        knownStatements.sort();
-        for (var i = 0; i < knownStatements.length; i++) {
-            if (knownStatements[i].replace(/Statement$/, "").toLowerCase().indexOf(search) == -1)
-                continue;
-            if (knownStatements[i] == "FunctionCallStatement" || knownStatements[i] == "BlockStatement" || knownStatements[i] == "EmptyStatement" || knownStatements[i] == "EmptyArrayStatement")
-                continue;
-            if (isFirst) {
-                html += "<div class='codeGroup'><span>Logic:</span>";
-                isFirst = false;
-            }
-            html += "<p type='base' call='" + knownStatements[i] + "'>" + knownStatements[i].replace(/Statement$/, "").title() + "</p>";
-        }
-        if (!isFirst)
-            html += "</div>";
-        var apiGroups = [];
-        for (var item in api)
-            apiGroups.push(item);
-        var isFirst = true;
-        for (var i = 0; i < apiGroups.length; i++) {
-            var functions = [];
-            for (var j = 0; j < apiFunctions.length; j++) {
-                if (apiFunctions[j].name.toLowerCase().indexOf(search) == -1)
-                    continue;
-                if (apiFunctions[j].name.split('.')[0].toLowerCase() == apiGroups[i].toLowerCase())
-                    functions.push(apiFunctions[j].name.split('.')[1]);
-            }
-            functions.sort();
-            if (functions.length == 0)
-                continue;
-            if (isFirst) {
-                html += "<div class='codeGroup'><span>API:</span>";
-                isFirst = false;
-            }
-            html += "<div class='codeGroup'><span>" + apiGroups[i].capitalize() + ":</span>";
-            for (var j = 0; j < functions.length; j++)
-                html += "<p type='api' call='" + apiGroups[i].capitalize() + "." + functions[j] + "'>" + functions[j] + "</p>";
-            html += "</div>";
-        }
-        if (!isFirst)
-            html += "</div>";
-        if (!this.isGenericCode) {
-            isFirst = true;
-            for (var i = 0; i < this.statements.length; i++) {
-                if (this.statements[i].constructor != FunctionDefinitionStatement)
-                    continue;
-                if (this.statements[i].Name.toLowerCase().indexOf(search) == -1)
-                    continue;
-                if (isFirst) {
-                    html += "<div class='codeGroup'><span>Functions:</span>";
-                    isFirst = false;
-                }
-                html += "<p type='api' call='" + this.statements[i].Name + "'>" + this.statements[i].Name + "</p>";
-            }
-            if (!isFirst)
-                html += "</div>";
-        }
-        isFirst = true;
-        if (world && world.Codes)
-            for (var i = 0; i < world.Codes.length; i++) {
-                if (!world.Codes[i].code) {
-                    try {
-                        world.Codes[i].code = CodeParser.ParseWithParameters(world.Codes[i].Source, world.Codes[i].Parameters);
-                    }
-                    catch (ex) {
-                    }
-                }
-                if (!world.Codes[i].code)
-                    continue;
-                for (var item in world.Codes[i].code.FunctionCodes) {
-                    if (item.toLowerCase().indexOf(search) == -1)
-                        continue;
-                    if (isFirst) {
-                        html += "<div class='codeGroup'><span>Generic Functions:</span>";
-                        isFirst = false;
-                    }
-                    html += "<p type='api' call='me." + world.Codes[i].Name + "." + item + "'>" + item + "</p>";
-                }
-            }
-        if (!isFirst)
-            html += "</div>";
-        $("#selector_" + this.element).html(html);
-        $("#selector_" + this.element + " p").prop("draggable", true).bind("dragstart", function (evt) {
-            //console.log(evt.target.innerHTML);
-            //evt.initDragEvent();
-            evt.dataTransfer.setData("text", JSON.stringify({ type: evt.target.getAttribute("type"), call: evt.target.getAttribute("call") }));
-        }).bind("mouseover", function (evt) {
-            var type = evt.target.getAttribute("type");
-            var call = evt.target.getAttribute("call").replace(/Statement$/, "");
-            $("#node_help_" + _this.element).html("");
-            if (type == "base" && statementEditorInfo[call])
-                $("#node_help_" + _this.element).html(statementEditorInfo[call].help);
-            else if (type == "api") {
-                call = ("" + call).toLowerCase();
-                var p = call.split('.');
-                if (p.length == 2) {
-                    for (var i = 0; i < apiFunctions.length; i++) {
-                        if (apiFunctions[i].name.toLowerCase() == call) {
-                            $("#node_help_" + _this.element).html(GetApiSignature(call) + GetApiDescription(call));
-                            break;
-                        }
-                    }
-                }
-                else
-                    $("#node_help_" + _this.element).html("Calls the function '" + call + "' and pass the parameters.");
-            }
-        }).bind("mouseout", function (evt) {
-            $("#node_help_" + _this.element).html("");
-        });
-    };
-    CodeGraphEditor.prototype.Collapse = function (evt) {
-        var obj = evt.target;
-        while (obj.className.indexOf("codeBlock") == -1)
-            obj = obj.parentElement;
-        $(obj).toggleClass("collapsedBlock");
-        var id = obj.id;
-        // Not collapsed
-        if (obj.className.indexOf("collapsedBlock") == -1)
-            this.expandedBlocks.push(id);
-        else {
-            for (var i = 0; i < this.expandedBlocks.length; i++) {
-                if (this.expandedBlocks[i] == id) {
-                    this.expandedBlocks.splice(i, 1);
-                    break;
-                }
-            }
-        }
-    };
-    CodeGraphEditor.prototype.GetCode = function () {
-        return this.editor.getDoc().getValue();
-    };
-    CodeGraphEditor.prototype.SetCode = function (source) {
-        this.inUpdate = true;
-        this.code = source;
-        this.statements = [];
-        try {
-            var parser = new CodeParser(this.code);
-            this.statements = parser.GetAllStatements();
-            this.RenderNodes();
-            this.RenderSelector();
-        }
-        catch (ex) {
-        }
-        this.editor.getDoc().setValue(source);
-        this.editor.refresh();
-        CodeMirror.signal(this.editor, "change");
-        this.inUpdate = false;
-    };
-    CodeGraphEditor.prototype.SetReadonly = function (readonly) {
-        this.editor.readOnly = readonly;
-    };
-    CodeGraphEditor.prototype.FromNodeToCode = function () {
-        try {
-            var code = "";
-            for (var i = 0; i < this.statements.length; i++) {
-                code += this.statements[i].ToCode(0) + "\n";
-            }
-            code = code.trim();
-            this.code = code;
-            this.editor.getDoc().setValue(code);
-            this.editor.refresh();
-            CodeMirror.signal(this.editor, "change");
-        }
-        catch (ex) {
-        }
-    };
-    CodeGraphEditor.prototype.Refresh = function () {
-        this.editor.refresh();
-    };
-    CodeGraphEditor.prototype.MouseOver = function (evt) {
-        $(".overBlock").removeClass("overBlock");
-        var obj = evt.target;
-        while (obj.className.indexOf("codeBlock") == -1)
-            obj = obj.parentElement;
-        $(obj).addClass("overBlock");
-        $("#node_help_" + this.element).html("");
-        var path = obj.id.substr(3).replace(/_/g, ".");
-        if (path) {
-            var node = this.GetNode(path);
-            if (node) {
-                if (node.constructor == FunctionCallStatement) {
-                    var call = node.Name.toLowerCase();
-                    var p = call.split('.');
-                    if (p.length == 2) {
-                        for (var i = 0; i < apiFunctions.length; i++) {
-                            if (apiFunctions[i].name.toLowerCase() == call) {
-                                $("#node_help_" + this.element).html(GetApiSignature(call) + GetApiDescription(call));
-                                break;
-                            }
-                        }
-                    }
-                    else
-                        $("#node_help_" + this.element).html("Calls the function '" + call + "' and pass the parameters.");
-                }
-                else {
-                    var className = ("" + node.constructor).match(/function ([^\(]+)\(/)[1].replace("Statement", "");
-                    if (statementEditorInfo[className])
-                        $("#node_help_" + this.element).html(statementEditorInfo[className].help);
-                }
-            }
-        }
-    };
-    CodeGraphEditor.prototype.MouseOut = function (evt) {
-        $(".overBlock").removeClass("overBlock");
-        $("#node_help_" + this.element).html("");
-    };
-    CodeGraphEditor.HideWelcome = function () {
-        Framework.ReloadPreferences();
-        framework.Preferences['codeGraphEditor_help'] = false;
-        Framework.SavePreferences();
-        $("#codeGraphEditorHelp").hide();
-    };
-    return CodeGraphEditor;
-}());
-/// <reference path="../../Common/Libs/MiniQuery.ts"/>
-var Routing = (function () {
-    function Routing(action, callback) {
-        this.Action = action;
-        this.Callback = callback;
-    }
-    return Routing;
-}());
-var GuiPart = (function () {
-    function GuiPart(position, callback) {
-        this.Position = position;
-        this.Callback = callback;
-    }
-    return GuiPart;
-}());
-String.prototype.endsWith = function (toCheck) {
-    return (this.substr(this.length - toCheck.length) == toCheck);
-};
-String.prototype.title = function () {
-    return this.replace(/(\w)([A-Z][a-z])/g, "$1 $2");
-};
-String.prototype.padLeft = function (c, nb) {
-    if (this.length >= nb)
-        return this;
-    return Array(nb - this.length + 1).join(c) + this;
-};
-String.prototype.htmlEntities = function (escapeQuotes) {
-    if (escapeQuotes === void 0) { escapeQuotes = true; }
-    if (!escapeQuotes)
-        return this.replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;");
-    return this.replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;").replace(/'/g, "&#39;").replace(/"/g, "&quot;");
-};
-String.prototype.capitalize = function () {
-    return this.charAt(0).toUpperCase() + this.substr(1);
-};
-/**
-* Transorms the string into a CSS valid ID
-*/
-String.prototype.id = function () {
-    return this.replace(/ /g, "_").replace(/\//g, "_").replace(/#/g, "_").replace(/\./g, "_").replace(/</g, "_")
-        .replace(/:/g, "_").replace(/\+/g, "_").replace(/\*/g, "_").replace(/\-/g, "_").replace(/\\/g, "_")
-        .replace(/\(/g, "_").replace(/\)/g, "_").replace(/\&/g, "_").replace(/,/g, "_").replace(/\=/g, "_").replace(/\'/g, "_");
-};
-Array.prototype.contains = function (toFind) {
-    for (var i = 0; i < this.length; i++)
-        if (this[i] == toFind)
-            return true;
-    return false;
-};
-function FirstItem(dictionary) {
-    for (var item in dictionary)
-        return item;
-    return null;
-}
-function Keys(dictionary) {
-    var keys = [];
-    for (var item in dictionary)
-        keys.push(item);
-    return keys;
-}
-function isString(variable) {
-    return (typeof variable == 'string' || variable instanceof String);
-}
-function IsNull(value) {
-    return (value === null || value === undefined);
-}
-function IfIsNull(value, defaultValue) {
-    return ((value === null || value === undefined) ? defaultValue : value);
-}
-/**
- * Don't use static properties as it may trigger Typescript bugs. Therefore an instance of an anonymous class
- * containting the needed values is the current solution.
- * Sadly with this solution we loose the visibility of the properties.
- *
- * https://github.com/Microsoft/TypeScript/issues/5549
- *
- */
-var framework = new ((function () {
-    function class_50() {
-        this.DefaultModule = "Play";
-        this.Routing = [];
-        this.HandleUrl = true;
-        this.LastRoute = null;
-        this.CurrentHandler = null;
-        this.Preferences = {};
-        this.eventRouteCall = null;
-        this.cachedTemplates = [];
-        this.CurrentUrl = {};
-        this.GuiParts = [];
-        this.Months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        this.WeekDays = ["M", "T", "W", "T", "F", "S", "S"];
-        this.MonthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-        this.keyPressed = [];
-        this.specialKeyHandling = [];
-        this.isPrompt = false;
-        this.RoutePrefix = "/Engine/Module/";
-    }
-    return class_50;
-}()));
-/**
- * Base framework class
- *
- * Page sections must implement:
- * static Recover(url)
- * The function will receive an "url" object (dictionary) containing all the URL parameters.
- *
- * Any class can implement the following function which will be called during the framework initialization:
- * static InitFunction(): void
- * The framework will need a corresponding Templates/XXX.html or
- * an <script id="XXX" type="text/html"> tag in the index.html where XXX is the name of the typescript class.
- *
- */
-var Framework = (function () {
-    function Framework() {
-    }
-    /**
-     * Calculates an MD5 of a given string
-     */
-    Framework.MD5 = function (source) {
-        return window["md5"](source);
-    };
-    /**
-     * Parse the URL and returns an object (dictionary) of the parsed URL.
-     * @param url the string of the url (the # part of the url is the important piece).
-     */
-    Framework.ParseUrl = function (url) {
-        if (url === void 0) { url = null; }
-        if (!url) {
-            url = ("" + document.location);
-            if (url.indexOf("#") == -1)
-                url = "";
-            else
-                url = url.substr(url.indexOf("#") + 1);
-        }
-        else
-            url = url.substr(url.indexOf("#") + 1);
-        var parts = url.split("&");
-        var result = {};
-        parts.forEach(function (row) { return result[row.split("=")[0]] = decodeURIComponent(row.split("=")[1]); });
-        return result;
-    };
-    Framework.ParseQuery = function (url) {
-        if (url === void 0) { url = null; }
-        if (!url) {
-            url = ("" + document.location);
-            if (url.indexOf("?") == -1)
-                url = "";
-            else
-                url = url.substr(url.indexOf("?") + 1);
-        }
-        else
-            url = url.substr(url.indexOf("?") + 1);
-        if (url.indexOf('#') != -1)
-            url = url.substr(0, url.indexOf('#'));
-        var parts = url.split("&");
-        var result = {};
-        parts.forEach(function (row) { return result[row.split("=")[0]] = decodeURIComponent(row.split("=")[1]); });
-        return result;
-    };
-    /**
-    * Re-execute the routing
-    */
-    Framework.Recall = function () {
-        Framework.ExecuteRoute();
-    };
-    /**
-     * Internal function used to re-route the URL to the right class and passing the parsed URL to the callback.
-     */
-    Framework.ExecuteRoute = function (reload) {
-        if (reload === void 0) { reload = false; }
-        if (!framework.HandleUrl)
-            return;
-        var url = Framework.ParseUrl();
-        if (!url["action"])
-            url["action"] = framework.DefaultModule;
-        framework.CurrentUrl = url;
-        var found = false;
-        for (var i = 0; i < framework.Routing.length; i++) {
-            if (framework.Routing[i].Action == url["action"]) {
-                found = true;
-                break;
-            }
-        }
-        if (!found)
-            url["action"] = framework.DefaultModule;
-        Framework.RoutePage(url["action"], reload);
-    };
-    Framework.Rerun = function () {
-        Framework.ExecuteRoute(true);
-    };
-    Framework.RoutePage = function (page, reload) {
-        if (reload === void 0) { reload = false; }
-        for (var i = 0; i < framework.Routing.length; i++) {
-            if (framework.Routing[i].Action == page) {
-                var isReady = true;
-                if (framework.LastRoute != page || reload === true) {
-                    if (framework.LastRoute != null) {
-                        try {
-                            window[framework.LastRoute].Dispose();
-                        }
-                        catch (ex) {
-                            //alert(ex);
-                        }
-                    }
-                    if ($("#" + framework.Routing[i].Action).length) {
-                        $("#contentArea").html($("#" + framework.Routing[i].Action).html());
-                        framework.LastRoute = page;
-                    }
-                    else if (framework.cachedTemplates[framework.Routing[i].Action]) {
-                        $("#contentArea").html(framework.cachedTemplates[framework.Routing[i].Action]);
-                        framework.LastRoute = page;
-                    }
-                    else {
-                        isReady = false;
-                        $.ajax({
-                            type: "GET",
-                            url: framework.RoutePrefix + framework.Routing[i].Action + "/Template.html",
-                            success: function (msg) {
-                                if (msg.toLocaleLowerCase().indexOf("<body>")) {
-                                    var m = msg.match(/\<body\>((.|\n|\r)*)\<\/body\>/i);
-                                    if (m && m[1])
-                                        msg = m[1];
-                                }
-                                framework.cachedTemplates[framework.Routing[i].Action] = msg;
-                                $("#contentArea").html(msg);
-                                framework.LastRoute = page;
-                                framework.CurrentHandler = page;
-                                framework.Routing[i].Callback(framework.CurrentUrl);
-                                document.dispatchEvent(framework.eventRouteCall);
-                            }
-                        });
-                    }
-                }
-                if (isReady) {
-                    framework.CurrentHandler = page;
-                    framework.Routing[i].Callback(framework.CurrentUrl);
-                    document.dispatchEvent(framework.eventRouteCall);
-                }
-                return;
-            }
-        }
-    };
-    /**
-     * Changes the title of the page
-     * @param title component added to the page title
-     */
-    Framework.SetTitle = function (title) {
-        if (!title || title == "")
-            document.title = "Dot World Maker";
-        else
-            document.title = "Dot World Maker - " + title;
-    };
-    Framework.MakeUrl = function (newData) {
-        var s = "";
-        var props = [];
-        for (var i in newData)
-            props.push(i);
-        props.sort();
-        for (var j = 0; j < props.length; j++) {
-            if (!newData[props[j]] || newData[props[j]] == "")
-                continue;
-            if (s != "")
-                s += "&";
-            s += props[j] + "=" + encodeURIComponent(newData[props[j]]);
-        }
-        return s;
-    };
-    /**
-     * Change the URL
-     * @param newData should be a dictionary which will build hash part of the URL
-     * @skipHandler will avoid to call the routing (by default it's true)
-     */
-    Framework.SetLocation = function (newData, skipHandler, replace) {
-        if (skipHandler === void 0) { skipHandler = true; }
-        if (replace === void 0) { replace = false; }
-        // We need to compose it ourself
-        if (isString(newData))
-            newData = JSON.parse(newData);
-        if (!newData['action'])
-            newData['action'] = framework.CurrentHandler;
-        framework.CurrentUrl = newData;
-        newData = Framework.MakeUrl(newData);
-        var oldUrl = "" + document.location;
-        var url = ("" + document.location);
-        if (url.indexOf("#") != -1)
-            url = url.substr(0, url.indexOf("#"));
-        if (skipHandler)
-            framework.HandleUrl = false;
-        url += "#" + newData;
-        if (replace)
-            document.location.replace(url);
-        else
-            document.location.assign(url);
-        if (skipHandler) {
-            setTimeout(function () {
-                framework.HandleUrl = true;
-            }, 100);
-        }
-        else if (oldUrl == url)
-            Framework.ExecuteRoute();
-    };
-    /**
-     * Set a callback in case the routing change
-     */
-    Framework.OnRouteCall = function (callback) {
-        document.addEventListener("RouteCall", callback, false);
-    };
-    /**
-     * Save the preference object to local storage
-     */
-    Framework.SavePreferences = function () {
-        localStorage.setItem("preferences", JSON.stringify(framework.Preferences));
-    };
-    /**
-     * Store the routings
-     */
-    Framework.AutoLinkRoutes = function () {
-        for (var i in window) {
-            try {
-                if (i.substr(0, 3) != "web" && window[i] && window[i].Recover) {
-                    if (!(window[i].IsAccessible && window[i].IsAccessible() == false))
-                        framework.Routing.push(new Routing(i, window[i].Recover));
-                }
-            }
-            catch (ex) {
-            }
-        }
-    };
-    /**
-     * Store the gui parts
-     */
-    Framework.AutoLinkGuiParts = function () {
-        for (var i in window) {
-            try {
-                if (i.substr(0, 3) != "web" && window[i] && window[i].GuiPart) {
-                    var p = window[i].GuiPart();
-                    if (p)
-                        framework.GuiParts.push(p);
-                }
-            }
-            catch (ex) {
-            }
-        }
-        framework.GuiParts.sort(function (a, b) { return a.Position - b.Position; });
-    };
-    Framework.FixObjectDates = function (source) {
-        var dest = JSON.parse(JSON.stringify(source));
-        for (var i in dest) {
-            if (source[i] instanceof Date)
-                dest[i] = Framework.FullDateFormat(source[i]);
-        }
-        return dest;
-    };
-    Framework.NetDate = function (source) {
-        return "/Date(" + source.getTime() + ")/";
-    };
-    Framework.DateFormat = function (source) {
-        if (!source)
-            return "";
-        return source.getFullYear() + "/" + ("" + (source.getMonth() + 1)).padLeft("0", 2) + "/" + ("" + source.getDate()).padLeft("0", 2);
-        //return ("" + source.getDate()).padLeft("0", 2) + "/" + ("" + (source.getMonth() + 1)).padLeft("0", 2) + "/" + source.getFullYear();
-    };
-    Framework.FullDateFormat = function (source) {
-        if (!source)
-            return "";
-        return source.getFullYear() + "/" + ("" + (source.getMonth() + 1)).padLeft("0", 2) + "/" + ("" + source.getDate()).padLeft("0", 2) + " " +
-            ("" + source.getHours()).padLeft("0", 2) + ":" + ("" + source.getMinutes()).padLeft("0", 2) + ":" + ("" + source.getSeconds()).padLeft("0", 2);
-        /*return ("" + source.getDate()).padLeft("0", 2) + "/" + ("" + (source.getMonth() + 1)).padLeft("0", 2) + "/" + source.getFullYear() + " " +
-            ("" + source.getHours()).padLeft("0", 2) + ":" + ("" + source.getMinutes()).padLeft("0", 2) + ":" + ("" + source.getSeconds()).padLeft("0", 2);*/
-    };
-    Framework.ParseDate = function (source) {
-        if (!source || source == "")
-            return null;
-        if (source.charAt(source.length - 1) == "Z")
-            return new Date(source);
-        source = source.replace(/\./g, "/").replace(/\-/g, "/");
-        if (source.charAt(2) == "/") {
-            return new Date(parseInt(source.substr(6, 4)), parseInt(source.substr(3, 2)) - 1, parseInt(source.substr(0, 2)));
-        }
-        else if (source.charAt(4) == "/") {
-            return new Date(parseInt(source.substr(0, 4)), parseInt(source.substr(5, 2)) - 1, parseInt(source.substr(8, 2)));
-        }
-        return new Date(parseInt(source));
-    };
-    /**
-     * Calls all the InitFunction
-     */
-    Framework.CallInits = function () {
-        for (var i in window) {
-            try {
-                if (i.substr(0, 3) != "web" && window[i] && window[i].InitFunction) {
-                    window[i].InitFunction();
-                }
-            }
-            catch (ex) {
-            }
-        }
-    };
-    Framework.HandleError = function (returnedError) {
-        if (returnedError.status == 0)
-            return "";
-        try {
-            var err = JSON.parse(returnedError.responseText);
-            if (err.ExceptionType == "IV4.Backend.IvException") {
-                var msg = err.Message;
-                return msg.substr(msg.indexOf(":") + 1);
-            }
-            else {
-                /*Framework.RoutePage("ErrorHandling");
-                ErrorHandling.SetError(err.Message + "\n" + err.ExceptionType + "\n" + err.StackTrace);*/
-                return "";
-            }
-        }
-        catch (ex) {
-            /*Framework.RoutePage("ErrorHandling");
-            ErrorHandling.SetError(returnedError.responseText);*/
-            return "";
-        }
-    };
-    Framework.IsKeyPressed = function (code) {
-        if (framework.keyPressed[code] === true)
-            return true;
-        return false;
-    };
-    Framework.RegisterKey = function (keyCode, callback) {
-        framework.specialKeyHandling[keyCode] = callback;
-    };
-    Framework.keyDown = function (e) {
-        e = e ? e : event;
-        framework.keyPressed[e.keyCode] = true;
-        //console.log(e.keyCode);
-        if (framework.specialKeyHandling[e.keyCode]) {
-            if (framework.specialKeyHandling[e.keyCode](e.keyCode) === true) {
-                // Firefox
-                try {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    return false;
-                }
-                catch (er) {
-                }
-                // IE
-                try {
-                    e.cancelBubble = true;
-                    e.returnValue = false;
-                }
-                catch (er) {
-                }
+    ImportExport.Dispose = function () {
+    };
+    ImportExport.IsAccessible = function () {
+        return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
+    };
+    ImportExport.Recover = function () {
+        if (Main.CheckNW())
+            $("#helpLink").first().onclick = function () {
+                StandaloneMaker.Help($("#helpLink").prop("href"));
                 return false;
-            }
+            };
+        if (selfHosted) {
+            $("#html5export").hide();
+            $("#apkexport").hide();
         }
-        else
-            return true;
     };
-    Framework.keyUp = function (e) {
-        e = e ? e : event;
-        framework.keyPressed[e.keyCode] = false;
-        if (framework.specialKeyHandling[e.keyCode]) {
-            // Firefox
-            try {
-                e.preventDefault();
-                e.stopPropagation();
-                return false;
-            }
-            catch (er) {
-            }
-            // IE
-            try {
-                e.cancelBubble = true;
-                e.returnValue = false;
-            }
-            catch (er) {
-            }
-            return false;
-        }
-        else
-            return true;
+    ImportExport.ExportJSON = function () {
+        $("#importExportFrame").prop("src", "/backend/ExportJson?game=" + world.Id + "&token=" + framework.Preferences['token']);
     };
-    Framework.Confirm = function (displayQuestion, yesCallback, noCallback) {
-        if (noCallback === void 0) { noCallback = null; }
-        framework.isPrompt = false;
-        $("#backgroundConfirm").show();
-        $("#confirmDialog").show();
-        $("#confirmOk").hide();
-        $("#confirmYes").show().html("Yes");
-        $("#confirmNo").show().html("No");
-        $("#confirmLabel").html(displayQuestion);
-        //$("#confirmDialog").css("top", "0px");
-        $("#confirmDialog").animate({
-            top: ($(window).height() / 2 - 50) + "px"
-        }, 200);
-        framework.yesCallback = yesCallback;
-        framework.noCallback = noCallback;
+    ImportExport.ExportGame = function () {
+        $("#importExportFrame").prop("src", "/backend/ExportGame?game=" + world.Id + "&token=" + framework.Preferences['token']);
     };
-    Framework.Prompt = function (displayQuestion, defaultValue, yesCallback, noCallback, confirmLabel, cancelLabel) {
-        if (noCallback === void 0) { noCallback = null; }
-        if (confirmLabel === void 0) { confirmLabel = "Confirm"; }
-        if (cancelLabel === void 0) { cancelLabel = "Cancel"; }
-        framework.isPrompt = true;
-        $("#backgroundConfirm").show();
-        $("#confirmDialog").show();
-        $("#confirmOk").hide();
-        $("#confirmYes").show().html(confirmLabel);
-        $("#confirmNo").show().html(cancelLabel);
-        $("#confirmLabel").html(displayQuestion + "<br><input type='text' id='promptField' value='" + (defaultValue ? defaultValue.htmlEntities() : "") + "'>");
-        //$("#confirmDialog").css("top", "0px");
-        $("#confirmDialog").animate({
-            top: ($(window).height() / 2 - 50) + "px"
-        }, 200, function () {
-            $("#promptField").focus();
-        });
-        $("#promptField").focus();
-        framework.yesCallback = yesCallback;
-        framework.noCallback = noCallback;
+    ImportExport.AndroidAPK = function () {
+        $("#importExportFrame").prop("src", "/backend/ExportAndroidApp?game=" + world.Id + "&token=" + framework.Preferences['token']);
     };
-    Framework.Alert = function (displayLabel, okCallback) {
-        if (okCallback === void 0) { okCallback = null; }
-        framework.isPrompt = false;
-        $("#backgroundConfirm").show();
-        $("#confirmDialog").show();
-        $("#confirmOk").show();
-        $("#confirmYes").hide();
-        $("#confirmNo").hide();
-        $("#confirmLabel").html(displayLabel);
-        $("#backgroundConfirm").bind("click", Framework.ConfirmOk);
-        //$("#confirmDialog").css("top", "0px");
-        try {
-            $("#confirmDialog").animate({
-                top: ($(window).height() / 2 - 50) + "px"
-            }, 200);
-        }
-        catch (ex) {
-        }
-        framework.yesCallback = okCallback;
+    ImportExport.ImportJSON = function () {
+        $("#uploadImportData").show();
+        $("#uploadGameId").val("" + world.Id);
+        $("#uploadToken").val(framework.Preferences['token']);
+        $("#fileUpload").prop("accept", ".json");
+        $("#uploadFormData").prop("action", "/upload/ImportJson");
     };
-    Framework.ShowMessage = function (displayText) {
-        if (framework.MessageTimeout)
-            clearTimeout(framework.MessageTimeout);
-        $("#displayMessage").show().first().className = "displayMessageVisible";
-        $("#displayMessageContent").html(displayText);
-        framework.MessageTimeout = setTimeout(function () {
-            $("#displayMessage").first().className = "displayMessageHidden";
-            framework.MessageTimeout = setTimeout(function () {
-                $("#displayMessage").hide();
-                framework.MessageTimeout = null;
-            }, 500);
-        }, 5000);
+    ImportExport.Upload = function () {
+        $("#uploadImportData").hide();
+        $("#uploadFormData").submit();
     };
-    Framework.ConfirmOk = function () {
-        $("#backgroundConfirm").unbind("click", Framework.ConfirmOk);
-        $("#backgroundConfirm").hide();
-        $("#confirmDialog").hide();
-        if (framework.yesCallback)
-            framework.yesCallback();
+    ImportExport.CloseUpload = function () {
+        $("#uploadImportData").hide();
     };
-    Framework.ConfirmYes = function () {
-        $("#backgroundConfirm").hide();
-        $("#confirmDialog").hide();
-        if (framework.isPrompt && framework.yesCallback)
-            framework.yesCallback($("#promptField").val());
-        else if (framework.yesCallback)
-            framework.yesCallback();
-    };
-    Framework.ConfirmNo = function () {
-        $("#backgroundConfirm").hide();
-        $("#confirmDialog").hide();
-        if (framework.noCallback)
-            framework.noCallback();
-    };
-    Framework.ReloadPreferences = function () {
-        framework.Preferences = {};
-        if (localStorage.getItem("preferences") != null && localStorage.getItem("preferences") != undefined)
-            framework.Preferences = JSON.parse(localStorage.getItem("preferences"));
-    };
-    Framework.SetRoutePrefix = function (prefix) {
-        framework.RoutePrefix = prefix;
-    };
-    /**
-     * Initialization of the framework.
-     */
-    Framework.Init = function (withExecuteRoute) {
-        if (withExecuteRoute === void 0) { withExecuteRoute = true; }
-        $(document).bind("keydown", Framework.keyDown);
-        $(document).bind("keyup", Framework.keyUp);
-        // Used to place the debugger at the start
-        //alert("init");
-        if (localStorage.getItem("preferences") != null && localStorage.getItem("preferences") != undefined)
-            framework.Preferences = JSON.parse(localStorage.getItem("preferences"));
-        framework.eventRouteCall = document.createEvent("Event");
-        framework.eventRouteCall.initEvent("RouteCall", true, true);
-        Framework.CallInits();
-        Framework.AutoLinkRoutes();
-        Framework.AutoLinkGuiParts();
-        if (withExecuteRoute)
-            Framework.ExecuteRoute();
-        window.addEventListener("hashchange", function () {
-            Framework.ExecuteRoute();
-        });
-    };
-    return Framework;
-}());
-/// <reference path="../../../Common/Libs/Framework.ts" />
-var listSelector = new ((function () {
-    function class_51() {
-        this.CurrentSelectors = {};
-    }
-    return class_51;
-}()));
-var ListSelector = (function () {
-    /**
-     * Creates a selection list (sorted) with search box.
-     * @param HTML element id to put the list on (should be a div)
-     * @param data source (an array or an object)
-     * @param displayColumn (optional) the field name to display, valid only for an array source
-     */
-    function ListSelector(element, data, displayColumn) {
-        this.Sort = true;
-        listSelector[element] = this;
-        this.element = element;
-        this.data = data;
-        this.displayColumn = displayColumn;
-        if (displayColumn) {
-            this.sortedDirect = [];
-            for (var i = 0; i < data.length; i++)
-                this.sortedDirect.push(i);
-            this.sortedDirect.sort(function (a, b) {
-                if (data[a][displayColumn] > data[b][displayColumn])
-                    return 1;
-                if (data[a][displayColumn] < data[b][displayColumn])
-                    return -1;
-                return 0;
+    ImportExport.Result = function (data) {
+        data = JSON.parse(data);
+        if (data.error)
+            Framework.Alert(data.error);
+        else {
+            Framework.Alert("Import done, press ok to reload the page.", function () {
+                document.location.reload(true);
             });
         }
-        $("#" + this.element).addClass("listSelector");
-        this.Render();
-    }
-    ListSelector.prototype.Dispose = function () {
-        $("#" + this.element).html("");
-        delete listSelector[this.element];
     };
-    ListSelector.prototype.Rebind = function () {
-        var _this = this;
-        $("#list_selector_" + this.element).bind("keyup", function () {
-            $("#display_list_selector_" + _this.element).html(_this.RenderList());
-        });
+    ImportExport.Html5 = function () {
+        $("#importExportFrame").prop("src", "/backend/ExportHtml5?game=" + world.Id + "&token=" + framework.Preferences['token']);
     };
-    ListSelector.prototype.Render = function () {
-        var _this = this;
-        var html = "";
-        html += "<input type='text' id='list_selector_" + this.element + "' placeholder='Search...'>";
-        html += "<div id='display_list_selector_" + this.element + "'>";
-        html += this.RenderList();
-        html += "</div>";
-        $("#" + this.element).html(html);
-        $("#list_selector_" + this.element).bind("keyup", function () {
-            $("#display_list_selector_" + _this.element).html(_this.RenderList());
-        });
-    };
-    ListSelector.prototype.UpdateList = function (newData) {
-        if (newData)
-            this.data = newData;
-        else
-            newData = this.data;
-        if (this.displayColumn) {
-            this.sortedDirect = [];
-            for (var i = 0; i < this.data.length; i++)
-                this.sortedDirect.push(i);
-            var displayColumn = this.displayColumn;
-            this.sortedDirect.sort(function (a, b) {
-                if (newData[a][displayColumn] > newData[b][displayColumn])
-                    return 1;
-                if (newData[a][displayColumn] < newData[b][displayColumn])
-                    return -1;
-                return 0;
-            });
-        }
-        $("#display_list_selector_" + this.element).html(this.RenderList());
-    };
-    ListSelector.prototype.RenderList = function () {
-        var html = "";
-        html += "<table>";
-        var searchTxt = $("#list_selector_" + this.element).val();
-        var search = (searchTxt ? searchTxt : "").trim().toLowerCase();
-        if (this.displayColumn) {
-            for (var i = 0; i < this.data.length; i++) {
-                var val = "" + this.data[this.sortedDirect[i]][this.displayColumn];
-                if (search && search != "" && (!val || val.toLowerCase().indexOf(search) == -1))
-                    continue;
-                html += "<tr id='display_list_selector_" + this.element + "_" + this.sortedDirect[i] + "' onclick='ListSelector.Find(\"" + this.element + "\").Select(" + this.sortedDirect[i] + ");'" + (this.selectedRow == this.sortedDirect[i] ? " class='listSelectorSelectedRow'" : "") + "><td>" + val + "</td></tr>";
-            }
-        }
-        else {
-            var names = [];
-            for (var item in this.data)
-                names.push(item);
-            if (this.Sort)
-                names.sort();
-            for (var i = 0; i < names.length; i++) {
-                var val = names[i];
-                if (search && search != "" && (!val || val.toLowerCase().indexOf(search) == -1))
-                    continue;
-                html += "<tr id='display_list_selector_" + this.element + "_" + val.id() + "' onclick='ListSelector.Find(\"" + this.element + "\").Select(\"" + val + "\");'" + (this.selectedRow == val ? " class='listSelectorSelectedRow'" : "") + "><td>" + val + "</td></tr>";
-            }
-        }
-        html += "</table>";
-        return html;
-    };
-    ListSelector.Find = function (name) {
-        return listSelector[name];
-    };
-    ListSelector.prototype.Select = function (row) {
-        this.selectedRow = row;
-        $("#display_list_selector_" + this.element + " tr").removeClass("listSelectorSelectedRow");
-        if (this.displayColumn)
-            $("#display_list_selector_" + this.element + "_" + row).addClass("listSelectorSelectedRow");
-        else if (row !== null)
-            $("#display_list_selector_" + this.element + "_" + row.id()).addClass("listSelectorSelectedRow");
-        if (this.OnSelect)
-            this.OnSelect(row);
-    };
-    return ListSelector;
+    return ImportExport;
 }());
-var inventoryMenu = new ((function () {
-    function class_52() {
-        this.inventoryDisplayed = false;
-    }
-    return class_52;
-}()));
-var InventoryMenu = (function () {
-    function InventoryMenu() {
-    }
-    InventoryMenu.AdditionalCSS = function () {
-        return "#inventoryIcon\n\
-{\n\
-    position: absolute;\n\
-    left: -" + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
-    top: 80px;\n\
-}\n\
-#inventoryIcon .gamePanelContentNoHeader\n\
-{\n\
-    width: 74px;\n\
-}\n\
-#inventoryObjectDetails\n\
-{\n\
-    position: absolute;\n\
-    left: " + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
-    right: " + parseInt("" + world.art.panelStyle.rightBorder) + "px;\n\
-    bottom: " + parseInt("" + world.art.panelStyle.bottomBorder) + "px;\n\
-    overflow: hidden;\n\
-    height: 150px;\n\
-    padding: 7px;\n\
-    box-sizing: border-box;\n\
-}\n\
-\n\
-#inventoryObjectList\n\
-{\n\
-    position: absolute;\n\
-    left: " + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
-    right: " + parseInt("" + world.art.panelStyle.rightBorder) + "px;\n\
-    top: " + parseInt("" + world.art.panelStyle.topBorder) + "px;\n\
-    bottom: " + (parseInt("" + world.art.panelStyle.bottomBorder) + 150) + "px;\n\
-    overflow-y: scroll;\n\
-}\n\
-\n\
-#inventoryObjectList h1\n\
-{\n\
-    border-bottom: solid 1px " + Main.EnsureColor(world.art.panelStyle.contentColor) + ";\n\
-    margin-bottom: 5px;\n\
-}\n\
-";
-    };
-    InventoryMenu.Init = function (position) {
-        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowInventory === false))) {
-            $("#inventoryIcon").hide();
-            return position;
-        }
-        $("#inventoryIcon").css("top", position + "px");
-        if (game)
-            $("#inventoryIcon .gamePanelContentNoHeader").html("<img src='art/tileset2/inventory_icon.png'>");
-        else
-            $("#inventoryIcon .gamePanelContentNoHeader").html("<img src='/art/tileset2/inventory_icon.png'>");
-        return position + 64 + world.art.panelStyle.topBorder;
-    };
-    InventoryMenu.Toggle = function () {
-        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowInventory === false)))
-            return;
-        $("#profileIcon").removeClass("openPanelIcon");
-        profileMenu.profileDisplayed = false;
-        $("#messageIcon").removeClass("openPanelIcon");
-        messageMenu.messageDisplayed = false;
-        $("#journalIcon").removeClass("openPanelIcon");
-        journalMenu.journalDisplayed = false;
-        if (inventoryMenu.inventoryDisplayed) {
-            $("#gameMenuPanel").hide();
-            $("#inventoryIcon").removeClass("openPanelIcon");
-            inventoryMenu.inventoryDisplayed = false;
-        }
-        else {
-            inventoryMenu.inventoryDisplayed = true;
-            $("#gameMenuPanel").show();
-            $("#inventoryIcon").addClass("openPanelIcon");
-            InventoryMenu.Update();
-        }
-    };
-    InventoryMenu.Update = function () {
-        if (!inventoryMenu.inventoryDisplayed)
-            return;
-        var html = "";
-        var wearSomething = false;
-        for (var slot in world.Player.EquipedObjects) {
-            wearSomething = true;
-            break;
-        }
-        html += "<div id='inventoryObjectList'>";
-        if (wearSomething) {
-            html += "<h1>Wearing</h1>";
-            html += "<table class='inventoryList'>";
-            for (var slot in world.Player.EquipedObjects) {
-                html += "<tr>";
-                var wearedItem = world.Player.EquipedObjects[slot];
-                var details = world.GetInventoryObject(wearedItem.Name);
-                if (!details)
-                    continue;
-                if (details.CanUnwear())
-                    html += "<td><div class='gameButton' onclick='InventoryMenu.Unwear(\"" + slot.htmlEntities() + "\");'>Unwear</div></td>";
-                else
-                    html += "<td>&nbsp;</td>";
-                html += "<td>" + (details.Image ? "<img src='" + details.Image.htmlEntities() + "' width='32' height='32'>" : "") + "</td>";
-                html += "<td>" + world.Player.EquipedObjects[slot].Name.htmlEntities() + "</td>";
-                html += "<td>" + slot.title().htmlEntities() + "</td>";
-                html += "</tr>";
-            }
-            html += "</table>";
-        }
-        html += "<h1>Inventory</h1>";
-        if (!world.Player.Inventory || !world.Player.Inventory.length) {
-            $("#gameMenuPanelContent").html(html);
-            return;
-        }
-        world.Player.Inventory.sort(function (a, b) {
-            if (a.Name > b.Name)
-                return 1;
-            if (a.Name < b.Name)
-                return -1;
-            return 0;
-        });
-        world.Player.StoredCompare = world.Player.JSON();
-        html += "<table class='inventoryList'>";
-        html += "<thead>";
-        html += "<tr><td>&nbsp;</td><td>&nbsp;</td><td>Item</td><td>Quantity</td></tr>";
-        html += "</thead>";
-        html += "<tbody>";
-        for (var i = 0; i < world.Player.Inventory.length; i++) {
-            var details = world.Player.Inventory[i].GetDetails();
-            if (details == null) {
-                world.Player.Inventory.splice(i, 1);
-                i--;
-                world.Player.StoredCompare = world.Player.JSON();
-                continue;
-            }
-            html += "<tr onmouseover='InventoryMenu.ShowDetails(" + i + ");' onmouseout='InventoryMenu.HideDetails();'>";
-            html += "<td>";
-            if (details.CanWear())
-                html += "<div class='gameButton' onclick='InventoryMenu.Wear(" + i + ");'>Equip</div>";
-            if (details.ActionLabel() && details.CanUse())
-                html += "<div class='gameButton' onclick='InventoryMenu.Use(" + i + ");'>" + details.ActionLabel().htmlEntities() + "</div>";
-            if (details.CanDrop())
-                html += "<div class='gameButton' onclick='InventoryMenu.Drop(" + i + ");'>Drop</div>";
-            if (details.CanWear() || (details.ActionLabel() && details.CanUse()))
-                html += "<div class='gameButton' onclick='InventoryMenu.Quickslot(" + i + ");'>Quickslot</div>";
-            html += "</td>";
-            html += "<td>" + (details.Image ? "<img src='" + details.Image.htmlEntities() + "' width='32' height='32'>" : "") + "</td>";
-            html += "<td><div>" + world.Player.Inventory[i].Name.htmlEntities() + "</div></td>";
-            html += "<td>" + ("" + world.Player.Inventory[i].Count).htmlEntities() + "</td>";
-            html += "</tr>";
-        }
-        html += "</tbody></table></div>";
-        html += "<div id='inventoryObjectDetails'></div>";
-        $("#gameMenuPanelContent").html(html);
-    };
-    InventoryMenu.ShowDetails = function (rowId) {
-        var details = world.Player.Inventory[rowId].GetDetails();
-        var html = "";
-        html += (details.Image ? "<img src='" + details.Image.htmlEntities() + "' width='32' height='32' style='vertical-align: middle;'>" : "");
-        html += "<b>" + details.Name.htmlEntities() + ":</b><br>";
-        html += Main.TextTransform(details.Description, true);
-        $("#inventoryObjectDetails").html(html);
-    };
-    InventoryMenu.HideDetails = function () {
-        $("#inventoryObjectDetails").html("");
-    };
-    InventoryMenu.Wear = function (rowId) {
-        var details = world.Player.Inventory[rowId].GetDetails();
-        if (details.CanWear())
-            world.Player.Wear(world.Player.Inventory[rowId].Name);
-    };
-    InventoryMenu.Unwear = function (slotName) {
-        var wearedItem = world.Player.EquipedObjects[slotName];
-        var details = world.GetInventoryObject(wearedItem.Name);
-        if (details.CanUnwear())
-            world.Player.Unwear(slotName);
-    };
-    InventoryMenu.Drop = function (rowId) {
-        var details = world.Player.Inventory[rowId].GetDetails();
-        if (details.CanDrop())
-            world.Player.RemoveItem(world.Player.Inventory[rowId].Name);
-    };
-    InventoryMenu.Use = function (rowId) {
-        var details = world.Player.Inventory[rowId].GetDetails();
-        if (details.CanUse())
-            details.Use();
-    };
-    InventoryMenu.Quickslot = function (rowId) {
-        profileMenu.profileDisplayed = false;
-        var html = "<h1>Quickslot</h1>";
-        for (var i = 0; i < 10; i++) {
-            var q = world.Player.QuickSlot[i];
-            var skill = null;
-            if (!q)
-                q = "-- Empty --";
-            else if (q.substring(0, 2) == "S/") {
-                var skill = world.GetSkill(q.substring(2));
-                q = "Skill " + q.substring(2).title().htmlEntities();
-            }
-            else
-                q = "Item " + q.substring(2).title().htmlEntities();
-            if (skill && skill.CodeVariable("QuickslotEditable") === "false") {
-                html += "Slot " + (i + 1) + " " + q + "<br>";
-            }
-            else
-                html += "<div class='gameButton' onclick='InventoryMenu.SetQuickslot(" + rowId + "," + i + ");'>Slot " + (i + 1) + "</div>" + q + "<br>";
-        }
-        html += "<center><div class='gameButton' onclick='InventoryMenu.Update();'>Cancel</div></center>";
-        $("#gameMenuPanelContent").html(html);
-    };
-    InventoryMenu.SetQuickslot = function (rowId, slotId) {
-        var details = world.Player.Inventory[rowId].GetDetails();
-        var itemName = details.Name;
-        for (var i = 0; i < 10; i++)
-            if (world.Player.QuickSlot[i] == "I/" + itemName)
-                world.Player.QuickSlot[i] = null;
-        world.Player.QuickSlot[slotId] = "I/" + itemName;
-        world.Player.StoredCompare = world.Player.JSON();
-        world.Player.Save();
-        InventoryMenu.Update();
-    };
-    return InventoryMenu;
-}());
-var journalMenu = new ((function () {
-    function class_53() {
-        this.journalDisplayed = false;
-    }
-    return class_53;
-}()));
-var JournalMenu = (function () {
-    function JournalMenu() {
-    }
-    JournalMenu.AdditionalCSS = function () {
-        return "#journalIcon\n\
-{\n\
-    position: absolute;\n\
-    left: -" + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
-    top: 245px;\n\
-}\n\
-#journalIcon .gamePanelContentNoHeader\n\
-{\n\
-    width: 74px;\n\
-}\n\
-";
-    };
-    JournalMenu.Init = function (position) {
-        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowJournal === false))) {
-            $("#journalIcon").hide();
-            return position;
-        }
-        $("#journalIcon").css("top", position + "px");
-        if (game)
-            $("#journalIcon .gamePanelContentNoHeader").html("<img src='art/tileset2/journal_icon.png'>");
-        else
-            $("#journalIcon .gamePanelContentNoHeader").html("<img src='/art/tileset2/journal_icon.png'>");
-        return position + 64 + world.art.panelStyle.topBorder;
-    };
-    JournalMenu.Toggle = function () {
-        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowJournal === false)))
-            return;
-        inventoryMenu.inventoryDisplayed = false;
-        $("#inventoryIcon").removeClass("openPanelIcon");
-        messageMenu.messageDisplayed = false;
-        $("#messageIcon").removeClass("openPanelIcon");
-        profileMenu.profileDisplayed = false;
-        $("#profileIcon").removeClass("openPanelIcon");
-        if (journalMenu.journalDisplayed) {
-            $("#gameMenuPanel").hide();
-            $("#journalIcon").removeClass("openPanelIcon");
-            journalMenu.journalDisplayed = false;
-        }
-        else {
-            journalMenu.journalDisplayed = true;
-            $("#gameMenuPanel").show();
-            $("#journalIcon").addClass("openPanelIcon");
-            JournalMenu.Update();
-        }
-    };
-    JournalMenu.Update = function () {
-        if (!journalMenu.journalDisplayed)
-            return;
-        world.Player.Quests.sort(JournalMenu.SortQuests);
-        world.Player.StoredCompare = world.Player.JSON();
-        world.Player.Save();
-        var html = "<h1>Quest Journal</h1>";
-        if (world.Player.Quests.length > 0) {
-            var showCompleted = false;
-            if (!world.Player.Quests[0].Completed)
-                html += "<h2>Open quests</h2>";
-            for (var i = 0; i < world.Player.Quests.length; i++) {
-                var quest = world.GetQuest(world.Player.Quests[i].Name);
-                if (!quest)
-                    continue;
-                if (!showCompleted && world.Player.Quests[i].Completed) {
-                    showCompleted = true;
-                    html += "<h2>Completed quests</h2>";
-                }
-                html += "<b>" + quest.Name.htmlEntities() + "</b><br>";
-                html += Main.TextTransform(quest.Description, true) + "<br>";
-                for (var j = 0; j < world.Player.Quests[i].JournalEntries.length; j++) {
-                    var entry = JournalMenu.GetJournal(quest, world.Player.Quests[i].JournalEntries[j].EntryId);
-                    if (!entry)
-                        continue;
-                    html += Main.TextTransform(entry) + "<br>";
-                }
-            }
-        }
-        $("#gameMenuPanelContent").html(html);
-    };
-    JournalMenu.GetJournal = function (quest, id) {
-        for (var i = 0; i < quest.JournalEntries.length; i++)
-            if (quest.JournalEntries[i].Id == id)
-                return quest.JournalEntries[i].Entry;
-        return null;
-    };
-    JournalMenu.SortQuests = function (a, b) {
-        if (a.Completed && b.Completed) {
-            if (a.Completed > b.Completed)
-                return -1;
-            if (a.Completed < b.Completed)
-                return 1;
-            return 0;
-        }
-        if (a.Completed && !b.Completed)
-            return 1;
-        if (!a.Completed && b.Completed)
-            return -1;
-        if (a.JournalEntries && a.JournalEntries.length > 0 && b.JournalEntries && b.JournalEntries.length > 0) {
-            if (a.JournalEntries[a.JournalEntries.length - 1] > b.JournalEntries[b.JournalEntries.length - 1])
-                return 1;
-            if (a.JournalEntries[a.JournalEntries.length - 1] < b.JournalEntries[b.JournalEntries.length - 1])
-                return -1;
-            return 0;
-        }
-        if (a.JournalEntries && a.JournalEntries.length > 0 && (!b.JournalEntries || b.JournalEntries.length == 0))
-            return 1;
-        if ((!a.JournalEntries || a.JournalEntries.length == 0) && b.JournalEntries && b.JournalEntries.length > 0)
-            return -1;
-        if (a.Started > b.Started)
-            return 1;
-        if (a.Started < b.Started)
-            return -1;
-        return 0;
-    };
-    return JournalMenu;
-}());
-var messageMenu = new ((function () {
-    function class_54() {
-        this.messageDisplayed = false;
-        this.firstInit = true;
-        this.selectedMessage = null;
-        this.nonRead = 0;
-        this.attachments = null;
-    }
-    return class_54;
-}()));
-var MessageMenu = (function () {
-    function MessageMenu() {
-    }
-    MessageMenu.AdditionalCSS = function () {
-        return "#messageIcon\n\
-{\n\
-    position: absolute;\n\
-    left: -" + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
-    top: 330px;\n\
-}\n\
-#messageIcon .gamePanelContentNoHeader\n\
-{\n\
-    width: 74px;\n\
-}\n\
-";
-    };
-    MessageMenu.Init = function (position) {
-        if (!framework.Preferences['token'] || (world && world.ShowMessage === false) || framework.Preferences['token'] == "demo" || game) {
-            $("#messageIcon").hide();
-            return position;
-        }
-        $("#messageIcon").css("top", position + "px");
-        $("#messageIcon .gamePanelContentNoHeader").html("<img src='/art/tileset2/message_icon.png'><div>10</div>");
-        $("#messageIcon div.gamePanelContentNoHeader > div").html("0").hide();
-        if (messageMenu.firstInit && chat.socket) {
-            messageMenu.firstInit = false;
-            chat.socket.on('new_message', function () {
-                for (var i = 0; i < world.Codes.length; i++) {
-                    if (world.Codes[i].Enabled === false)
-                        continue;
-                    if (!world.Codes[i].code)
-                        world.Codes[i].code = CodeParser.ParseWithParameters(world.Codes[i].Source, world.Codes[i].Parameters);
-                    if (world.Codes[i].code.HasFunction("OnPrivateMessage"))
-                        world.Codes[i].code.ExecuteFunction("OnPrivateMessage", []);
-                }
-                MessageMenu.CheckCounter();
-                MessageMenu.UpdateReceived();
-            });
-        }
-        MessageMenu.CheckCounter();
-        return position + 64 + world.art.panelStyle.topBorder;
-    };
-    MessageMenu.CheckCounter = function () {
-        $.ajax({
-            type: 'POST',
-            url: '/backend/CheckNewGameMessage',
-            data: {
-                game: world.Id,
-                token: framework.Preferences['token'],
-            },
-            success: function (msg) {
-                var data = TryParse(msg);
-                if (data) {
-                    messageMenu.nonRead = data;
-                    $("#messageIcon div.gamePanelContentNoHeader > div").html(data).show();
-                }
-                else {
-                    $("#messageIcon div.gamePanelContentNoHeader > div").html("0").hide();
-                }
-            },
-            error: function (msg) {
-            }
-        });
-    };
-    MessageMenu.Toggle = function () {
-        if (!framework.Preferences['token'] || (world && world.ShowMessage === false) || framework.Preferences['token'] == "demo")
-            return;
-        $("#inventoryIcon").removeClass("openPanelIcon");
-        inventoryMenu.inventoryDisplayed = false;
-        $("#profileIcon").removeClass("openPanelIcon");
-        profileMenu.profileDisplayed = false;
-        $("#journalIcon").removeClass("openPanelIcon");
-        journalMenu.journalDisplayed = false;
-        if (messageMenu.messageDisplayed) {
-            $("#gameMenuPanel").hide();
-            $("#messageIcon").removeClass("openPanelIcon");
-            messageMenu.messageDisplayed = false;
-        }
-        else {
-            messageMenu.messageDisplayed = true;
-            $("#gameMenuPanel").show();
-            $("#messageIcon").addClass("openPanelIcon");
-            MessageMenu.Update();
-        }
-    };
-    MessageMenu.Update = function () {
-        var html = "";
-        html += "<table class='panelContentTableWithHeader'>";
-        html += "<thead><tr><td>Date</td><td>Sender</td><td>Subject</td></tr></thead>";
-        html += "</table>";
-        html += "<div id='messageList'>";
-        html += "</div>";
-        html += "<div id='messageDetails'></div>";
-        $("#gameMenuPanelContent").html(html);
-        MessageMenu.UpdateReceived();
-        MessageMenu.ShowCompose();
-    };
-    MessageMenu.UpdateReceived = function () {
-        if (!messageMenu.messageDisplayed)
-            return;
-        $.ajax({
-            type: 'POST',
-            url: '/backend/GetGameMessageList',
-            data: {
-                game: world.Id,
-                token: framework.Preferences['token'],
-            },
-            success: function (msg) {
-                var data = TryParse(msg);
-                var html = "";
-                if (data) {
-                    html += "<table>";
-                    for (var i = 0; i < data.length; i++) {
-                        html += "<tr onclick='MessageMenu.Read(" + data[i].id + ");' class='" + (data[i].newMessage ? "newMessage" : "") + (messageMenu.selectedMessage == data[i].id ? " panelContentSelected" : "") + "'>";
-                        html += "<td>" + Main.FormatDateTime(data[i].sentDate) + "</td><td>" + data[i].from + "</td><td>" + data[i].subject + "</td>";
-                        html += "</tr>";
-                    }
-                    html += "</table>";
-                }
-                $("#messageList").html(html);
-            },
-            error: function (msg) {
-            }
-        });
-    };
-    MessageMenu.Read = function (id) {
-        messageMenu.selectedMessage = id;
-        $.ajax({
-            type: 'POST',
-            url: '/backend/GetGameMessage',
-            data: {
-                game: world.Id,
-                token: framework.Preferences['token'],
-                id: id
-            },
-            success: function (msg) {
-                var data = TryParse(msg);
-                var html = "";
-                if (data) {
-                    if (data.isNew === true) {
-                        MessageMenu.CheckCounter();
-                        MessageMenu.UpdateReceived();
-                        if (data.attachments) {
-                            var attachments = TryParse(data.attachments);
-                            if (attachments && attachments.length > 0)
-                                for (var i = 0; i < attachments.length; i++) {
-                                    world.Player.AddItem(attachments[i].name, attachments[i].quantity);
-                                }
-                        }
-                    }
-                    html += "<table>";
-                    html += "<tr><td>From:</td><td>" + ("" + data.from).htmlEntities() + "</td></tr>";
-                    html += "<tr><td>To:</td><td>" + ("" + data.to).htmlEntities() + "</td></tr>";
-                    html += "<tr><td>Date:</td><td>" + Main.FormatDateTime(data.sentDate) + "</td></tr>";
-                    html += "<tr><td>Subject:</td><td>" + ("" + data.subject).htmlEntities() + "</td></tr>";
-                    html += "<tr><td>Message:</td><td>" + Main.TextTransform("" + data.message) + "</td></tr>";
-                    if (data.attachments) {
-                        var attachments = TryParse(data.attachments);
-                        if (attachments && attachments.length > 0)
-                            html += "<tr><td>Attachments:</td><td>";
-                        for (var i = 0; i < attachments.length; i++) {
-                            html += "" + attachments[i].quantity + "x " + attachments[i].name + "<br>";
-                        }
-                        html += "</td></tr>";
-                    }
-                    html += "</table>";
-                    html += "<center>";
-                    html += "<div class='gameButton' onclick='MessageMenu.ShowCompose()'>New</div>";
-                    html += "<div class='gameButton' onclick='MessageMenu.Reply(" + id + ")'>Reply</div>";
-                    html += "<div class='gameButton' onclick='MessageMenu.Delete(" + id + ")'>Delete</div>";
-                    html + "</center>";
-                }
-                $("#messageDetails").html(html);
-            },
-            error: function (msg) {
-                var data = TryParse(msg);
-                $("#messageDetails").html("Error: " + (data && data.error ? data.error : msg));
-            }
-        });
-    };
-    MessageMenu.Reply = function (id) {
-        $.ajax({
-            type: 'POST',
-            url: '/backend/GetGameMessage',
-            data: {
-                game: world.Id,
-                token: framework.Preferences['token'],
-                id: id
-            },
-            success: function (msg) {
-                var data = TryParse(msg);
-                var html = "";
-                if (data) {
-                    messageMenu.selectedMessage = null;
-                    MessageMenu.CheckCounter();
-                    MessageMenu.UpdateReceived();
-                    html += "<table>";
-                    var dest = data.to.replace(/,/g, ";").replace(/ /g, "").split(';');
-                    for (var i = 0; i < dest.length; i++)
-                        if (dest[i].toLowerCase() == world.Player.Username.toLowerCase())
-                            dest[i] = data.from;
-                    dest = dest.join(", ");
-                    html += "<tr><td>To:</td><td><input type='text' id='message_to' value='" + dest.htmlEntities() + "' onfocus='play.inField=true;' onblur='play.inField=false;'></td></tr>";
-                    html += "<tr><td>Subject:</td><td><input type='text' id='message_subject' value='" + ("Re: " + data.subject.replace(/^re: /i, "")).htmlEntities() + "' onfocus='play.inField=true;' onblur='play.inField=false;'></td></tr>";
-                    html += "<tr><td>Message:</td><td>&nbsp;</td></tr>";
-                    html += "<tr><td colspan='2'><textarea id='message_text' rows='10' onfocus='play.inField=true;' onblur='play.inField=false;'>\n\n\n" + data.message.replace(/<\//gi, "").replace(/^/gm, "> ") + "</textarea></td></tr>";
-                    html += "<tr><td>Attach:</td><td colspan='2'><select onchange='MessageMenu.Attach()' id='new_attach'><option>-- Select an item to attach --</option>";
-                    for (var i = 0; i < world.Player.Inventory.length; i++) {
-                        var canShow = true;
-                        if (messageMenu.attachments)
-                            for (var j = 0; j < messageMenu.attachments.length; j++) {
-                                if (messageMenu.attachments[j].name == world.Player.Inventory[i].Name) {
-                                    canShow = false;
-                                    break;
-                                }
-                            }
-                        if (!canShow)
-                            continue;
-                        html += "<option value='" + encodeURIComponent(world.Player.Inventory[i].Name) + "'>" + world.Player.Inventory[i].Name + " (" + world.Player.Inventory[i].Count + ")</option>";
-                    }
-                    html += "</select></td></tr>";
-                    html += "</table>";
-                    html += "<center>";
-                    html += "<div class='gameButton' onclick='MessageMenu.ShowCompose()'>New</div>";
-                    html += "<div class='gameButton' onclick='MessageMenu.Send()'>Send</div>";
-                    html += "<div class='gameButton' onclick='MessageMenu.Read(" + id + ")'>Cancel</div>";
-                    html + "</center>";
-                    setTimeout(function () {
-                        $("#message_text").focus();
-                    }, 100);
-                }
-                $("#messageDetails").html(html);
-            },
-            error: function (msg) {
-                var data = TryParse(msg);
-                $("#messageDetails").html("Error: " + (data && data.error ? data.error : msg));
-            }
-        });
-    };
-    MessageMenu.Delete = function (id) {
-        $.ajax({
-            type: 'POST',
-            url: '/backend/DeleteGameMessage',
-            data: {
-                game: world.Id,
-                token: framework.Preferences['token'],
-                id: id
-            },
-            success: function (msg) {
-                messageMenu.selectedMessage = null;
-                MessageMenu.CheckCounter();
-                MessageMenu.UpdateReceived();
-                MessageMenu.ShowCompose();
-            },
-            error: function (msg) {
-                var data = TryParse(msg);
-                $("#messageDetails").html("Error: " + (data && data.error ? data.error : msg));
-            }
-        });
-    };
-    MessageMenu.ShowCompose = function () {
-        messageMenu.selectedMessage = null;
-        MessageMenu.UpdateReceived();
-        var html = "<div id='messageResult'></div><table>";
-        html += "<tr><td>To:</td><td colspan='2'><input type='text' id='message_to' onfocus='play.inField=true;' onblur='play.inField=false;'></td></tr>";
-        html += "<tr><td>Subject:</td><td colspan='2'><input type='text' id='message_subject' onfocus='play.inField=true;' onblur='play.inField=false;'></td></tr>";
-        html += "<tr><td>Message:</td><td colspan='2'>&nbsp;</td></tr>";
-        html += "<tr><td colspan='3'><textarea id='message_text' rows='10' onfocus='play.inField=true;' onblur='play.inField=false;'></textarea></td></tr>";
-        if (messageMenu.attachments && messageMenu.attachments.length > 0) {
-            html += "<tr><td>Attachments:</td><td>&nbsp;</td><td>&nbsp;</td></tr>";
-            for (var i = 0; i < messageMenu.attachments.length; i++) {
-                html += "<tr><td>&nbsp;</td><td>";
-                html += "<div class='removeAttachement' onclick='MessageMenu.RemoveAttachment(" + i + ");'>X</div>";
-                html += messageMenu.attachments[i].name + " (" + world.Player.GetInventoryQuantity(messageMenu.attachments[i].name) + ")</td>";
-                html += "<td><input type='text' id='attach_" + i + "' value='" + messageMenu.attachments[i].quantity + "' onfocus='play.inField=true;' onblur='play.inField=false;' onkeyup='MessageMenu.ChangeAttach(" + i + ")'></tr>";
-            }
-            html += "</td></tr>";
-        }
-        html += "<tr><td>Attach:</td><td colspan='2'><select onchange='MessageMenu.Attach()' id='new_attach'><option>-- Select an item to attach --</option>";
-        for (var i = 0; i < world.Player.Inventory.length; i++) {
-            var canShow = true;
-            if (messageMenu.attachments)
-                for (var j = 0; j < messageMenu.attachments.length; j++) {
-                    if (messageMenu.attachments[j].name == world.Player.Inventory[i].Name) {
-                        canShow = false;
-                        break;
-                    }
-                }
-            if (!canShow)
-                continue;
-            html += "<option value='" + encodeURIComponent(world.Player.Inventory[i].Name) + "'>" + world.Player.Inventory[i].Name + " (" + world.Player.Inventory[i].Count + ")</option>";
-        }
-        html += "</select></td></tr>";
-        html += "</table>";
-        html += "<center><div class='gameButton' onclick='MessageMenu.Send()'>Send</div></center>";
-        $("#messageDetails").html(html);
-        setTimeout(function () {
-            $("#message_to").focus();
-        }, 100);
-    };
-    MessageMenu.RemoveAttachment = function (rowId) {
-        var to = $("#message_to").val();
-        var subject = $("#message_subject").val();
-        var message = $("#message_text").val();
-        messageMenu.attachments.splice(rowId, 1);
-        MessageMenu.ShowCompose();
-        $("#message_to").val(to);
-        $("#message_subject").val(subject);
-        $("#message_text").val(message);
-    };
-    MessageMenu.Attach = function () {
-        var to = $("#message_to").val();
-        var subject = $("#message_subject").val();
-        var message = $("#message_text").val();
-        if (!messageMenu.attachments)
-            messageMenu.attachments = [];
-        messageMenu.attachments.push({
-            name: decodeURIComponent($("#new_attach").val()),
-            quantity: 1
-        });
-        MessageMenu.ShowCompose();
-        $("#message_to").val(to);
-        $("#message_subject").val(subject);
-        $("#message_text").val(message);
-    };
-    MessageMenu.ChangeAttach = function (rowId) {
-        $("#attach_" + rowId).css("background-color", "");
-        var val = 0;
-        try {
-            val = parseInt($("#attach_" + rowId).val());
-        }
-        catch (ex) {
-            $("#attach_" + rowId).css('backgroundColor', '#FFE0E0');
-        }
-        if (val <= 0 || world.Player.GetInventoryQuantity(messageMenu.attachments[rowId].name) < val) {
-            $("#attach_" + rowId).css('backgroundColor', '#FFE0E0');
-            val = 0;
-        }
-        messageMenu.attachments[rowId].quantity = val;
-    };
-    MessageMenu.Send = function () {
-        if (messageMenu.attachments) {
-            for (var i = 0; i < messageMenu.attachments.length; i++) {
-                if (world.Player.GetInventoryQuantity(messageMenu.attachments[i].name) < messageMenu.attachments[i].quantity) {
-                    $("#messageResult").html("Error: you don't have " + messageMenu.attachments[i].quantity + " " + messageMenu.attachments[i].name);
-                    return;
-                }
-            }
-        }
-        $.ajax({
-            type: 'POST',
-            url: '/backend/AddGameMessage',
-            data: {
-                game: world.Id,
-                token: framework.Preferences['token'],
-                to: $("#message_to").val(),
-                subject: $("#message_subject").val() && $("#message_subject").val().trim() != "" ? $("#message_subject").val() : "(no subject)",
-                message: $("#message_text").val(),
-                attachments: JSON.stringify(messageMenu.attachments ? messageMenu.attachments : null)
-            },
-            success: function (msg) {
-                if (messageMenu.attachments && messageMenu.attachments.length > 0) {
-                    $("#messageDetails table tr:nth-child(5)").remove();
-                    for (var i = 0; i < messageMenu.attachments.length; i++) {
-                        world.Player.RemoveItem(messageMenu.attachments[i].name, messageMenu.attachments[i].quantity);
-                        $("#messageDetails table tr:nth-child(5)").remove();
-                    }
-                }
-                messageMenu.attachments = null;
-                $("#messageResult").html("Message sent successfully");
-                $("#message_to").val("");
-                $("#message_subject").val("");
-                $("#message_text").val("");
-            },
-            error: function (msg) {
-                var data = TryParse(msg);
-                $("#messageResult").html("Error: " + (data && data.error ? data.error : msg));
-            }
-        });
-    };
-    MessageMenu.SendMessage = function (destination, subject, message) {
-        if (!framework.Preferences['token'] || (world && world.ShowMessage === false) || framework.Preferences['token'] == "demo" || game) {
-            return;
-        }
-        $.ajax({
-            type: 'POST',
-            url: '/backend/AddGameMessage',
-            data: {
-                game: world.Id,
-                token: framework.Preferences['token'],
-                to: destination,
-                subject: subject,
-                message: message
-            },
-            success: function (msg) {
-            },
-            error: function (msg) {
-            }
-        });
-    };
-    return MessageMenu;
-}());
-var searchPanel = new ((function () {
-    function class_55() {
-        this.links = [];
-    }
-    return class_55;
-}()));
-var SearchPanel = (function () {
-    function SearchPanel() {
-    }
-    SearchPanel.InitFunction = function () {
-        if (!$("#searchPanel").first())
-            return;
-        if (Main.CheckNW()) {
-            $("#searchPanel").css("top", "0px");
-        }
-        $("#game_Search").bind("click", SearchPanel.ShowHide);
-        $("#generalSearch").bind("keyup", SearchPanel.KeyUp);
-        // Control Q => quick search
-        $(document).bind('keydown', function (e) {
-            if (e.ctrlKey && (e.which == 81)) {
-                e.preventDefault();
-                SearchPanel.ShowHide();
-                return false;
-            }
-        });
-    };
-    SearchPanel.ShowHide = function () {
-        if ($("#searchPanel").is(":visible")) {
-            $("#searchPanel").hide();
-        }
-        else {
-            $("#searchPanel").show();
-            $("#generalSearch").focus();
-            SearchPanel.RenderResult();
-        }
-    };
-    SearchPanel.KeyUp = function (evt) {
-        switch (evt.keyCode) {
-            case 27:
-                $("#generalSearch").blur();
-                $("#searchPanel").hide();
-                break;
-            case 13:
-                if (searchPanel.links && searchPanel.links.length > 0)
-                    document.location.assign(searchPanel.links[0]);
-                break;
-        }
-        SearchPanel.RenderResult();
-    };
-    SearchPanel.Update = function () {
-        SearchPanel.RenderResult();
-    };
-    SearchPanel.RenderResult = function () {
-        if (!$("#searchPanel").is(":visible"))
-            return;
-        var toSearch = $("#generalSearch").val().toLowerCase();
-        searchPanel.links = [];
-        var html = "";
-        var itemsToSearch = [
-            { object: world.art.characters, title: "Characters", action: "ArtCharacterEditor" },
-            { object: world.art.houses, title: "Houses", action: "HouseEditor" },
-            { object: world.art.house_parts, title: "House parts", action: "HousePart" },
-            { object: world.art.objects, title: "Map Objects", action: "ArtObjectEditor" },
-            { object: world.art.sounds, title: "Sounds &amp; Musics", action: "ArtSoundEditor" },
-            { object: world.Codes, title: "Generic Code", action: "GenericCodeEditor" },
-            { object: world.InventorySlots, title: "Inventory Slots", action: "InventorySlotEditor" },
-            { object: world.Monsters, title: "Monsters", action: "MonsterEditor" },
-            { object: world.NPCs, title: "NPCs", action: "NPCEditor" },
-            { object: world.InventoryObjects, title: "Objects", action: "ObjectEditor" },
-            { object: world.InventoryObjectTypes, title: "Object Types", action: "ObjectTypeEditor" },
-            { object: world.ParticleEffects, title: "Particles Effects", action: "ParticleEditor" },
-            { object: world.Quests, title: "Quests", action: "QuestEditor" },
-            { object: world.Skills, title: "Skills", action: "SkillEditor" },
-            { object: world.Stats, title: "Stats", action: "StatEditor" },
-            { object: world.TemporaryEffects, title: "Temporary Effects", action: "TemporaryEffectEditor" },
-            { object: world.Zones, title: "Zones", action: "ZoneEditor" },
-            { object: world.ChatBots, title: "Chat Bots", action: "ChatBotEditor" },
-        ];
-        itemsToSearch.sort(function (a, b) {
-            if (a.title > b.title)
-                return 1;
-            if (a.title < b.title)
-                return -1;
-            return 0;
-        });
-        for (var j = 0; j < itemsToSearch.length; j++) {
-            var items = [];
-            if (itemsToSearch[j].object.length) {
-                for (var i = 0; i < itemsToSearch[j].object.length; i++) {
-                    if (itemsToSearch[j].object[i].Name.toLowerCase().indexOf(toSearch) == -1)
-                        continue;
-                    items.push(itemsToSearch[j].object[i].Name);
-                }
-            }
-            else {
-                for (var item in itemsToSearch[j].object) {
-                    if (item == "contains")
-                        continue;
-                    if (item.toLowerCase().indexOf(toSearch) == -1)
-                        continue;
-                    items.push(item);
-                }
-            }
-            if (items.length > 0) {
-                html += "<span>" + itemsToSearch[j].title + ":</span>";
-                html += "<div>";
-                items.sort();
-                for (var i = 0; i < items.length; i++) {
-                    var link = "#action=" + itemsToSearch[j].action + "&id=" + encodeURIComponent(items[i]);
-                    searchPanel.links.push(link);
-                    html += "<a href='" + link + "'>" + items[i] + "</a>";
-                }
-                html += "</div>";
-            }
-        }
-        $("#generalSearchResult").html(html);
-    };
-    return SearchPanel;
-}());
-var profileMenu = new ((function () {
-    function class_56() {
-        this.profileDisplayed = false;
-    }
-    return class_56;
-}()));
-var ProfileMenu = (function () {
-    function ProfileMenu() {
-    }
-    ProfileMenu.AdditionalCSS = function () {
-        return "#profileIcon\n\
-{\n\
-    position: absolute;\n\
-    left: -" + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
-    top: 165px;\n\
-}\n\
-#profileIcon .gamePanelContentNoHeader\n\
-{\n\
-    width: 74px;\n\
-}\n\
-";
-    };
-    ProfileMenu.Init = function (position) {
-        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowStats === false))) {
-            $("#profileIcon").hide();
-            return position;
-        }
-        $("#profileIcon").css("top", position + "px");
-        if (game)
-            $("#profileIcon .gamePanelContentNoHeader").html("<img src='art/tileset2/profile_icon.png'><div>+</div>");
-        else
-            $("#profileIcon .gamePanelContentNoHeader").html("<img src='/art/tileset2/profile_icon.png'><div>+</div>");
-        if (!ProfileMenu.HasToUpgrade())
-            $("#profileIcon div.gamePanelContentNoHeader > div").hide();
-        return position + 64 + world.art.panelStyle.topBorder;
-    };
-    ProfileMenu.Toggle = function () {
-        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowStats === false)))
-            return;
-        inventoryMenu.inventoryDisplayed = false;
-        $("#inventoryIcon").removeClass("openPanelIcon");
-        messageMenu.messageDisplayed = false;
-        $("#messageIcon").removeClass("openPanelIcon");
-        $("#journalIcon").removeClass("openPanelIcon");
-        journalMenu.journalDisplayed = false;
-        if (profileMenu.profileDisplayed) {
-            $("#gameMenuPanel").hide();
-            $("#profileIcon").removeClass("openPanelIcon");
-            profileMenu.profileDisplayed = false;
-        }
-        else {
-            profileMenu.profileDisplayed = true;
-            $("#gameMenuPanel").show();
-            $("#profileIcon").addClass("openPanelIcon");
-            ProfileMenu.Update();
-        }
-    };
-    ProfileMenu.HasToUpgrade = function () {
-        for (var i = 0; i < world.Player.Stats.length; i++) {
-            if (world.Player.Stats[i].BaseStat.CodeVariable('PlayerVisible') === "false")
-                continue;
-            var res = world.Player.Stats[i].BaseStat.InvokeFunction("CanUpgrade", []);
-            if (res && res.GetBoolean() == true)
-                return true;
-        }
-        return false;
-    };
-    ProfileMenu.Update = function () {
-        if (ProfileMenu.HasToUpgrade())
-            $("#profileIcon div.gamePanelContentNoHeader > div").show();
-        else
-            $("#profileIcon div.gamePanelContentNoHeader > div").hide();
-        if (!profileMenu.profileDisplayed)
-            return;
-        var html = "";
-        html = "<h1>Profile<h1>";
-        html += "<h2>Stats</h2>";
-        html += "<table class='profileList'>";
-        html += "<thead><tr><td>Name:</td><td>Value:</td><td>Max:</td><td>&nbsp;</td></tr></thead>";
-        html += "<tbody>";
-        for (var i = 0; i < world.Player.Stats.length; i++) {
-            if (world.Player.Stats[i].BaseStat.CodeVariable('PlayerVisible') === "false")
-                continue;
-            html += "<tr>";
-            html += "<td>" + (world.Player.Stats[i].BaseStat.CodeVariable('DisplayName') ? world.Player.Stats[i].BaseStat.CodeVariable('DisplayName') : world.Player.Stats[i].Name).htmlEntities() + "</td>";
-            html += "<td>" + world.Player.Stats[i].Value + "</td>";
-            html += "<td>" + (world.Player.GetStatMaxValue(world.Player.Stats[i].Name) ? world.Player.GetStatMaxValue(world.Player.Stats[i].Name) : "&nbsp;") + "</td>";
-            var res = world.Player.Stats[i].BaseStat.InvokeFunction("CanUpgrade", []);
-            if (res && res.GetBoolean() == true)
-                html += "<td><div class='gameButton' onclick='ProfileMenu.UpgradeStat(\"" + world.Player.Stats[i].Name + "\")')>+</div></td>";
-            else
-                html += "<td>&nbsp;</td>";
-            html += "</tr>";
-        }
-        html += "</tbody>";
-        html += "</table>";
-        html += "<h2>Skills</h2>";
-        html += "<table class='profileList'>";
-        html += "<thead><tr><td>Name:</td><td>Level:</td><td>&nbsp;</td></tr></thead>";
-        html += "<tbody>";
-        for (var i = 0; i < world.Player.Skills.length; i++) {
-            html += "<tr>";
-            html += "<td>" + (world.Player.Skills[i].BaseSkill.CodeVariable('DisplayName') ? world.Player.Skills[i].BaseSkill.CodeVariable('DisplayName') : world.Player.Skills[i].Name).htmlEntities() + "</td><td>" + (world.Player.Skills[i].Level ? ("" + world.Player.Skills[i].Level).htmlEntities() : "&nbsp;") + "</td>";
-            html += "<td>";
-            if (world.Player.Skills[i].BaseSkill.CodeVariable("Quickslot") == "true" && world.Player.Skills[i].BaseSkill.CodeVariable("QuickslotEditable") !== "false")
-                html += "<div class='gameButton' onclick='ProfileMenu.Quickslot(\"" + world.Player.Skills[i].Name.htmlEntities() + "\");'>Quickslot</div>";
-            else
-                html += "&nbsp;";
-            html += "</td>";
-            html += "</tr>";
-        }
-        html += "</tbody>";
-        html += "</table>";
-        html += "<br><br>";
-        html += "<center><div class='gameButton' onclick='ProfileMenu.ResetPlayer();'>Reset your player</div></center>";
-        $("#gameMenuPanelContent").html(html);
-    };
-    ProfileMenu.DoResetPlayer = function () {
-        if (Main.CheckNW()) {
-            var saves = {};
-            if (framework.Preferences['gameSaves'])
-                saves = JSON.parse(framework.Preferences['gameSaves']);
-            delete saves["S" + world.Id];
-            framework.Preferences['gameSaves'] = JSON.stringify(saves);
-            Framework.SavePreferences();
-            world.Init();
-            Main.GenerateGameStyle();
-            world.ResetAreas();
-            world.ResetGenerator();
-            Framework.Rerun();
-            return;
-        }
-        if (!framework.Preferences['token'] || framework.Preferences['token'] == "demo") {
-            document.location.reload();
-            return;
-        }
-        $.ajax({
-            type: 'POST',
-            url: '/backend/ResetPlayer',
-            data: {
-                game: world.Id,
-                token: framework.Preferences['token']
-            },
-            success: function (msg) {
-                document.location.reload();
-            },
-            error: function (msg, textStatus) {
-                if (msg.d && msg.d.error)
-                    Framework.ShowMessage(msg.d.error);
-                else
-                    Framework.ShowMessage(msg);
-            }
-        });
-    };
-    ProfileMenu.ResetPlayer = function () {
-        Framework.Confirm("Are you sure you want to reset your player? You lose all the stats, items, and quests and start as a fresh new player.", ProfileMenu.DoResetPlayer);
-    };
-    ProfileMenu.UpgradeStat = function (statName) {
-        var res = world.Player.FindStat(statName).BaseStat.InvokeFunction("CanUpgrade", []);
-        if (!res || res.GetBoolean() !== true)
-            return;
-        world.Player.SetStat(statName, world.Player.GetStat(statName) + 1);
-        //world.Player.FindStat(statName).Value++;
-        ProfileMenu.Update();
-    };
-    ProfileMenu.Quickslot = function (skillName) {
-        profileMenu.profileDisplayed = false;
-        var html = "<h1>Quickslot</h1>";
-        for (var i = 0; i < 10; i++) {
-            var q = world.Player.QuickSlot[i];
-            var skill = null;
-            if (!q)
-                q = "-- Empty --";
-            else if (q.substring(0, 2) == "S/") {
-                var skill = world.GetSkill(q.substring(2));
-                q = "Skill " + q.substring(2).title().htmlEntities();
-            }
-            else
-                q = "Item " + q.substring(2).title().htmlEntities();
-            if (skill && skill.CodeVariable("QuickslotEditable") === "false") {
-                html += "Slot " + (i + 1) + " " + q + "<br>";
-            }
-            else
-                html += "<div class='gameButton' onclick='ProfileMenu.SetQuickslot(\"" + skillName.htmlEntities() + "\"," + i + ");'>Slot " + (i + 1) + "</div>" + q + "<br>";
-        }
-        html += "<center><div class='gameButton' onclick='ProfileMenu.Show();'>Cancel</div></center>";
-        $("#gameMenuPanelContent").html(html);
-    };
-    ProfileMenu.Show = function () {
-        profileMenu.profileDisplayed = true;
-        ProfileMenu.Update();
-    };
-    ProfileMenu.SetQuickslot = function (skillName, slotId) {
-        for (var i = 0; i < 10; i++)
-            if (world.Player.QuickSlot[i] == "S/" + skillName)
-                world.Player.QuickSlot[i] = null;
-        world.Player.QuickSlot[slotId] = "S/" + skillName;
-        world.Player.StoredCompare = world.Player.JSON();
-        world.Player.Save();
-        ProfileMenu.Show();
-    };
-    return ProfileMenu;
-}());
-/// <reference path="../../../Common/Libs/MiniQuery.ts"/>
-/// <reference path="../../../Common/Libs/Framework.ts"/>
-var MenuItem = (function () {
-    function MenuItem(label, link) {
-        this.Label = label;
-        this.Link = link;
-    }
-    return MenuItem;
-}());
-var menubarStatic = new ((function () {
-    function class_57() {
-        this.previousItem = null;
-        this.KnownItems = [];
-        this.hoverHideTimer = null;
-    }
-    return class_57;
-}()));
-var Menubar = (function () {
-    function Menubar() {
-    }
-    Menubar.InitFunction = function () {
-        var menu = document.getElementById("menubar");
-        if (!menu)
-            return;
-        /*var pos = 5;
-        for (var i = 0; i < menu.children.length; i++)
-        {
-            var item: HTMLElement = <HTMLElement>menu.children[i];
-            item.style.left = pos + "px";
-            pos += $(item).width();
-        }*/
-        $("#menubar a").bind("dragstart", function () { return false; }).bind("drop", function () { return false; });
-        $("#hideMenu").mouseover(Menubar.HoverHideMenus).mouseout(Menubar.StopHoverHideMenus);
-        $("#searchPanel").mouseover(Menubar.HoverHideMenus);
-        for (var i = 0; i < menu.children.length; i++) {
-            var item = menu.children[i];
-            if (item.children.length > 0) {
-                item.onmouseover = function () {
-                    var currentSubmenu = item.children[0];
-                    return function () {
-                        if (menubarStatic.previousItem == currentSubmenu.textContent)
-                            return;
-                        Menubar.HideMenus();
-                        menubarStatic.previousItem = currentSubmenu.textContent;
-                        $("#hideMenu").show();
-                        $(currentSubmenu).show();
-                    };
-                }();
-                Menubar.HookSubmenu(item.children[0]);
-            }
-            else
-                item.onmouseover = Menubar.HideMenus;
-        }
-        Menubar.ExtractItems();
-    };
-    Menubar.ExtractItems = function (menuItem) {
-        if (menuItem === void 0) { menuItem = null; }
-        if (!menuItem) {
-            menubarStatic.KnownItems = [];
-            menuItem = document.getElementById("menubar");
-        }
-        for (var i = 0; i < menuItem.children.length; i++) {
-            var item = menuItem.children[i];
-            if (item.children.length > 0) {
-                //if($(item).is(":visible"))
-                if (item.style.display !== "none")
-                    Menubar.ExtractItems(item.children[0]);
-            }
-            else if (item.style.display !== "none") {
-                var n = new MenuItem((item.attributes["label"] ? item.attributes["label"].textContent : item.textContent), (item.attributes["href"] ? item.attributes["href"].textContent : ""));
-                if (item.onclick && (!n.Link || n.Link == "" || n.Link == "#"))
-                    n.Link = item.onclick;
-                menubarStatic.KnownItems.push(n);
-            }
-            if (item.tagName.toLowerCase() == "a") {
-                $(item).bind("click", function () {
-                    $("#hideMenu").hide();
-                    Menubar.HideMenus();
-                });
-            }
-        }
-    };
-    Menubar.HookSubmenu = function (menuItem) {
-        for (var i = 0; i < menuItem.children.length; i++) {
-            var item = menuItem.children[i];
-            if (item.children.length > 0) {
-                item.onmouseover = function () {
-                    var child = item.children[0];
-                    $(child).addClass("childMenuBar");
-                    return function (e) {
-                        $("#menubar .childMenuBar").hide();
-                        $(child).show();
-                        e.stopPropagation();
-                    };
-                }();
-            }
-            else
-                item.onmouseover = function () {
-                    $("#menubar .childMenuBar").hide();
-                };
-        }
-    };
-    Menubar.HideMenus = function () {
-        menubarStatic.previousItem = null;
-        menubarStatic.hoverHideTimer = null;
-        $("#hideMenu").hide();
-        $("#menubar > div > div").hide();
-        $("#menubar .childMenuBar").hide();
-    };
-    Menubar.HoverHideMenus = function () {
-        if (menubarStatic.hoverHideTimer)
-            clearTimeout(menubarStatic.hoverHideTimer);
-        menubarStatic.hoverHideTimer = setTimeout(Menubar.HideMenus, 500);
-    };
-    Menubar.StopHoverHideMenus = function () {
-        if (menubarStatic.hoverHideTimer)
-            clearTimeout(menubarStatic.hoverHideTimer);
-        menubarStatic.hoverHideTimer = null;
-    };
-    /**
-     * Allows to disable a menu entry
-     * @param menuPath searched path in the form Main>Child>SubChild
-     */
-    Menubar.DisableMenu = function (menuPath, menuSection, currentPath) {
-        if (menuSection === void 0) { menuSection = null; }
-        if (currentPath === void 0) { currentPath = ""; }
-        if (!menuSection)
-            menuSection = document.getElementById("menubar");
-        for (var i = 0; i < menuSection.children.length; i++) {
-            var t = menuSection.children[i].textContent.trim();
-            var p = currentPath + t.split('\n')[0];
-            if (p == menuPath) {
-                $(menuSection.children[i]).hide();
-                Menubar.ExtractItems();
-                return true;
-            }
-            else if (menuSection.children[i].children.length > 0) {
-                var r = Menubar.DisableMenu(menuPath, menuSection.children[i].children[0], p + ">");
-                if (r == true)
-                    return true;
-            }
-        }
-        return false;
-    };
-    /**
-     * Allows to enable a menu entry
-     * @param menuPath searched path in the form Main>Child>SubChild
-     */
-    Menubar.EnableMenu = function (menuPath, menuSection, currentPath) {
-        if (menuSection === void 0) { menuSection = null; }
-        if (currentPath === void 0) { currentPath = ""; }
-        if (!menuSection)
-            menuSection = document.getElementById("menubar");
-        for (var i = 0; i < menuSection.children.length; i++) {
-            var t = menuSection.children[i].textContent.trim();
-            var p = currentPath + t.split('\n')[0];
-            if (p == menuPath) {
-                $(menuSection.children[i]).show();
-                Menubar.ExtractItems();
-                return true;
-            }
-            else if (menuSection.children[i].children.length > 0) {
-                var r = Menubar.EnableMenu(menuPath, menuSection.children[i].children[0], p + ">");
-                if (r == true)
-                    return true;
-            }
-        }
-        return false;
-    };
-    return Menubar;
-}());
-var PublicViewPlayer = (function () {
-    function PublicViewPlayer() {
-    }
-    PublicViewPlayer.Show = function (name) {
-        $.ajax({
-            type: 'POST',
-            url: '/backend/PublicViewPlayer',
-            data: {
-                game: world.Id,
-                name: name
-            },
-            success: function (msg) {
-                var data = TryParse(msg);
-                if (!data)
-                    return;
-                $("#npcDialog").show();
-                $("#npcDialog .gamePanelHeader").html("View: " + name.htmlEntities());
-                var html = "";
-                html += "<table>";
-                html += "<tr><td>Name:</td><td>" + ("" + data.name).htmlEntities() + "</td></tr>";
-                html += "<tr><td>X:</td><td>" + ("" + data.x).htmlEntities() + "</td></tr>";
-                html += "<tr><td>Y:</td><td>" + ("" + data.x).htmlEntities() + "</td></tr>";
-                html += "<tr><td>Zone:</td><td>" + ("" + data.zone).htmlEntities() + "</td></tr>";
-                html += "</table>";
-                html += "<h3>Equiped with</h3>";
-                var items = [];
-                for (var item in data.equipedObjects)
-                    items.push(data.equipedObjects[item]);
-                items.sort();
-                for (var i = 0; i < items.length; i++)
-                    html += ("" + items[i].Name).htmlEntities() + "<br>";
-                html += "<h3>Stats</h3>";
-                html += "<table>";
-                data.stats.sort(function (a, b) {
-                    if (a.Name > b.Name)
-                        return 1;
-                    if (a.Name < b.Name)
-                        return -1;
-                    return 0;
-                });
-                for (var i = 0; i < data.stats.length; i++) {
-                    var stat = world.GetStat(data.stats[i].Name);
-                    if (!stat)
-                        continue;
-                    if (stat.CodeVariable("PlayerVisible") === "false")
-                        continue;
-                    html += "<tr><td>" + ("" + (stat.CodeVariable("DisplayName") ? stat.CodeVariable("DisplayName") : stat.Name)).htmlEntities() + "</td><td>" + ("" + data.stats[i].Value).htmlEntities() + "</td></tr>";
-                }
-                html += "<h3>Skills</h3>";
-                data.skills.sort(function (a, b) {
-                    if (a.Name > b.Name)
-                        return 1;
-                    if (a.Name < b.Name)
-                        return -1;
-                    return 0;
-                });
-                for (var i = 0; i < data.skills.length; i++) {
-                    var skill = world.GetSkill(data.skills[i].Name);
-                    if (!skill)
-                        continue;
-                    html += ("" + (skill.CodeVariable("DisplayName") ? skill.CodeVariable("DisplayName") : skill.Name)).htmlEntities() + "<br>";
-                }
-                $("#dialogSentence").html(html);
-                play.onDialogPaint = [];
-                $("#dialogAnswers").html("<div onclick='PublicViewPlayer.Close();' class='gameButton'>Close</div>");
-            },
-            error: function (msg, textStatus) {
-            }
-        });
-    };
-    PublicViewPlayer.Close = function () {
-        $("#npcDialog").hide();
-    };
-    return PublicViewPlayer;
-}());
-var skillBar = new ((function () {
+/// <reference path="../../Logic/World/WorldRender.ts" />
+var houseEditor = new ((function () {
     function class_58() {
-        this.SkillIcons = {};
-        this.lastCheckInventory = 0;
+        this.housePartImages = {};
+        this.sticky = true;
+        this.glueDistance = 5;
+        this.keys = [];
+        this.multiSelection = null;
+        this.collisionSelection = null;
     }
     return class_58;
 }()));
-var SkillBar = (function () {
-    function SkillBar() {
+var HouseEditor = (function () {
+    function HouseEditor() {
     }
-    SkillBar.Render = function () {
-        if (!framework.Preferences['token'] && !game && !Main.CheckNW())
+    HouseEditor.Dispose = function () {
+        houseEditor.listHouses.Dispose();
+        houseEditor.listHouses = null;
+        houseEditor.listParts.Dispose();
+        houseEditor.listParts = null;
+        houseEditor.housePartImages = null;
+        $(window).unbind("resize", HouseEditor.Resize);
+        $(window).unbind("keydown", HouseEditor.KeyDown);
+        $(window).unbind("keyup", HouseEditor.KeyUp);
+    };
+    HouseEditor.IsAccessible = function () {
+        return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
+    };
+    HouseEditor.Recover = function () {
+        if (Main.CheckNW()) {
+            $("#helpLink").first().onclick = function () {
+                StandaloneMaker.Help($("#helpLink").prop("href"));
+                return false;
+            };
+            $("#listHouses").css("top", "5px");
+            $("#houseDetailsContainer").css("top", "5px");
+        }
+        houseEditor.keys = [];
+        houseEditor.partSelected = null;
+        houseEditor.multiSelection = null;
+        houseEditor.housePartImages = {};
+        houseEditor.listHouses = new ListSelector("listHouses", world.Houses);
+        houseEditor.listHouses.OnSelect = function (houseName) {
+            Framework.SetLocation({
+                action: "HouseEditor", id: houseName
+            });
+            if (!houseName) {
+                $("#houseTitle").html("");
+                houseEditor.currentHouse = houseEditor.currentHouseName = null;
+                $("#houseName").css('backgroundColor', '').val("").prop("disabled", true);
+                $("#houseCollisionX").val("").prop("disabled", true);
+                $("#houseCollisionY").val("").prop("disabled", true);
+                $("#houseCollisionWidth").val("").prop("disabled", true);
+                $("#houseCollisionHeight").val("").prop("disabled", true);
+            }
+            else {
+                $("#houseTitle").html("Details " + houseName);
+                houseEditor.currentHouseName = houseName;
+                houseEditor.currentHouse = world.Houses[houseEditor.currentHouseName];
+                $("#houseName").css('backgroundColor', '').val(houseEditor.currentHouseName).prop("disabled", false);
+                $("#houseCollisionX").val("" + houseEditor.currentHouse.collisionX).prop("disabled", false);
+                $("#houseCollisionY").val("" + houseEditor.currentHouse.collisionY).prop("disabled", false);
+                $("#houseCollisionWidth").val("" + houseEditor.currentHouse.collisionWidth).prop("disabled", false);
+                $("#houseCollisionHeight").val("" + houseEditor.currentHouse.collisionHeight).prop("disabled", false);
+            }
+        };
+        var firstHouse = null;
+        for (var item in world.Houses) {
+            firstHouse = item;
+            break;
+        }
+        houseEditor.listParts = new ListSelector("houseParts", world.art.house_parts);
+        houseEditor.listParts.OnSelect = function (partName) {
+            if (!partName)
+                return;
+            houseEditor.listParts.Select(null);
+            if (!houseEditor.currentHouse)
+                return;
+            houseEditor.currentHouse.parts.push({ part: partName, x: 0, y: 0 });
+            houseEditor.partSelected = [houseEditor.currentHouse[houseEditor.currentHouse.parts.length - 1]];
+        };
+        if (framework.CurrentUrl.id) {
+            if (!world.GetHouse(framework.CurrentUrl.id)) {
+                Framework.SetLocation({
+                    action: "HouseEditor"
+                });
+                houseEditor.listHouses.Select(null);
+            }
+            else
+                houseEditor.listHouses.Select(framework.CurrentUrl.id);
+        }
+        else if (firstHouse)
+            houseEditor.listHouses.Select(firstHouse);
+        else
+            houseEditor.listHouses.Select(null);
+        $(window).bind("resize", HouseEditor.Resize);
+        HouseEditor.Resize();
+        HouseEditor.Draw();
+        $("#houseEditor").bind("mousedown", HouseEditor.MouseDown);
+        $(window).bind("keydown", HouseEditor.KeyDown);
+        $(window).bind("keyup", HouseEditor.KeyUp);
+        if (framework.Preferences['houseSticky'] === false) {
+            houseEditor.sticky = false;
+            $("#stickyButton").removeClass("selectedButton");
+        }
+    };
+    HouseEditor.ChangeName = function () {
+        var newName = $("#houseName").val().trim();
+        if ((newName.match(databaseNameRule) || !newName || newName.length < 1) || (world.Houses[newName] && world.Houses[newName] != world.Houses[houseEditor.currentHouseName])) {
+            $("#houseName").css('backgroundColor', '#FFE0E0');
             return;
-        var canvas = document.getElementById("gameCanvas");
-        var height = canvas.height;
-        var width = canvas.width;
-        var ctx = canvas.getContext("2d");
-        if (!skillBar.SlotBar) {
-            skillBar.SlotBar = new Image();
-            skillBar.SlotBar.src = world.art.quickslotStyle.file;
         }
-        if (!skillBar.StatBar) {
-            skillBar.StatBar = new Image();
-            skillBar.StatBar.src = world.art.statBarStyle.file;
-        }
-        if (!skillBar.SlotBar || !skillBar.SlotBar.width)
+        $("#houseName").css('backgroundColor', '');
+        if (newName == "" || newName == houseEditor.currentHouseName || world.Houses[newName])
             return;
-        ctx.save();
-        if (world.art.statBarStyle.barsToDisplay === null || world.art.statBarStyle.barsToDisplay === undefined)
-            world.art.statBarStyle.barsToDisplay = 1;
-        if ((world.art.statBarStyle.barsToDisplay == 1 || world.art.statBarStyle.barsToDisplay == 2) && skillBar.StatBar && skillBar.StatBar.width) {
-            var v = world.Player.GetStat('Life');
-            var maxV = world.Player.GetStatMaxValue('Life');
-            v = Math.min(Math.max(v, 0), maxV);
-            var h = Math.round((skillBar.StatBar.height - (world.art.statBarStyle.topBorder + world.art.statBarStyle.bottomBorder)) * (maxV - v) / maxV);
-            //h = Math.min(Math.max(h, 0), 100);
-            ctx.drawImage(skillBar.StatBar, 0, 0, skillBar.StatBar.width / 3, skillBar.StatBar.height, 10, height - (skillBar.StatBar.height + 10), skillBar.StatBar.width / 3, skillBar.StatBar.height);
-            try {
-                ctx.drawImage(skillBar.StatBar, skillBar.StatBar.width / 3, world.art.statBarStyle.topBorder + h, skillBar.StatBar.width / 3, skillBar.StatBar.height - (world.art.statBarStyle.topBorder + world.art.statBarStyle.bottomBorder + h), 10, height - ((skillBar.StatBar.height - (world.art.statBarStyle.topBorder + h)) + 10), skillBar.StatBar.width / 3, skillBar.StatBar.height - (world.art.statBarStyle.topBorder + world.art.statBarStyle.bottomBorder + h));
-            }
-            catch (ex) {
-            }
-        }
-        if ((world.art.statBarStyle.barsToDisplay == 2) && skillBar.StatBar && skillBar.StatBar.width) {
-            var v = world.Player.GetStat('Energy');
-            var maxV = world.Player.GetStatMaxValue('Energy');
-            v = Math.min(Math.max(v, 0), maxV);
-            var h = Math.round((skillBar.StatBar.height - (world.art.statBarStyle.topBorder + world.art.statBarStyle.bottomBorder)) * (maxV - v) / maxV);
-            //h = Math.min(Math.max(h, 0), 100);
-            ctx.drawImage(skillBar.StatBar, 0, 0, skillBar.StatBar.width / 3, skillBar.StatBar.height, 10 + skillBar.StatBar.width / 3, height - (skillBar.StatBar.height + 10), skillBar.StatBar.width / 3, skillBar.StatBar.height);
-            try {
-                ctx.drawImage(skillBar.StatBar, skillBar.StatBar.width * 2 / 3, world.art.statBarStyle.topBorder + h, skillBar.StatBar.width / 3, skillBar.StatBar.height - (world.art.statBarStyle.topBorder + world.art.statBarStyle.bottomBorder + h), 10 + skillBar.StatBar.width / 3, height - ((skillBar.StatBar.height - (world.art.statBarStyle.topBorder + h)) + 10), skillBar.StatBar.width / 3, skillBar.StatBar.height - (world.art.statBarStyle.topBorder + world.art.statBarStyle.bottomBorder + h));
-            }
-            catch (ex) {
+        var oldName = houseEditor.currentHouseName;
+        delete world.Houses[houseEditor.currentHouseName];
+        world.Houses[newName] = houseEditor.currentHouse;
+        houseEditor.currentHouseName = newName;
+        //houseEditor.listHouses.UpdateList();
+        HouseEditor.UpdateHouseList();
+        SearchPanel.Update();
+        for (var i = 0; i < world.Zones.length; i++) {
+            var zone = world.Zones[i];
+            for (var j = 0; j < zone.MapFragments.length; j++) {
+                var fragment = zone.MapFragments[i].Modifications;
+                for (var k = 0; k < fragment.length; k++)
+                    if (fragment[k].Action == "house" && fragment[k].Value == oldName)
+                        fragment[k].Value = newName;
             }
         }
-        if (world.art.quickslotStyle.quickslotVisible === false) {
-            ctx.restore();
+        MapUtilities.Modify("house", oldName, newName);
+    };
+    HouseEditor.UpdateHouseList = function () {
+        houseEditor.listHouses.UpdateList();
+        houseEditor.listHouses.Select(houseEditor.currentHouseName);
+    };
+    HouseEditor.ChangeCollisionX = function () {
+        houseEditor.currentHouse.collisionX = parseInt($("#houseCollisionX").val());
+    };
+    HouseEditor.ChangeCollisionY = function () {
+        houseEditor.currentHouse.collisionY = parseInt($("#houseCollisionY").val());
+    };
+    HouseEditor.ChangeCollisionWidth = function () {
+        houseEditor.currentHouse.collisionWidth = parseInt($("#houseCollisionWidth").val());
+    };
+    HouseEditor.ChangeCollisionHeight = function () {
+        houseEditor.currentHouse.collisionHeight = parseInt($("#houseCollisionHeight").val());
+    };
+    HouseEditor.CollisionSelection = function () {
+        houseEditor.collisionSelection = { X: 0, Y: 0, Width: 1, Height: 1 };
+    };
+    HouseEditor.MouseDown = function (evt) {
+        if (!houseEditor.currentHouse)
             return;
+        var x = evt.pageX - $("#houseEditor").position().left + $("#houseEditorContainer").first().scrollLeft;
+        var y = evt.pageY - $("#houseEditor").position().top + $("#houseEditorContainer").first().scrollTop;
+        if (houseEditor.collisionSelection != null) {
+            houseEditor.mouseOffset = { X: x, Y: y };
+            houseEditor.collisionSelection = { X: x, Y: y, Width: 1, Height: 1 };
+            HouseEditor.HandleCollisionSelection(evt);
         }
-        var pos = Math.round(width / 2 - skillBar.SlotBar.width / 2);
-        ctx.drawImage(skillBar.SlotBar, pos, height - skillBar.SlotBar.height);
-        pos += world.art.quickslotStyle.leftBorder;
-        for (var i = 0; i < world.Player.QuickSlot.length; i++) {
-            var q = world.Player.QuickSlot[i];
-            if (q == null) {
-                pos += 32 + world.art.quickslotStyle.itemSpacing;
-                continue;
-            }
-            var name = q.substring(2);
-            // Skill quickslot
-            if (q.substring(0, 2) == "S/") {
-                if (!skillBar.SkillIcons[q] && world.GetSkill(name)) {
-                    var skillInfo = world.GetSkill(name);
-                    skillBar.SkillIcons[q] = new Image();
-                    skillBar.SkillIcons[q].src = (skillInfo.CodeVariable("icon") ? skillInfo.CodeVariable("icon") : "/art/tileset2/fist_icon.png");
+        else {
+            var newSelection = null;
+            for (var i = 0; i < houseEditor.currentHouse.parts.length; i++) {
+                var item = houseEditor.currentHouse.parts[i];
+                var partInfo = world.art.house_parts[item.part];
+                if (x >= item.x && x <= item.x + partInfo.width && y >= item.y && y <= item.y + partInfo.height) {
+                    newSelection = [item];
+                    houseEditor.mouseOffset = { X: x - item.x, Y: y - item.y };
                 }
-                if (!skillBar.SkillIcons[q])
+            }
+            if (newSelection && houseEditor.partSelected && houseEditor.partSelected.indexOf(newSelection[0]) != -1)
+                houseEditor.mouseOffset = { X: x - houseEditor.partSelected[0].x, Y: y - houseEditor.partSelected[0].y };
+            else
+                houseEditor.partSelected = newSelection;
+            if (!houseEditor.partSelected) {
+                houseEditor.multiSelection = { X: x, Y: y, Width: 1, Height: 1 };
+                houseEditor.mouseOffset = { X: x, Y: y };
+            }
+        }
+        $("#houseEditorMouseOverlay").bind("mouseup", HouseEditor.MouseUp).bind("mousemove", HouseEditor.MouseMove).show();
+    };
+    HouseEditor.MouseUp = function (evt) {
+        houseEditor.multiSelection = null;
+        houseEditor.collisionSelection = null;
+        $("#houseEditorMouseOverlay").unbind("mousemove", HouseEditor.MouseMove).unbind("mouseup", HouseEditor.MouseUp).hide();
+    };
+    HouseEditor.MouseMove = function (evt) {
+        if (!houseEditor.currentHouse)
+            return;
+        if (houseEditor.collisionSelection)
+            HouseEditor.HandleCollisionSelection(evt);
+        else if (houseEditor.partSelected && houseEditor.partSelected.length > 0 && !houseEditor.multiSelection)
+            HouseEditor.MoveItems(evt);
+        else
+            HouseEditor.HandleMultiSelect(evt);
+    };
+    HouseEditor.HandleCollisionSelection = function (evt) {
+        if (!houseEditor.currentHouse)
+            return;
+        var x = evt.pageX - $("#houseEditor").position().left + $("#houseEditorContainer").first().scrollLeft;
+        var y = evt.pageY - $("#houseEditor").position().top + $("#houseEditorContainer").first().scrollTop;
+        houseEditor.currentHouse.collisionWidth = houseEditor.collisionSelection.Width = Math.abs(x - houseEditor.mouseOffset.X);
+        houseEditor.currentHouse.collisionHeight = houseEditor.collisionSelection.Height = Math.abs(y - houseEditor.mouseOffset.Y);
+        houseEditor.currentHouse.collisionX = houseEditor.collisionSelection.X = Math.min(houseEditor.mouseOffset.X, x);
+        houseEditor.currentHouse.collisionY = houseEditor.collisionSelection.Y = Math.min(houseEditor.mouseOffset.Y, y);
+        $("#houseCollisionX").val("" + houseEditor.currentHouse.collisionX);
+        $("#houseCollisionY").val("" + houseEditor.currentHouse.collisionY);
+        $("#houseCollisionWidth").val("" + houseEditor.currentHouse.collisionWidth);
+        $("#houseCollisionHeight").val("" + houseEditor.currentHouse.collisionHeight);
+    };
+    HouseEditor.HandleMultiSelect = function (evt) {
+        if (!houseEditor.currentHouse)
+            return;
+        var x = evt.pageX - $("#houseEditor").position().left + $("#houseEditorContainer").first().scrollLeft;
+        var y = evt.pageY - $("#houseEditor").position().top + $("#houseEditorContainer").first().scrollTop;
+        houseEditor.multiSelection.Width = Math.abs(x - houseEditor.mouseOffset.X);
+        houseEditor.multiSelection.Height = Math.abs(y - houseEditor.mouseOffset.Y);
+        houseEditor.multiSelection.X = Math.min(houseEditor.mouseOffset.X, x);
+        houseEditor.multiSelection.Y = Math.min(houseEditor.mouseOffset.Y, y);
+        var a = houseEditor.multiSelection.X;
+        var b = houseEditor.multiSelection.Y;
+        var c = houseEditor.multiSelection.X + houseEditor.multiSelection.Width;
+        var d = houseEditor.multiSelection.Y + houseEditor.multiSelection.Height;
+        houseEditor.partSelected = [];
+        for (var i = 0; i < houseEditor.currentHouse.parts.length; i++) {
+            var item = houseEditor.currentHouse.parts[i];
+            var partInfo = world.art.house_parts[item.part];
+            if (!(item.x + partInfo.width < a || item.x > c || item.y + partInfo.height < b || item.y > d))
+                houseEditor.partSelected.push(item);
+        }
+        if (houseEditor.partSelected.length == 0)
+            houseEditor.partSelected = null;
+    };
+    HouseEditor.MoveItems = function (evt) {
+        var partInfo = world.art.house_parts[houseEditor.partSelected[0].part];
+        var x = evt.pageX - $("#houseEditor").position().left + $("#houseEditorContainer").first().scrollLeft - houseEditor.mouseOffset.X;
+        var y = evt.pageY - $("#houseEditor").position().top + $("#houseEditorContainer").first().scrollTop - houseEditor.mouseOffset.Y;
+        /*var x = (evt.pageX - $("#houseEditor").position().left) - houseEditor.mouseOffset.X;
+        var y = (evt.pageY - $("#houseEditor").position().top) - houseEditor.mouseOffset.Y;*/
+        if (houseEditor.sticky) {
+            // Search others to glue
+            var gluedX = false;
+            var gluedY = false;
+            for (var i = 0; i < houseEditor.currentHouse.parts.length && !(gluedX && gluedY); i++) {
+                var other = houseEditor.currentHouse.parts[i];
+                // Don't glue on myself
+                if (houseEditor.partSelected.indexOf(other) != -1)
                     continue;
-                ctx.drawImage(skillBar.SkillIcons[q], pos, height - skillBar.SlotBar.height + world.art.quickslotStyle.topBorder);
-                var timer = world.Player.GetTimer(name);
-                if (timer && !timer.IsOver()) {
-                    ctx.fillStyle = "#FFFFFF";
-                    ctx.globalAlpha = 0.8;
-                    var h = Math.round(Math.max(timer.Length - timer.Ellapsed(), 0) * 32 / timer.Length);
-                    ctx.fillRect(pos, height - skillBar.SlotBar.height + world.art.quickslotStyle.topBorder + (32 - h), 32, h);
+                var otherInfo = world.art.house_parts[other.part];
+                var a = Math.abs(other.x - x);
+                var b = Math.abs(other.y - y);
+                var c = Math.abs((other.x + otherInfo.width) - x);
+                var d = Math.abs((other.y + otherInfo.height) - y);
+                var e = Math.abs(other.x - (x + partInfo.width));
+                var f = Math.abs(other.y - (y + partInfo.height));
+                var g = Math.abs((other.x + otherInfo.width) - (x + partInfo.width));
+                var h = Math.abs((other.y + otherInfo.height) - (y + partInfo.height));
+                if (a <= houseEditor.glueDistance && gluedX == false) {
+                    x = other.x;
+                    gluedX = true;
                 }
-                if (world.Player.CurrentSkill.toLowerCase() == name.toLowerCase()) {
-                    ctx.strokeStyle = world.art.quickslotStyle.selectedSkillColor;
-                    ctx.globalAlpha = 1;
-                    ctx.lineWidth = 3;
-                    ctx.beginPath();
-                    ctx.strokeRect(pos, height - skillBar.SlotBar.height + world.art.quickslotStyle.topBorder, 32, 32);
-                    ctx.stroke();
+                if (b <= houseEditor.glueDistance && gluedY == false) {
+                    y = other.y;
+                    gluedY = true;
+                }
+                if (c <= houseEditor.glueDistance && gluedX == false) {
+                    x = other.x + otherInfo.width;
+                    gluedX = true;
+                }
+                if (d <= houseEditor.glueDistance && gluedY == false) {
+                    y = other.y + otherInfo.height;
+                    gluedY = true;
+                }
+                if (e <= houseEditor.glueDistance && gluedX == false) {
+                    x = other.x - partInfo.width;
+                    gluedX = true;
+                }
+                if (f <= houseEditor.glueDistance && gluedY == false) {
+                    y = other.y - partInfo.height;
+                    gluedY = true;
+                }
+                if (g <= houseEditor.glueDistance && gluedX == false) {
+                    x = other.x + otherInfo.width - partInfo.width;
+                    gluedX = true;
+                }
+                if (h <= houseEditor.glueDistance && gluedY == false) {
+                    y = other.y + otherInfo.height - partInfo.height;
+                    gluedY = true;
                 }
             }
-            else if (q.substring(0, 2) == "I/") {
-                var details = world.GetInventoryObject(name);
-                if (skillBar.lastCheckInventory <= 0) {
-                    if (world.Player.GetInventoryQuantity(name) <= 0) {
-                        world.Player.QuickSlot[i] = null;
-                        world.Player.StoredCompare = world.Player.JSON();
-                        world.Player.Save();
-                        continue;
+        }
+        x = Math.max(0, Math.min(x, 500 - partInfo.width));
+        y = Math.max(0, Math.min(y, 500 - partInfo.height));
+        var dx = x - houseEditor.partSelected[0].x;
+        var dy = y - houseEditor.partSelected[0].y;
+        for (var i = 0; i < houseEditor.partSelected.length; i++) {
+            houseEditor.partSelected[i].x += dx;
+            houseEditor.partSelected[i].y += dy;
+        }
+    };
+    HouseEditor.Draw = function () {
+        if (!houseEditor.housePartImages)
+            return;
+        if (window['mozRequestAnimationFrame'])
+            window['mozRequestAnimationFrame'](HouseEditor.Draw);
+        else if (window['requestAnimationFrame'])
+            window['requestAnimationFrame'](HouseEditor.Draw);
+        else
+            setTimeout(HouseEditor.Draw, 16);
+        var ctx = $("#houseEditor").first().getContext("2d");
+        ctx.fillStyle = "#000000";
+        ctx.fillRect(0, 0, 500, 500);
+        if (!houseEditor.currentHouse)
+            return;
+        for (var i = 0; i < houseEditor.currentHouse.parts.length; i++) {
+            var item = houseEditor.currentHouse.parts[i];
+            var part = HouseEditor.GetPart(item.part);
+            if (!part)
+                continue;
+            var partInfo = world.art.house_parts[item.part];
+            ctx.drawImage(part, partInfo.x, partInfo.y, partInfo.width, partInfo.height, item.x, item.y, partInfo.width, partInfo.height);
+        }
+        // Highlight selected parts
+        if (houseEditor.partSelected && houseEditor.partSelected.length)
+            for (var i = 0; i < houseEditor.currentHouse.parts.length; i++) {
+                var item = houseEditor.currentHouse.parts[i];
+                if (houseEditor.partSelected.indexOf(item) != -1) {
+                    var partInfo = world.art.house_parts[item.part];
+                    ctx.strokeStyle = "#8080FF";
+                    ctx.strokeRect(item.x + 0.5, item.y + 0.5, partInfo.width, partInfo.height);
+                }
+            }
+        if (houseEditor.multiSelection) {
+            ctx.strokeStyle = "#8080FF";
+            ctx.strokeRect(houseEditor.multiSelection.X + 0.5, houseEditor.multiSelection.Y + 0.5, houseEditor.multiSelection.Width, houseEditor.multiSelection.Height);
+        }
+        ctx.strokeStyle = "#FF0000";
+        ctx.strokeRect(houseEditor.currentHouse.collisionX + 0.5, houseEditor.currentHouse.collisionY + 0.5, houseEditor.currentHouse.collisionWidth, houseEditor.currentHouse.collisionHeight);
+    };
+    HouseEditor.GetPart = function (name) {
+        if (!world.art.house_parts[name])
+            return null;
+        var file = world.art.house_parts[name].file;
+        if (!houseEditor.housePartImages[file]) {
+            houseEditor.housePartImages[file] = new Image();
+            houseEditor.housePartImages[file].src = file;
+        }
+        return houseEditor.housePartImages[file];
+    };
+    HouseEditor.Resize = function () {
+        var w = $("#houseEditorContainer").width();
+        var h = $("#houseEditorContainer").height();
+    };
+    HouseEditor.SwitchSticky = function () {
+        if (houseEditor.sticky)
+            $("#stickyButton").removeClass("selectedButton");
+        else
+            $("#stickyButton").addClass("selectedButton");
+        houseEditor.sticky = !houseEditor.sticky;
+        framework.Preferences['houseSticky'] = houseEditor.sticky;
+        Framework.SavePreferences();
+    };
+    HouseEditor.DeleteSelected = function () {
+        if (!houseEditor.partSelected)
+            return;
+        for (var i = 0; i < houseEditor.currentHouse.parts.length;) {
+            if (houseEditor.partSelected.indexOf(houseEditor.currentHouse.parts[i]) != -1)
+                houseEditor.currentHouse.parts.splice(i, 1);
+            else
+                i++;
+        }
+    };
+    HouseEditor.ToFront = function () {
+        if (!houseEditor.partSelected)
+            return;
+        HouseEditor.DeleteSelected();
+        for (var i = 0; i < houseEditor.partSelected.length; i++)
+            houseEditor.currentHouse.parts.push(houseEditor.partSelected[i]);
+    };
+    HouseEditor.ToBack = function () {
+        if (!houseEditor.partSelected)
+            return;
+        HouseEditor.DeleteSelected();
+        for (var i = 0; i < houseEditor.partSelected.length; i++)
+            houseEditor.currentHouse.parts.unshift(houseEditor.partSelected[i]);
+    };
+    HouseEditor.KeyDown = function (evt) {
+        houseEditor.keys[evt.keyCode] = true;
+        //console.log(evt.keyCode);
+        HouseEditor.HandleKeys();
+    };
+    HouseEditor.KeyUp = function (evt) {
+        houseEditor.keys[evt.keyCode] = false;
+    };
+    HouseEditor.HandleKeys = function () {
+        // Up key
+        if (houseEditor.keys[38] === true || houseEditor.keys[87] === true) {
+            if (houseEditor.partSelected)
+                for (var i = 0; i < houseEditor.partSelected.length; i++)
+                    houseEditor.partSelected[i].y -= (houseEditor.keys[16] ? 5 : 1);
+        }
+        // Left key
+        if (houseEditor.keys[37] === true || houseEditor.keys[65] === true) {
+            if (houseEditor.partSelected)
+                for (var i = 0; i < houseEditor.partSelected.length; i++)
+                    houseEditor.partSelected[i].x -= (houseEditor.keys[16] ? 5 : 1);
+        }
+        // Right key
+        if (houseEditor.keys[39] === true || houseEditor.keys[68] === true) {
+            if (houseEditor.partSelected)
+                for (var i = 0; i < houseEditor.partSelected.length; i++)
+                    houseEditor.partSelected[i].x += (houseEditor.keys[16] ? 5 : 1);
+        }
+        // Down key
+        if (houseEditor.keys[40] === true || houseEditor.keys[83] === true) {
+            if (houseEditor.partSelected)
+                for (var i = 0; i < houseEditor.partSelected.length; i++)
+                    houseEditor.partSelected[i].y += (houseEditor.keys[16] ? 5 : 1);
+        }
+    };
+    HouseEditor.NewHouse = function () {
+        var nextId = 1;
+        while (world.Houses["house_" + nextId])
+            nextId++;
+        world.Houses["house_" + nextId] = {
+            collisionX: 0,
+            collisionY: 0,
+            collisionWidth: 0,
+            collisionHeight: 0,
+            parts: []
+        };
+        houseEditor.currentHouse = world.Houses["house_" + nextId];
+        houseEditor.currentHouseName = "house_" + nextId;
+        houseEditor.partSelected = [];
+        HouseEditor.UpdateHouseList();
+        SearchPanel.Update();
+    };
+    HouseEditor.DeleteHouse = function () {
+        Framework.Confirm("Are you sure you want to delete this house?", function () {
+            var oldName = houseEditor.currentHouseName;
+            delete world.Houses[houseEditor.currentHouseName];
+            houseEditor.listHouses.Select(null);
+            HouseEditor.UpdateHouseList();
+            SearchPanel.Update();
+            for (var i = 0; i < world.Zones.length; i++) {
+                var zone = world.Zones[i];
+                for (var j = 0; j < zone.MapFragments.length; j++) {
+                    var fragment = zone.MapFragments[i].Modifications;
+                    for (var k = 0; k < fragment.length;) {
+                        if (fragment[k].Action == "house" && fragment[k].Value == oldName)
+                            fragment.splice(k, 1);
+                        else
+                            k++;
                     }
                 }
-                if (!skillBar.SkillIcons[q] && details) {
-                    skillBar.SkillIcons[q] = new Image();
-                    skillBar.SkillIcons[q].src = (details.Image ? details.Image : "/art/tileset2/inventory_object.png");
-                }
-                if (!skillBar.SkillIcons[q])
-                    continue;
-                ctx.drawImage(skillBar.SkillIcons[q], pos, height - skillBar.SlotBar.height + world.art.quickslotStyle.topBorder);
             }
-            pos += 32 + world.art.quickslotStyle.itemSpacing;
-        }
-        ctx.restore();
-        skillBar.lastCheckInventory--;
-        if (skillBar.lastCheckInventory < 0)
-            skillBar.lastCheckInventory = 30;
+            MapUtilities.Modify("house", oldName, null);
+        });
     };
-    SkillBar.SelectQuickslot = function (slot) {
-        if (slot == 0)
-            slot = 9;
-        else
-            slot--;
-        if (world.Player.QuickSlot[slot] && world.Player.QuickSlot[slot].substring(0, 2) == "S/") {
-            var oldSkill = world.Player.CurrentSkill;
-            var selectedSkill = world.Player.QuickSlot[slot].substring(2);
-            world.Player.CurrentSkill = selectedSkill;
-            var skill = world.GetSkill(selectedSkill);
-            var res = skill.InvokeFunction("Activate", []);
-            // Prevent selection
-            if (res !== null && res.GetBoolean() === false) {
-                world.Player.CurrentSkill = oldSkill;
-            }
-            world.Player.StoredCompare = world.Player.JSON();
-            world.Player.Save();
-        }
-        else if (world.Player.QuickSlot[slot] && world.Player.QuickSlot[slot].substring(0, 2) == "I/") {
-            var name = world.Player.QuickSlot[slot].substring(2);
-            var details = world.GetInventoryObject(name);
-            if (!details)
-                return;
-            if (world.Player.GetInventoryQuantity(name) > 0) {
-                if (details.CanWear())
-                    world.Player.Wear(name);
-                else if (details.ActionLabel() && details.CanUse())
-                    details.Use();
-            }
-        }
+    HouseEditor.CloneHouse = function () {
+        var nextId = 1;
+        while (world.Houses["house_" + nextId])
+            nextId++;
+        world.Houses["house_" + nextId] = JSON.parse(JSON.stringify(world.Houses[houseEditor.currentHouseName]));
+        houseEditor.currentHouse = world.Houses["house_" + nextId];
+        houseEditor.currentHouseName = "house_" + nextId;
+        houseEditor.partSelected = [];
+        HouseEditor.UpdateHouseList();
+        SearchPanel.Update();
     };
-    SkillBar.HandleClick = function (x, y) {
-        if (world.art.quickslotStyle.quickslotVisible === false)
-            return false;
-        if (!skillBar.StatBar)
-            return;
-        var canvas = document.getElementById("gameCanvas");
-        y -= $("#gameCanvas").position().top;
-        var width = canvas.width;
-        var height = canvas.height;
-        var barX = Math.round(width / 2 - skillBar.SlotBar.width / 2);
-        var barY = height - skillBar.SlotBar.height;
-        if (x >= barX && x <= barX + skillBar.SlotBar.width && y >= barY && y <= barY + skillBar.SlotBar.height) {
-            var s = Math.floor((x - (barX + world.art.quickslotStyle.leftBorder)) / (32 + world.art.quickslotStyle.itemSpacing));
-            if (s >= 0 && s <= 9) {
-                s = (s + 1) % 10;
-                SkillBar.SelectQuickslot(s);
-            }
-            return true;
-        }
-        return false;
-    };
-    return SkillBar;
+    return HouseEditor;
 }());
 
 //# sourceMappingURL=maker-self-hosted.js.map

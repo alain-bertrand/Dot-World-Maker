@@ -14,28 +14,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var KnownCode = (function () {
-    function KnownCode() {
-        this.Parameters = {};
-        this.Includes = [];
-    }
-    KnownCode.prototype.Store = function () {
-        return {
-            Author: this.Author,
-            Name: this.Name,
-            Source: this.Source,
-            Parameters: this.Parameters,
-            Description: this.Description,
-            Includes: this.Includes,
-            Enabled: this.Enabled,
-            CodeBrowsing: this.CodeBrowsing,
-            AllowEditing: this.AllowEditing,
-            Price: this.Price,
-            Version: this.Version
-        };
-    };
-    return KnownCode;
-}());
 var dialogAction = new ((function () {
     function class_1() {
         this.code = {};
@@ -370,6 +348,23 @@ var GiveSkill = (function (_super) {
 GiveSkill = __decorate([
     DialogActionClass
 ], GiveSkill);
+var HideMinimap = (function (_super) {
+    __extends(HideMinimap, _super);
+    function HideMinimap() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    HideMinimap.prototype.Display = function (id, values, updateFunction) {
+        var html = "";
+        return html;
+    };
+    HideMinimap.prototype.Execute = function (values, env) {
+        play.showMinimap = false;
+    };
+    return HideMinimap;
+}(ActionClass));
+HideMinimap = __decorate([
+    DialogActionClass
+], HideMinimap);
 /// <reference path="../Dialogs/DialogAction.ts" />
 var IncreaseStat = (function (_super) {
     __extends(IncreaseStat, _super);
@@ -853,6 +848,23 @@ var ShowMapMessage = (function (_super) {
 ShowMapMessage = __decorate([
     DialogActionClass
 ], ShowMapMessage);
+var ShowMinimap = (function (_super) {
+    __extends(ShowMinimap, _super);
+    function ShowMinimap() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    ShowMinimap.prototype.Display = function (id, values, updateFunction) {
+        var html = "";
+        return html;
+    };
+    ShowMinimap.prototype.Execute = function (values, env) {
+        play.showMinimap = true;
+    };
+    return ShowMinimap;
+}(ActionClass));
+ShowMinimap = __decorate([
+    DialogActionClass
+], ShowMinimap);
 /// <reference path="../Dialogs/DialogAction.ts" />
 var ShowShop = (function (_super) {
     __extends(ShowShop, _super);
@@ -1249,6 +1261,28 @@ var ChatBotSentence = (function () {
     };
     return ChatBotSentence;
 }());
+var KnownCode = (function () {
+    function KnownCode() {
+        this.Parameters = {};
+        this.Includes = [];
+    }
+    KnownCode.prototype.Store = function () {
+        return {
+            Author: this.Author,
+            Name: this.Name,
+            Source: this.Source,
+            Parameters: this.Parameters,
+            Description: this.Description,
+            Includes: this.Includes,
+            Enabled: this.Enabled,
+            CodeBrowsing: this.CodeBrowsing,
+            AllowEditing: this.AllowEditing,
+            Price: this.Price,
+            Version: this.Version
+        };
+    };
+    return KnownCode;
+}());
 var dialogCondition = new ((function () {
     function class_2() {
         this.code = {};
@@ -1504,6 +1538,42 @@ CheckLookIsNot = __decorate([
     DialogConditionClass
 ], CheckLookIsNot);
 /// <reference path="../Dialogs/DialogCondition.ts" />
+var CheckMinimapIsHidden = (function (_super) {
+    __extends(CheckMinimapIsHidden, _super);
+    function CheckMinimapIsHidden() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    CheckMinimapIsHidden.prototype.Display = function (id, values, updateFunction) {
+        var html = "";
+        return html;
+    };
+    CheckMinimapIsHidden.prototype.Check = function (values, env) {
+        return !play.showMinimap;
+    };
+    return CheckMinimapIsHidden;
+}(ConditionClass));
+CheckMinimapIsHidden = __decorate([
+    DialogConditionClass
+], CheckMinimapIsHidden);
+/// <reference path="../Dialogs/DialogCondition.ts" />
+var CheckMinimapIsVisible = (function (_super) {
+    __extends(CheckMinimapIsVisible, _super);
+    function CheckMinimapIsVisible() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    CheckMinimapIsVisible.prototype.Display = function (id, values, updateFunction) {
+        var html = "";
+        return html;
+    };
+    CheckMinimapIsVisible.prototype.Check = function (values, env) {
+        return play.showMinimap;
+    };
+    return CheckMinimapIsVisible;
+}(ConditionClass));
+CheckMinimapIsVisible = __decorate([
+    DialogConditionClass
+], CheckMinimapIsVisible);
+/// <reference path="../Dialogs/DialogCondition.ts" />
 var CheckNotHasSkill = (function (_super) {
     __extends(CheckNotHasSkill, _super);
     function CheckNotHasSkill() {
@@ -1723,12 +1793,6 @@ var CheckUserStat = (function (_super) {
 CheckUserStat = __decorate([
     DialogConditionClass
 ], CheckUserStat);
-var Dialog = (function () {
-    function Dialog() {
-        this.Answers = [];
-    }
-    return Dialog;
-}());
 var knownEffects = [];
 // Class decorator which will put all the API inside the api variable.
 function MapEffectClass(target) {
@@ -1807,257 +1871,11 @@ var SightEffect = (function (_super) {
 SightEffect = __decorate([
     MapEffectClass
 ], SightEffect);
-var InventoryObject = (function () {
-    function InventoryObject(name, count, usage) {
-        if (count === void 0) { count = 1; }
-        if (usage === void 0) { usage = null; }
-        this.Name = name;
-        this.Count = count;
-        this.UsageLevel = usage;
+var Dialog = (function () {
+    function Dialog() {
+        this.Answers = [];
     }
-    InventoryObject.prototype.GetDetails = function () {
-        for (var i = 0; i < world.InventoryObjects.length; i++)
-            if (world.InventoryObjects[i].Name == this.Name)
-                return world.InventoryObjects[i];
-        return null;
-    };
-    InventoryObject.prototype.GetObjectType = function () {
-        return this.GetDetails().GetType();
-    };
-    return InventoryObject;
-}());
-var InventorySlot = (function () {
-    function InventorySlot(name) {
-        this.Name = name;
-    }
-    InventorySlot.DefaultSlots = function () {
-        return [
-            new InventorySlot('Head'),
-            new InventorySlot('Body'),
-            new InventorySlot('LeftHand'),
-            new InventorySlot('RightHand'),
-            new InventorySlot('Legs'),
-            new InventorySlot('Feet'),
-            new InventorySlot('Neck'),
-            new InventorySlot('LeftHandFinger'),
-            new InventorySlot('RightHandFinger')
-        ];
-    };
-    return InventorySlot;
-}());
-var KnownObject = (function () {
-    function KnownObject(name, objectType, slots, weight, price, description, maxStack, action, actionCode, parameters) {
-        this.UsageConditions = [];
-        this.UnwearConditions = [];
-        this.WearConditions = [];
-        this.DropConditions = [];
-        this.UsageActions = [];
-        this.Name = name;
-        this.ObjectType = objectType;
-        this.Slots = slots ? slots : [];
-        this.Weight = weight ? weight : 0;
-        this.Price = price ? price : 0;
-        this.Description = description ? description : "";
-        this.MaxStack = maxStack ? maxStack : 0;
-        this.Action = action;
-        this.ActionCode = actionCode;
-        this.Parameters = parameters ? parameters : [];
-        this.Image = '/art/tileset2/inventory_object.png';
-    }
-    KnownObject.DefaultObjects = function () {
-        var result = [
-            new KnownObject("Wood Stick", "Weapon", ["RightHand"], 2, 2, "A simple wood stick to defend yourself", 1, null, null, [new ObjectParameter("Base Damage", "5"), new ObjectParameter("Attack Speed", "0.5")]),
-            new KnownObject("Apple", "Food", [], 1, 1, "A red apple", 10, null, null, [new ObjectParameter("Life Recover", "3")])
-        ];
-        return result;
-    };
-    KnownObject.prototype.GetType = function () {
-        for (var i = 0; i < world.InventoryObjectTypes.length; i++)
-            if (world.InventoryObjectTypes[i].Name == this.ObjectType)
-                return world.InventoryObjectTypes[i];
-        return null;
-    };
-    KnownObject.prototype.GetParameter = function (statName) {
-        // Checks within the object properties
-        for (var prop in this)
-            if (prop.toLowerCase() == statName.toLowerCase())
-                return "" + this[prop];
-        // Checks within the additional parameters
-        for (var i = 0; i < this.Parameters.length; i++)
-            if (this.Parameters[i].Name.toLowerCase() == statName.toLowerCase())
-                return this.Parameters[i].Value;
-        return null;
-    };
-    KnownObject.prototype.CanUnwear = function () {
-        if (world.SimplifiedObjectLogic) {
-            var env = new CodeEnvironement();
-            env.SetVariable('currentItem', new VariableValue(this.Name));
-            if (!this.UnwearConditions)
-                this.UnwearConditions = [];
-            if (this.UnwearConditions.length)
-                for (var i = 0; i < this.UnwearConditions.length; i++) {
-                    if (!dialogCondition.code[this.UnwearConditions[i].Name].Check(this.UnwearConditions[i].Values, env))
-                        return false;
-                }
-            else
-                for (var i = 0; i < this.GetType().UnwearConditions.length; i++) {
-                    if (!dialogCondition.code[this.GetType().UnwearConditions[i].Name].Check(this.GetType().DropConditions[i].Values, env))
-                        return false;
-                }
-            return true;
-        }
-        var code = this.GetObjectCode();
-        if (code && code.HasFunction("CanUnwear"))
-            return code.ExecuteFunction("CanUnwear", [new VariableValue(this.Name)]).GetBoolean();
-        return true;
-    };
-    KnownObject.prototype.CanWear = function () {
-        if (this.Slots.length == 0)
-            return false;
-        if (world.SimplifiedObjectLogic) {
-            var env = new CodeEnvironement();
-            env.SetVariable('currentItem', new VariableValue(this.Name));
-            if (this.WearConditions.length)
-                for (var i = 0; i < this.WearConditions.length; i++) {
-                    if (!dialogCondition.code[this.WearConditions[i].Name].Check(this.WearConditions[i].Values, env))
-                        return false;
-                }
-            else
-                for (var i = 0; i < this.GetType().WearConditions.length; i++) {
-                    if (!dialogCondition.code[this.GetType().WearConditions[i].Name].Check(this.GetType().WearConditions[i].Values, env))
-                        return false;
-                }
-            return true;
-        }
-        var code = this.GetObjectCode();
-        if (code && code.HasFunction("CanWear"))
-            return code.ExecuteFunction("CanWear", [new VariableValue(this.Name)]).GetBoolean();
-        return true;
-    };
-    KnownObject.prototype.CanUse = function () {
-        if (world.SimplifiedObjectLogic) {
-            var env = new CodeEnvironement();
-            env.SetVariable('currentItem', new VariableValue(this.Name));
-            if (this.UsageConditions.length)
-                for (var i = 0; i < this.UsageConditions.length; i++) {
-                    if (!dialogCondition.code[this.UsageConditions[i].Name].Check(this.UsageConditions[i].Values, env))
-                        return false;
-                }
-            else
-                for (var i = 0; i < this.GetType().UsageConditions.length; i++) {
-                    if (!dialogCondition.code[this.GetType().UsageConditions[i].Name].Check(this.GetType().UsageConditions[i].Values, env))
-                        return false;
-                }
-            return true;
-        }
-        var code = this.GetObjectCode();
-        if (code && code.HasFunction("CanUse"))
-            return code.ExecuteFunction("CanUse", [new VariableValue(this.Name)]).GetBoolean();
-        return true;
-    };
-    KnownObject.prototype.CanDrop = function () {
-        if (world.SimplifiedObjectLogic) {
-            var env = new CodeEnvironement();
-            env.SetVariable('currentItem', new VariableValue(this.Name));
-            if (this.DropConditions.length)
-                for (var i = 0; i < this.DropConditions.length; i++) {
-                    if (!dialogCondition.code[this.DropConditions[i].Name].Check(this.DropConditions[i].Values, env))
-                        return false;
-                }
-            else
-                for (var i = 0; i < this.GetType().DropConditions.length; i++) {
-                    if (!dialogCondition.code[this.GetType().DropConditions[i].Name].Check(this.GetType().DropConditions[i].Values, env))
-                        return false;
-                }
-            return true;
-        }
-        var code = this.GetObjectCode();
-        if (code && code.HasFunction("CanDrop"))
-            return code.ExecuteFunction("CanDrop", [new VariableValue(this.Name)]).GetBoolean();
-        return true;
-    };
-    KnownObject.prototype.Use = function () {
-        if (world.SimplifiedObjectLogic) {
-            var env = new CodeEnvironement();
-            env.SetVariable('currentItem', new VariableValue(this.Name));
-            if (this.UsageActions.length)
-                for (var i = 0; i < this.UsageActions.length; i++)
-                    dialogAction.code[this.UsageActions[i].Name].Execute(this.UsageActions[i].Values, env);
-            else
-                for (var i = 0; i < this.GetType().UsageActions.length; i++)
-                    dialogAction.code[this.GetType().UsageActions[i].Name].Execute(this.GetType().UsageActions[i].Values, env);
-            return;
-        }
-        var code = this.GetObjectCode();
-        if (code.HasFunction("Use"))
-            code.ExecuteFunction("Use", [new VariableValue(this.Name)]);
-    };
-    KnownObject.prototype.GetObjectCode = function () {
-        var code;
-        if (this.Action && this.ActionCode && this.ActionCode.trim() != "") {
-            if (this.ActionCode.indexOf("function") == -1)
-                return CodeParser.Parse("function Use() { " + this.ActionCode + ";}");
-            return CodeParser.Parse(this.ActionCode);
-        }
-        else if (this.GetType().Action) {
-            if (this.GetType().ActionCode.indexOf("function") == -1)
-                return CodeParser.Parse("function Use() { " + this.GetType().ActionCode + ";}");
-            return CodeParser.Parse(this.GetType().ActionCode);
-        }
-        return code;
-    };
-    KnownObject.prototype.ActionLabel = function () {
-        if (this.Action)
-            return this.Action;
-        else if (this.GetType().Action)
-            return this.GetType().Action;
-        return null;
-    };
-    return KnownObject;
-}());
-var ObjectDefinedParameter = (function () {
-    function ObjectDefinedParameter(name, defaultValue) {
-        this.Name = name;
-        this.DefaultValue = defaultValue;
-    }
-    return ObjectDefinedParameter;
-}());
-var ObjectParameter = (function () {
-    function ObjectParameter(name, value) {
-        this.Name = name;
-        this.Value = value;
-    }
-    return ObjectParameter;
-}());
-var ObjectType = (function () {
-    function ObjectType(name, group, action, actionCode, parameters) {
-        this.UsageConditions = [];
-        this.WearConditions = [];
-        this.UnwearConditions = [];
-        this.DropConditions = [];
-        this.UsageActions = [];
-        this.Name = name;
-        this.Group = group;
-        this.Action = action;
-        this.ActionCode = actionCode;
-        this.Parameters = parameters ? parameters : [];
-    }
-    ObjectType.DefaultObjectType = function () {
-        var result = [
-            new ObjectType("Head Armor", "Armor", null, null, [new ObjectDefinedParameter("Protection", "1")]),
-            new ObjectType("Body Armor", "Armor", null, null, [new ObjectDefinedParameter("Protection", "1")]),
-            new ObjectType("Leg Armor", "Armor", null, null, [new ObjectDefinedParameter("Protection", "1")]),
-            new ObjectType("Feet Armor", "Armor", null, null, [new ObjectDefinedParameter("Protection", "1")]),
-            new ObjectType("Hand Armor", "Armor", null, null, [new ObjectDefinedParameter("Protection", "1")]),
-            new ObjectType("Weapon", "Weapon", null, null, [new ObjectDefinedParameter("Base Damage", "1"), new ObjectDefinedParameter("Attack Speed", "1")]),
-            new ObjectType("Potion", "Aid", "Drink", "function Use(currentItem)\n{\n\tInventory.RemoveItem(currentItem);\n\tif(Inventory.ObjectParameterExists(currentItem,'Life Recover'))\n\t\tPlayer.IncreaseStat('Life',Inventory.ObjectParameter(currentItem,'Life Recover'));\n}", [new ObjectDefinedParameter("Life Recover", "1")]),
-            new ObjectType("Food", "Aid", "Eat", "function Use(currentItem)\n{\n\tInventory.RemoveItem(currentItem);\n\tif(Inventory.ObjectParameterExists(currentItem,'Life Recover'))\n\t\tPlayer.IncreaseStat('Life',Inventory.ObjectParameter(currentItem,'Life Recover'));\n}", [new ObjectDefinedParameter("Life Recover", "0")])
-        ];
-        result[6].UsageActions = [{ "Name": "IncreaseStat", "Values": ["Life", "Inventory.ObjectParameter(currentItem, 'Life Recover')"] }, { "Name": "RemoveCurrentItem", "Values": ["1"] }];
-        result[7].UsageActions = [{ "Name": "IncreaseStat", "Values": ["Life", "Inventory.ObjectParameter(currentItem, 'Life Recover')"] }, { "Name": "RemoveCurrentItem", "Values": ["1"] }];
-        return result;
-    };
-    return ObjectType;
+    return Dialog;
 }());
 var mapBag = new ((function () {
     function class_3() {
@@ -6020,105 +5838,6 @@ var Skill = (function () {
     }
     return Skill;
 }());
-var sounds = {};
-var Sounds = (function () {
-    function Sounds() {
-    }
-    Sounds.Init = function (clearAtStart) {
-        if (clearAtStart === void 0) { clearAtStart = true; }
-        if (clearAtStart)
-            Sounds.ClearSound();
-        if (!world.art.sounds)
-            return;
-        for (var item in world.art.sounds)
-            Sounds.Load(item, world.art.sounds[item].mp3, world.art.sounds[item].ogg);
-    };
-    Sounds.ClearSound = function () {
-        /*var soundArea = $('#sounds').first();
-        while (soundArea.firstChild != null)
-            soundArea.removeChild(soundArea.firstChild);
-        sounds = {};*/
-        for (var item in sounds) {
-            for (var i = 0; i < sounds[item].stack; i++) {
-                try {
-                    sounds[item].sounds[i].pause();
-                    sounds[item].sounds[i].currentTime = 0;
-                }
-                catch (ex) {
-                }
-            }
-        }
-        Sounds.Init(false);
-    };
-    Sounds.Load = function (name, mp3, ogg, stack) {
-        name = name.id();
-        if (document.getElementById("sound_" + name + "_" + 0))
-            return;
-        var soundArea = $('#sounds').first();
-        if (!stack)
-            stack = 6;
-        var audioStack = { round: 0, stack: stack, sounds: [] };
-        for (var i = 0; i < stack; i++) {
-            var audio = document.createElement('audio');
-            var source = document.createElement('source');
-            if (("" + document.location).substr(0, 5) == "file:" && mp3 != null && mp3 != undefined && mp3.charAt(0) == '/')
-                source.src = mp3.substr(1);
-            else
-                source.src = mp3;
-            source.type = "audio/mpeg";
-            audio.appendChild(source);
-            audio.id = "sound_" + name + "_" + i;
-            soundArea.appendChild(audio);
-            audio.oncanplay = function () {
-                audio['loaded'] = true;
-            };
-            audioStack.sounds[i] = audio;
-        }
-        sounds[name] = audioStack;
-    };
-    Sounds.Play = function (name, volume, looped) {
-        if (volume === void 0) { volume = 0.6; }
-        if (looped === void 0) { looped = false; }
-        name = name.id();
-        var browser = "";
-        if (("" + navigator.userAgent).toLowerCase().indexOf("chrome") != -1)
-            browser = "Chrome";
-        else if (("" + navigator.userAgent).toLowerCase().indexOf("msie") != -1)
-            browser = "Internet Explorer";
-        else if (("" + navigator.userAgent).toLowerCase().indexOf("opera") != -1)
-            browser = "Opera";
-        else if (("" + navigator.userAgent).toLowerCase().indexOf("firefox") != -1)
-            browser = "Firefox";
-        var s = null;
-        try {
-            if (sounds[name].stack == null || sounds[name].stack == undefined) {
-                s = sounds[name];
-            }
-            else {
-                try {
-                    sounds[name].sounds[sounds[name].round].currentTime = 0;
-                }
-                catch (ex2) {
-                }
-                if (browser == "Chrome")
-                    sounds[name].sounds[sounds[name].round].load();
-                sounds[name].round = (sounds[name].round + 1) % sounds[name].stack;
-                s = sounds[name].sounds[sounds[name].round];
-            }
-            s.loop = looped;
-            try {
-                s.currentTime = 0;
-            }
-            catch (ex2) {
-            }
-            s.volume = volume;
-            s.play();
-        }
-        catch (ex) {
-        }
-    };
-    return Sounds;
-}());
 var statCodes = ["// Default life stat.\n\
 \n\
 /// Name: Life,string\n\
@@ -6430,6 +6149,105 @@ var Stat = (function () {
     function Stat() {
     }
     return Stat;
+}());
+var sounds = {};
+var Sounds = (function () {
+    function Sounds() {
+    }
+    Sounds.Init = function (clearAtStart) {
+        if (clearAtStart === void 0) { clearAtStart = true; }
+        if (clearAtStart)
+            Sounds.ClearSound();
+        if (!world.art.sounds)
+            return;
+        for (var item in world.art.sounds)
+            Sounds.Load(item, world.art.sounds[item].mp3, world.art.sounds[item].ogg);
+    };
+    Sounds.ClearSound = function () {
+        /*var soundArea = $('#sounds').first();
+        while (soundArea.firstChild != null)
+            soundArea.removeChild(soundArea.firstChild);
+        sounds = {};*/
+        for (var item in sounds) {
+            for (var i = 0; i < sounds[item].stack; i++) {
+                try {
+                    sounds[item].sounds[i].pause();
+                    sounds[item].sounds[i].currentTime = 0;
+                }
+                catch (ex) {
+                }
+            }
+        }
+        Sounds.Init(false);
+    };
+    Sounds.Load = function (name, mp3, ogg, stack) {
+        name = name.id();
+        if (document.getElementById("sound_" + name + "_" + 0))
+            return;
+        var soundArea = $('#sounds').first();
+        if (!stack)
+            stack = 6;
+        var audioStack = { round: 0, stack: stack, sounds: [] };
+        for (var i = 0; i < stack; i++) {
+            var audio = document.createElement('audio');
+            var source = document.createElement('source');
+            if (("" + document.location).substr(0, 5) == "file:" && mp3 != null && mp3 != undefined && mp3.charAt(0) == '/')
+                source.src = mp3.substr(1);
+            else
+                source.src = mp3;
+            source.type = "audio/mpeg";
+            audio.appendChild(source);
+            audio.id = "sound_" + name + "_" + i;
+            soundArea.appendChild(audio);
+            audio.oncanplay = function () {
+                audio['loaded'] = true;
+            };
+            audioStack.sounds[i] = audio;
+        }
+        sounds[name] = audioStack;
+    };
+    Sounds.Play = function (name, volume, looped) {
+        if (volume === void 0) { volume = 0.6; }
+        if (looped === void 0) { looped = false; }
+        name = name.id();
+        var browser = "";
+        if (("" + navigator.userAgent).toLowerCase().indexOf("chrome") != -1)
+            browser = "Chrome";
+        else if (("" + navigator.userAgent).toLowerCase().indexOf("msie") != -1)
+            browser = "Internet Explorer";
+        else if (("" + navigator.userAgent).toLowerCase().indexOf("opera") != -1)
+            browser = "Opera";
+        else if (("" + navigator.userAgent).toLowerCase().indexOf("firefox") != -1)
+            browser = "Firefox";
+        var s = null;
+        try {
+            if (sounds[name].stack == null || sounds[name].stack == undefined) {
+                s = sounds[name];
+            }
+            else {
+                try {
+                    sounds[name].sounds[sounds[name].round].currentTime = 0;
+                }
+                catch (ex2) {
+                }
+                if (browser == "Chrome")
+                    sounds[name].sounds[sounds[name].round].load();
+                sounds[name].round = (sounds[name].round + 1) % sounds[name].stack;
+                s = sounds[name].sounds[sounds[name].round];
+            }
+            s.loop = looped;
+            try {
+                s.currentTime = 0;
+            }
+            catch (ex2) {
+            }
+            s.volume = volume;
+            s.play();
+        }
+        catch (ex) {
+        }
+    };
+    return Sounds;
 }());
 var RunningEffect = (function () {
     function RunningEffect() {
@@ -8969,6 +8787,258 @@ PerlinGenerator = PerlinGenerator_1 = __decorate([
     WorldGeneratorClass
 ], PerlinGenerator);
 var PerlinGenerator_1;
+var InventoryObject = (function () {
+    function InventoryObject(name, count, usage) {
+        if (count === void 0) { count = 1; }
+        if (usage === void 0) { usage = null; }
+        this.Name = name;
+        this.Count = count;
+        this.UsageLevel = usage;
+    }
+    InventoryObject.prototype.GetDetails = function () {
+        for (var i = 0; i < world.InventoryObjects.length; i++)
+            if (world.InventoryObjects[i].Name == this.Name)
+                return world.InventoryObjects[i];
+        return null;
+    };
+    InventoryObject.prototype.GetObjectType = function () {
+        return this.GetDetails().GetType();
+    };
+    return InventoryObject;
+}());
+var InventorySlot = (function () {
+    function InventorySlot(name) {
+        this.Name = name;
+    }
+    InventorySlot.DefaultSlots = function () {
+        return [
+            new InventorySlot('Head'),
+            new InventorySlot('Body'),
+            new InventorySlot('LeftHand'),
+            new InventorySlot('RightHand'),
+            new InventorySlot('Legs'),
+            new InventorySlot('Feet'),
+            new InventorySlot('Neck'),
+            new InventorySlot('LeftHandFinger'),
+            new InventorySlot('RightHandFinger')
+        ];
+    };
+    return InventorySlot;
+}());
+var KnownObject = (function () {
+    function KnownObject(name, objectType, slots, weight, price, description, maxStack, action, actionCode, parameters) {
+        this.UsageConditions = [];
+        this.UnwearConditions = [];
+        this.WearConditions = [];
+        this.DropConditions = [];
+        this.UsageActions = [];
+        this.Name = name;
+        this.ObjectType = objectType;
+        this.Slots = slots ? slots : [];
+        this.Weight = weight ? weight : 0;
+        this.Price = price ? price : 0;
+        this.Description = description ? description : "";
+        this.MaxStack = maxStack ? maxStack : 0;
+        this.Action = action;
+        this.ActionCode = actionCode;
+        this.Parameters = parameters ? parameters : [];
+        this.Image = '/art/tileset2/inventory_object.png';
+    }
+    KnownObject.DefaultObjects = function () {
+        var result = [
+            new KnownObject("Wood Stick", "Weapon", ["RightHand"], 2, 2, "A simple wood stick to defend yourself", 1, null, null, [new ObjectParameter("Base Damage", "5"), new ObjectParameter("Attack Speed", "0.5")]),
+            new KnownObject("Apple", "Food", [], 1, 1, "A red apple", 10, null, null, [new ObjectParameter("Life Recover", "3")])
+        ];
+        return result;
+    };
+    KnownObject.prototype.GetType = function () {
+        for (var i = 0; i < world.InventoryObjectTypes.length; i++)
+            if (world.InventoryObjectTypes[i].Name == this.ObjectType)
+                return world.InventoryObjectTypes[i];
+        return null;
+    };
+    KnownObject.prototype.GetParameter = function (statName) {
+        // Checks within the object properties
+        for (var prop in this)
+            if (prop.toLowerCase() == statName.toLowerCase())
+                return "" + this[prop];
+        // Checks within the additional parameters
+        for (var i = 0; i < this.Parameters.length; i++)
+            if (this.Parameters[i].Name.toLowerCase() == statName.toLowerCase())
+                return this.Parameters[i].Value;
+        return null;
+    };
+    KnownObject.prototype.CanUnwear = function () {
+        if (world.SimplifiedObjectLogic) {
+            var env = new CodeEnvironement();
+            env.SetVariable('currentItem', new VariableValue(this.Name));
+            if (!this.UnwearConditions)
+                this.UnwearConditions = [];
+            if (this.UnwearConditions.length)
+                for (var i = 0; i < this.UnwearConditions.length; i++) {
+                    if (!dialogCondition.code[this.UnwearConditions[i].Name].Check(this.UnwearConditions[i].Values, env))
+                        return false;
+                }
+            else
+                for (var i = 0; i < this.GetType().UnwearConditions.length; i++) {
+                    if (!dialogCondition.code[this.GetType().UnwearConditions[i].Name].Check(this.GetType().DropConditions[i].Values, env))
+                        return false;
+                }
+            return true;
+        }
+        var code = this.GetObjectCode();
+        if (code && code.HasFunction("CanUnwear"))
+            return code.ExecuteFunction("CanUnwear", [new VariableValue(this.Name)]).GetBoolean();
+        return true;
+    };
+    KnownObject.prototype.CanWear = function () {
+        if (this.Slots.length == 0)
+            return false;
+        if (world.SimplifiedObjectLogic) {
+            var env = new CodeEnvironement();
+            env.SetVariable('currentItem', new VariableValue(this.Name));
+            if (this.WearConditions.length)
+                for (var i = 0; i < this.WearConditions.length; i++) {
+                    if (!dialogCondition.code[this.WearConditions[i].Name].Check(this.WearConditions[i].Values, env))
+                        return false;
+                }
+            else
+                for (var i = 0; i < this.GetType().WearConditions.length; i++) {
+                    if (!dialogCondition.code[this.GetType().WearConditions[i].Name].Check(this.GetType().WearConditions[i].Values, env))
+                        return false;
+                }
+            return true;
+        }
+        var code = this.GetObjectCode();
+        if (code && code.HasFunction("CanWear"))
+            return code.ExecuteFunction("CanWear", [new VariableValue(this.Name)]).GetBoolean();
+        return true;
+    };
+    KnownObject.prototype.CanUse = function () {
+        if (world.SimplifiedObjectLogic) {
+            var env = new CodeEnvironement();
+            env.SetVariable('currentItem', new VariableValue(this.Name));
+            if (this.UsageConditions.length)
+                for (var i = 0; i < this.UsageConditions.length; i++) {
+                    if (!dialogCondition.code[this.UsageConditions[i].Name].Check(this.UsageConditions[i].Values, env))
+                        return false;
+                }
+            else
+                for (var i = 0; i < this.GetType().UsageConditions.length; i++) {
+                    if (!dialogCondition.code[this.GetType().UsageConditions[i].Name].Check(this.GetType().UsageConditions[i].Values, env))
+                        return false;
+                }
+            return true;
+        }
+        var code = this.GetObjectCode();
+        if (code && code.HasFunction("CanUse"))
+            return code.ExecuteFunction("CanUse", [new VariableValue(this.Name)]).GetBoolean();
+        return true;
+    };
+    KnownObject.prototype.CanDrop = function () {
+        if (world.SimplifiedObjectLogic) {
+            var env = new CodeEnvironement();
+            env.SetVariable('currentItem', new VariableValue(this.Name));
+            if (this.DropConditions.length)
+                for (var i = 0; i < this.DropConditions.length; i++) {
+                    if (!dialogCondition.code[this.DropConditions[i].Name].Check(this.DropConditions[i].Values, env))
+                        return false;
+                }
+            else
+                for (var i = 0; i < this.GetType().DropConditions.length; i++) {
+                    if (!dialogCondition.code[this.GetType().DropConditions[i].Name].Check(this.GetType().DropConditions[i].Values, env))
+                        return false;
+                }
+            return true;
+        }
+        var code = this.GetObjectCode();
+        if (code && code.HasFunction("CanDrop"))
+            return code.ExecuteFunction("CanDrop", [new VariableValue(this.Name)]).GetBoolean();
+        return true;
+    };
+    KnownObject.prototype.Use = function () {
+        if (world.SimplifiedObjectLogic) {
+            var env = new CodeEnvironement();
+            env.SetVariable('currentItem', new VariableValue(this.Name));
+            if (this.UsageActions.length)
+                for (var i = 0; i < this.UsageActions.length; i++)
+                    dialogAction.code[this.UsageActions[i].Name].Execute(this.UsageActions[i].Values, env);
+            else
+                for (var i = 0; i < this.GetType().UsageActions.length; i++)
+                    dialogAction.code[this.GetType().UsageActions[i].Name].Execute(this.GetType().UsageActions[i].Values, env);
+            return;
+        }
+        var code = this.GetObjectCode();
+        if (code.HasFunction("Use"))
+            code.ExecuteFunction("Use", [new VariableValue(this.Name)]);
+    };
+    KnownObject.prototype.GetObjectCode = function () {
+        var code;
+        if (this.Action && this.ActionCode && this.ActionCode.trim() != "") {
+            if (this.ActionCode.indexOf("function") == -1)
+                return CodeParser.Parse("function Use() { " + this.ActionCode + ";}");
+            return CodeParser.Parse(this.ActionCode);
+        }
+        else if (this.GetType().Action) {
+            if (this.GetType().ActionCode.indexOf("function") == -1)
+                return CodeParser.Parse("function Use() { " + this.GetType().ActionCode + ";}");
+            return CodeParser.Parse(this.GetType().ActionCode);
+        }
+        return code;
+    };
+    KnownObject.prototype.ActionLabel = function () {
+        if (this.Action)
+            return this.Action;
+        else if (this.GetType().Action)
+            return this.GetType().Action;
+        return null;
+    };
+    return KnownObject;
+}());
+var ObjectDefinedParameter = (function () {
+    function ObjectDefinedParameter(name, defaultValue) {
+        this.Name = name;
+        this.DefaultValue = defaultValue;
+    }
+    return ObjectDefinedParameter;
+}());
+var ObjectParameter = (function () {
+    function ObjectParameter(name, value) {
+        this.Name = name;
+        this.Value = value;
+    }
+    return ObjectParameter;
+}());
+var ObjectType = (function () {
+    function ObjectType(name, group, action, actionCode, parameters) {
+        this.UsageConditions = [];
+        this.WearConditions = [];
+        this.UnwearConditions = [];
+        this.DropConditions = [];
+        this.UsageActions = [];
+        this.Name = name;
+        this.Group = group;
+        this.Action = action;
+        this.ActionCode = actionCode;
+        this.Parameters = parameters ? parameters : [];
+    }
+    ObjectType.DefaultObjectType = function () {
+        var result = [
+            new ObjectType("Head Armor", "Armor", null, null, [new ObjectDefinedParameter("Protection", "1")]),
+            new ObjectType("Body Armor", "Armor", null, null, [new ObjectDefinedParameter("Protection", "1")]),
+            new ObjectType("Leg Armor", "Armor", null, null, [new ObjectDefinedParameter("Protection", "1")]),
+            new ObjectType("Feet Armor", "Armor", null, null, [new ObjectDefinedParameter("Protection", "1")]),
+            new ObjectType("Hand Armor", "Armor", null, null, [new ObjectDefinedParameter("Protection", "1")]),
+            new ObjectType("Weapon", "Weapon", null, null, [new ObjectDefinedParameter("Base Damage", "1"), new ObjectDefinedParameter("Attack Speed", "1")]),
+            new ObjectType("Potion", "Aid", "Drink", "function Use(currentItem)\n{\n\tInventory.RemoveItem(currentItem);\n\tif(Inventory.ObjectParameterExists(currentItem,'Life Recover'))\n\t\tPlayer.IncreaseStat('Life',Inventory.ObjectParameter(currentItem,'Life Recover'));\n}", [new ObjectDefinedParameter("Life Recover", "1")]),
+            new ObjectType("Food", "Aid", "Eat", "function Use(currentItem)\n{\n\tInventory.RemoveItem(currentItem);\n\tif(Inventory.ObjectParameterExists(currentItem,'Life Recover'))\n\t\tPlayer.IncreaseStat('Life',Inventory.ObjectParameter(currentItem,'Life Recover'));\n}", [new ObjectDefinedParameter("Life Recover", "0")])
+        ];
+        result[6].UsageActions = [{ "Name": "IncreaseStat", "Values": ["Life", "Inventory.ObjectParameter(currentItem, 'Life Recover')"] }, { "Name": "RemoveCurrentItem", "Values": ["1"] }];
+        result[7].UsageActions = [{ "Name": "IncreaseStat", "Values": ["Life", "Inventory.ObjectParameter(currentItem, 'Life Recover')"] }, { "Name": "RemoveCurrentItem", "Values": ["1"] }];
+        return result;
+    };
+    return ObjectType;
+}());
 ///<reference path="../MovingActor.ts" />
 var MapMessage = (function (_super) {
     __extends(MapMessage, _super);
@@ -10722,315 +10792,6 @@ var Player = (function (_super) {
     };
     return Player;
 }(MovingActor));
-/// <reference path="ExecutionCode.ts" />
-var AddCode = (function () {
-    function AddCode() {
-    }
-    AddCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        var b = env.Pop();
-        if (a === null && b === null) {
-            env.Push(new VariableValue(null));
-            return;
-        }
-        if (a === null || a === undefined)
-            a = new VariableValue("(null)");
-        if (b === null || b === undefined)
-            b = new VariableValue("(null)");
-        var aType = a.Type;
-        var bType = b.Type;
-        if (aType == ValueType.String) {
-            var aValue = a.GetString();
-            if (!isNaN(parseFloat(aValue)) && ("" + parseFloat(aValue)) == aValue)
-                aType = ValueType.Number;
-        }
-        if (bType == ValueType.String) {
-            var bValue = b.GetString();
-            if (!isNaN(parseFloat(bValue)) && ("" + parseFloat(bValue)) == bValue)
-                bType = ValueType.Number;
-        }
-        if (aType == ValueType.String || bType == ValueType.String)
-            env.Push(new VariableValue(a.GetString() + b.GetString()));
-        else
-            env.Push(new VariableValue(a.GetNumber() + b.GetNumber()));
-        env.CodeLine++;
-    };
-    return AddCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var AndCode = (function () {
-    function AndCode() {
-    }
-    AndCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        var b = env.Pop();
-        env.Push(new VariableValue(a.GetBoolean() && b.GetBoolean()));
-        env.CodeLine++;
-    };
-    return AndCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var AssignCode = (function () {
-    function AssignCode(name, index) {
-        if (index === void 0) { index = false; }
-        this.Index = false;
-        this.Name = name;
-        this.Index = index;
-    }
-    AssignCode.prototype.Execute = function (env) {
-        if (this.Index == false) {
-            var a = env.Pop();
-            env.SetVariable(this.Name, a);
-        }
-        else {
-            var idx = env.Pop().GetNumber();
-            var a = env.Pop();
-            var v = env.GetVariable(this.Name);
-            v.Value[idx] = a;
-        }
-        env.CodeLine++;
-    };
-    return AssignCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var CompareCode = (function () {
-    function CompareCode(operation) {
-        this.Operation = operation;
-    }
-    CompareCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        var b = env.Pop();
-        if (!a)
-            a = new VariableValue(null);
-        if (!b)
-            b = new VariableValue(null);
-        switch (this.Operation) {
-            case "==":
-                if (a.Type == ValueType.Null || b.Type == ValueType.Null)
-                    env.Push(new VariableValue(a.Value === b.Value));
-                else
-                    env.Push(new VariableValue(a.Value == b.Value));
-                break;
-            case "!=":
-                if (a.Type == ValueType.Null || b.Type == ValueType.Null)
-                    env.Push(new VariableValue(a.Value !== b.Value));
-                else
-                    env.Push(new VariableValue(a.Value != b.Value));
-                break;
-            case "<=":
-                env.Push(new VariableValue(a.Value <= b.Value));
-                break;
-            case "<":
-                env.Push(new VariableValue(a.Value < b.Value));
-                break;
-            case ">=":
-                env.Push(new VariableValue(a.Value >= b.Value));
-                break;
-            case ">":
-                env.Push(new VariableValue(a.Value > b.Value));
-                break;
-            default:
-                throw "Unknown operator " + this.Operation;
-        }
-        env.CodeLine++;
-    };
-    return CompareCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var DivideCode = (function () {
-    function DivideCode() {
-    }
-    DivideCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        var b = env.Pop();
-        if (a === null || b === null)
-            env.Push(new VariableValue(null));
-        else
-            env.Push(new VariableValue(a.GetNumber() / b.GetNumber()));
-        env.CodeLine++;
-    };
-    return DivideCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var FlushVariableStackCode = (function () {
-    function FlushVariableStackCode() {
-    }
-    FlushVariableStackCode.prototype.Execute = function (env) {
-        env.Flush();
-        env.CodeLine++;
-    };
-    return FlushVariableStackCode;
-}());
-/// <refe/rence path="ExecutionCode.ts" />
-var FunctionCallCode = (function () {
-    function FunctionCallCode(name, parametersCount) {
-        this.Name = name;
-        this.ParametersCount = parametersCount;
-    }
-    FunctionCallCode.prototype.Execute = function (env) {
-        var values = [];
-        for (var i = this.ParametersCount - 1; i >= 0; i--)
-            values[i] = env.Pop();
-        env.CodeLine++;
-        if (!this.type) {
-            var parts = this.Name.split('.');
-            if (parts.length == 2 && env.HasWrapper(this.Name))
-                this.type = "wrapper";
-            else if (parts.length == 1 || parts.length == 3)
-                this.type = "sub";
-            else
-                this.type = "api";
-        }
-        switch (this.type) {
-            case "wrapper":
-                env.ExecuteWrapperFunctionCode(this.Name, values);
-                break;
-            case "sub":
-                env.ExecuteSubFunctionCode(this.Name, values);
-                break;
-            case "api":
-                var a = env.ExecuteFunction(this.Name, values);
-                if (a !== null)
-                    env.Push(a);
-                break;
-        }
-    };
-    return FunctionCallCode;
-}());
-var FunctionDefinitionCode = (function () {
-    function FunctionDefinitionCode() {
-        this.Code = [];
-        this.LoopExitStack = [];
-    }
-    return FunctionDefinitionCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var IfCode = (function () {
-    function IfCode(trueJump, falseJump) {
-        this.TrueJump = trueJump;
-        this.FalseJump = falseJump;
-    }
-    IfCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        if (a.GetBoolean() === true)
-            env.CodeLine = this.TrueJump;
-        else
-            env.CodeLine = this.FalseJump;
-    };
-    return IfCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var JumpCode = (function () {
-    function JumpCode(jumpLine) {
-        this.JumpLine = jumpLine;
-    }
-    JumpCode.prototype.Execute = function (env) {
-        env.CodeLine = this.JumpLine;
-    };
-    return JumpCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var MultiplyCode = (function () {
-    function MultiplyCode() {
-    }
-    MultiplyCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        var b = env.Pop();
-        if (a === null || b === null)
-            env.Push(new VariableValue(null));
-        else
-            env.Push(new VariableValue(a.GetNumber() * b.GetNumber()));
-        env.CodeLine++;
-    };
-    return MultiplyCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var NewArrayCode = (function () {
-    function NewArrayCode() {
-    }
-    NewArrayCode.prototype.Execute = function (env) {
-        env.Push(new VariableValue([]));
-        env.CodeLine++;
-    };
-    return NewArrayCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var NotCode = (function () {
-    function NotCode() {
-    }
-    NotCode.prototype.Execute = function (env) {
-        env.Push(new VariableValue(!(env.Pop().GetBoolean())));
-        env.CodeLine++;
-    };
-    return NotCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var OrCode = (function () {
-    function OrCode() {
-    }
-    OrCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        var b = env.Pop();
-        env.Push(new VariableValue(a.GetBoolean() || b.GetBoolean()));
-        env.CodeLine++;
-    };
-    return OrCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var PushCode = (function () {
-    function PushCode(value) {
-        this.Value = value;
-    }
-    PushCode.prototype.Execute = function (env) {
-        env.Push(new VariableValue(this.Value));
-        env.CodeLine++;
-    };
-    return PushCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var ReadCode = (function () {
-    function ReadCode(name, index) {
-        if (index === void 0) { index = false; }
-        this.Index = false;
-        this.Name = name;
-        this.Index = index;
-    }
-    ReadCode.prototype.Execute = function (env) {
-        if (this.Index == false)
-            env.Push(env.GetVariable(this.Name));
-        else {
-            var idx = env.Pop().GetNumber();
-            var v = env.GetVariable(this.Name);
-            env.Push(v.Value[idx]);
-        }
-        env.CodeLine++;
-    };
-    return ReadCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var ReturnCode = (function () {
-    function ReturnCode() {
-    }
-    ReturnCode.prototype.Execute = function (env) {
-        env.CodeLine = -1;
-    };
-    return ReturnCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var SubstractCode = (function () {
-    function SubstractCode() {
-    }
-    SubstractCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        var b = env.Pop();
-        if (a === null || b === null)
-            env.Push(new VariableValue(null));
-        else
-            env.Push(new VariableValue(a.GetNumber() - b.GetNumber()));
-        env.CodeLine++;
-    };
-    return SubstractCode;
-}());
 /// <reference path="../CodeEnvironement.ts" />
 var EngineActor = (function () {
     function EngineActor() {
@@ -14172,514 +13933,315 @@ EngineStorage = EngineStorage_1 = __decorate([
     ApiClass
 ], EngineStorage);
 var EngineStorage_1;
-/// <reference path="../CodeParser.ts" />
-var TokenAnd = (function (_super) {
-    __extends(TokenAnd, _super);
-    function TokenAnd() {
-        return _super !== null && _super.apply(this, arguments) || this;
+/// <reference path="ExecutionCode.ts" />
+var AddCode = (function () {
+    function AddCode() {
     }
-    TokenAnd.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (parser.PeekChar() == "&" && parser.PeekChar(1) == "&");
+    AddCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        var b = env.Pop();
+        if (a === null && b === null) {
+            env.Push(new VariableValue(null));
+            return;
+        }
+        if (a === null || a === undefined)
+            a = new VariableValue("(null)");
+        if (b === null || b === undefined)
+            b = new VariableValue("(null)");
+        var aType = a.Type;
+        var bType = b.Type;
+        if (aType == ValueType.String) {
+            var aValue = a.GetString();
+            if (!isNaN(parseFloat(aValue)) && ("" + parseFloat(aValue)) == aValue)
+                aType = ValueType.Number;
+        }
+        if (bType == ValueType.String) {
+            var bValue = b.GetString();
+            if (!isNaN(parseFloat(bValue)) && ("" + parseFloat(bValue)) == bValue)
+                bType = ValueType.Number;
+        }
+        if (aType == ValueType.String || bType == ValueType.String)
+            env.Push(new VariableValue(a.GetString() + b.GetString()));
+        else
+            env.Push(new VariableValue(a.GetNumber() + b.GetNumber()));
+        env.CodeLine++;
     };
-    TokenAnd.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        return parser.NextChar() + parser.NextChar();
-    };
-    return TokenAnd;
-}(CodeToken));
-TokenAnd = __decorate([
-    Token
-], TokenAnd);
-/// <reference path="../CodeParser.ts" />
-var TokenAssign = (function (_super) {
-    __extends(TokenAssign, _super);
-    function TokenAssign() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    return AddCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var AndCode = (function () {
+    function AndCode() {
     }
-    TokenAssign.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (parser.PeekChar() == "=" && parser.PeekChar(1) != "=");
+    AndCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        var b = env.Pop();
+        env.Push(new VariableValue(a.GetBoolean() && b.GetBoolean()));
+        env.CodeLine++;
     };
-    TokenAssign.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        return parser.NextChar();
-    };
-    return TokenAssign;
-}(CodeToken));
-TokenAssign = __decorate([
-    Token
-], TokenAssign);
-/// <reference path="../CodeParser.ts" />
-var TokenCloseParenthesis = (function (_super) {
-    __extends(TokenCloseParenthesis, _super);
-    function TokenCloseParenthesis() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    return AndCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var AssignCode = (function () {
+    function AssignCode(name, index) {
+        if (index === void 0) { index = false; }
+        this.Index = false;
+        this.Name = name;
+        this.Index = index;
     }
-    TokenCloseParenthesis.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (parser.PeekChar() == ")");
+    AssignCode.prototype.Execute = function (env) {
+        if (this.Index == false) {
+            var a = env.Pop();
+            env.SetVariable(this.Name, a);
+        }
+        else {
+            var idx = env.Pop().GetNumber();
+            var a = env.Pop();
+            var v = env.GetVariable(this.Name);
+            v.Value[idx] = a;
+        }
+        env.CodeLine++;
     };
-    TokenCloseParenthesis.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        return parser.NextChar();
-    };
-    return TokenCloseParenthesis;
-}(CodeToken));
-TokenCloseParenthesis = __decorate([
-    Token
-], TokenCloseParenthesis);
-/// <reference path="../CodeParser.ts" />
-var TokenCloseSquareBracket = (function (_super) {
-    __extends(TokenCloseSquareBracket, _super);
-    function TokenCloseSquareBracket() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    return AssignCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var CompareCode = (function () {
+    function CompareCode(operation) {
+        this.Operation = operation;
     }
-    TokenCloseSquareBracket.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (parser.PeekChar() == "]");
+    CompareCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        var b = env.Pop();
+        if (!a)
+            a = new VariableValue(null);
+        if (!b)
+            b = new VariableValue(null);
+        switch (this.Operation) {
+            case "==":
+                if (a.Type == ValueType.Null || b.Type == ValueType.Null)
+                    env.Push(new VariableValue(a.Value === b.Value));
+                else
+                    env.Push(new VariableValue(a.Value == b.Value));
+                break;
+            case "!=":
+                if (a.Type == ValueType.Null || b.Type == ValueType.Null)
+                    env.Push(new VariableValue(a.Value !== b.Value));
+                else
+                    env.Push(new VariableValue(a.Value != b.Value));
+                break;
+            case "<=":
+                env.Push(new VariableValue(a.Value <= b.Value));
+                break;
+            case "<":
+                env.Push(new VariableValue(a.Value < b.Value));
+                break;
+            case ">=":
+                env.Push(new VariableValue(a.Value >= b.Value));
+                break;
+            case ">":
+                env.Push(new VariableValue(a.Value > b.Value));
+                break;
+            default:
+                throw "Unknown operator " + this.Operation;
+        }
+        env.CodeLine++;
     };
-    TokenCloseSquareBracket.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        return parser.NextChar();
-    };
-    return TokenCloseSquareBracket;
-}(CodeToken));
-TokenCloseSquareBracket = __decorate([
-    Token
-], TokenCloseSquareBracket);
-/// <reference path="../CodeParser.ts" />
-var TokenCodeVariable = (function (_super) {
-    __extends(TokenCodeVariable, _super);
-    function TokenCodeVariable() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    return CompareCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var DivideCode = (function () {
+    function DivideCode() {
     }
-    TokenCodeVariable.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (parser.PeekChar() == "@");
+    DivideCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        var b = env.Pop();
+        if (a === null || b === null)
+            env.Push(new VariableValue(null));
+        else
+            env.Push(new VariableValue(a.GetNumber() / b.GetNumber()));
+        env.CodeLine++;
     };
-    TokenCodeVariable.prototype.Extract = function (parser) {
-        var extracted = parser.NextChar();
-        while (parser.HasChar()) {
-            var c = parser.NextChar();
-            extracted += c;
-            if (c == extracted.charAt(0))
+    return DivideCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var FlushVariableStackCode = (function () {
+    function FlushVariableStackCode() {
+    }
+    FlushVariableStackCode.prototype.Execute = function (env) {
+        env.Flush();
+        env.CodeLine++;
+    };
+    return FlushVariableStackCode;
+}());
+/// <refe/rence path="ExecutionCode.ts" />
+var FunctionCallCode = (function () {
+    function FunctionCallCode(name, parametersCount) {
+        this.Name = name;
+        this.ParametersCount = parametersCount;
+    }
+    FunctionCallCode.prototype.Execute = function (env) {
+        var values = [];
+        for (var i = this.ParametersCount - 1; i >= 0; i--)
+            values[i] = env.Pop();
+        env.CodeLine++;
+        if (!this.type) {
+            var parts = this.Name.split('.');
+            if (parts.length == 2 && env.HasWrapper(this.Name))
+                this.type = "wrapper";
+            else if (parts.length == 1 || parts.length == 3)
+                this.type = "sub";
+            else
+                this.type = "api";
+        }
+        switch (this.type) {
+            case "wrapper":
+                env.ExecuteWrapperFunctionCode(this.Name, values);
+                break;
+            case "sub":
+                env.ExecuteSubFunctionCode(this.Name, values);
+                break;
+            case "api":
+                var a = env.ExecuteFunction(this.Name, values);
+                if (a !== null)
+                    env.Push(a);
                 break;
         }
-        return extracted.substr(1, extracted.length - 2);
     };
-    ;
-    return TokenCodeVariable;
-}(CodeToken));
-TokenCodeVariable = __decorate([
-    Token
-], TokenCodeVariable);
-/// <reference path="../CodeToken.ts" />
-/// <reference path="../CodeParser.ts" />
-var TokenComment = (function (_super) {
-    __extends(TokenComment, _super);
-    function TokenComment() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    return FunctionCallCode;
+}());
+var FunctionDefinitionCode = (function () {
+    function FunctionDefinitionCode() {
+        this.Code = [];
+        this.LoopExitStack = [];
     }
-    TokenComment.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        if (parser.PeekChar() == "/" && parser.PeekChar(1) == "/")
-            return true;
-        if (parser.PeekChar() == "/" && parser.PeekChar(1) == "*")
-            return true;
+    return FunctionDefinitionCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var IfCode = (function () {
+    function IfCode(trueJump, falseJump) {
+        this.TrueJump = trueJump;
+        this.FalseJump = falseJump;
+    }
+    IfCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        if (a.GetBoolean() === true)
+            env.CodeLine = this.TrueJump;
+        else
+            env.CodeLine = this.FalseJump;
     };
-    TokenComment.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        // Skip the two slashes
-        parser.SkipChar();
-        var secondChar = parser.NextChar();
-        var extracted = "";
-        // Multi line comment
-        if (secondChar == "*") {
-            while (parser.HasChar()) {
-                if (parser.PeekChar() == "*" && parser.PeekChar(1) == "/") {
-                    parser.NextChar();
-                    parser.NextChar();
-                    return extracted;
-                }
-                extracted += parser.NextChar();
-            }
+    return IfCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var JumpCode = (function () {
+    function JumpCode(jumpLine) {
+        this.JumpLine = jumpLine;
+    }
+    JumpCode.prototype.Execute = function (env) {
+        env.CodeLine = this.JumpLine;
+    };
+    return JumpCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var MultiplyCode = (function () {
+    function MultiplyCode() {
+    }
+    MultiplyCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        var b = env.Pop();
+        if (a === null || b === null)
+            env.Push(new VariableValue(null));
+        else
+            env.Push(new VariableValue(a.GetNumber() * b.GetNumber()));
+        env.CodeLine++;
+    };
+    return MultiplyCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var NewArrayCode = (function () {
+    function NewArrayCode() {
+    }
+    NewArrayCode.prototype.Execute = function (env) {
+        env.Push(new VariableValue([]));
+        env.CodeLine++;
+    };
+    return NewArrayCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var NotCode = (function () {
+    function NotCode() {
+    }
+    NotCode.prototype.Execute = function (env) {
+        env.Push(new VariableValue(!(env.Pop().GetBoolean())));
+        env.CodeLine++;
+    };
+    return NotCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var OrCode = (function () {
+    function OrCode() {
+    }
+    OrCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        var b = env.Pop();
+        env.Push(new VariableValue(a.GetBoolean() || b.GetBoolean()));
+        env.CodeLine++;
+    };
+    return OrCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var PushCode = (function () {
+    function PushCode(value) {
+        this.Value = value;
+    }
+    PushCode.prototype.Execute = function (env) {
+        env.Push(new VariableValue(this.Value));
+        env.CodeLine++;
+    };
+    return PushCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var ReadCode = (function () {
+    function ReadCode(name, index) {
+        if (index === void 0) { index = false; }
+        this.Index = false;
+        this.Name = name;
+        this.Index = index;
+    }
+    ReadCode.prototype.Execute = function (env) {
+        if (this.Index == false)
+            env.Push(env.GetVariable(this.Name));
+        else {
+            var idx = env.Pop().GetNumber();
+            var v = env.GetVariable(this.Name);
+            env.Push(v.Value[idx]);
         }
-        // Single line comment
-        while (parser.HasChar()) {
-            if (parser.PeekChar() == "\n" || parser.PeekChar() == "\r")
-                break;
-            extracted += parser.NextChar();
-        }
-        return extracted;
+        env.CodeLine++;
     };
-    return TokenComment;
-}(CodeToken));
-TokenComment = __decorate([
-    Token
-], TokenComment);
-/// <reference path="../CodeParser.ts" />
-var TokenCompare = (function (_super) {
-    __extends(TokenCompare, _super);
-    function TokenCompare() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    return ReadCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var ReturnCode = (function () {
+    function ReturnCode() {
     }
-    TokenCompare.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return ((parser.PeekChar() == "=" && parser.PeekChar(1) == "=") ||
-            parser.PeekChar() == "<" ||
-            parser.PeekChar() == ">" ||
-            (parser.PeekChar() == "!" && parser.PeekChar(1) == "="));
+    ReturnCode.prototype.Execute = function (env) {
+        env.CodeLine = -1;
     };
-    TokenCompare.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        if ((parser.PeekChar() == "<" || parser.PeekChar() == ">") && parser.PeekChar(1) != "=")
-            return parser.NextChar();
-        return parser.NextChar() + parser.NextChar();
-    };
-    return TokenCompare;
-}(CodeToken));
-TokenCompare = __decorate([
-    Token
-], TokenCompare);
-/// <reference path="../CodeParser.ts" />
-var TokenDecrement = (function (_super) {
-    __extends(TokenDecrement, _super);
-    function TokenDecrement() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    return ReturnCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var SubstractCode = (function () {
+    function SubstractCode() {
     }
-    TokenDecrement.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (parser.PeekChar() == "-" && parser.PeekChar(1) == "-");
+    SubstractCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        var b = env.Pop();
+        if (a === null || b === null)
+            env.Push(new VariableValue(null));
+        else
+            env.Push(new VariableValue(a.GetNumber() - b.GetNumber()));
+        env.CodeLine++;
     };
-    TokenDecrement.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        return parser.NextChar() + parser.NextChar();
-    };
-    return TokenDecrement;
-}(CodeToken));
-TokenDecrement = __decorate([
-    Token
-], TokenDecrement);
-/// <reference path="../CodeParser.ts" />
-var TokenDot = (function (_super) {
-    __extends(TokenDot, _super);
-    function TokenDot() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.numberChar = "0123456789";
-        return _this;
-    }
-    TokenDot.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (parser.PeekChar() == "." && this.numberChar.indexOf(parser.PeekChar(1)) == -1);
-    };
-    TokenDot.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        return parser.NextChar();
-    };
-    return TokenDot;
-}(CodeToken));
-TokenDot = __decorate([
-    Token
-], TokenDot);
-/// <reference path="../CodeParser.ts" />
-var TokenEndBlock = (function (_super) {
-    __extends(TokenEndBlock, _super);
-    function TokenEndBlock() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    TokenEndBlock.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (parser.PeekChar() == "}");
-    };
-    TokenEndBlock.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        return parser.NextChar();
-    };
-    return TokenEndBlock;
-}(CodeToken));
-TokenEndBlock = __decorate([
-    Token
-], TokenEndBlock);
-/// <reference path="../CodeParser.ts" />
-var TokenEndLine = (function (_super) {
-    __extends(TokenEndLine, _super);
-    function TokenEndLine() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    TokenEndLine.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (parser.PeekChar() == ";");
-    };
-    TokenEndLine.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        return parser.NextChar();
-    };
-    return TokenEndLine;
-}(CodeToken));
-TokenEndLine = __decorate([
-    Token
-], TokenEndLine);
-/// <reference path="../CodeParser.ts" />
-var TokenIncrement = (function (_super) {
-    __extends(TokenIncrement, _super);
-    function TokenIncrement() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    TokenIncrement.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (parser.PeekChar() == "+" && parser.PeekChar(1) == "+");
-    };
-    TokenIncrement.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        return parser.NextChar() + parser.NextChar();
-    };
-    return TokenIncrement;
-}(CodeToken));
-TokenIncrement = __decorate([
-    Token
-], TokenIncrement);
-/// <reference path="../CodeParser.ts" />
-var TokenName = (function (_super) {
-    __extends(TokenName, _super);
-    function TokenName() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.allowedChar = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_";
-        _this.secondChar = "0123456789";
-        return _this;
-    }
-    TokenName.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return this.allowedChar.indexOf(parser.PeekChar()) != -1;
-    };
-    TokenName.prototype.Extract = function (parser) {
-        var extracted = "";
-        parser.SkipSpaces();
-        while (parser.HasChar()) {
-            if (extracted.length > 0 && this.allowedChar.indexOf(parser.PeekChar()) == -1 && this.secondChar.indexOf(parser.PeekChar()) == -1)
-                break;
-            else if (extracted.length == 0 && this.allowedChar.indexOf(parser.PeekChar()) == -1)
-                break;
-            extracted += parser.NextChar();
-        }
-        return extracted;
-    };
-    return TokenName;
-}(CodeToken));
-TokenName = __decorate([
-    Token
-], TokenName);
-/// <reference path="../CodeParser.ts" />
-var TokenNot = (function (_super) {
-    __extends(TokenNot, _super);
-    function TokenNot() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    TokenNot.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (parser.PeekChar() == "!" && parser.PeekChar(1) != "=");
-    };
-    TokenNot.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        return parser.NextChar();
-    };
-    return TokenNot;
-}(CodeToken));
-TokenNot = __decorate([
-    Token
-], TokenNot);
-/// <reference path="../CodeParser.ts" />
-var TokenNumber = (function (_super) {
-    __extends(TokenNumber, _super);
-    function TokenNumber() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.allowedChar = "0123456789";
-        return _this;
-    }
-    TokenNumber.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        if (parser.PeekChar() == "." && this.allowedChar.indexOf(parser.PeekChar(1)) != -1)
-            return true;
-        return this.allowedChar.indexOf(parser.PeekChar()) != -1 && parser.PeekChar() != ".";
-    };
-    TokenNumber.prototype.Extract = function (parser) {
-        var extracted = "";
-        parser.SkipSpaces();
-        while (parser.HasChar()) {
-            if (this.allowedChar.indexOf(parser.PeekChar()) == -1 && parser.PeekChar() != ".")
-                break;
-            extracted += parser.NextChar();
-        }
-        return extracted;
-    };
-    return TokenNumber;
-}(CodeToken));
-TokenNumber = __decorate([
-    Token
-], TokenNumber);
-/// <reference path="../CodeParser.ts" />
-var TokenOpenParenthesis = (function (_super) {
-    __extends(TokenOpenParenthesis, _super);
-    function TokenOpenParenthesis() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    TokenOpenParenthesis.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (parser.PeekChar() == "(");
-    };
-    TokenOpenParenthesis.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        return parser.NextChar();
-    };
-    return TokenOpenParenthesis;
-}(CodeToken));
-TokenOpenParenthesis = __decorate([
-    Token
-], TokenOpenParenthesis);
-/// <reference path="../CodeParser.ts" />
-var TokenOpenSquareBracket = (function (_super) {
-    __extends(TokenOpenSquareBracket, _super);
-    function TokenOpenSquareBracket() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    TokenOpenSquareBracket.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (parser.PeekChar() == "[");
-    };
-    TokenOpenSquareBracket.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        return parser.NextChar();
-    };
-    return TokenOpenSquareBracket;
-}(CodeToken));
-TokenOpenSquareBracket = __decorate([
-    Token
-], TokenOpenSquareBracket);
-/// <reference path="../CodeParser.ts" />
-var TokenOperator = (function (_super) {
-    __extends(TokenOperator, _super);
-    function TokenOperator() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.allowedChar = "+-*/";
-        return _this;
-    }
-    TokenOperator.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (this.allowedChar.indexOf(parser.PeekChar()) != -1 && this.allowedChar.indexOf(parser.PeekChar(1)) == -1 && parser.PeekChar(1) != "=");
-    };
-    TokenOperator.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        return parser.NextChar();
-    };
-    return TokenOperator;
-}(CodeToken));
-TokenOperator = __decorate([
-    Token
-], TokenOperator);
-/// <reference path="../CodeParser.ts" />
-var TokenOperatorAssign = (function (_super) {
-    __extends(TokenOperatorAssign, _super);
-    function TokenOperatorAssign() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.allowedChar = "+-*/";
-        return _this;
-    }
-    TokenOperatorAssign.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (this.allowedChar.indexOf(parser.PeekChar()) != -1 && this.allowedChar.indexOf(parser.PeekChar(1)) == -1 && parser.PeekChar(1) == "=");
-    };
-    TokenOperatorAssign.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        return parser.NextChar() + parser.NextChar();
-    };
-    return TokenOperatorAssign;
-}(CodeToken));
-TokenOperatorAssign = __decorate([
-    Token
-], TokenOperatorAssign);
-/// <reference path="../CodeParser.ts" />
-var TokenOr = (function (_super) {
-    __extends(TokenOr, _super);
-    function TokenOr() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    TokenOr.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (parser.PeekChar() == "|" && parser.PeekChar(1) == "|");
-    };
-    TokenOr.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        return parser.NextChar() + parser.NextChar();
-    };
-    return TokenOr;
-}(CodeToken));
-TokenOr = __decorate([
-    Token
-], TokenOr);
-/// <reference path="../CodeParser.ts" />
-var TokenSplitParameter = (function (_super) {
-    __extends(TokenSplitParameter, _super);
-    function TokenSplitParameter() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    TokenSplitParameter.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (parser.PeekChar() == ",");
-    };
-    TokenSplitParameter.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        return parser.NextChar();
-    };
-    return TokenSplitParameter;
-}(CodeToken));
-TokenSplitParameter = __decorate([
-    Token
-], TokenSplitParameter);
-/// <reference path="../CodeParser.ts" />
-var TokenStartBlock = (function (_super) {
-    __extends(TokenStartBlock, _super);
-    function TokenStartBlock() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    TokenStartBlock.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (parser.PeekChar() == "{");
-    };
-    TokenStartBlock.prototype.Extract = function (parser) {
-        parser.SkipSpaces();
-        return parser.NextChar();
-    };
-    return TokenStartBlock;
-}(CodeToken));
-TokenStartBlock = __decorate([
-    Token
-], TokenStartBlock);
-/// <reference path="../CodeParser.ts" />
-var TokenString = (function (_super) {
-    __extends(TokenString, _super);
-    function TokenString() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    TokenString.prototype.CanBeUsed = function (parser) {
-        parser.SkipSpaces();
-        return (parser.PeekChar() == "\"" || parser.PeekChar() == "'");
-    };
-    TokenString.prototype.Extract = function (parser) {
-        var extracted = parser.NextChar();
-        while (parser.HasChar()) {
-            var c = parser.NextChar();
-            extracted += c;
-            if (c == extracted.charAt(0))
-                break;
-        }
-        return extracted.substr(1, extracted.length - 2);
-    };
-    ;
-    return TokenString;
-}(CodeToken));
-TokenString = __decorate([
-    Token
-], TokenString);
+    return SubstractCode;
+}());
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['Add'] = { help: "Add two values and return the result. If one of the two is a string a concatenation will be made.", params: [{ name: 'AStatement', type: 'CodeStatement' }, { name: 'BStatement', type: 'CodeStatement' }] };
 var AddStatement = (function (_super) {
@@ -15813,6 +15375,514 @@ WhileStatement = WhileStatement_1 = __decorate([
     StatementClass
 ], WhileStatement);
 var WhileStatement_1;
+/// <reference path="../CodeParser.ts" />
+var TokenAnd = (function (_super) {
+    __extends(TokenAnd, _super);
+    function TokenAnd() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TokenAnd.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (parser.PeekChar() == "&" && parser.PeekChar(1) == "&");
+    };
+    TokenAnd.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        return parser.NextChar() + parser.NextChar();
+    };
+    return TokenAnd;
+}(CodeToken));
+TokenAnd = __decorate([
+    Token
+], TokenAnd);
+/// <reference path="../CodeParser.ts" />
+var TokenAssign = (function (_super) {
+    __extends(TokenAssign, _super);
+    function TokenAssign() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TokenAssign.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (parser.PeekChar() == "=" && parser.PeekChar(1) != "=");
+    };
+    TokenAssign.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        return parser.NextChar();
+    };
+    return TokenAssign;
+}(CodeToken));
+TokenAssign = __decorate([
+    Token
+], TokenAssign);
+/// <reference path="../CodeParser.ts" />
+var TokenCloseParenthesis = (function (_super) {
+    __extends(TokenCloseParenthesis, _super);
+    function TokenCloseParenthesis() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TokenCloseParenthesis.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (parser.PeekChar() == ")");
+    };
+    TokenCloseParenthesis.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        return parser.NextChar();
+    };
+    return TokenCloseParenthesis;
+}(CodeToken));
+TokenCloseParenthesis = __decorate([
+    Token
+], TokenCloseParenthesis);
+/// <reference path="../CodeParser.ts" />
+var TokenCloseSquareBracket = (function (_super) {
+    __extends(TokenCloseSquareBracket, _super);
+    function TokenCloseSquareBracket() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TokenCloseSquareBracket.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (parser.PeekChar() == "]");
+    };
+    TokenCloseSquareBracket.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        return parser.NextChar();
+    };
+    return TokenCloseSquareBracket;
+}(CodeToken));
+TokenCloseSquareBracket = __decorate([
+    Token
+], TokenCloseSquareBracket);
+/// <reference path="../CodeParser.ts" />
+var TokenCodeVariable = (function (_super) {
+    __extends(TokenCodeVariable, _super);
+    function TokenCodeVariable() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TokenCodeVariable.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (parser.PeekChar() == "@");
+    };
+    TokenCodeVariable.prototype.Extract = function (parser) {
+        var extracted = parser.NextChar();
+        while (parser.HasChar()) {
+            var c = parser.NextChar();
+            extracted += c;
+            if (c == extracted.charAt(0))
+                break;
+        }
+        return extracted.substr(1, extracted.length - 2);
+    };
+    ;
+    return TokenCodeVariable;
+}(CodeToken));
+TokenCodeVariable = __decorate([
+    Token
+], TokenCodeVariable);
+/// <reference path="../CodeToken.ts" />
+/// <reference path="../CodeParser.ts" />
+var TokenComment = (function (_super) {
+    __extends(TokenComment, _super);
+    function TokenComment() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TokenComment.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        if (parser.PeekChar() == "/" && parser.PeekChar(1) == "/")
+            return true;
+        if (parser.PeekChar() == "/" && parser.PeekChar(1) == "*")
+            return true;
+    };
+    TokenComment.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        // Skip the two slashes
+        parser.SkipChar();
+        var secondChar = parser.NextChar();
+        var extracted = "";
+        // Multi line comment
+        if (secondChar == "*") {
+            while (parser.HasChar()) {
+                if (parser.PeekChar() == "*" && parser.PeekChar(1) == "/") {
+                    parser.NextChar();
+                    parser.NextChar();
+                    return extracted;
+                }
+                extracted += parser.NextChar();
+            }
+        }
+        // Single line comment
+        while (parser.HasChar()) {
+            if (parser.PeekChar() == "\n" || parser.PeekChar() == "\r")
+                break;
+            extracted += parser.NextChar();
+        }
+        return extracted;
+    };
+    return TokenComment;
+}(CodeToken));
+TokenComment = __decorate([
+    Token
+], TokenComment);
+/// <reference path="../CodeParser.ts" />
+var TokenCompare = (function (_super) {
+    __extends(TokenCompare, _super);
+    function TokenCompare() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TokenCompare.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return ((parser.PeekChar() == "=" && parser.PeekChar(1) == "=") ||
+            parser.PeekChar() == "<" ||
+            parser.PeekChar() == ">" ||
+            (parser.PeekChar() == "!" && parser.PeekChar(1) == "="));
+    };
+    TokenCompare.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        if ((parser.PeekChar() == "<" || parser.PeekChar() == ">") && parser.PeekChar(1) != "=")
+            return parser.NextChar();
+        return parser.NextChar() + parser.NextChar();
+    };
+    return TokenCompare;
+}(CodeToken));
+TokenCompare = __decorate([
+    Token
+], TokenCompare);
+/// <reference path="../CodeParser.ts" />
+var TokenDecrement = (function (_super) {
+    __extends(TokenDecrement, _super);
+    function TokenDecrement() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TokenDecrement.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (parser.PeekChar() == "-" && parser.PeekChar(1) == "-");
+    };
+    TokenDecrement.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        return parser.NextChar() + parser.NextChar();
+    };
+    return TokenDecrement;
+}(CodeToken));
+TokenDecrement = __decorate([
+    Token
+], TokenDecrement);
+/// <reference path="../CodeParser.ts" />
+var TokenDot = (function (_super) {
+    __extends(TokenDot, _super);
+    function TokenDot() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.numberChar = "0123456789";
+        return _this;
+    }
+    TokenDot.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (parser.PeekChar() == "." && this.numberChar.indexOf(parser.PeekChar(1)) == -1);
+    };
+    TokenDot.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        return parser.NextChar();
+    };
+    return TokenDot;
+}(CodeToken));
+TokenDot = __decorate([
+    Token
+], TokenDot);
+/// <reference path="../CodeParser.ts" />
+var TokenEndBlock = (function (_super) {
+    __extends(TokenEndBlock, _super);
+    function TokenEndBlock() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TokenEndBlock.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (parser.PeekChar() == "}");
+    };
+    TokenEndBlock.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        return parser.NextChar();
+    };
+    return TokenEndBlock;
+}(CodeToken));
+TokenEndBlock = __decorate([
+    Token
+], TokenEndBlock);
+/// <reference path="../CodeParser.ts" />
+var TokenEndLine = (function (_super) {
+    __extends(TokenEndLine, _super);
+    function TokenEndLine() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TokenEndLine.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (parser.PeekChar() == ";");
+    };
+    TokenEndLine.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        return parser.NextChar();
+    };
+    return TokenEndLine;
+}(CodeToken));
+TokenEndLine = __decorate([
+    Token
+], TokenEndLine);
+/// <reference path="../CodeParser.ts" />
+var TokenIncrement = (function (_super) {
+    __extends(TokenIncrement, _super);
+    function TokenIncrement() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TokenIncrement.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (parser.PeekChar() == "+" && parser.PeekChar(1) == "+");
+    };
+    TokenIncrement.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        return parser.NextChar() + parser.NextChar();
+    };
+    return TokenIncrement;
+}(CodeToken));
+TokenIncrement = __decorate([
+    Token
+], TokenIncrement);
+/// <reference path="../CodeParser.ts" />
+var TokenName = (function (_super) {
+    __extends(TokenName, _super);
+    function TokenName() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.allowedChar = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_";
+        _this.secondChar = "0123456789";
+        return _this;
+    }
+    TokenName.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return this.allowedChar.indexOf(parser.PeekChar()) != -1;
+    };
+    TokenName.prototype.Extract = function (parser) {
+        var extracted = "";
+        parser.SkipSpaces();
+        while (parser.HasChar()) {
+            if (extracted.length > 0 && this.allowedChar.indexOf(parser.PeekChar()) == -1 && this.secondChar.indexOf(parser.PeekChar()) == -1)
+                break;
+            else if (extracted.length == 0 && this.allowedChar.indexOf(parser.PeekChar()) == -1)
+                break;
+            extracted += parser.NextChar();
+        }
+        return extracted;
+    };
+    return TokenName;
+}(CodeToken));
+TokenName = __decorate([
+    Token
+], TokenName);
+/// <reference path="../CodeParser.ts" />
+var TokenNot = (function (_super) {
+    __extends(TokenNot, _super);
+    function TokenNot() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TokenNot.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (parser.PeekChar() == "!" && parser.PeekChar(1) != "=");
+    };
+    TokenNot.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        return parser.NextChar();
+    };
+    return TokenNot;
+}(CodeToken));
+TokenNot = __decorate([
+    Token
+], TokenNot);
+/// <reference path="../CodeParser.ts" />
+var TokenNumber = (function (_super) {
+    __extends(TokenNumber, _super);
+    function TokenNumber() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.allowedChar = "0123456789";
+        return _this;
+    }
+    TokenNumber.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        if (parser.PeekChar() == "." && this.allowedChar.indexOf(parser.PeekChar(1)) != -1)
+            return true;
+        return this.allowedChar.indexOf(parser.PeekChar()) != -1 && parser.PeekChar() != ".";
+    };
+    TokenNumber.prototype.Extract = function (parser) {
+        var extracted = "";
+        parser.SkipSpaces();
+        while (parser.HasChar()) {
+            if (this.allowedChar.indexOf(parser.PeekChar()) == -1 && parser.PeekChar() != ".")
+                break;
+            extracted += parser.NextChar();
+        }
+        return extracted;
+    };
+    return TokenNumber;
+}(CodeToken));
+TokenNumber = __decorate([
+    Token
+], TokenNumber);
+/// <reference path="../CodeParser.ts" />
+var TokenOpenParenthesis = (function (_super) {
+    __extends(TokenOpenParenthesis, _super);
+    function TokenOpenParenthesis() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TokenOpenParenthesis.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (parser.PeekChar() == "(");
+    };
+    TokenOpenParenthesis.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        return parser.NextChar();
+    };
+    return TokenOpenParenthesis;
+}(CodeToken));
+TokenOpenParenthesis = __decorate([
+    Token
+], TokenOpenParenthesis);
+/// <reference path="../CodeParser.ts" />
+var TokenOpenSquareBracket = (function (_super) {
+    __extends(TokenOpenSquareBracket, _super);
+    function TokenOpenSquareBracket() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TokenOpenSquareBracket.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (parser.PeekChar() == "[");
+    };
+    TokenOpenSquareBracket.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        return parser.NextChar();
+    };
+    return TokenOpenSquareBracket;
+}(CodeToken));
+TokenOpenSquareBracket = __decorate([
+    Token
+], TokenOpenSquareBracket);
+/// <reference path="../CodeParser.ts" />
+var TokenOperator = (function (_super) {
+    __extends(TokenOperator, _super);
+    function TokenOperator() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.allowedChar = "+-*/";
+        return _this;
+    }
+    TokenOperator.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (this.allowedChar.indexOf(parser.PeekChar()) != -1 && this.allowedChar.indexOf(parser.PeekChar(1)) == -1 && parser.PeekChar(1) != "=");
+    };
+    TokenOperator.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        return parser.NextChar();
+    };
+    return TokenOperator;
+}(CodeToken));
+TokenOperator = __decorate([
+    Token
+], TokenOperator);
+/// <reference path="../CodeParser.ts" />
+var TokenOperatorAssign = (function (_super) {
+    __extends(TokenOperatorAssign, _super);
+    function TokenOperatorAssign() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.allowedChar = "+-*/";
+        return _this;
+    }
+    TokenOperatorAssign.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (this.allowedChar.indexOf(parser.PeekChar()) != -1 && this.allowedChar.indexOf(parser.PeekChar(1)) == -1 && parser.PeekChar(1) == "=");
+    };
+    TokenOperatorAssign.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        return parser.NextChar() + parser.NextChar();
+    };
+    return TokenOperatorAssign;
+}(CodeToken));
+TokenOperatorAssign = __decorate([
+    Token
+], TokenOperatorAssign);
+/// <reference path="../CodeParser.ts" />
+var TokenOr = (function (_super) {
+    __extends(TokenOr, _super);
+    function TokenOr() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TokenOr.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (parser.PeekChar() == "|" && parser.PeekChar(1) == "|");
+    };
+    TokenOr.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        return parser.NextChar() + parser.NextChar();
+    };
+    return TokenOr;
+}(CodeToken));
+TokenOr = __decorate([
+    Token
+], TokenOr);
+/// <reference path="../CodeParser.ts" />
+var TokenSplitParameter = (function (_super) {
+    __extends(TokenSplitParameter, _super);
+    function TokenSplitParameter() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TokenSplitParameter.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (parser.PeekChar() == ",");
+    };
+    TokenSplitParameter.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        return parser.NextChar();
+    };
+    return TokenSplitParameter;
+}(CodeToken));
+TokenSplitParameter = __decorate([
+    Token
+], TokenSplitParameter);
+/// <reference path="../CodeParser.ts" />
+var TokenStartBlock = (function (_super) {
+    __extends(TokenStartBlock, _super);
+    function TokenStartBlock() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TokenStartBlock.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (parser.PeekChar() == "{");
+    };
+    TokenStartBlock.prototype.Extract = function (parser) {
+        parser.SkipSpaces();
+        return parser.NextChar();
+    };
+    return TokenStartBlock;
+}(CodeToken));
+TokenStartBlock = __decorate([
+    Token
+], TokenStartBlock);
+/// <reference path="../CodeParser.ts" />
+var TokenString = (function (_super) {
+    __extends(TokenString, _super);
+    function TokenString() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TokenString.prototype.CanBeUsed = function (parser) {
+        parser.SkipSpaces();
+        return (parser.PeekChar() == "\"" || parser.PeekChar() == "'");
+    };
+    TokenString.prototype.Extract = function (parser) {
+        var extracted = parser.NextChar();
+        while (parser.HasChar()) {
+            var c = parser.NextChar();
+            extracted += c;
+            if (c == extracted.charAt(0))
+                break;
+        }
+        return extracted.substr(1, extracted.length - 2);
+    };
+    ;
+    return TokenString;
+}(CodeToken));
+TokenString = __decorate([
+    Token
+], TokenString);
 ///<reference path="../TilesetInformation.ts" />
 defaultTilesets['tileset2'] = {
     "background": { "file": "/art/tileset2/background.png?v=2", "height": 32, "width": 32, "types": { "grass": [43, 61], "dark_grass": [51], "water": [7], "sand": [25, 33], "empty": [115], "dirt": [64] }, "mainType": "grass", "nbColumns": 6, "nonWalkable": [7, 0, 1, 2, 8, 14, 13, 12, 6, 3, 9, 4, 5, 11, 17, 35, 53, 69, 83, 101, 107, 106, 125, 112, 118, 124, 123, 143, 142, 141, 117, 111, 110, 116, 122, 121, 115, 109, 108, 114, 120, 119, 113, 15], "lastTile": 144, "paths": { "grass_path": [126, 139, 140, 133, 134, 131, 132, 129, 130, 127, 128, 135, 136, 137, 138] }, "transitions": [{ "from": "water", "to": "grass", "size": 12, "transition": [5, 3, 11, 9, 14, 12, 2, 0, 13, 8, 6, 1] }, { "from": "grass", "to": "sand", "size": 12, "transition": [18, 20, 30, 32, 27, 29, 21, 23, 19, 24, 26, 31] }, { "from": "dark_grass", "to": "grass", "size": 12, "transition": [36, 38, 48, 50, 45, 47, 39, 41, 37, 42, 44, 49] }, { "from": "grass", "to": "grass", "size": 12, "transition": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] }, { "from": "grass", "to": "dirt", "size": 12, "transition": [59, 57, 65, 63, 68, 66, 56, 54, 67, 62, 60, 55] }, { "from": "empty", "to": "dirt", "size": 12, "transition": [113, 111, 119, 117, 122, 120, 110, 108, 121, 116, 114, 109] }] },
@@ -16674,6 +16744,246 @@ var Chat = (function () {
     };
     return Chat;
 }());
+var codeEditor = new ((function () {
+    function class_19() {
+        this.hideHelpTimer = null;
+        this.currentEditor = null;
+        this.currentSelection = null;
+        this.currentList = null;
+        this.currentSelectedCompletion = null;
+        this.currentTextToTheEnd = null;
+    }
+    return class_19;
+}()));
+var CodeEditor = (function () {
+    function CodeEditor() {
+    }
+    CodeEditor.Create = function (element) {
+        var editor = CodeMirror.fromTextArea($("#" + element).first(), {
+            lineNumbers: true,
+            matchBrackets: true,
+            continueComments: "Enter",
+            showCursorWhenSelecting: true,
+            tabSize: 4,
+            indentUnit: 4
+        });
+        codeEditor.currentEditor = editor;
+        editor.on("blur", function () {
+            if (codeEditor.hideHelpTimer) {
+                clearTimeout(codeEditor.hideHelpTimer);
+                codeEditor.hideHelpTimer = null;
+            }
+            codeEditor.hideHelpTimer = setTimeout(function () { CodeEditor.HideHelp(element); }, 500);
+        });
+        editor.setOption("extraKeys", {
+            "Enter": function () {
+                if (codeEditor.currentList && codeEditor.currentSelectedCompletion !== null) {
+                    CodeEditor.Add(codeEditor.currentList[codeEditor.currentSelectedCompletion]);
+                    event.preventDefault();
+                    event.stopPropagation();
+                    return false;
+                }
+                return CodeMirror.Pass;
+            },
+            "Tab": function () {
+                if (codeEditor.currentList && codeEditor.currentSelectedCompletion !== null) {
+                    CodeEditor.Add(codeEditor.currentList[codeEditor.currentSelectedCompletion]);
+                    event.preventDefault();
+                    event.stopPropagation();
+                    return false;
+                }
+                return CodeMirror.Pass;
+            },
+            "Up": function () {
+                if (codeEditor.currentList && codeEditor.currentSelectedCompletion !== null && codeEditor.currentList[0].indexOf(".") != -1) {
+                    codeEditor.currentSelectedCompletion--;
+                    if (codeEditor.currentSelectedCompletion < 0)
+                        codeEditor.currentSelectedCompletion = codeEditor.currentList.length - 1;
+                    CodeEditor.UpdateList(element);
+                    $("#codeHelp_" + element + " .selectedInsertion").first().scrollIntoView();
+                    return false;
+                }
+                return CodeMirror.Pass;
+            },
+            "Down": function () {
+                if (codeEditor.currentList && codeEditor.currentSelectedCompletion !== null && codeEditor.currentList[0].indexOf(".") != -1) {
+                    codeEditor.currentSelectedCompletion++;
+                    if (codeEditor.currentSelectedCompletion >= codeEditor.currentList.length)
+                        codeEditor.currentSelectedCompletion = 0;
+                    CodeEditor.UpdateList(element);
+                    $("#codeHelp_" + element + " .selectedInsertion").first().scrollIntoView();
+                    return false;
+                }
+                return CodeMirror.Pass;
+            },
+            "Esc": function () {
+                if (codeEditor.hideHelpTimer) {
+                    if (codeEditor.hideHelpTimer) {
+                        clearTimeout(codeEditor.hideHelpTimer);
+                        codeEditor.hideHelpTimer = null;
+                    }
+                    CodeEditor.HideHelp(element);
+                    return false;
+                }
+                return CodeMirror.Pass;
+            },
+            "Ctrl-Q": "toggleComment"
+        });
+        editor.on("cursorActivity", function () {
+            codeEditor.currentList = null;
+            codeEditor.currentSelectedCompletion = null;
+            if (codeEditor.hideHelpTimer) {
+                clearTimeout(codeEditor.hideHelpTimer);
+                codeEditor.hideHelpTimer = null;
+            }
+            var line = editor.getCursor().line;
+            var char = editor.getCursor().ch;
+            var code = editor.getValue();
+            var lines = code.split('\n');
+            if (lines[line]) {
+                var allowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._";
+                var overText = "";
+                var toTheEnd = 0;
+                char--;
+                for (var i = char; i >= 0; i--) {
+                    //var c = lines[line].charAt(i);
+                    var c = CodeEditor.GetCharAt(line, i);
+                    if (allowedChars.indexOf(c) == -1)
+                        break;
+                    overText = c + overText;
+                }
+                if (overText.length > 0)
+                    for (var i = char + 1; i < lines[line].length; i++) {
+                        var c = CodeEditor.GetCharAt(line, i);
+                        if (allowedChars.indexOf(c) == -1)
+                            break;
+                        overText += c;
+                        toTheEnd++;
+                    }
+                codeEditor.currentTextToTheEnd = toTheEnd;
+                codeEditor.currentSelection = overText;
+                var foundApi = GetApiDescription(overText);
+                if (foundApi) {
+                    var domLine = $(".CodeMirror-line").eq(line + 1);
+                    var coords = codeEditor.currentEditor.cursorCoords(true, "page");
+                    var y = coords.top;
+                    var x = coords.left - 150;
+                    $("#codeHelp_" + element).show();
+                    if (y + 200 > window.innerHeight - 35)
+                        $("#codeHelp_" + element).css("top", "" + (y - 110) + "px");
+                    else
+                        $("#codeHelp_" + element).css("top", "" + (y + 20) + "px");
+                    if (x < 0)
+                        x = 0;
+                    if (x > window.innerHeight - 310)
+                        x = window.innerHeight - 310;
+                    $("#codeHelp_" + element).css("left", "" + x + "px");
+                    $("#codeHelp_" + element).html(GetApiSignature(overText) + foundApi);
+                    codeEditor.hideHelpTimer = setTimeout(function () { CodeEditor.HideHelp(element); }, 5000);
+                }
+                else {
+                    // We still have to choose an API
+                    var list = [];
+                    if (overText != "") {
+                        if (overText.indexOf(".") == -1) {
+                            var last = null;
+                            for (var i = 0; i < apiFunctions.length; i++) {
+                                var f = apiFunctions[i].name.split('.')[0];
+                                if (last == f)
+                                    continue;
+                                if (f.toLowerCase().indexOf(overText.toLowerCase()) == 0)
+                                    list.push(f);
+                                last = f;
+                            }
+                        }
+                        else {
+                            for (var i = 0; i < apiFunctions.length; i++)
+                                if (apiFunctions[i].name.toLowerCase().indexOf(overText.toLowerCase()) == 0)
+                                    list.push(apiFunctions[i].name);
+                        }
+                        list.sort();
+                    }
+                    if (list && list.length > 0) {
+                        codeEditor.currentList = list;
+                        codeEditor.currentSelectedCompletion = 0;
+                        CodeEditor.UpdateList(element);
+                        var domLine = $(".CodeMirror-line").eq(line + 1);
+                        var coords = codeEditor.currentEditor.cursorCoords(true, "page");
+                        var y = coords.top;
+                        var x = coords.left - 150;
+                        $("#codeHelp_" + element).show();
+                        if (y + 200 > window.innerHeight - 35)
+                            $("#codeHelp_" + element).css("top", "" + (y - 110) + "px");
+                        else
+                            $("#codeHelp_" + element).css("top", "" + (y + 20) + "px");
+                        if (x < 0)
+                            x = 0;
+                        if (x > window.innerHeight - 310)
+                            x = window.innerHeight - 310;
+                        $("#codeHelp_" + element).css("left", "" + x + "px");
+                    }
+                    else
+                        CodeEditor.HideHelp(element);
+                }
+            }
+            else
+                CodeEditor.HideHelp(element);
+        });
+        editor.on('change', function () {
+            $("#codeError_" + element).hide();
+            var nblines = editor.getDoc().lineCount();
+            for (var i = 0; i < nblines; i++)
+                editor.removeLineClass(i, 'background', "line-error");
+            var code = editor.getValue();
+            try {
+                CodeParser.Parse(code.replace(/\@[a-z0-9_]+\@/gi, "1"));
+            }
+            catch (ex) {
+                var m = ("" + ex).match(/ ([0-9]+):([0-9]+)/);
+                if (m != null)
+                    editor.addLineClass(parseInt(m[1]) - 1, 'background', "line-error");
+                setTimeout(function () { $("#codeError_" + element).show().html(ex); }, 10);
+            }
+        });
+        return editor;
+    };
+    CodeEditor.GetCharAt = function (line, col) {
+        return codeEditor.currentEditor.getRange({ line: line, ch: col }, { line: line, ch: col + 1 });
+    };
+    CodeEditor.UpdateList = function (element) {
+        if (codeEditor.hideHelpTimer) {
+            clearTimeout(codeEditor.hideHelpTimer);
+            codeEditor.hideHelpTimer = null;
+        }
+        var html = "";
+        for (var i = 0; i < codeEditor.currentList.length; i++) {
+            html += "<div onclick='CodeEditor.Add(\"" + codeEditor.currentList[i] + "\");'" + (codeEditor.currentSelectedCompletion == i ? " class='selectedInsertion'" : "") + ">" + codeEditor.currentList[i] + "</div>";
+        }
+        $("#codeHelp_" + element).html(html);
+        codeEditor.hideHelpTimer = setTimeout(function () { CodeEditor.HideHelp(element); }, 5000);
+    };
+    CodeEditor.Add = function (text) {
+        if (codeEditor.hideHelpTimer) {
+            clearTimeout(codeEditor.hideHelpTimer);
+            codeEditor.hideHelpTimer = null;
+        }
+        if (text.indexOf('.') == -1)
+            text += '.';
+        else {
+            var api = GetApiSignature(text).replace(/<.{0,1}span[^>]*>/gi, "").replace(";", "");
+            text += api.substr(text.length);
+        }
+        var pos = codeEditor.currentEditor.getCursor();
+        codeEditor.currentEditor.replaceRange(text.substr(codeEditor.currentSelection.length), { line: pos.line, ch: pos.ch + (codeEditor.currentTextToTheEnd > 0 ? codeEditor.currentTextToTheEnd + 1 : 0) });
+    };
+    CodeEditor.HideHelp = function (element) {
+        $("#codeHelp_" + element).hide();
+        codeEditor.hideHelpTimer = null;
+        codeEditor.currentList = null;
+        codeEditor.currentSelectedCompletion = null;
+    };
+    return CodeEditor;
+}());
 var CodeGraphEditor = (function () {
     function CodeGraphEditor(element, isGenericCode, tab) {
         if (isGenericCode === void 0) { isGenericCode = false; }
@@ -17296,10 +17606,10 @@ var CodeGraphEditor = (function () {
     return CodeGraphEditor;
 }());
 var inventoryMenu = new ((function () {
-    function class_19() {
+    function class_20() {
         this.inventoryDisplayed = false;
     }
-    return class_19;
+    return class_20;
 }()));
 var InventoryMenu = (function () {
     function InventoryMenu() {
@@ -17520,129 +17830,6 @@ var InventoryMenu = (function () {
         InventoryMenu.Update();
     };
     return InventoryMenu;
-}());
-var journalMenu = new ((function () {
-    function class_20() {
-        this.journalDisplayed = false;
-    }
-    return class_20;
-}()));
-var JournalMenu = (function () {
-    function JournalMenu() {
-    }
-    JournalMenu.AdditionalCSS = function () {
-        return "#journalIcon\n\
-{\n\
-    position: absolute;\n\
-    left: -" + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
-    top: 245px;\n\
-}\n\
-#journalIcon .gamePanelContentNoHeader\n\
-{\n\
-    width: 74px;\n\
-}\n\
-";
-    };
-    JournalMenu.Init = function (position) {
-        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowJournal === false))) {
-            $("#journalIcon").hide();
-            return position;
-        }
-        $("#journalIcon").css("top", position + "px");
-        if (game)
-            $("#journalIcon .gamePanelContentNoHeader").html("<img src='art/tileset2/journal_icon.png'>");
-        else
-            $("#journalIcon .gamePanelContentNoHeader").html("<img src='/art/tileset2/journal_icon.png'>");
-        return position + 64 + world.art.panelStyle.topBorder;
-    };
-    JournalMenu.Toggle = function () {
-        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowJournal === false)))
-            return;
-        inventoryMenu.inventoryDisplayed = false;
-        $("#inventoryIcon").removeClass("openPanelIcon");
-        messageMenu.messageDisplayed = false;
-        $("#messageIcon").removeClass("openPanelIcon");
-        profileMenu.profileDisplayed = false;
-        $("#profileIcon").removeClass("openPanelIcon");
-        if (journalMenu.journalDisplayed) {
-            $("#gameMenuPanel").hide();
-            $("#journalIcon").removeClass("openPanelIcon");
-            journalMenu.journalDisplayed = false;
-        }
-        else {
-            journalMenu.journalDisplayed = true;
-            $("#gameMenuPanel").show();
-            $("#journalIcon").addClass("openPanelIcon");
-            JournalMenu.Update();
-        }
-    };
-    JournalMenu.Update = function () {
-        if (!journalMenu.journalDisplayed)
-            return;
-        world.Player.Quests.sort(JournalMenu.SortQuests);
-        world.Player.StoredCompare = world.Player.JSON();
-        world.Player.Save();
-        var html = "<h1>Quest Journal</h1>";
-        if (world.Player.Quests.length > 0) {
-            var showCompleted = false;
-            if (!world.Player.Quests[0].Completed)
-                html += "<h2>Open quests</h2>";
-            for (var i = 0; i < world.Player.Quests.length; i++) {
-                var quest = world.GetQuest(world.Player.Quests[i].Name);
-                if (!quest)
-                    continue;
-                if (!showCompleted && world.Player.Quests[i].Completed) {
-                    showCompleted = true;
-                    html += "<h2>Completed quests</h2>";
-                }
-                html += "<b>" + quest.Name.htmlEntities() + "</b><br>";
-                html += Main.TextTransform(quest.Description, true) + "<br>";
-                for (var j = 0; j < world.Player.Quests[i].JournalEntries.length; j++) {
-                    var entry = JournalMenu.GetJournal(quest, world.Player.Quests[i].JournalEntries[j].EntryId);
-                    if (!entry)
-                        continue;
-                    html += Main.TextTransform(entry) + "<br>";
-                }
-            }
-        }
-        $("#gameMenuPanelContent").html(html);
-    };
-    JournalMenu.GetJournal = function (quest, id) {
-        for (var i = 0; i < quest.JournalEntries.length; i++)
-            if (quest.JournalEntries[i].Id == id)
-                return quest.JournalEntries[i].Entry;
-        return null;
-    };
-    JournalMenu.SortQuests = function (a, b) {
-        if (a.Completed && b.Completed) {
-            if (a.Completed > b.Completed)
-                return -1;
-            if (a.Completed < b.Completed)
-                return 1;
-            return 0;
-        }
-        if (a.Completed && !b.Completed)
-            return 1;
-        if (!a.Completed && b.Completed)
-            return -1;
-        if (a.JournalEntries && a.JournalEntries.length > 0 && b.JournalEntries && b.JournalEntries.length > 0) {
-            if (a.JournalEntries[a.JournalEntries.length - 1] > b.JournalEntries[b.JournalEntries.length - 1])
-                return 1;
-            if (a.JournalEntries[a.JournalEntries.length - 1] < b.JournalEntries[b.JournalEntries.length - 1])
-                return -1;
-            return 0;
-        }
-        if (a.JournalEntries && a.JournalEntries.length > 0 && (!b.JournalEntries || b.JournalEntries.length == 0))
-            return 1;
-        if ((!a.JournalEntries || a.JournalEntries.length == 0) && b.JournalEntries && b.JournalEntries.length > 0)
-            return -1;
-        if (a.Started > b.Started)
-            return 1;
-        if (a.Started < b.Started)
-            return -1;
-        return 0;
-    };
-    return JournalMenu;
 }());
 /**
 A small replacement for JQuery
@@ -18611,127 +18798,6 @@ var Framework = (function () {
     };
     return Framework;
 }());
-/// <reference path="../../../Common/Libs/Framework.ts" />
-var listSelector = new ((function () {
-    function class_22() {
-        this.CurrentSelectors = {};
-    }
-    return class_22;
-}()));
-var ListSelector = (function () {
-    /**
-     * Creates a selection list (sorted) with search box.
-     * @param HTML element id to put the list on (should be a div)
-     * @param data source (an array or an object)
-     * @param displayColumn (optional) the field name to display, valid only for an array source
-     */
-    function ListSelector(element, data, displayColumn) {
-        this.Sort = true;
-        listSelector[element] = this;
-        this.element = element;
-        this.data = data;
-        this.displayColumn = displayColumn;
-        if (displayColumn) {
-            this.sortedDirect = [];
-            for (var i = 0; i < data.length; i++)
-                this.sortedDirect.push(i);
-            this.sortedDirect.sort(function (a, b) {
-                if (data[a][displayColumn] > data[b][displayColumn])
-                    return 1;
-                if (data[a][displayColumn] < data[b][displayColumn])
-                    return -1;
-                return 0;
-            });
-        }
-        $("#" + this.element).addClass("listSelector");
-        this.Render();
-    }
-    ListSelector.prototype.Dispose = function () {
-        $("#" + this.element).html("");
-        delete listSelector[this.element];
-    };
-    ListSelector.prototype.Rebind = function () {
-        var _this = this;
-        $("#list_selector_" + this.element).bind("keyup", function () {
-            $("#display_list_selector_" + _this.element).html(_this.RenderList());
-        });
-    };
-    ListSelector.prototype.Render = function () {
-        var _this = this;
-        var html = "";
-        html += "<input type='text' id='list_selector_" + this.element + "' placeholder='Search...'>";
-        html += "<div id='display_list_selector_" + this.element + "'>";
-        html += this.RenderList();
-        html += "</div>";
-        $("#" + this.element).html(html);
-        $("#list_selector_" + this.element).bind("keyup", function () {
-            $("#display_list_selector_" + _this.element).html(_this.RenderList());
-        });
-    };
-    ListSelector.prototype.UpdateList = function (newData) {
-        if (newData)
-            this.data = newData;
-        else
-            newData = this.data;
-        if (this.displayColumn) {
-            this.sortedDirect = [];
-            for (var i = 0; i < this.data.length; i++)
-                this.sortedDirect.push(i);
-            var displayColumn = this.displayColumn;
-            this.sortedDirect.sort(function (a, b) {
-                if (newData[a][displayColumn] > newData[b][displayColumn])
-                    return 1;
-                if (newData[a][displayColumn] < newData[b][displayColumn])
-                    return -1;
-                return 0;
-            });
-        }
-        $("#display_list_selector_" + this.element).html(this.RenderList());
-    };
-    ListSelector.prototype.RenderList = function () {
-        var html = "";
-        html += "<table>";
-        var searchTxt = $("#list_selector_" + this.element).val();
-        var search = (searchTxt ? searchTxt : "").trim().toLowerCase();
-        if (this.displayColumn) {
-            for (var i = 0; i < this.data.length; i++) {
-                var val = "" + this.data[this.sortedDirect[i]][this.displayColumn];
-                if (search && search != "" && (!val || val.toLowerCase().indexOf(search) == -1))
-                    continue;
-                html += "<tr id='display_list_selector_" + this.element + "_" + this.sortedDirect[i] + "' onclick='ListSelector.Find(\"" + this.element + "\").Select(" + this.sortedDirect[i] + ");'" + (this.selectedRow == this.sortedDirect[i] ? " class='listSelectorSelectedRow'" : "") + "><td>" + val + "</td></tr>";
-            }
-        }
-        else {
-            var names = [];
-            for (var item in this.data)
-                names.push(item);
-            if (this.Sort)
-                names.sort();
-            for (var i = 0; i < names.length; i++) {
-                var val = names[i];
-                if (search && search != "" && (!val || val.toLowerCase().indexOf(search) == -1))
-                    continue;
-                html += "<tr id='display_list_selector_" + this.element + "_" + val.id() + "' onclick='ListSelector.Find(\"" + this.element + "\").Select(\"" + val + "\");'" + (this.selectedRow == val ? " class='listSelectorSelectedRow'" : "") + "><td>" + val + "</td></tr>";
-            }
-        }
-        html += "</table>";
-        return html;
-    };
-    ListSelector.Find = function (name) {
-        return listSelector[name];
-    };
-    ListSelector.prototype.Select = function (row) {
-        this.selectedRow = row;
-        $("#display_list_selector_" + this.element + " tr").removeClass("listSelectorSelectedRow");
-        if (this.displayColumn)
-            $("#display_list_selector_" + this.element + "_" + row).addClass("listSelectorSelectedRow");
-        else if (row !== null)
-            $("#display_list_selector_" + this.element + "_" + row.id()).addClass("listSelectorSelectedRow");
-        if (this.OnSelect)
-            this.OnSelect(row);
-    };
-    return ListSelector;
-}());
 /// <reference path="../../../Common/Libs/MiniQuery.ts"/>
 /// <reference path="../../../Common/Libs/Framework.ts"/>
 var MenuItem = (function () {
@@ -18742,12 +18808,12 @@ var MenuItem = (function () {
     return MenuItem;
 }());
 var menubarStatic = new ((function () {
-    function class_23() {
+    function class_22() {
         this.previousItem = null;
         this.KnownItems = [];
         this.hoverHideTimer = null;
     }
-    return class_23;
+    return class_22;
 }()));
 var Menubar = (function () {
     function Menubar() {
@@ -18903,15 +18969,462 @@ var Menubar = (function () {
     };
     return Menubar;
 }());
-var messageMenu = new ((function () {
+var journalMenu = new ((function () {
+    function class_23() {
+        this.journalDisplayed = false;
+    }
+    return class_23;
+}()));
+var JournalMenu = (function () {
+    function JournalMenu() {
+    }
+    JournalMenu.AdditionalCSS = function () {
+        return "#journalIcon\n\
+{\n\
+    position: absolute;\n\
+    left: -" + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
+    top: 245px;\n\
+}\n\
+#journalIcon .gamePanelContentNoHeader\n\
+{\n\
+    width: 74px;\n\
+}\n\
+";
+    };
+    JournalMenu.Init = function (position) {
+        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowJournal === false))) {
+            $("#journalIcon").hide();
+            return position;
+        }
+        $("#journalIcon").css("top", position + "px");
+        if (game)
+            $("#journalIcon .gamePanelContentNoHeader").html("<img src='art/tileset2/journal_icon.png'>");
+        else
+            $("#journalIcon .gamePanelContentNoHeader").html("<img src='/art/tileset2/journal_icon.png'>");
+        return position + 64 + world.art.panelStyle.topBorder;
+    };
+    JournalMenu.Toggle = function () {
+        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowJournal === false)))
+            return;
+        inventoryMenu.inventoryDisplayed = false;
+        $("#inventoryIcon").removeClass("openPanelIcon");
+        messageMenu.messageDisplayed = false;
+        $("#messageIcon").removeClass("openPanelIcon");
+        profileMenu.profileDisplayed = false;
+        $("#profileIcon").removeClass("openPanelIcon");
+        if (journalMenu.journalDisplayed) {
+            $("#gameMenuPanel").hide();
+            $("#journalIcon").removeClass("openPanelIcon");
+            journalMenu.journalDisplayed = false;
+        }
+        else {
+            journalMenu.journalDisplayed = true;
+            $("#gameMenuPanel").show();
+            $("#journalIcon").addClass("openPanelIcon");
+            JournalMenu.Update();
+        }
+    };
+    JournalMenu.Update = function () {
+        if (!journalMenu.journalDisplayed)
+            return;
+        world.Player.Quests.sort(JournalMenu.SortQuests);
+        world.Player.StoredCompare = world.Player.JSON();
+        world.Player.Save();
+        var html = "<h1>Quest Journal</h1>";
+        if (world.Player.Quests.length > 0) {
+            var showCompleted = false;
+            if (!world.Player.Quests[0].Completed)
+                html += "<h2>Open quests</h2>";
+            for (var i = 0; i < world.Player.Quests.length; i++) {
+                var quest = world.GetQuest(world.Player.Quests[i].Name);
+                if (!quest)
+                    continue;
+                if (!showCompleted && world.Player.Quests[i].Completed) {
+                    showCompleted = true;
+                    html += "<h2>Completed quests</h2>";
+                }
+                html += "<b>" + quest.Name.htmlEntities() + "</b><br>";
+                html += Main.TextTransform(quest.Description, true) + "<br>";
+                for (var j = 0; j < world.Player.Quests[i].JournalEntries.length; j++) {
+                    var entry = JournalMenu.GetJournal(quest, world.Player.Quests[i].JournalEntries[j].EntryId);
+                    if (!entry)
+                        continue;
+                    html += Main.TextTransform(entry) + "<br>";
+                }
+            }
+        }
+        $("#gameMenuPanelContent").html(html);
+    };
+    JournalMenu.GetJournal = function (quest, id) {
+        for (var i = 0; i < quest.JournalEntries.length; i++)
+            if (quest.JournalEntries[i].Id == id)
+                return quest.JournalEntries[i].Entry;
+        return null;
+    };
+    JournalMenu.SortQuests = function (a, b) {
+        if (a.Completed && b.Completed) {
+            if (a.Completed > b.Completed)
+                return -1;
+            if (a.Completed < b.Completed)
+                return 1;
+            return 0;
+        }
+        if (a.Completed && !b.Completed)
+            return 1;
+        if (!a.Completed && b.Completed)
+            return -1;
+        if (a.JournalEntries && a.JournalEntries.length > 0 && b.JournalEntries && b.JournalEntries.length > 0) {
+            if (a.JournalEntries[a.JournalEntries.length - 1] > b.JournalEntries[b.JournalEntries.length - 1])
+                return 1;
+            if (a.JournalEntries[a.JournalEntries.length - 1] < b.JournalEntries[b.JournalEntries.length - 1])
+                return -1;
+            return 0;
+        }
+        if (a.JournalEntries && a.JournalEntries.length > 0 && (!b.JournalEntries || b.JournalEntries.length == 0))
+            return 1;
+        if ((!a.JournalEntries || a.JournalEntries.length == 0) && b.JournalEntries && b.JournalEntries.length > 0)
+            return -1;
+        if (a.Started > b.Started)
+            return 1;
+        if (a.Started < b.Started)
+            return -1;
+        return 0;
+    };
+    return JournalMenu;
+}());
+/// <reference path="../../../Common/Libs/Framework.ts" />
+var listSelector = new ((function () {
     function class_24() {
+        this.CurrentSelectors = {};
+    }
+    return class_24;
+}()));
+var ListSelector = (function () {
+    /**
+     * Creates a selection list (sorted) with search box.
+     * @param HTML element id to put the list on (should be a div)
+     * @param data source (an array or an object)
+     * @param displayColumn (optional) the field name to display, valid only for an array source
+     */
+    function ListSelector(element, data, displayColumn) {
+        this.Sort = true;
+        listSelector[element] = this;
+        this.element = element;
+        this.data = data;
+        this.displayColumn = displayColumn;
+        if (displayColumn) {
+            this.sortedDirect = [];
+            for (var i = 0; i < data.length; i++)
+                this.sortedDirect.push(i);
+            this.sortedDirect.sort(function (a, b) {
+                if (data[a][displayColumn] > data[b][displayColumn])
+                    return 1;
+                if (data[a][displayColumn] < data[b][displayColumn])
+                    return -1;
+                return 0;
+            });
+        }
+        $("#" + this.element).addClass("listSelector");
+        this.Render();
+    }
+    ListSelector.prototype.Dispose = function () {
+        $("#" + this.element).html("");
+        delete listSelector[this.element];
+    };
+    ListSelector.prototype.Rebind = function () {
+        var _this = this;
+        $("#list_selector_" + this.element).bind("keyup", function () {
+            $("#display_list_selector_" + _this.element).html(_this.RenderList());
+        });
+    };
+    ListSelector.prototype.Render = function () {
+        var _this = this;
+        var html = "";
+        html += "<input type='text' id='list_selector_" + this.element + "' placeholder='Search...'>";
+        html += "<div id='display_list_selector_" + this.element + "'>";
+        html += this.RenderList();
+        html += "</div>";
+        $("#" + this.element).html(html);
+        $("#list_selector_" + this.element).bind("keyup", function () {
+            $("#display_list_selector_" + _this.element).html(_this.RenderList());
+        });
+    };
+    ListSelector.prototype.UpdateList = function (newData) {
+        if (newData)
+            this.data = newData;
+        else
+            newData = this.data;
+        if (this.displayColumn) {
+            this.sortedDirect = [];
+            for (var i = 0; i < this.data.length; i++)
+                this.sortedDirect.push(i);
+            var displayColumn = this.displayColumn;
+            this.sortedDirect.sort(function (a, b) {
+                if (newData[a][displayColumn] > newData[b][displayColumn])
+                    return 1;
+                if (newData[a][displayColumn] < newData[b][displayColumn])
+                    return -1;
+                return 0;
+            });
+        }
+        $("#display_list_selector_" + this.element).html(this.RenderList());
+    };
+    ListSelector.prototype.RenderList = function () {
+        var html = "";
+        html += "<table>";
+        var searchTxt = $("#list_selector_" + this.element).val();
+        var search = (searchTxt ? searchTxt : "").trim().toLowerCase();
+        if (this.displayColumn) {
+            for (var i = 0; i < this.data.length; i++) {
+                var val = "" + this.data[this.sortedDirect[i]][this.displayColumn];
+                if (search && search != "" && (!val || val.toLowerCase().indexOf(search) == -1))
+                    continue;
+                html += "<tr id='display_list_selector_" + this.element + "_" + this.sortedDirect[i] + "' onclick='ListSelector.Find(\"" + this.element + "\").Select(" + this.sortedDirect[i] + ");'" + (this.selectedRow == this.sortedDirect[i] ? " class='listSelectorSelectedRow'" : "") + "><td>" + val + "</td></tr>";
+            }
+        }
+        else {
+            var names = [];
+            for (var item in this.data)
+                names.push(item);
+            if (this.Sort)
+                names.sort();
+            for (var i = 0; i < names.length; i++) {
+                var val = names[i];
+                if (search && search != "" && (!val || val.toLowerCase().indexOf(search) == -1))
+                    continue;
+                html += "<tr id='display_list_selector_" + this.element + "_" + val.id() + "' onclick='ListSelector.Find(\"" + this.element + "\").Select(\"" + val + "\");'" + (this.selectedRow == val ? " class='listSelectorSelectedRow'" : "") + "><td>" + val + "</td></tr>";
+            }
+        }
+        html += "</table>";
+        return html;
+    };
+    ListSelector.Find = function (name) {
+        return listSelector[name];
+    };
+    ListSelector.prototype.Select = function (row) {
+        this.selectedRow = row;
+        $("#display_list_selector_" + this.element + " tr").removeClass("listSelectorSelectedRow");
+        if (this.displayColumn)
+            $("#display_list_selector_" + this.element + "_" + row).addClass("listSelectorSelectedRow");
+        else if (row !== null)
+            $("#display_list_selector_" + this.element + "_" + row.id()).addClass("listSelectorSelectedRow");
+        if (this.OnSelect)
+            this.OnSelect(row);
+    };
+    return ListSelector;
+}());
+var profileMenu = new ((function () {
+    function class_25() {
+        this.profileDisplayed = false;
+    }
+    return class_25;
+}()));
+var ProfileMenu = (function () {
+    function ProfileMenu() {
+    }
+    ProfileMenu.AdditionalCSS = function () {
+        return "#profileIcon\n\
+{\n\
+    position: absolute;\n\
+    left: -" + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
+    top: 165px;\n\
+}\n\
+#profileIcon .gamePanelContentNoHeader\n\
+{\n\
+    width: 74px;\n\
+}\n\
+";
+    };
+    ProfileMenu.Init = function (position) {
+        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowStats === false))) {
+            $("#profileIcon").hide();
+            return position;
+        }
+        $("#profileIcon").css("top", position + "px");
+        if (game)
+            $("#profileIcon .gamePanelContentNoHeader").html("<img src='art/tileset2/profile_icon.png'><div>+</div>");
+        else
+            $("#profileIcon .gamePanelContentNoHeader").html("<img src='/art/tileset2/profile_icon.png'><div>+</div>");
+        if (!ProfileMenu.HasToUpgrade())
+            $("#profileIcon div.gamePanelContentNoHeader > div").hide();
+        return position + 64 + world.art.panelStyle.topBorder;
+    };
+    ProfileMenu.Toggle = function () {
+        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowStats === false)))
+            return;
+        inventoryMenu.inventoryDisplayed = false;
+        $("#inventoryIcon").removeClass("openPanelIcon");
+        messageMenu.messageDisplayed = false;
+        $("#messageIcon").removeClass("openPanelIcon");
+        $("#journalIcon").removeClass("openPanelIcon");
+        journalMenu.journalDisplayed = false;
+        if (profileMenu.profileDisplayed) {
+            $("#gameMenuPanel").hide();
+            $("#profileIcon").removeClass("openPanelIcon");
+            profileMenu.profileDisplayed = false;
+        }
+        else {
+            profileMenu.profileDisplayed = true;
+            $("#gameMenuPanel").show();
+            $("#profileIcon").addClass("openPanelIcon");
+            ProfileMenu.Update();
+        }
+    };
+    ProfileMenu.HasToUpgrade = function () {
+        for (var i = 0; i < world.Player.Stats.length; i++) {
+            if (world.Player.Stats[i].BaseStat.CodeVariable('PlayerVisible') === "false")
+                continue;
+            var res = world.Player.Stats[i].BaseStat.InvokeFunction("CanUpgrade", []);
+            if (res && res.GetBoolean() == true)
+                return true;
+        }
+        return false;
+    };
+    ProfileMenu.Update = function () {
+        if (ProfileMenu.HasToUpgrade())
+            $("#profileIcon div.gamePanelContentNoHeader > div").show();
+        else
+            $("#profileIcon div.gamePanelContentNoHeader > div").hide();
+        if (!profileMenu.profileDisplayed)
+            return;
+        var html = "";
+        html = "<h1>Profile<h1>";
+        html += "<h2>Stats</h2>";
+        html += "<table class='profileList'>";
+        html += "<thead><tr><td>Name:</td><td>Value:</td><td>Max:</td><td>&nbsp;</td></tr></thead>";
+        html += "<tbody>";
+        for (var i = 0; i < world.Player.Stats.length; i++) {
+            if (world.Player.Stats[i].BaseStat.CodeVariable('PlayerVisible') === "false")
+                continue;
+            html += "<tr>";
+            html += "<td>" + (world.Player.Stats[i].BaseStat.CodeVariable('DisplayName') ? world.Player.Stats[i].BaseStat.CodeVariable('DisplayName') : world.Player.Stats[i].Name).htmlEntities() + "</td>";
+            html += "<td>" + world.Player.Stats[i].Value + "</td>";
+            html += "<td>" + (world.Player.GetStatMaxValue(world.Player.Stats[i].Name) ? world.Player.GetStatMaxValue(world.Player.Stats[i].Name) : "&nbsp;") + "</td>";
+            var res = world.Player.Stats[i].BaseStat.InvokeFunction("CanUpgrade", []);
+            if (res && res.GetBoolean() == true)
+                html += "<td><div class='gameButton' onclick='ProfileMenu.UpgradeStat(\"" + world.Player.Stats[i].Name + "\")')>+</div></td>";
+            else
+                html += "<td>&nbsp;</td>";
+            html += "</tr>";
+        }
+        html += "</tbody>";
+        html += "</table>";
+        html += "<h2>Skills</h2>";
+        html += "<table class='profileList'>";
+        html += "<thead><tr><td>Name:</td><td>Level:</td><td>&nbsp;</td></tr></thead>";
+        html += "<tbody>";
+        for (var i = 0; i < world.Player.Skills.length; i++) {
+            html += "<tr>";
+            html += "<td>" + (world.Player.Skills[i].BaseSkill.CodeVariable('DisplayName') ? world.Player.Skills[i].BaseSkill.CodeVariable('DisplayName') : world.Player.Skills[i].Name).htmlEntities() + "</td><td>" + (world.Player.Skills[i].Level ? ("" + world.Player.Skills[i].Level).htmlEntities() : "&nbsp;") + "</td>";
+            html += "<td>";
+            if (world.Player.Skills[i].BaseSkill.CodeVariable("Quickslot") == "true" && world.Player.Skills[i].BaseSkill.CodeVariable("QuickslotEditable") !== "false")
+                html += "<div class='gameButton' onclick='ProfileMenu.Quickslot(\"" + world.Player.Skills[i].Name.htmlEntities() + "\");'>Quickslot</div>";
+            else
+                html += "&nbsp;";
+            html += "</td>";
+            html += "</tr>";
+        }
+        html += "</tbody>";
+        html += "</table>";
+        html += "<br><br>";
+        html += "<center><div class='gameButton' onclick=\"document.location='#action=Logout';\">Logout</div> <div class='gameButton' onclick='ProfileMenu.ResetPlayer();'>Reset your player</div></center>";
+        $("#gameMenuPanelContent").html(html);
+    };
+    ProfileMenu.DoResetPlayer = function () {
+        if (Main.CheckNW()) {
+            var saves = {};
+            if (framework.Preferences['gameSaves'])
+                saves = JSON.parse(framework.Preferences['gameSaves']);
+            delete saves["S" + world.Id];
+            framework.Preferences['gameSaves'] = JSON.stringify(saves);
+            Framework.SavePreferences();
+            world.Init();
+            Main.GenerateGameStyle();
+            world.ResetAreas();
+            world.ResetGenerator();
+            Framework.Rerun();
+            return;
+        }
+        if (!framework.Preferences['token'] || framework.Preferences['token'] == "demo") {
+            document.location.reload();
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url: '/backend/ResetPlayer',
+            data: {
+                game: world.Id,
+                token: framework.Preferences['token']
+            },
+            success: function (msg) {
+                document.location.reload();
+            },
+            error: function (msg, textStatus) {
+                if (msg.d && msg.d.error)
+                    Framework.ShowMessage(msg.d.error);
+                else
+                    Framework.ShowMessage(msg);
+            }
+        });
+    };
+    ProfileMenu.ResetPlayer = function () {
+        Framework.Confirm("Are you sure you want to reset your player? You lose all the stats, items, and quests and start as a fresh new player.", ProfileMenu.DoResetPlayer);
+    };
+    ProfileMenu.UpgradeStat = function (statName) {
+        var res = world.Player.FindStat(statName).BaseStat.InvokeFunction("CanUpgrade", []);
+        if (!res || res.GetBoolean() !== true)
+            return;
+        world.Player.SetStat(statName, world.Player.GetStat(statName) + 1);
+        //world.Player.FindStat(statName).Value++;
+        ProfileMenu.Update();
+    };
+    ProfileMenu.Quickslot = function (skillName) {
+        profileMenu.profileDisplayed = false;
+        var html = "<h1>Quickslot</h1>";
+        for (var i = 0; i < 10; i++) {
+            var q = world.Player.QuickSlot[i];
+            var skill = null;
+            if (!q)
+                q = "-- Empty --";
+            else if (q.substring(0, 2) == "S/") {
+                var skill = world.GetSkill(q.substring(2));
+                q = "Skill " + q.substring(2).title().htmlEntities();
+            }
+            else
+                q = "Item " + q.substring(2).title().htmlEntities();
+            if (skill && skill.CodeVariable("QuickslotEditable") === "false") {
+                html += "Slot " + (i + 1) + " " + q + "<br>";
+            }
+            else
+                html += "<div class='gameButton' onclick='ProfileMenu.SetQuickslot(\"" + skillName.htmlEntities() + "\"," + i + ");'>Slot " + (i + 1) + "</div>" + q + "<br>";
+        }
+        html += "<center><div class='gameButton' onclick='ProfileMenu.Show();'>Cancel</div></center>";
+        $("#gameMenuPanelContent").html(html);
+    };
+    ProfileMenu.Show = function () {
+        profileMenu.profileDisplayed = true;
+        ProfileMenu.Update();
+    };
+    ProfileMenu.SetQuickslot = function (skillName, slotId) {
+        for (var i = 0; i < 10; i++)
+            if (world.Player.QuickSlot[i] == "S/" + skillName)
+                world.Player.QuickSlot[i] = null;
+        world.Player.QuickSlot[slotId] = "S/" + skillName;
+        world.Player.StoredCompare = world.Player.JSON();
+        world.Player.Save();
+        ProfileMenu.Show();
+    };
+    return ProfileMenu;
+}());
+var messageMenu = new ((function () {
+    function class_26() {
         this.messageDisplayed = false;
         this.firstInit = true;
         this.selectedMessage = null;
         this.nonRead = 0;
         this.attachments = null;
     }
-    return class_24;
+    return class_26;
 }()));
 var MessageMenu = (function () {
     function MessageMenu() {
@@ -19315,209 +19828,6 @@ var MessageMenu = (function () {
     };
     return MessageMenu;
 }());
-var profileMenu = new ((function () {
-    function class_25() {
-        this.profileDisplayed = false;
-    }
-    return class_25;
-}()));
-var ProfileMenu = (function () {
-    function ProfileMenu() {
-    }
-    ProfileMenu.AdditionalCSS = function () {
-        return "#profileIcon\n\
-{\n\
-    position: absolute;\n\
-    left: -" + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
-    top: 165px;\n\
-}\n\
-#profileIcon .gamePanelContentNoHeader\n\
-{\n\
-    width: 74px;\n\
-}\n\
-";
-    };
-    ProfileMenu.Init = function (position) {
-        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowStats === false))) {
-            $("#profileIcon").hide();
-            return position;
-        }
-        $("#profileIcon").css("top", position + "px");
-        if (game)
-            $("#profileIcon .gamePanelContentNoHeader").html("<img src='art/tileset2/profile_icon.png'><div>+</div>");
-        else
-            $("#profileIcon .gamePanelContentNoHeader").html("<img src='/art/tileset2/profile_icon.png'><div>+</div>");
-        if (!ProfileMenu.HasToUpgrade())
-            $("#profileIcon div.gamePanelContentNoHeader > div").hide();
-        return position + 64 + world.art.panelStyle.topBorder;
-    };
-    ProfileMenu.Toggle = function () {
-        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowStats === false)))
-            return;
-        inventoryMenu.inventoryDisplayed = false;
-        $("#inventoryIcon").removeClass("openPanelIcon");
-        messageMenu.messageDisplayed = false;
-        $("#messageIcon").removeClass("openPanelIcon");
-        $("#journalIcon").removeClass("openPanelIcon");
-        journalMenu.journalDisplayed = false;
-        if (profileMenu.profileDisplayed) {
-            $("#gameMenuPanel").hide();
-            $("#profileIcon").removeClass("openPanelIcon");
-            profileMenu.profileDisplayed = false;
-        }
-        else {
-            profileMenu.profileDisplayed = true;
-            $("#gameMenuPanel").show();
-            $("#profileIcon").addClass("openPanelIcon");
-            ProfileMenu.Update();
-        }
-    };
-    ProfileMenu.HasToUpgrade = function () {
-        for (var i = 0; i < world.Player.Stats.length; i++) {
-            if (world.Player.Stats[i].BaseStat.CodeVariable('PlayerVisible') === "false")
-                continue;
-            var res = world.Player.Stats[i].BaseStat.InvokeFunction("CanUpgrade", []);
-            if (res && res.GetBoolean() == true)
-                return true;
-        }
-        return false;
-    };
-    ProfileMenu.Update = function () {
-        if (ProfileMenu.HasToUpgrade())
-            $("#profileIcon div.gamePanelContentNoHeader > div").show();
-        else
-            $("#profileIcon div.gamePanelContentNoHeader > div").hide();
-        if (!profileMenu.profileDisplayed)
-            return;
-        var html = "";
-        html = "<h1>Profile<h1>";
-        html += "<h2>Stats</h2>";
-        html += "<table class='profileList'>";
-        html += "<thead><tr><td>Name:</td><td>Value:</td><td>Max:</td><td>&nbsp;</td></tr></thead>";
-        html += "<tbody>";
-        for (var i = 0; i < world.Player.Stats.length; i++) {
-            if (world.Player.Stats[i].BaseStat.CodeVariable('PlayerVisible') === "false")
-                continue;
-            html += "<tr>";
-            html += "<td>" + (world.Player.Stats[i].BaseStat.CodeVariable('DisplayName') ? world.Player.Stats[i].BaseStat.CodeVariable('DisplayName') : world.Player.Stats[i].Name).htmlEntities() + "</td>";
-            html += "<td>" + world.Player.Stats[i].Value + "</td>";
-            html += "<td>" + (world.Player.GetStatMaxValue(world.Player.Stats[i].Name) ? world.Player.GetStatMaxValue(world.Player.Stats[i].Name) : "&nbsp;") + "</td>";
-            var res = world.Player.Stats[i].BaseStat.InvokeFunction("CanUpgrade", []);
-            if (res && res.GetBoolean() == true)
-                html += "<td><div class='gameButton' onclick='ProfileMenu.UpgradeStat(\"" + world.Player.Stats[i].Name + "\")')>+</div></td>";
-            else
-                html += "<td>&nbsp;</td>";
-            html += "</tr>";
-        }
-        html += "</tbody>";
-        html += "</table>";
-        html += "<h2>Skills</h2>";
-        html += "<table class='profileList'>";
-        html += "<thead><tr><td>Name:</td><td>Level:</td><td>&nbsp;</td></tr></thead>";
-        html += "<tbody>";
-        for (var i = 0; i < world.Player.Skills.length; i++) {
-            html += "<tr>";
-            html += "<td>" + (world.Player.Skills[i].BaseSkill.CodeVariable('DisplayName') ? world.Player.Skills[i].BaseSkill.CodeVariable('DisplayName') : world.Player.Skills[i].Name).htmlEntities() + "</td><td>" + (world.Player.Skills[i].Level ? ("" + world.Player.Skills[i].Level).htmlEntities() : "&nbsp;") + "</td>";
-            html += "<td>";
-            if (world.Player.Skills[i].BaseSkill.CodeVariable("Quickslot") == "true" && world.Player.Skills[i].BaseSkill.CodeVariable("QuickslotEditable") !== "false")
-                html += "<div class='gameButton' onclick='ProfileMenu.Quickslot(\"" + world.Player.Skills[i].Name.htmlEntities() + "\");'>Quickslot</div>";
-            else
-                html += "&nbsp;";
-            html += "</td>";
-            html += "</tr>";
-        }
-        html += "</tbody>";
-        html += "</table>";
-        html += "<br><br>";
-        html += "<center><div class='gameButton' onclick='ProfileMenu.ResetPlayer();'>Reset your player</div></center>";
-        $("#gameMenuPanelContent").html(html);
-    };
-    ProfileMenu.DoResetPlayer = function () {
-        if (Main.CheckNW()) {
-            var saves = {};
-            if (framework.Preferences['gameSaves'])
-                saves = JSON.parse(framework.Preferences['gameSaves']);
-            delete saves["S" + world.Id];
-            framework.Preferences['gameSaves'] = JSON.stringify(saves);
-            Framework.SavePreferences();
-            world.Init();
-            Main.GenerateGameStyle();
-            world.ResetAreas();
-            world.ResetGenerator();
-            Framework.Rerun();
-            return;
-        }
-        if (!framework.Preferences['token'] || framework.Preferences['token'] == "demo") {
-            document.location.reload();
-            return;
-        }
-        $.ajax({
-            type: 'POST',
-            url: '/backend/ResetPlayer',
-            data: {
-                game: world.Id,
-                token: framework.Preferences['token']
-            },
-            success: function (msg) {
-                document.location.reload();
-            },
-            error: function (msg, textStatus) {
-                if (msg.d && msg.d.error)
-                    Framework.ShowMessage(msg.d.error);
-                else
-                    Framework.ShowMessage(msg);
-            }
-        });
-    };
-    ProfileMenu.ResetPlayer = function () {
-        Framework.Confirm("Are you sure you want to reset your player? You lose all the stats, items, and quests and start as a fresh new player.", ProfileMenu.DoResetPlayer);
-    };
-    ProfileMenu.UpgradeStat = function (statName) {
-        var res = world.Player.FindStat(statName).BaseStat.InvokeFunction("CanUpgrade", []);
-        if (!res || res.GetBoolean() !== true)
-            return;
-        world.Player.SetStat(statName, world.Player.GetStat(statName) + 1);
-        //world.Player.FindStat(statName).Value++;
-        ProfileMenu.Update();
-    };
-    ProfileMenu.Quickslot = function (skillName) {
-        profileMenu.profileDisplayed = false;
-        var html = "<h1>Quickslot</h1>";
-        for (var i = 0; i < 10; i++) {
-            var q = world.Player.QuickSlot[i];
-            var skill = null;
-            if (!q)
-                q = "-- Empty --";
-            else if (q.substring(0, 2) == "S/") {
-                var skill = world.GetSkill(q.substring(2));
-                q = "Skill " + q.substring(2).title().htmlEntities();
-            }
-            else
-                q = "Item " + q.substring(2).title().htmlEntities();
-            if (skill && skill.CodeVariable("QuickslotEditable") === "false") {
-                html += "Slot " + (i + 1) + " " + q + "<br>";
-            }
-            else
-                html += "<div class='gameButton' onclick='ProfileMenu.SetQuickslot(\"" + skillName.htmlEntities() + "\"," + i + ");'>Slot " + (i + 1) + "</div>" + q + "<br>";
-        }
-        html += "<center><div class='gameButton' onclick='ProfileMenu.Show();'>Cancel</div></center>";
-        $("#gameMenuPanelContent").html(html);
-    };
-    ProfileMenu.Show = function () {
-        profileMenu.profileDisplayed = true;
-        ProfileMenu.Update();
-    };
-    ProfileMenu.SetQuickslot = function (skillName, slotId) {
-        for (var i = 0; i < 10; i++)
-            if (world.Player.QuickSlot[i] == "S/" + skillName)
-                world.Player.QuickSlot[i] = null;
-        world.Player.QuickSlot[slotId] = "S/" + skillName;
-        world.Player.StoredCompare = world.Player.JSON();
-        world.Player.Save();
-        ProfileMenu.Show();
-    };
-    return ProfileMenu;
-}());
 var PublicViewPlayer = (function () {
     function PublicViewPlayer() {
     }
@@ -19592,246 +19902,6 @@ var PublicViewPlayer = (function () {
         $("#npcDialog").hide();
     };
     return PublicViewPlayer;
-}());
-var codeEditor = new ((function () {
-    function class_26() {
-        this.hideHelpTimer = null;
-        this.currentEditor = null;
-        this.currentSelection = null;
-        this.currentList = null;
-        this.currentSelectedCompletion = null;
-        this.currentTextToTheEnd = null;
-    }
-    return class_26;
-}()));
-var CodeEditor = (function () {
-    function CodeEditor() {
-    }
-    CodeEditor.Create = function (element) {
-        var editor = CodeMirror.fromTextArea($("#" + element).first(), {
-            lineNumbers: true,
-            matchBrackets: true,
-            continueComments: "Enter",
-            showCursorWhenSelecting: true,
-            tabSize: 4,
-            indentUnit: 4
-        });
-        codeEditor.currentEditor = editor;
-        editor.on("blur", function () {
-            if (codeEditor.hideHelpTimer) {
-                clearTimeout(codeEditor.hideHelpTimer);
-                codeEditor.hideHelpTimer = null;
-            }
-            codeEditor.hideHelpTimer = setTimeout(function () { CodeEditor.HideHelp(element); }, 500);
-        });
-        editor.setOption("extraKeys", {
-            "Enter": function () {
-                if (codeEditor.currentList && codeEditor.currentSelectedCompletion !== null) {
-                    CodeEditor.Add(codeEditor.currentList[codeEditor.currentSelectedCompletion]);
-                    event.preventDefault();
-                    event.stopPropagation();
-                    return false;
-                }
-                return CodeMirror.Pass;
-            },
-            "Tab": function () {
-                if (codeEditor.currentList && codeEditor.currentSelectedCompletion !== null) {
-                    CodeEditor.Add(codeEditor.currentList[codeEditor.currentSelectedCompletion]);
-                    event.preventDefault();
-                    event.stopPropagation();
-                    return false;
-                }
-                return CodeMirror.Pass;
-            },
-            "Up": function () {
-                if (codeEditor.currentList && codeEditor.currentSelectedCompletion !== null && codeEditor.currentList[0].indexOf(".") != -1) {
-                    codeEditor.currentSelectedCompletion--;
-                    if (codeEditor.currentSelectedCompletion < 0)
-                        codeEditor.currentSelectedCompletion = codeEditor.currentList.length - 1;
-                    CodeEditor.UpdateList(element);
-                    $("#codeHelp_" + element + " .selectedInsertion").first().scrollIntoView();
-                    return false;
-                }
-                return CodeMirror.Pass;
-            },
-            "Down": function () {
-                if (codeEditor.currentList && codeEditor.currentSelectedCompletion !== null && codeEditor.currentList[0].indexOf(".") != -1) {
-                    codeEditor.currentSelectedCompletion++;
-                    if (codeEditor.currentSelectedCompletion >= codeEditor.currentList.length)
-                        codeEditor.currentSelectedCompletion = 0;
-                    CodeEditor.UpdateList(element);
-                    $("#codeHelp_" + element + " .selectedInsertion").first().scrollIntoView();
-                    return false;
-                }
-                return CodeMirror.Pass;
-            },
-            "Esc": function () {
-                if (codeEditor.hideHelpTimer) {
-                    if (codeEditor.hideHelpTimer) {
-                        clearTimeout(codeEditor.hideHelpTimer);
-                        codeEditor.hideHelpTimer = null;
-                    }
-                    CodeEditor.HideHelp(element);
-                    return false;
-                }
-                return CodeMirror.Pass;
-            },
-            "Ctrl-Q": "toggleComment"
-        });
-        editor.on("cursorActivity", function () {
-            codeEditor.currentList = null;
-            codeEditor.currentSelectedCompletion = null;
-            if (codeEditor.hideHelpTimer) {
-                clearTimeout(codeEditor.hideHelpTimer);
-                codeEditor.hideHelpTimer = null;
-            }
-            var line = editor.getCursor().line;
-            var char = editor.getCursor().ch;
-            var code = editor.getValue();
-            var lines = code.split('\n');
-            if (lines[line]) {
-                var allowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._";
-                var overText = "";
-                var toTheEnd = 0;
-                char--;
-                for (var i = char; i >= 0; i--) {
-                    //var c = lines[line].charAt(i);
-                    var c = CodeEditor.GetCharAt(line, i);
-                    if (allowedChars.indexOf(c) == -1)
-                        break;
-                    overText = c + overText;
-                }
-                if (overText.length > 0)
-                    for (var i = char + 1; i < lines[line].length; i++) {
-                        var c = CodeEditor.GetCharAt(line, i);
-                        if (allowedChars.indexOf(c) == -1)
-                            break;
-                        overText += c;
-                        toTheEnd++;
-                    }
-                codeEditor.currentTextToTheEnd = toTheEnd;
-                codeEditor.currentSelection = overText;
-                var foundApi = GetApiDescription(overText);
-                if (foundApi) {
-                    var domLine = $(".CodeMirror-line").eq(line + 1);
-                    var coords = codeEditor.currentEditor.cursorCoords(true, "page");
-                    var y = coords.top;
-                    var x = coords.left - 150;
-                    $("#codeHelp_" + element).show();
-                    if (y + 200 > window.innerHeight - 35)
-                        $("#codeHelp_" + element).css("top", "" + (y - 110) + "px");
-                    else
-                        $("#codeHelp_" + element).css("top", "" + (y + 20) + "px");
-                    if (x < 0)
-                        x = 0;
-                    if (x > window.innerHeight - 310)
-                        x = window.innerHeight - 310;
-                    $("#codeHelp_" + element).css("left", "" + x + "px");
-                    $("#codeHelp_" + element).html(GetApiSignature(overText) + foundApi);
-                    codeEditor.hideHelpTimer = setTimeout(function () { CodeEditor.HideHelp(element); }, 5000);
-                }
-                else {
-                    // We still have to choose an API
-                    var list = [];
-                    if (overText != "") {
-                        if (overText.indexOf(".") == -1) {
-                            var last = null;
-                            for (var i = 0; i < apiFunctions.length; i++) {
-                                var f = apiFunctions[i].name.split('.')[0];
-                                if (last == f)
-                                    continue;
-                                if (f.toLowerCase().indexOf(overText.toLowerCase()) == 0)
-                                    list.push(f);
-                                last = f;
-                            }
-                        }
-                        else {
-                            for (var i = 0; i < apiFunctions.length; i++)
-                                if (apiFunctions[i].name.toLowerCase().indexOf(overText.toLowerCase()) == 0)
-                                    list.push(apiFunctions[i].name);
-                        }
-                        list.sort();
-                    }
-                    if (list && list.length > 0) {
-                        codeEditor.currentList = list;
-                        codeEditor.currentSelectedCompletion = 0;
-                        CodeEditor.UpdateList(element);
-                        var domLine = $(".CodeMirror-line").eq(line + 1);
-                        var coords = codeEditor.currentEditor.cursorCoords(true, "page");
-                        var y = coords.top;
-                        var x = coords.left - 150;
-                        $("#codeHelp_" + element).show();
-                        if (y + 200 > window.innerHeight - 35)
-                            $("#codeHelp_" + element).css("top", "" + (y - 110) + "px");
-                        else
-                            $("#codeHelp_" + element).css("top", "" + (y + 20) + "px");
-                        if (x < 0)
-                            x = 0;
-                        if (x > window.innerHeight - 310)
-                            x = window.innerHeight - 310;
-                        $("#codeHelp_" + element).css("left", "" + x + "px");
-                    }
-                    else
-                        CodeEditor.HideHelp(element);
-                }
-            }
-            else
-                CodeEditor.HideHelp(element);
-        });
-        editor.on('change', function () {
-            $("#codeError_" + element).hide();
-            var nblines = editor.getDoc().lineCount();
-            for (var i = 0; i < nblines; i++)
-                editor.removeLineClass(i, 'background', "line-error");
-            var code = editor.getValue();
-            try {
-                CodeParser.Parse(code.replace(/\@[a-z0-9_]+\@/gi, "1"));
-            }
-            catch (ex) {
-                var m = ("" + ex).match(/ ([0-9]+):([0-9]+)/);
-                if (m != null)
-                    editor.addLineClass(parseInt(m[1]) - 1, 'background', "line-error");
-                setTimeout(function () { $("#codeError_" + element).show().html(ex); }, 10);
-            }
-        });
-        return editor;
-    };
-    CodeEditor.GetCharAt = function (line, col) {
-        return codeEditor.currentEditor.getRange({ line: line, ch: col }, { line: line, ch: col + 1 });
-    };
-    CodeEditor.UpdateList = function (element) {
-        if (codeEditor.hideHelpTimer) {
-            clearTimeout(codeEditor.hideHelpTimer);
-            codeEditor.hideHelpTimer = null;
-        }
-        var html = "";
-        for (var i = 0; i < codeEditor.currentList.length; i++) {
-            html += "<div onclick='CodeEditor.Add(\"" + codeEditor.currentList[i] + "\");'" + (codeEditor.currentSelectedCompletion == i ? " class='selectedInsertion'" : "") + ">" + codeEditor.currentList[i] + "</div>";
-        }
-        $("#codeHelp_" + element).html(html);
-        codeEditor.hideHelpTimer = setTimeout(function () { CodeEditor.HideHelp(element); }, 5000);
-    };
-    CodeEditor.Add = function (text) {
-        if (codeEditor.hideHelpTimer) {
-            clearTimeout(codeEditor.hideHelpTimer);
-            codeEditor.hideHelpTimer = null;
-        }
-        if (text.indexOf('.') == -1)
-            text += '.';
-        else {
-            var api = GetApiSignature(text).replace(/<.{0,1}span[^>]*>/gi, "").replace(";", "");
-            text += api.substr(text.length);
-        }
-        var pos = codeEditor.currentEditor.getCursor();
-        codeEditor.currentEditor.replaceRange(text.substr(codeEditor.currentSelection.length), { line: pos.line, ch: pos.ch + (codeEditor.currentTextToTheEnd > 0 ? codeEditor.currentTextToTheEnd + 1 : 0) });
-    };
-    CodeEditor.HideHelp = function (element) {
-        $("#codeHelp_" + element).hide();
-        codeEditor.hideHelpTimer = null;
-        codeEditor.currentList = null;
-        codeEditor.currentSelectedCompletion = null;
-    };
-    return CodeEditor;
 }());
 var searchPanel = new ((function () {
     function class_27() {

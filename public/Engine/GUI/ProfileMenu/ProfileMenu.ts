@@ -132,7 +132,7 @@ class ProfileMenu
         html += "</tbody>";
         html += "</table>";
         html += "<br><br>";
-        html += "<center><div class='gameButton' onclick='ProfileMenu.ResetPlayer();'>Reset your player</div></center>";
+        html += "<center><div class='gameButton' onclick=\"document.location='#action=Logout';\">Logout</div> <div class='gameButton' onclick='ProfileMenu.ResetPlayer();'>Reset your player</div></center>";
         $("#gameMenuPanelContent").html(html);
     }
 
