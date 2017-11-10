@@ -12,7 +12,7 @@ This is also the same base engine used on https://www.dotworldmaker.com
 * Create a database on your MySQL or MariaDB and create a DB user for the engine
 * Import the SQL statements from tables.txt into your database
 * Edit the package.json file (config section)
-* install the needed packages: "npm install ."
+* install the needed packages: "npm install ." (this must be run within the directory where the package.json is)
 
 ## Running it
 * Start the server: node server.js
