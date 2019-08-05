@@ -9039,60 +9039,6 @@ PerlinGenerator = PerlinGenerator_1 = __decorate([
     WorldGeneratorClass
 ], PerlinGenerator);
 var PerlinGenerator_1;
-///<reference path="../MovingActor.ts" />
-var MapMessage = (function (_super) {
-    __extends(MapMessage, _super);
-    function MapMessage(world) {
-        var _this = _super.call(this, world) || this;
-        _this.life = 0;
-        return _this;
-    }
-    MapMessage.Create = function (message, color, worldArea, x, y) {
-        var result = new MapMessage(world);
-        result.CurrentArea = worldArea;
-        result.X = x;
-        result.Y = y;
-        result.message = message;
-        result.color = color;
-        return result;
-    };
-    MapMessage.prototype.CanReachArea = function (x, y) {
-        return true;
-    };
-    MapMessage.prototype.Handle = function () {
-        this.Y -= 0.4;
-        this.life++;
-        if (this.life > 100)
-            this.Kill();
-        else
-            this.UpdatePosition();
-    };
-    MapMessage.prototype.Draw = function (renderEngine, ctx, x, y) {
-        var width = ctx.measureText(this.message).width;
-        if (this.life < 50)
-            ctx.globalAlpha = 1;
-        else {
-            var a = (50 - (this.life - 50)) / 50;
-            if (a < 0)
-                return;
-            ctx.globalAlpha = a;
-        }
-        var cx = x + Math.sin(this.life / 10) * 5;
-        ctx.font = "13px sans-serif";
-        ctx.strokeStyle = "#000000";
-        ctx.lineWidth = 4;
-        ctx.strokeText(this.message, Math.floor(cx) + 0.5, y + 0.5);
-        ctx.fillStyle = this.color;
-        ctx.fillText(this.message, Math.floor(cx) + 0.5, y + 0.5);
-        ctx.globalAlpha = 1;
-    };
-    MapMessage.prototype.PlayerInteract = function (ax, ay) {
-    };
-    MapMessage.prototype.PlayerMouseInteract = function (ax, ay) {
-        return false;
-    };
-    return MapMessage;
-}(MovingActor));
 var monsterCodes = ["/// Name: DefaultMonster,string\n\
 /// Speed: 2,number\n\
 /// BaseDamage: 5,number\n\
@@ -9599,6 +9545,60 @@ var Monster = (function (_super) {
         return this.MonsterEnv.InvokeFunction(action, variableValues);
     };
     return Monster;
+}(MovingActor));
+///<reference path="../MovingActor.ts" />
+var MapMessage = (function (_super) {
+    __extends(MapMessage, _super);
+    function MapMessage(world) {
+        var _this = _super.call(this, world) || this;
+        _this.life = 0;
+        return _this;
+    }
+    MapMessage.Create = function (message, color, worldArea, x, y) {
+        var result = new MapMessage(world);
+        result.CurrentArea = worldArea;
+        result.X = x;
+        result.Y = y;
+        result.message = message;
+        result.color = color;
+        return result;
+    };
+    MapMessage.prototype.CanReachArea = function (x, y) {
+        return true;
+    };
+    MapMessage.prototype.Handle = function () {
+        this.Y -= 0.4;
+        this.life++;
+        if (this.life > 100)
+            this.Kill();
+        else
+            this.UpdatePosition();
+    };
+    MapMessage.prototype.Draw = function (renderEngine, ctx, x, y) {
+        var width = ctx.measureText(this.message).width;
+        if (this.life < 50)
+            ctx.globalAlpha = 1;
+        else {
+            var a = (50 - (this.life - 50)) / 50;
+            if (a < 0)
+                return;
+            ctx.globalAlpha = a;
+        }
+        var cx = x + Math.sin(this.life / 10) * 5;
+        ctx.font = "13px sans-serif";
+        ctx.strokeStyle = "#000000";
+        ctx.lineWidth = 4;
+        ctx.strokeText(this.message, Math.floor(cx) + 0.5, y + 0.5);
+        ctx.fillStyle = this.color;
+        ctx.fillText(this.message, Math.floor(cx) + 0.5, y + 0.5);
+        ctx.globalAlpha = 1;
+    };
+    MapMessage.prototype.PlayerInteract = function (ax, ay) {
+    };
+    MapMessage.prototype.PlayerMouseInteract = function (ax, ay) {
+        return false;
+    };
+    return MapMessage;
 }(MovingActor));
 var Answer = (function () {
     function Answer() {
@@ -10792,315 +10792,6 @@ var Player = (function (_super) {
     };
     return Player;
 }(MovingActor));
-/// <reference path="ExecutionCode.ts" />
-var AddCode = (function () {
-    function AddCode() {
-    }
-    AddCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        var b = env.Pop();
-        if (a === null && b === null) {
-            env.Push(new VariableValue(null));
-            return;
-        }
-        if (a === null || a === undefined)
-            a = new VariableValue("(null)");
-        if (b === null || b === undefined)
-            b = new VariableValue("(null)");
-        var aType = a.Type;
-        var bType = b.Type;
-        if (aType == ValueType.String) {
-            var aValue = a.GetString();
-            if (!isNaN(parseFloat(aValue)) && ("" + parseFloat(aValue)) == aValue)
-                aType = ValueType.Number;
-        }
-        if (bType == ValueType.String) {
-            var bValue = b.GetString();
-            if (!isNaN(parseFloat(bValue)) && ("" + parseFloat(bValue)) == bValue)
-                bType = ValueType.Number;
-        }
-        if (aType == ValueType.String || bType == ValueType.String)
-            env.Push(new VariableValue(a.GetString() + b.GetString()));
-        else
-            env.Push(new VariableValue(a.GetNumber() + b.GetNumber()));
-        env.CodeLine++;
-    };
-    return AddCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var AndCode = (function () {
-    function AndCode() {
-    }
-    AndCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        var b = env.Pop();
-        env.Push(new VariableValue(a.GetBoolean() && b.GetBoolean()));
-        env.CodeLine++;
-    };
-    return AndCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var AssignCode = (function () {
-    function AssignCode(name, index) {
-        if (index === void 0) { index = false; }
-        this.Index = false;
-        this.Name = name;
-        this.Index = index;
-    }
-    AssignCode.prototype.Execute = function (env) {
-        if (this.Index == false) {
-            var a = env.Pop();
-            env.SetVariable(this.Name, a);
-        }
-        else {
-            var idx = env.Pop().GetNumber();
-            var a = env.Pop();
-            var v = env.GetVariable(this.Name);
-            v.Value[idx] = a;
-        }
-        env.CodeLine++;
-    };
-    return AssignCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var CompareCode = (function () {
-    function CompareCode(operation) {
-        this.Operation = operation;
-    }
-    CompareCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        var b = env.Pop();
-        if (!a)
-            a = new VariableValue(null);
-        if (!b)
-            b = new VariableValue(null);
-        switch (this.Operation) {
-            case "==":
-                if (a.Type == ValueType.Null || b.Type == ValueType.Null)
-                    env.Push(new VariableValue(a.Value === b.Value));
-                else
-                    env.Push(new VariableValue(a.Value == b.Value));
-                break;
-            case "!=":
-                if (a.Type == ValueType.Null || b.Type == ValueType.Null)
-                    env.Push(new VariableValue(a.Value !== b.Value));
-                else
-                    env.Push(new VariableValue(a.Value != b.Value));
-                break;
-            case "<=":
-                env.Push(new VariableValue(a.Value <= b.Value));
-                break;
-            case "<":
-                env.Push(new VariableValue(a.Value < b.Value));
-                break;
-            case ">=":
-                env.Push(new VariableValue(a.Value >= b.Value));
-                break;
-            case ">":
-                env.Push(new VariableValue(a.Value > b.Value));
-                break;
-            default:
-                throw "Unknown operator " + this.Operation;
-        }
-        env.CodeLine++;
-    };
-    return CompareCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var DivideCode = (function () {
-    function DivideCode() {
-    }
-    DivideCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        var b = env.Pop();
-        if (a === null || b === null)
-            env.Push(new VariableValue(null));
-        else
-            env.Push(new VariableValue(a.GetNumber() / b.GetNumber()));
-        env.CodeLine++;
-    };
-    return DivideCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var FlushVariableStackCode = (function () {
-    function FlushVariableStackCode() {
-    }
-    FlushVariableStackCode.prototype.Execute = function (env) {
-        env.Flush();
-        env.CodeLine++;
-    };
-    return FlushVariableStackCode;
-}());
-/// <refe/rence path="ExecutionCode.ts" />
-var FunctionCallCode = (function () {
-    function FunctionCallCode(name, parametersCount) {
-        this.Name = name;
-        this.ParametersCount = parametersCount;
-    }
-    FunctionCallCode.prototype.Execute = function (env) {
-        var values = [];
-        for (var i = this.ParametersCount - 1; i >= 0; i--)
-            values[i] = env.Pop();
-        env.CodeLine++;
-        if (!this.type) {
-            var parts = this.Name.split('.');
-            if (parts.length == 2 && env.HasWrapper(this.Name))
-                this.type = "wrapper";
-            else if (parts.length == 1 || parts.length == 3)
-                this.type = "sub";
-            else
-                this.type = "api";
-        }
-        switch (this.type) {
-            case "wrapper":
-                env.ExecuteWrapperFunctionCode(this.Name, values);
-                break;
-            case "sub":
-                env.ExecuteSubFunctionCode(this.Name, values);
-                break;
-            case "api":
-                var a = env.ExecuteFunction(this.Name, values);
-                if (a !== null)
-                    env.Push(a);
-                break;
-        }
-    };
-    return FunctionCallCode;
-}());
-var FunctionDefinitionCode = (function () {
-    function FunctionDefinitionCode() {
-        this.Code = [];
-        this.LoopExitStack = [];
-    }
-    return FunctionDefinitionCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var IfCode = (function () {
-    function IfCode(trueJump, falseJump) {
-        this.TrueJump = trueJump;
-        this.FalseJump = falseJump;
-    }
-    IfCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        if (a.GetBoolean() === true)
-            env.CodeLine = this.TrueJump;
-        else
-            env.CodeLine = this.FalseJump;
-    };
-    return IfCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var JumpCode = (function () {
-    function JumpCode(jumpLine) {
-        this.JumpLine = jumpLine;
-    }
-    JumpCode.prototype.Execute = function (env) {
-        env.CodeLine = this.JumpLine;
-    };
-    return JumpCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var MultiplyCode = (function () {
-    function MultiplyCode() {
-    }
-    MultiplyCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        var b = env.Pop();
-        if (a === null || b === null)
-            env.Push(new VariableValue(null));
-        else
-            env.Push(new VariableValue(a.GetNumber() * b.GetNumber()));
-        env.CodeLine++;
-    };
-    return MultiplyCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var NewArrayCode = (function () {
-    function NewArrayCode() {
-    }
-    NewArrayCode.prototype.Execute = function (env) {
-        env.Push(new VariableValue([]));
-        env.CodeLine++;
-    };
-    return NewArrayCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var NotCode = (function () {
-    function NotCode() {
-    }
-    NotCode.prototype.Execute = function (env) {
-        env.Push(new VariableValue(!(env.Pop().GetBoolean())));
-        env.CodeLine++;
-    };
-    return NotCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var OrCode = (function () {
-    function OrCode() {
-    }
-    OrCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        var b = env.Pop();
-        env.Push(new VariableValue(a.GetBoolean() || b.GetBoolean()));
-        env.CodeLine++;
-    };
-    return OrCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var PushCode = (function () {
-    function PushCode(value) {
-        this.Value = value;
-    }
-    PushCode.prototype.Execute = function (env) {
-        env.Push(new VariableValue(this.Value));
-        env.CodeLine++;
-    };
-    return PushCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var ReadCode = (function () {
-    function ReadCode(name, index) {
-        if (index === void 0) { index = false; }
-        this.Index = false;
-        this.Name = name;
-        this.Index = index;
-    }
-    ReadCode.prototype.Execute = function (env) {
-        if (this.Index == false)
-            env.Push(env.GetVariable(this.Name));
-        else {
-            var idx = env.Pop().GetNumber();
-            var v = env.GetVariable(this.Name);
-            env.Push(v.Value[idx]);
-        }
-        env.CodeLine++;
-    };
-    return ReadCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var ReturnCode = (function () {
-    function ReturnCode() {
-    }
-    ReturnCode.prototype.Execute = function (env) {
-        env.CodeLine = -1;
-    };
-    return ReturnCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var SubstractCode = (function () {
-    function SubstractCode() {
-    }
-    SubstractCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        var b = env.Pop();
-        if (a === null || b === null)
-            env.Push(new VariableValue(null));
-        else
-            env.Push(new VariableValue(a.GetNumber() - b.GetNumber()));
-        env.CodeLine++;
-    };
-    return SubstractCode;
-}());
 /// <reference path="../CodeEnvironement.ts" />
 var EngineActor = (function () {
     function EngineActor() {
@@ -14242,6 +13933,315 @@ EngineStorage = EngineStorage_1 = __decorate([
     ApiClass
 ], EngineStorage);
 var EngineStorage_1;
+/// <reference path="ExecutionCode.ts" />
+var AddCode = (function () {
+    function AddCode() {
+    }
+    AddCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        var b = env.Pop();
+        if (a === null && b === null) {
+            env.Push(new VariableValue(null));
+            return;
+        }
+        if (a === null || a === undefined)
+            a = new VariableValue("(null)");
+        if (b === null || b === undefined)
+            b = new VariableValue("(null)");
+        var aType = a.Type;
+        var bType = b.Type;
+        if (aType == ValueType.String) {
+            var aValue = a.GetString();
+            if (!isNaN(parseFloat(aValue)) && ("" + parseFloat(aValue)) == aValue)
+                aType = ValueType.Number;
+        }
+        if (bType == ValueType.String) {
+            var bValue = b.GetString();
+            if (!isNaN(parseFloat(bValue)) && ("" + parseFloat(bValue)) == bValue)
+                bType = ValueType.Number;
+        }
+        if (aType == ValueType.String || bType == ValueType.String)
+            env.Push(new VariableValue(a.GetString() + b.GetString()));
+        else
+            env.Push(new VariableValue(a.GetNumber() + b.GetNumber()));
+        env.CodeLine++;
+    };
+    return AddCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var AndCode = (function () {
+    function AndCode() {
+    }
+    AndCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        var b = env.Pop();
+        env.Push(new VariableValue(a.GetBoolean() && b.GetBoolean()));
+        env.CodeLine++;
+    };
+    return AndCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var AssignCode = (function () {
+    function AssignCode(name, index) {
+        if (index === void 0) { index = false; }
+        this.Index = false;
+        this.Name = name;
+        this.Index = index;
+    }
+    AssignCode.prototype.Execute = function (env) {
+        if (this.Index == false) {
+            var a = env.Pop();
+            env.SetVariable(this.Name, a);
+        }
+        else {
+            var idx = env.Pop().GetNumber();
+            var a = env.Pop();
+            var v = env.GetVariable(this.Name);
+            v.Value[idx] = a;
+        }
+        env.CodeLine++;
+    };
+    return AssignCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var CompareCode = (function () {
+    function CompareCode(operation) {
+        this.Operation = operation;
+    }
+    CompareCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        var b = env.Pop();
+        if (!a)
+            a = new VariableValue(null);
+        if (!b)
+            b = new VariableValue(null);
+        switch (this.Operation) {
+            case "==":
+                if (a.Type == ValueType.Null || b.Type == ValueType.Null)
+                    env.Push(new VariableValue(a.Value === b.Value));
+                else
+                    env.Push(new VariableValue(a.Value == b.Value));
+                break;
+            case "!=":
+                if (a.Type == ValueType.Null || b.Type == ValueType.Null)
+                    env.Push(new VariableValue(a.Value !== b.Value));
+                else
+                    env.Push(new VariableValue(a.Value != b.Value));
+                break;
+            case "<=":
+                env.Push(new VariableValue(a.Value <= b.Value));
+                break;
+            case "<":
+                env.Push(new VariableValue(a.Value < b.Value));
+                break;
+            case ">=":
+                env.Push(new VariableValue(a.Value >= b.Value));
+                break;
+            case ">":
+                env.Push(new VariableValue(a.Value > b.Value));
+                break;
+            default:
+                throw "Unknown operator " + this.Operation;
+        }
+        env.CodeLine++;
+    };
+    return CompareCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var DivideCode = (function () {
+    function DivideCode() {
+    }
+    DivideCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        var b = env.Pop();
+        if (a === null || b === null)
+            env.Push(new VariableValue(null));
+        else
+            env.Push(new VariableValue(a.GetNumber() / b.GetNumber()));
+        env.CodeLine++;
+    };
+    return DivideCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var FlushVariableStackCode = (function () {
+    function FlushVariableStackCode() {
+    }
+    FlushVariableStackCode.prototype.Execute = function (env) {
+        env.Flush();
+        env.CodeLine++;
+    };
+    return FlushVariableStackCode;
+}());
+/// <refe/rence path="ExecutionCode.ts" />
+var FunctionCallCode = (function () {
+    function FunctionCallCode(name, parametersCount) {
+        this.Name = name;
+        this.ParametersCount = parametersCount;
+    }
+    FunctionCallCode.prototype.Execute = function (env) {
+        var values = [];
+        for (var i = this.ParametersCount - 1; i >= 0; i--)
+            values[i] = env.Pop();
+        env.CodeLine++;
+        if (!this.type) {
+            var parts = this.Name.split('.');
+            if (parts.length == 2 && env.HasWrapper(this.Name))
+                this.type = "wrapper";
+            else if (parts.length == 1 || parts.length == 3)
+                this.type = "sub";
+            else
+                this.type = "api";
+        }
+        switch (this.type) {
+            case "wrapper":
+                env.ExecuteWrapperFunctionCode(this.Name, values);
+                break;
+            case "sub":
+                env.ExecuteSubFunctionCode(this.Name, values);
+                break;
+            case "api":
+                var a = env.ExecuteFunction(this.Name, values);
+                if (a !== null)
+                    env.Push(a);
+                break;
+        }
+    };
+    return FunctionCallCode;
+}());
+var FunctionDefinitionCode = (function () {
+    function FunctionDefinitionCode() {
+        this.Code = [];
+        this.LoopExitStack = [];
+    }
+    return FunctionDefinitionCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var IfCode = (function () {
+    function IfCode(trueJump, falseJump) {
+        this.TrueJump = trueJump;
+        this.FalseJump = falseJump;
+    }
+    IfCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        if (a.GetBoolean() === true)
+            env.CodeLine = this.TrueJump;
+        else
+            env.CodeLine = this.FalseJump;
+    };
+    return IfCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var JumpCode = (function () {
+    function JumpCode(jumpLine) {
+        this.JumpLine = jumpLine;
+    }
+    JumpCode.prototype.Execute = function (env) {
+        env.CodeLine = this.JumpLine;
+    };
+    return JumpCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var MultiplyCode = (function () {
+    function MultiplyCode() {
+    }
+    MultiplyCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        var b = env.Pop();
+        if (a === null || b === null)
+            env.Push(new VariableValue(null));
+        else
+            env.Push(new VariableValue(a.GetNumber() * b.GetNumber()));
+        env.CodeLine++;
+    };
+    return MultiplyCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var NewArrayCode = (function () {
+    function NewArrayCode() {
+    }
+    NewArrayCode.prototype.Execute = function (env) {
+        env.Push(new VariableValue([]));
+        env.CodeLine++;
+    };
+    return NewArrayCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var NotCode = (function () {
+    function NotCode() {
+    }
+    NotCode.prototype.Execute = function (env) {
+        env.Push(new VariableValue(!(env.Pop().GetBoolean())));
+        env.CodeLine++;
+    };
+    return NotCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var OrCode = (function () {
+    function OrCode() {
+    }
+    OrCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        var b = env.Pop();
+        env.Push(new VariableValue(a.GetBoolean() || b.GetBoolean()));
+        env.CodeLine++;
+    };
+    return OrCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var PushCode = (function () {
+    function PushCode(value) {
+        this.Value = value;
+    }
+    PushCode.prototype.Execute = function (env) {
+        env.Push(new VariableValue(this.Value));
+        env.CodeLine++;
+    };
+    return PushCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var ReadCode = (function () {
+    function ReadCode(name, index) {
+        if (index === void 0) { index = false; }
+        this.Index = false;
+        this.Name = name;
+        this.Index = index;
+    }
+    ReadCode.prototype.Execute = function (env) {
+        if (this.Index == false)
+            env.Push(env.GetVariable(this.Name));
+        else {
+            var idx = env.Pop().GetNumber();
+            var v = env.GetVariable(this.Name);
+            env.Push(v.Value[idx]);
+        }
+        env.CodeLine++;
+    };
+    return ReadCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var ReturnCode = (function () {
+    function ReturnCode() {
+    }
+    ReturnCode.prototype.Execute = function (env) {
+        env.CodeLine = -1;
+    };
+    return ReturnCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var SubstractCode = (function () {
+    function SubstractCode() {
+    }
+    SubstractCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        var b = env.Pop();
+        if (a === null || b === null)
+            env.Push(new VariableValue(null));
+        else
+            env.Push(new VariableValue(a.GetNumber() - b.GetNumber()));
+        env.CodeLine++;
+    };
+    return SubstractCode;
+}());
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['Add'] = { help: "Add two values and return the result. If one of the two is a string a concatenation will be made.", params: [{ name: 'AStatement', type: 'CodeStatement' }, { name: 'BStatement', type: 'CodeStatement' }] };
 var AddStatement = (function (_super) {
@@ -19042,186 +19042,15 @@ var ListSelector = (function () {
     };
     return ListSelector;
 }());
-/// <reference path="../../../Common/Libs/MiniQuery.ts"/>
-/// <reference path="../../../Common/Libs/Framework.ts"/>
-var MenuItem = (function () {
-    function MenuItem(label, link) {
-        this.Label = label;
-        this.Link = link;
-    }
-    return MenuItem;
-}());
-var menubarStatic = new ((function () {
-    function class_24() {
-        this.previousItem = null;
-        this.KnownItems = [];
-        this.hoverHideTimer = null;
-    }
-    return class_24;
-}()));
-var Menubar = (function () {
-    function Menubar() {
-    }
-    Menubar.InitFunction = function () {
-        var menu = document.getElementById("menubar");
-        if (!menu)
-            return;
-        /*var pos = 5;
-        for (var i = 0; i < menu.children.length; i++)
-        {
-            var item: HTMLElement = <HTMLElement>menu.children[i];
-            item.style.left = pos + "px";
-            pos += $(item).width();
-        }*/
-        $("#menubar a").bind("dragstart", function () { return false; }).bind("drop", function () { return false; });
-        $("#hideMenu").mouseover(Menubar.HoverHideMenus).mouseout(Menubar.StopHoverHideMenus);
-        $("#searchPanel").mouseover(Menubar.HoverHideMenus);
-        for (var i = 0; i < menu.children.length; i++) {
-            var item = menu.children[i];
-            if (item.children.length > 0) {
-                item.onmouseover = function () {
-                    var currentSubmenu = item.children[0];
-                    return function () {
-                        if (menubarStatic.previousItem == currentSubmenu.textContent)
-                            return;
-                        Menubar.HideMenus();
-                        menubarStatic.previousItem = currentSubmenu.textContent;
-                        $("#hideMenu").show();
-                        $(currentSubmenu).show();
-                    };
-                }();
-                Menubar.HookSubmenu(item.children[0]);
-            }
-            else
-                item.onmouseover = Menubar.HideMenus;
-        }
-        Menubar.ExtractItems();
-    };
-    Menubar.ExtractItems = function (menuItem) {
-        if (menuItem === void 0) { menuItem = null; }
-        if (!menuItem) {
-            menubarStatic.KnownItems = [];
-            menuItem = document.getElementById("menubar");
-        }
-        for (var i = 0; i < menuItem.children.length; i++) {
-            var item = menuItem.children[i];
-            if (item.children.length > 0) {
-                //if($(item).is(":visible"))
-                if (item.style.display !== "none")
-                    Menubar.ExtractItems(item.children[0]);
-            }
-            else if (item.style.display !== "none") {
-                var n = new MenuItem((item.attributes["label"] ? item.attributes["label"].textContent : item.textContent), (item.attributes["href"] ? item.attributes["href"].textContent : ""));
-                if (item.onclick && (!n.Link || n.Link == "" || n.Link == "#"))
-                    n.Link = item.onclick;
-                menubarStatic.KnownItems.push(n);
-            }
-            if (item.tagName.toLowerCase() == "a") {
-                $(item).bind("click", function () {
-                    $("#hideMenu").hide();
-                    Menubar.HideMenus();
-                });
-            }
-        }
-    };
-    Menubar.HookSubmenu = function (menuItem) {
-        for (var i = 0; i < menuItem.children.length; i++) {
-            var item = menuItem.children[i];
-            if (item.children.length > 0) {
-                item.onmouseover = function () {
-                    var child = item.children[0];
-                    $(child).addClass("childMenuBar");
-                    return function (e) {
-                        $("#menubar .childMenuBar").hide();
-                        $(child).show();
-                        e.stopPropagation();
-                    };
-                }();
-            }
-            else
-                item.onmouseover = function () {
-                    $("#menubar .childMenuBar").hide();
-                };
-        }
-    };
-    Menubar.HideMenus = function () {
-        menubarStatic.previousItem = null;
-        menubarStatic.hoverHideTimer = null;
-        $("#hideMenu").hide();
-        $("#menubar > div > div").hide();
-        $("#menubar .childMenuBar").hide();
-    };
-    Menubar.HoverHideMenus = function () {
-        if (menubarStatic.hoverHideTimer)
-            clearTimeout(menubarStatic.hoverHideTimer);
-        menubarStatic.hoverHideTimer = setTimeout(Menubar.HideMenus, 500);
-    };
-    Menubar.StopHoverHideMenus = function () {
-        if (menubarStatic.hoverHideTimer)
-            clearTimeout(menubarStatic.hoverHideTimer);
-        menubarStatic.hoverHideTimer = null;
-    };
-    /**
-     * Allows to disable a menu entry
-     * @param menuPath searched path in the form Main>Child>SubChild
-     */
-    Menubar.DisableMenu = function (menuPath, menuSection, currentPath) {
-        if (menuSection === void 0) { menuSection = null; }
-        if (currentPath === void 0) { currentPath = ""; }
-        if (!menuSection)
-            menuSection = document.getElementById("menubar");
-        for (var i = 0; i < menuSection.children.length; i++) {
-            var t = menuSection.children[i].textContent.trim();
-            var p = currentPath + t.split('\n')[0];
-            if (p == menuPath) {
-                $(menuSection.children[i]).hide();
-                Menubar.ExtractItems();
-                return true;
-            }
-            else if (menuSection.children[i].children.length > 0) {
-                var r = Menubar.DisableMenu(menuPath, menuSection.children[i].children[0], p + ">");
-                if (r == true)
-                    return true;
-            }
-        }
-        return false;
-    };
-    /**
-     * Allows to enable a menu entry
-     * @param menuPath searched path in the form Main>Child>SubChild
-     */
-    Menubar.EnableMenu = function (menuPath, menuSection, currentPath) {
-        if (menuSection === void 0) { menuSection = null; }
-        if (currentPath === void 0) { currentPath = ""; }
-        if (!menuSection)
-            menuSection = document.getElementById("menubar");
-        for (var i = 0; i < menuSection.children.length; i++) {
-            var t = menuSection.children[i].textContent.trim();
-            var p = currentPath + t.split('\n')[0];
-            if (p == menuPath) {
-                $(menuSection.children[i]).show();
-                Menubar.ExtractItems();
-                return true;
-            }
-            else if (menuSection.children[i].children.length > 0) {
-                var r = Menubar.EnableMenu(menuPath, menuSection.children[i].children[0], p + ">");
-                if (r == true)
-                    return true;
-            }
-        }
-        return false;
-    };
-    return Menubar;
-}());
 var messageMenu = new ((function () {
-    function class_25() {
+    function class_24() {
         this.messageDisplayed = false;
         this.firstInit = true;
         this.selectedMessage = null;
         this.nonRead = 0;
         this.attachments = null;
     }
-    return class_25;
+    return class_24;
 }()));
 var MessageMenu = (function () {
     function MessageMenu() {
@@ -19245,7 +19074,7 @@ var MessageMenu = (function () {
             return position;
         }
         $("#messageIcon").css("top", position + "px");
-        $("#messageIcon .gamePanelContentNoHeader").html("<img src='/art/tileset1/message_icon.png'><div>10</div>");
+        $("#messageIcon .gamePanelContentNoHeader").html("<img src='/art/tileset2/message_icon.png'><div>10</div>");
         $("#messageIcon div.gamePanelContentNoHeader > div").html("0").hide();
         if (messageMenu.firstInit && chat.socket) {
             messageMenu.firstInit = false;
@@ -19625,80 +19454,176 @@ var MessageMenu = (function () {
     };
     return MessageMenu;
 }());
-var PublicViewPlayer = (function () {
-    function PublicViewPlayer() {
+/// <reference path="../../../Common/Libs/MiniQuery.ts"/>
+/// <reference path="../../../Common/Libs/Framework.ts"/>
+var MenuItem = (function () {
+    function MenuItem(label, link) {
+        this.Label = label;
+        this.Link = link;
     }
-    PublicViewPlayer.Show = function (name) {
-        $.ajax({
-            type: 'POST',
-            url: '/backend/PublicViewPlayer',
-            data: {
-                game: world.Id,
-                name: name
-            },
-            success: function (msg) {
-                var data = TryParse(msg);
-                if (!data)
-                    return;
-                $("#npcDialog").show();
-                $("#npcDialog .gamePanelHeader").html("View: " + name.htmlEntities());
-                var html = "";
-                html += "<table>";
-                html += "<tr><td>Name:</td><td>" + ("" + data.name).htmlEntities() + "</td></tr>";
-                html += "<tr><td>X:</td><td>" + ("" + data.x).htmlEntities() + "</td></tr>";
-                html += "<tr><td>Y:</td><td>" + ("" + data.x).htmlEntities() + "</td></tr>";
-                html += "<tr><td>Zone:</td><td>" + ("" + data.zone).htmlEntities() + "</td></tr>";
-                html += "</table>";
-                html += "<h3>Equiped with</h3>";
-                var items = [];
-                for (var item in data.equipedObjects)
-                    items.push(data.equipedObjects[item]);
-                items.sort();
-                for (var i = 0; i < items.length; i++)
-                    html += ("" + items[i].Name).htmlEntities() + "<br>";
-                html += "<h3>Stats</h3>";
-                html += "<table>";
-                data.stats.sort(function (a, b) {
-                    if (a.Name > b.Name)
-                        return 1;
-                    if (a.Name < b.Name)
-                        return -1;
-                    return 0;
-                });
-                for (var i = 0; i < data.stats.length; i++) {
-                    var stat = world.GetStat(data.stats[i].Name);
-                    if (!stat)
-                        continue;
-                    if (stat.CodeVariable("PlayerVisible") === "false")
-                        continue;
-                    html += "<tr><td>" + ("" + (stat.CodeVariable("DisplayName") ? stat.CodeVariable("DisplayName") : stat.Name)).htmlEntities() + "</td><td>" + ("" + data.stats[i].Value).htmlEntities() + "</td></tr>";
-                }
-                html += "<h3>Skills</h3>";
-                data.skills.sort(function (a, b) {
-                    if (a.Name > b.Name)
-                        return 1;
-                    if (a.Name < b.Name)
-                        return -1;
-                    return 0;
-                });
-                for (var i = 0; i < data.skills.length; i++) {
-                    var skill = world.GetSkill(data.skills[i].Name);
-                    if (!skill)
-                        continue;
-                    html += ("" + (skill.CodeVariable("DisplayName") ? skill.CodeVariable("DisplayName") : skill.Name)).htmlEntities() + "<br>";
-                }
-                $("#dialogSentence").html(html);
-                play.onDialogPaint = [];
-                $("#dialogAnswers").html("<div onclick='PublicViewPlayer.Close();' class='gameButton'>Close</div>");
-            },
-            error: function (msg, textStatus) {
+    return MenuItem;
+}());
+var menubarStatic = new ((function () {
+    function class_25() {
+        this.previousItem = null;
+        this.KnownItems = [];
+        this.hoverHideTimer = null;
+    }
+    return class_25;
+}()));
+var Menubar = (function () {
+    function Menubar() {
+    }
+    Menubar.InitFunction = function () {
+        var menu = document.getElementById("menubar");
+        if (!menu)
+            return;
+        /*var pos = 5;
+        for (var i = 0; i < menu.children.length; i++)
+        {
+            var item: HTMLElement = <HTMLElement>menu.children[i];
+            item.style.left = pos + "px";
+            pos += $(item).width();
+        }*/
+        $("#menubar a").bind("dragstart", function () { return false; }).bind("drop", function () { return false; });
+        $("#hideMenu").mouseover(Menubar.HoverHideMenus).mouseout(Menubar.StopHoverHideMenus);
+        $("#searchPanel").mouseover(Menubar.HoverHideMenus);
+        for (var i = 0; i < menu.children.length; i++) {
+            var item = menu.children[i];
+            if (item.children.length > 0) {
+                item.onmouseover = function () {
+                    var currentSubmenu = item.children[0];
+                    return function () {
+                        if (menubarStatic.previousItem == currentSubmenu.textContent)
+                            return;
+                        Menubar.HideMenus();
+                        menubarStatic.previousItem = currentSubmenu.textContent;
+                        $("#hideMenu").show();
+                        $(currentSubmenu).show();
+                    };
+                }();
+                Menubar.HookSubmenu(item.children[0]);
             }
-        });
+            else
+                item.onmouseover = Menubar.HideMenus;
+        }
+        Menubar.ExtractItems();
     };
-    PublicViewPlayer.Close = function () {
-        $("#npcDialog").hide();
+    Menubar.ExtractItems = function (menuItem) {
+        if (menuItem === void 0) { menuItem = null; }
+        if (!menuItem) {
+            menubarStatic.KnownItems = [];
+            menuItem = document.getElementById("menubar");
+        }
+        for (var i = 0; i < menuItem.children.length; i++) {
+            var item = menuItem.children[i];
+            if (item.children.length > 0) {
+                //if($(item).is(":visible"))
+                if (item.style.display !== "none")
+                    Menubar.ExtractItems(item.children[0]);
+            }
+            else if (item.style.display !== "none") {
+                var n = new MenuItem((item.attributes["label"] ? item.attributes["label"].textContent : item.textContent), (item.attributes["href"] ? item.attributes["href"].textContent : ""));
+                if (item.onclick && (!n.Link || n.Link == "" || n.Link == "#"))
+                    n.Link = item.onclick;
+                menubarStatic.KnownItems.push(n);
+            }
+            if (item.tagName.toLowerCase() == "a") {
+                $(item).bind("click", function () {
+                    $("#hideMenu").hide();
+                    Menubar.HideMenus();
+                });
+            }
+        }
     };
-    return PublicViewPlayer;
+    Menubar.HookSubmenu = function (menuItem) {
+        for (var i = 0; i < menuItem.children.length; i++) {
+            var item = menuItem.children[i];
+            if (item.children.length > 0) {
+                item.onmouseover = function () {
+                    var child = item.children[0];
+                    $(child).addClass("childMenuBar");
+                    return function (e) {
+                        $("#menubar .childMenuBar").hide();
+                        $(child).show();
+                        e.stopPropagation();
+                    };
+                }();
+            }
+            else
+                item.onmouseover = function () {
+                    $("#menubar .childMenuBar").hide();
+                };
+        }
+    };
+    Menubar.HideMenus = function () {
+        menubarStatic.previousItem = null;
+        menubarStatic.hoverHideTimer = null;
+        $("#hideMenu").hide();
+        $("#menubar > div > div").hide();
+        $("#menubar .childMenuBar").hide();
+    };
+    Menubar.HoverHideMenus = function () {
+        if (menubarStatic.hoverHideTimer)
+            clearTimeout(menubarStatic.hoverHideTimer);
+        menubarStatic.hoverHideTimer = setTimeout(Menubar.HideMenus, 500);
+    };
+    Menubar.StopHoverHideMenus = function () {
+        if (menubarStatic.hoverHideTimer)
+            clearTimeout(menubarStatic.hoverHideTimer);
+        menubarStatic.hoverHideTimer = null;
+    };
+    /**
+     * Allows to disable a menu entry
+     * @param menuPath searched path in the form Main>Child>SubChild
+     */
+    Menubar.DisableMenu = function (menuPath, menuSection, currentPath) {
+        if (menuSection === void 0) { menuSection = null; }
+        if (currentPath === void 0) { currentPath = ""; }
+        if (!menuSection)
+            menuSection = document.getElementById("menubar");
+        for (var i = 0; i < menuSection.children.length; i++) {
+            var t = menuSection.children[i].textContent.trim();
+            var p = currentPath + t.split('\n')[0];
+            if (p == menuPath) {
+                $(menuSection.children[i]).hide();
+                Menubar.ExtractItems();
+                return true;
+            }
+            else if (menuSection.children[i].children.length > 0) {
+                var r = Menubar.DisableMenu(menuPath, menuSection.children[i].children[0], p + ">");
+                if (r == true)
+                    return true;
+            }
+        }
+        return false;
+    };
+    /**
+     * Allows to enable a menu entry
+     * @param menuPath searched path in the form Main>Child>SubChild
+     */
+    Menubar.EnableMenu = function (menuPath, menuSection, currentPath) {
+        if (menuSection === void 0) { menuSection = null; }
+        if (currentPath === void 0) { currentPath = ""; }
+        if (!menuSection)
+            menuSection = document.getElementById("menubar");
+        for (var i = 0; i < menuSection.children.length; i++) {
+            var t = menuSection.children[i].textContent.trim();
+            var p = currentPath + t.split('\n')[0];
+            if (p == menuPath) {
+                $(menuSection.children[i]).show();
+                Menubar.ExtractItems();
+                return true;
+            }
+            else if (menuSection.children[i].children.length > 0) {
+                var r = Menubar.EnableMenu(menuPath, menuSection.children[i].children[0], p + ">");
+                if (r == true)
+                    return true;
+            }
+        }
+        return false;
+    };
+    return Menubar;
 }());
 var profileMenu = new ((function () {
     function class_26() {
@@ -19902,6 +19827,81 @@ var ProfileMenu = (function () {
         ProfileMenu.Show();
     };
     return ProfileMenu;
+}());
+var PublicViewPlayer = (function () {
+    function PublicViewPlayer() {
+    }
+    PublicViewPlayer.Show = function (name) {
+        $.ajax({
+            type: 'POST',
+            url: '/backend/PublicViewPlayer',
+            data: {
+                game: world.Id,
+                name: name
+            },
+            success: function (msg) {
+                var data = TryParse(msg);
+                if (!data)
+                    return;
+                $("#npcDialog").show();
+                $("#npcDialog .gamePanelHeader").html("View: " + name.htmlEntities());
+                var html = "";
+                html += "<table>";
+                html += "<tr><td>Name:</td><td>" + ("" + data.name).htmlEntities() + "</td></tr>";
+                html += "<tr><td>X:</td><td>" + ("" + data.x).htmlEntities() + "</td></tr>";
+                html += "<tr><td>Y:</td><td>" + ("" + data.x).htmlEntities() + "</td></tr>";
+                html += "<tr><td>Zone:</td><td>" + ("" + data.zone).htmlEntities() + "</td></tr>";
+                html += "</table>";
+                html += "<h3>Equiped with</h3>";
+                var items = [];
+                for (var item in data.equipedObjects)
+                    items.push(data.equipedObjects[item]);
+                items.sort();
+                for (var i = 0; i < items.length; i++)
+                    html += ("" + items[i].Name).htmlEntities() + "<br>";
+                html += "<h3>Stats</h3>";
+                html += "<table>";
+                data.stats.sort(function (a, b) {
+                    if (a.Name > b.Name)
+                        return 1;
+                    if (a.Name < b.Name)
+                        return -1;
+                    return 0;
+                });
+                for (var i = 0; i < data.stats.length; i++) {
+                    var stat = world.GetStat(data.stats[i].Name);
+                    if (!stat)
+                        continue;
+                    if (stat.CodeVariable("PlayerVisible") === "false")
+                        continue;
+                    html += "<tr><td>" + ("" + (stat.CodeVariable("DisplayName") ? stat.CodeVariable("DisplayName") : stat.Name)).htmlEntities() + "</td><td>" + ("" + data.stats[i].Value).htmlEntities() + "</td></tr>";
+                }
+                html += "<h3>Skills</h3>";
+                data.skills.sort(function (a, b) {
+                    if (a.Name > b.Name)
+                        return 1;
+                    if (a.Name < b.Name)
+                        return -1;
+                    return 0;
+                });
+                for (var i = 0; i < data.skills.length; i++) {
+                    var skill = world.GetSkill(data.skills[i].Name);
+                    if (!skill)
+                        continue;
+                    html += ("" + (skill.CodeVariable("DisplayName") ? skill.CodeVariable("DisplayName") : skill.Name)).htmlEntities() + "<br>";
+                }
+                $("#dialogSentence").html(html);
+                play.onDialogPaint = [];
+                $("#dialogAnswers").html("<div onclick='PublicViewPlayer.Close();' class='gameButton'>Close</div>");
+            },
+            error: function (msg, textStatus) {
+            }
+        });
+    };
+    PublicViewPlayer.Close = function () {
+        $("#npcDialog").hide();
+    };
+    return PublicViewPlayer;
 }());
 var searchPanel = new ((function () {
     function class_27() {

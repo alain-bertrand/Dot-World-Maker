@@ -39,7 +39,7 @@ class MessageMenu
         }
 
         $("#messageIcon").css("top", position + "px");
-        $("#messageIcon .gamePanelContentNoHeader").html("<img src='/art/tileset1/message_icon.png'><div>10</div>");
+        $("#messageIcon .gamePanelContentNoHeader").html("<img src='/art/tileset2/message_icon.png'><div>10</div>");
         $("#messageIcon div.gamePanelContentNoHeader > div").html("0").hide();
 
         if (messageMenu.firstInit && chat.socket)
