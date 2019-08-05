@@ -24,6 +24,13 @@ Default user: admin password: admin
 * Edit the *.ts* files never the resulting *.js* as they will be overwitten when you compile the engine
 * Use gulp with the task compile to compile once or the default task will watch the changes and compile when needed
 
+## How to start developing
+ * Install gulp-cli: npm install --global gulp-cli
+ * Edit the needed TS files
+ * Compile to JS: gulp compile:client compile:server
+
+You may keep gulp monitoring the changes and compile as needed by just running gulp
+
 ## How to create your grame
 [Online documentation](https://www.dotworldmaker.com/Help/welcome.html)
 
