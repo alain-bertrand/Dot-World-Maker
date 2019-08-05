@@ -122,9 +122,9 @@ class Play
             {
                 if (!world.Codes[i].code)
                     world.Codes[i].code = CodeParser.ParseWithParameters(world.Codes[i].Source, world.Codes[i].Parameters);
-                if (world.Codes[i].code.HasFunction("AutoRun"))
+                if (world.Codes[i].code && world.Codes[i].code.HasFunction("AutoRun"))
                     world.Codes[i].code.ExecuteFunction("AutoRun", []);
-                if (world.Codes[i].code.HasFunction("OnPaint"))
+                if (world.Codes[i].code && world.Codes[i].code.HasFunction("OnPaint"))
                     play.onPaint.push(world.Codes[i].code);
             }
             catch (ex)

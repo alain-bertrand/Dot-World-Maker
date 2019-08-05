@@ -10305,6 +10305,461 @@ var WorldZone = (function () {
     }
     return WorldZone;
 }());
+var chat = new ((function () {
+    function class_10() {
+        this.intervalCounter = 0;
+        this.chatNewMessage = false;
+        this.wasHidden = false;
+        this.onMapChat = false;
+        this.channels = {};
+        this.smilies_txt = [[":-)", ":)"], [":-P", ":P", ":-p", ":p"], [":O", ":o", ":-o", ":-O"], [":-(", ":("], [":-/"], [";-)",
+                ";)"], [":D", ":-D"], ["8)", "8-)"], ["B)", "B-)"], ["XD", "xD", "X-D"], ["T.T"], ["^^'", "^.^'"], ["^^", "^.^"], ["O.O", "o.o"],
+            ["8|", "8-|"], ["\M/"], ["&gt;.&lt;"], ["XP", "X-P"], ["oO", "o.O", "o0", "o.0"], ["-.-"], ["(:&lt;"], ["'W'"], [":S", ":-S"],
+            ["*.*"], [":X"], ["X.X", "x.x"], ["$.$"], ["o@@o"], ["9.9"], ["O:&lt;"], ["B|"], ["B("], ["B0"], ["@.@"], ["^**^"], ["9.6"],
+            ["/.O"], ["d.b"], ["&gt;.&gt;"], ["=^_^="]];
+    }
+    return class_10;
+}()));
+var Chat = (function () {
+    function Chat() {
+    }
+    Chat.AdditionalCSS = function () {
+        var r = parseInt(Main.EnsureColor(world.art.panelStyle.buttonBackground).substr(1, 2), 16);
+        var g = parseInt(Main.EnsureColor(world.art.panelStyle.buttonBackground).substr(3, 2), 16);
+        var b = parseInt(Main.EnsureColor(world.art.panelStyle.buttonBackground).substr(5, 2), 16);
+        return "#chatEntry\n\
+{\n\
+    width: calc(100% - " + (95 + world.art.panelStyle.leftBorder) + "px);\n\
+    top: " + (("" + document.location).indexOf("maker.html") != -1 ? "35px" : "5px") + ";\n\
+}\n\
+#chatEntryLine {\n\
+    background-color: rgba(" + r + "," + g + "," + b + ",0.6);\n\
+    color: " + Main.EnsureColor(world.art.panelStyle.contentColor) + ";\n\
+    border: solid 1px " + Main.EnsureColor(world.art.panelStyle.buttonBorder) + ";\n\
+}\n\
+#chatContainer {\n\
+    width: calc(100% - 95px);\n\
+    top: " + (("" + document.location).indexOf("maker.html") != -1 ? "65px" : "35px") + ";\n\
+}\n\
+@media (min-width: 1000px)\n\
+{\n\
+    #chatContainer {\n\
+        left: calc(50% + " + (parseInt("" + world.art.quickslotStyle.width) / 2 + 5) + "px);\n\
+        top: auto;\n\
+        bottom: 40px;\n\
+        width: auto;\n\
+    }\n\
+    #chatEntry\n\
+    {\n\
+        left: calc(50% + " + (parseInt("" + world.art.quickslotStyle.width) / 2 + 5) + "px);\n\
+        width: auto;\n\
+        top: auto;\n\
+        bottom: 5px;\n\
+    }\n\
+}\n\
+#chatChannels div {\n\
+    border: solid 1px " + Main.EnsureColor(world.art.panelStyle.buttonBorder) + ";\n\
+}\n\
+.selectedChannel {\n\
+    background-color: " + Main.EnsureColor(world.art.panelStyle.buttonBorder) + ";\n\
+}";
+    };
+    Chat.Init = function () {
+        if (!framework.Preferences['token'] || world.Edition == EditorEdition.Demo || framework.Preferences['token'] == "demo" || window['io'] == undefined || window['io'] == null || world.ChatEnabled === false) {
+            $("#chatEntry").hide();
+            return;
+        }
+        if (world.Player.ChatBannedTill && typeof world.Player.ChatBannedTill == "string")
+            world.Player.ChatBannedTill = new Date(world.Player.ChatBannedTill);
+        if (world.Player.ChatMutedTill && typeof world.Player.ChatMutedTill == "string")
+            world.Player.ChatMutedTill = new Date(world.Player.ChatMutedTill);
+        if (world.Player.ChatBannedTill && world.Player.ChatBannedTill.getTime() < (new Date()).getTime())
+            world.Player.ChatBannedTill = null;
+        if (world.Player.ChatMutedTill && world.Player.ChatMutedTill.getTime() < (new Date()).getTime())
+            world.Player.ChatMutedTill = null;
+        if (world.Player.ChatBannedTill && world.Player.ChatBannedTill.getTime() > (new Date()).getTime()) {
+            $("#chatContainer").hide();
+            $("#chatEntry").hide();
+            return;
+        }
+        chat.socket = window['io']();
+        chat.socket.on('connect', Chat.Connect);
+        chat.socket.on('chat', Chat.Receive);
+        chat.socket.on('join', Chat.Join);
+        chat.socket.on('leave', Chat.Leave);
+        chat.socket.on('channelUserList', Chat.ChannelUserList);
+        chat.socket.on('chatBot', Chat.BotLine);
+        chat.socket.on('mute', function (till) {
+            world.Player.ChatMutedTill = new Date(till);
+            world.Player.StoredCompare = world.Player.JSON();
+            Framework.ShowMessage("You have been chat muted till " + world.Player.ChatMutedTill);
+        });
+        chat.socket.on('ban', function (till) {
+            world.Player.ChatBannedTill = new Date(till);
+            world.Player.StoredCompare = world.Player.JSON();
+            Framework.ShowMessage("You have been chat banned till " + world.Player.ChatBannedTill);
+            $("#chatContainer").hide();
+            $("#chatEntry").hide();
+        });
+        $("#chatTitle").bind("click", Chat.ShowHide);
+        $("#chatCollapsed").bind("click", Chat.ShowHide);
+        if (!chat.chatInterval)
+            chat.chatInterval = setInterval(Chat.ChatInterval, 500);
+    };
+    Chat.ChatInterval = function () {
+        if (world.Player.ChatBannedTill && world.Player.ChatBannedTill.getTime() > (new Date()).getTime()) {
+            $("#chatContainer").hide();
+            $("#chatEntry").hide();
+            return;
+        }
+        // We entered in a zone
+        if (play.renderer && !chat.channels[world.Player.Zone.replace(/\./g, "_")]) {
+            chat.socket.emit('join', world.Id, framework.Preferences['token'], world.Player.Zone.replace(/\./g, "_"));
+            var items = [];
+            for (var item in chat.channels)
+                items.push(item);
+            chat.channels[world.Player.Zone.replace(/\./g, "_")] = { newMessage: false, messages: [], users: [] };
+            for (var i = 0; i < items.length; i++) {
+                var item = items[i];
+                if (item == "#global" || item == world.Player.Zone.replace(/\./g, "_"))
+                    continue;
+                chat.socket.emit('leave', world.Id, framework.Preferences['token'], item.replace(/\./g, "_"));
+                delete chat.channels[item];
+            }
+            Chat.UpdateChannels();
+            if (chat.currentChannel != "#global" || items.length == 1)
+                Chat.SelectChannel(world.Player.Zone.replace(/\./g, "_"));
+        }
+        // We left the play page
+        if (!play.renderer) {
+            var updated = false;
+            var items = [];
+            for (var item in chat.channels)
+                items.push(item);
+            for (var i = 0; i < items.length; i++) {
+                var item = items[i];
+                if (item == "#global")
+                    continue;
+                updated = true;
+                delete chat.channels[item];
+                chat.socket.emit('leave', world.Id, framework.Preferences['token'], item);
+            }
+            if (updated)
+                Chat.UpdateChannels();
+            Chat.SelectChannel("#global");
+        }
+        if (play.renderer && chat.onMapChat === false) {
+            chat.onMapChat = true;
+            $("#chatEntry").show();
+            $("#chatLine").hide();
+            $("#chatScroll").addClass("fullChatScroll");
+            $("#chatUserList").addClass("fullChatScroll");
+        }
+        else if (!play.renderer && chat.onMapChat === true) {
+            chat.onMapChat = false;
+            $("#chatEntry").hide();
+            $("#chatLine").show();
+            $("#chatScroll").removeClass("fullChatScroll");
+            $("#chatUserList").removeClass("fullChatScroll");
+        }
+        if ($("#chatCollapsed").is(":visible") && chat.chatNewMessage) {
+            if (chat.intervalCounter % 2)
+                $("#chatCollapsed .gamePanelContentNoHeader > div").html("- New message -");
+            else
+                $("#chatCollapsed .gamePanelContentNoHeader > div").html("Click to chat");
+        }
+        for (var item in chat.channels) {
+            if (chat.channels[item].newMessage) {
+                Chat.UpdateChannels();
+                break;
+            }
+        }
+        chat.intervalCounter = 1 - chat.intervalCounter;
+    };
+    Chat.Connect = function () {
+        if (!framework.Preferences['token'] || world.Edition == EditorEdition.Demo || framework.Preferences['token'] == "demo" || window['io'] == undefined || window['io'] == null)
+            return;
+        chat.socket.emit('join', world.Id, framework.Preferences['token'], "#global");
+        chat.channels["#global"] = { newMessage: false, messages: [], users: [] };
+        Chat.UpdateChannels();
+        Chat.SelectChannel("#global");
+        if (framework.Preferences["ChatVisible"] === false) {
+            $("#chatContainer").hide();
+            $("#chatCollapsed").show();
+        }
+        else {
+            $("#chatContainer").show();
+            $("#chatCollapsed").hide();
+        }
+        if (world.Player.ChatBannedTill && world.Player.ChatBannedTill.getTime() > (new Date()).getTime()) {
+            $("#chatContainer").hide();
+            $("#chatEntry").hide();
+            return;
+        }
+    };
+    Chat.Key = function (evt, field) {
+        switch (evt.keyCode) {
+            case 13:
+                Chat.SendLine($("#" + field).val());
+                $("#" + field).val("");
+                break;
+            case 27:
+                $("#" + field).blur();
+                if (chat.wasHidden == true)
+                    Chat.ShowHide();
+                break;
+            default:
+                break;
+        }
+    };
+    Chat.SelectChannel = function (channel) {
+        if (!chat.channels[channel])
+            return;
+        chat.currentChannel = channel;
+        chat.channels[channel].newMessage = false;
+        Chat.RedrawUserList();
+        Chat.RedrawChannelHistory();
+        /*$("#chatChannels div").removeClass("selectedChannel");
+        $("#" + channel.id()).addClass("selectedChannel");*/
+        Chat.UpdateChannels();
+    };
+    Chat.UpdateChannels = function () {
+        var html = "<span>Channels:</span>";
+        for (var item in chat.channels)
+            html += "<div onclick=\"Chat.SelectChannel('" + item.replace(/'/g, "\\'") + "');\" id=\"" + item.id() + "\" class='" + (item == chat.currentChannel ? " selectedChannel" : "") + (chat.channels[item].newMessage && chat.intervalCounter % 2 ? " channelNewMessage" : "") + "'>" + item + "</div>";
+        $("#chatChannels").html(html);
+    };
+    Chat.UpdateAllChannelsUserList = function () {
+        for (var i in chat.channels) {
+            Chat.UpdateChannelUserList(i);
+        }
+    };
+    Chat.UpdateChannelUserList = function (channel) {
+        chat.socket.emit('getChannelUserList', world.Id, channel);
+    };
+    Chat.ChannelUserList = function (channel, users) {
+        if (!chat.channels[channel])
+            return;
+        for (var i = 0; i < world.ChatBots.length; i++) {
+            // Skip the invisible bots
+            if (world.ChatBots[i].Name[0] == "~")
+                continue;
+            if (world.ChatBots[i].Channel == "*" || world.ChatBots[i].Channel == "" || world.ChatBots[i].Channel.toLowerCase() == channel.toLowerCase())
+                users.push(world.ChatBots[i].Name);
+        }
+        chat.channels[channel].users = users;
+        if (chat.currentChannel == channel)
+            Chat.RedrawUserList();
+    };
+    Chat.Join = function (user, channel) {
+        Chat.AddChatLine("", channel, "<b class='chatSystemMessage'>" + user + " joined " + channel + "</b>");
+        Chat.UpdateChannelUserList(channel);
+    };
+    Chat.Leave = function (user, channel) {
+        Chat.AddChatLine("", channel, "<b class='chatSystemMessage'>" + user + " left " + channel + "</b>");
+        Chat.UpdateChannelUserList(channel);
+    };
+    Chat.BotLine = function (botname, fromUser, channel, line) {
+        if (botname[0] == "~")
+            Chat.AddChatLine(null, channel, line.htmlEntities(false).replace(/\n/g, "<br />"));
+        else
+            Chat.AddChatLine(botname, channel, line.htmlEntities(false).replace(/\n/g, "<br />"));
+    };
+    Chat.SendBotLine = function (botname, channel, line) {
+        if (framework.Preferences['token'] == "demo") {
+            Chat.AddChatLine(null, chat.currentChannel, "The chat is disabled in the demo.");
+            return;
+        }
+        if (!chat || !chat.socket)
+            return;
+        if (!world.Player.ChatMutedTill || world.Player.ChatMutedTill.getTime() < (new Date()).getTime())
+            chat.socket.emit('bot', botname, channel, line);
+    };
+    Chat.SendLine = function (line, channel) {
+        if (channel === void 0) { channel = null; }
+        if (world.Player.ChatMutedTill && world.Player.ChatMutedTill.getTime() >= (new Date()).getTime()) {
+            Chat.AddChatLine(null, chat.currentChannel, "<b>!! you are chat muted till " + world.Player.ChatMutedTill + " !!</b>");
+            return;
+        }
+        if (world.Player.ChatBannedTill && world.Player.ChatBannedTill.getTime() >= (new Date()).getTime()) {
+            Chat.AddChatLine(null, chat.currentChannel, "<b>!! you are chat banned till " + world.Player.ChatBannedTill + " !!</b>");
+            return;
+        }
+        if (!chat || !chat.socket)
+            return;
+        if (framework.Preferences['token'] == "demo") {
+            Chat.AddChatLine(null, chat.currentChannel, "The chat is disabled in the demo.");
+            return;
+        }
+        var line = line.trim();
+        if (!line || line == "")
+            return;
+        var botToRun = 0;
+        var botHandled = false;
+        var normalHandling = function () {
+            if (botHandled == true || botToRun > 0)
+                return;
+            if (line.toLowerCase().indexOf("/e ") == 0 || line.toLowerCase().indexOf("/emote ") == 0) {
+                var emote = "--";
+                try {
+                    emote = line.split(' ')[1].toLowerCase();
+                }
+                catch (ex) {
+                }
+                if (EmotesArt[emote] !== undefined) {
+                    world.Player.EmoteTimer = 0;
+                    world.Player.CurrentEmote = EmotesArt[emote];
+                }
+                else
+                    Chat.AddChatLine(null, channel ? channel : chat.currentChannel, "Unknown emote.");
+            }
+            else if (line.toLowerCase().indexOf("/") == 0 && line.toLowerCase().indexOf("/me ") != 0) {
+                Chat.AddChatLine(null, channel ? channel : chat.currentChannel, "Unknown command.");
+            }
+            else
+                chat.socket.emit('send', channel ? channel : chat.currentChannel, line);
+        };
+        var toExecute = [];
+        for (var i = 0; i < world.ChatBots.length; i++) {
+            if (!(world.ChatBots[i].Channel == "*" || world.ChatBots[i].Channel == "" || world.ChatBots[i].Channel.toLowerCase() == channel.toLowerCase()))
+                continue;
+            botToRun++;
+        }
+        if (world.ChatBots.length > 0)
+            for (var i = 0; i < world.ChatBots.length; i++) {
+                if (!(world.ChatBots[i].Channel == "*" || world.ChatBots[i].Channel == "" || world.ChatBots[i].Channel.toLowerCase() == channel.toLowerCase()))
+                    continue;
+                var a = function () {
+                    var bot = world.ChatBots[i];
+                    bot.HandleChat(line, function (res) {
+                        botToRun--;
+                        if (res) {
+                            //Chat.AddChatLine(username, chat.currentChannel, line);
+                            //Chat.AddChatLine(world.ChatBots[i].Name, chat.currentChannel, res);
+                            if (res[0] == "/")
+                                chat.socket.emit('bot', bot.Name, channel ? channel : chat.currentChannel, "/" + res);
+                            else if (res[0] == "!")
+                                Chat.AddChatLine(bot.Name[0] == "~" ? null : bot.Name, channel ? channel : chat.currentChannel, res.substr(1).htmlEntities(false).replace(/\n/g, "<br />"));
+                            else {
+                                chat.socket.emit('send', channel ? channel : chat.currentChannel, line);
+                                chat.socket.emit('bot', bot.Name, channel ? channel : chat.currentChannel, res);
+                            }
+                            botHandled = true;
+                        }
+                        else
+                            normalHandling();
+                    });
+                }();
+            }
+        else
+            normalHandling();
+    };
+    Chat.Receive = function (sender, channel, message) {
+        if (!chat.channels[channel])
+            return;
+        if ($("#chatCollapsed").is(":visible"))
+            chat.chatNewMessage = true;
+        if (chat.currentChannel != channel)
+            chat.channels[channel].newMessage = true;
+        Chat.AddChatLine(sender, channel, message);
+    };
+    Chat.UrlChanger = function (str) {
+        return str.replace(/(^|\s|\>)(http[s]{0,1}:\/\/[a-zA-Z0-9\/\-\+:\.\?=_\&\#\;\%\,~]{1,30})([a-zA-Z0-9\/\-\+:\.\?=_\&\#\;\%\,~]*)/g, "$1[<A HREF='$2$3' TARGET='_BLANK'>$2 ...</A>]");
+    };
+    Chat.Smilies = function (str) {
+        if (!chat.smiliesDb) {
+            chat.smiliesDb = [];
+            for (var i = 0; i < chat.smilies_txt.length; i++) {
+                for (var j = 0; j < chat.smilies_txt[i].length; j++) {
+                    var e = chat.smilies_txt[i][j].replace(/([\.\+\|\\\$\^\(\)\:\?\*\/])/g, '\\$1');
+                    chat.smiliesDb.push({ regexp: new RegExp("(^|\\s|\\>)" + e + "(\\s|\\<|$)", "g"), html: "$1<div style='background-image: url(\"/art/tileset2/smilies.png\"); display: inline-block; width: 20px; height: 16px; background-position: -" + (i * 20) + "px 0px;'></div>$2" });
+                }
+            }
+        }
+        for (var i = 0; i < chat.smiliesDb.length; i++)
+            str = str.replace(chat.smiliesDb[i].regexp, chat.smiliesDb[i].html);
+        return str;
+    };
+    Chat.AddChatLine = function (sender, channel, message) {
+        if (!chat.channels[channel])
+            return;
+        //chat.channels[channel] = [];
+        chat.channels[channel].messages.push({ sender: sender, message: message });
+        while (chat.channels[channel].messages.length > 100)
+            chat.channels[channel].messages.shift();
+        if (channel == chat.currentChannel)
+            Chat.AddChatScrollLine(sender, message);
+    };
+    Chat.AddChatScrollLine = function (sender, message) {
+        if (!message || message.length == 0)
+            return;
+        if (message.toLowerCase().indexOf("/me ") == 0) {
+            message = "<b>-- " + ("" + sender).htmlEntities(false) + " " + message.substr(3).trim().htmlEntities(false) + " --</b>";
+            sender = null;
+        }
+        else if (message.indexOf("//") == 0 && sender != null) {
+            return;
+        }
+        else if (message.indexOf("//") == 0) {
+            message = "<b>** " + message.substr(2).trim() + " **</b>";
+            sender = null;
+        }
+        if (sender != null && sender != "")
+            message = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        if (world.ChatSmilies)
+            message = Chat.Smilies(message);
+        if (world.ChatLink)
+            message = Chat.UrlChanger(message);
+        var chatScroll = $("#chatScroll").first();
+        while (chatScroll.children.length > 100)
+            chatScroll.removeChild(chatScroll.children[0]);
+        $("#chatScroll").html($("#chatScroll").html() + "<div><div" + (sender ? " onclick='PublicViewPlayer.Show(\"" + sender + "\");'" : "") + ">" + (!sender || sender == "" ? "&nbsp;" : sender.htmlEntities(false)) + "</div><div>" + message + "</div></div>");
+        $("#chatScroll").scrollTop($("#chatScroll").scrollTop() + 60000);
+    };
+    Chat.RedrawUserList = function () {
+        var html = "";
+        var users = chat.channels[chat.currentChannel].users;
+        if (users) {
+            users.sort();
+            for (var i = 0; i < users.length; i++) {
+                html += "<div>" + users[i] + "</div>";
+            }
+        }
+        $("#chatUserList").html(html);
+    };
+    Chat.RedrawChannelHistory = function () {
+        $("#chatScroll").html("");
+        for (var i = 0; i < chat.channels[chat.currentChannel].messages.length; i++)
+            Chat.AddChatScrollLine(chat.channels[chat.currentChannel].messages[i].sender, chat.channels[chat.currentChannel].messages[i].message);
+    };
+    Chat.Focus = function () {
+        if ($("#chatCollapsed").is(":visible")) {
+            chat.wasHidden = true;
+            Chat.ShowHide();
+        }
+        else
+            chat.wasHidden = false;
+        if (chat.onMapChat)
+            $("#chatEntryLine").focus();
+        else
+            $("#chatLine").focus();
+    };
+    Chat.ShowHide = function () {
+        if ($("#chatCollapsed").is(":visible")) {
+            $("#chatContainer").show();
+            $("#chatCollapsed").hide();
+            chat.chatNewMessage = false;
+            $("#chatCollapsed .gamePanelContentNoHeader > div").html("Click to chat");
+        }
+        else {
+            $("#chatContainer").hide();
+            $("#chatCollapsed").show();
+        }
+        framework.Preferences["ChatVisible"] = !$("#chatCollapsed").is(":visible");
+        Framework.SavePreferences();
+    };
+    return Chat;
+}());
 var knownGenerators = [];
 // Class decorator which will put all the API inside the api variable.
 function WorldGeneratorClass(target) {
@@ -11126,10 +11581,10 @@ MazeGenerator = MazeGenerator_1 = __decorate([
 var MazeGenerator_1;
 /// <reference path="WorldGenerator.ts" />
 var perlinGenerator = new ((function () {
-    function class_10() {
+    function class_11() {
         this.perlin = null;
     }
-    return class_10;
+    return class_11;
 }()));
 var PerlinGenerator = PerlinGenerator_1 = (function (_super) {
     __extends(PerlinGenerator, _super);
@@ -11295,461 +11750,6 @@ PerlinGenerator = PerlinGenerator_1 = __decorate([
     WorldGeneratorClass
 ], PerlinGenerator);
 var PerlinGenerator_1;
-var chat = new ((function () {
-    function class_11() {
-        this.intervalCounter = 0;
-        this.chatNewMessage = false;
-        this.wasHidden = false;
-        this.onMapChat = false;
-        this.channels = {};
-        this.smilies_txt = [[":-)", ":)"], [":-P", ":P", ":-p", ":p"], [":O", ":o", ":-o", ":-O"], [":-(", ":("], [":-/"], [";-)",
-                ";)"], [":D", ":-D"], ["8)", "8-)"], ["B)", "B-)"], ["XD", "xD", "X-D"], ["T.T"], ["^^'", "^.^'"], ["^^", "^.^"], ["O.O", "o.o"],
-            ["8|", "8-|"], ["\M/"], ["&gt;.&lt;"], ["XP", "X-P"], ["oO", "o.O", "o0", "o.0"], ["-.-"], ["(:&lt;"], ["'W'"], [":S", ":-S"],
-            ["*.*"], [":X"], ["X.X", "x.x"], ["$.$"], ["o@@o"], ["9.9"], ["O:&lt;"], ["B|"], ["B("], ["B0"], ["@.@"], ["^**^"], ["9.6"],
-            ["/.O"], ["d.b"], ["&gt;.&gt;"], ["=^_^="]];
-    }
-    return class_11;
-}()));
-var Chat = (function () {
-    function Chat() {
-    }
-    Chat.AdditionalCSS = function () {
-        var r = parseInt(Main.EnsureColor(world.art.panelStyle.buttonBackground).substr(1, 2), 16);
-        var g = parseInt(Main.EnsureColor(world.art.panelStyle.buttonBackground).substr(3, 2), 16);
-        var b = parseInt(Main.EnsureColor(world.art.panelStyle.buttonBackground).substr(5, 2), 16);
-        return "#chatEntry\n\
-{\n\
-    width: calc(100% - " + (95 + world.art.panelStyle.leftBorder) + "px);\n\
-    top: " + (("" + document.location).indexOf("maker.html") != -1 ? "35px" : "5px") + ";\n\
-}\n\
-#chatEntryLine {\n\
-    background-color: rgba(" + r + "," + g + "," + b + ",0.6);\n\
-    color: " + Main.EnsureColor(world.art.panelStyle.contentColor) + ";\n\
-    border: solid 1px " + Main.EnsureColor(world.art.panelStyle.buttonBorder) + ";\n\
-}\n\
-#chatContainer {\n\
-    width: calc(100% - 95px);\n\
-    top: " + (("" + document.location).indexOf("maker.html") != -1 ? "65px" : "35px") + ";\n\
-}\n\
-@media (min-width: 1000px)\n\
-{\n\
-    #chatContainer {\n\
-        left: calc(50% + " + (parseInt("" + world.art.quickslotStyle.width) / 2 + 5) + "px);\n\
-        top: auto;\n\
-        bottom: 40px;\n\
-        width: auto;\n\
-    }\n\
-    #chatEntry\n\
-    {\n\
-        left: calc(50% + " + (parseInt("" + world.art.quickslotStyle.width) / 2 + 5) + "px);\n\
-        width: auto;\n\
-        top: auto;\n\
-        bottom: 5px;\n\
-    }\n\
-}\n\
-#chatChannels div {\n\
-    border: solid 1px " + Main.EnsureColor(world.art.panelStyle.buttonBorder) + ";\n\
-}\n\
-.selectedChannel {\n\
-    background-color: " + Main.EnsureColor(world.art.panelStyle.buttonBorder) + ";\n\
-}";
-    };
-    Chat.Init = function () {
-        if (!framework.Preferences['token'] || world.Edition == EditorEdition.Demo || framework.Preferences['token'] == "demo" || window['io'] == undefined || window['io'] == null || world.ChatEnabled === false) {
-            $("#chatEntry").hide();
-            return;
-        }
-        if (world.Player.ChatBannedTill && typeof world.Player.ChatBannedTill == "string")
-            world.Player.ChatBannedTill = new Date(world.Player.ChatBannedTill);
-        if (world.Player.ChatMutedTill && typeof world.Player.ChatMutedTill == "string")
-            world.Player.ChatMutedTill = new Date(world.Player.ChatMutedTill);
-        if (world.Player.ChatBannedTill && world.Player.ChatBannedTill.getTime() < (new Date()).getTime())
-            world.Player.ChatBannedTill = null;
-        if (world.Player.ChatMutedTill && world.Player.ChatMutedTill.getTime() < (new Date()).getTime())
-            world.Player.ChatMutedTill = null;
-        if (world.Player.ChatBannedTill && world.Player.ChatBannedTill.getTime() > (new Date()).getTime()) {
-            $("#chatContainer").hide();
-            $("#chatEntry").hide();
-            return;
-        }
-        chat.socket = window['io']();
-        chat.socket.on('connect', Chat.Connect);
-        chat.socket.on('chat', Chat.Receive);
-        chat.socket.on('join', Chat.Join);
-        chat.socket.on('leave', Chat.Leave);
-        chat.socket.on('channelUserList', Chat.ChannelUserList);
-        chat.socket.on('chatBot', Chat.BotLine);
-        chat.socket.on('mute', function (till) {
-            world.Player.ChatMutedTill = new Date(till);
-            world.Player.StoredCompare = world.Player.JSON();
-            Framework.ShowMessage("You have been chat muted till " + world.Player.ChatMutedTill);
-        });
-        chat.socket.on('ban', function (till) {
-            world.Player.ChatBannedTill = new Date(till);
-            world.Player.StoredCompare = world.Player.JSON();
-            Framework.ShowMessage("You have been chat banned till " + world.Player.ChatBannedTill);
-            $("#chatContainer").hide();
-            $("#chatEntry").hide();
-        });
-        $("#chatTitle").bind("click", Chat.ShowHide);
-        $("#chatCollapsed").bind("click", Chat.ShowHide);
-        if (!chat.chatInterval)
-            chat.chatInterval = setInterval(Chat.ChatInterval, 500);
-    };
-    Chat.ChatInterval = function () {
-        if (world.Player.ChatBannedTill && world.Player.ChatBannedTill.getTime() > (new Date()).getTime()) {
-            $("#chatContainer").hide();
-            $("#chatEntry").hide();
-            return;
-        }
-        // We entered in a zone
-        if (play.renderer && !chat.channels[world.Player.Zone.replace(/\./g, "_")]) {
-            chat.socket.emit('join', world.Id, framework.Preferences['token'], world.Player.Zone.replace(/\./g, "_"));
-            var items = [];
-            for (var item in chat.channels)
-                items.push(item);
-            chat.channels[world.Player.Zone.replace(/\./g, "_")] = { newMessage: false, messages: [], users: [] };
-            for (var i = 0; i < items.length; i++) {
-                var item = items[i];
-                if (item == "#global" || item == world.Player.Zone.replace(/\./g, "_"))
-                    continue;
-                chat.socket.emit('leave', world.Id, framework.Preferences['token'], item.replace(/\./g, "_"));
-                delete chat.channels[item];
-            }
-            Chat.UpdateChannels();
-            if (chat.currentChannel != "#global" || items.length == 1)
-                Chat.SelectChannel(world.Player.Zone.replace(/\./g, "_"));
-        }
-        // We left the play page
-        if (!play.renderer) {
-            var updated = false;
-            var items = [];
-            for (var item in chat.channels)
-                items.push(item);
-            for (var i = 0; i < items.length; i++) {
-                var item = items[i];
-                if (item == "#global")
-                    continue;
-                updated = true;
-                delete chat.channels[item];
-                chat.socket.emit('leave', world.Id, framework.Preferences['token'], item);
-            }
-            if (updated)
-                Chat.UpdateChannels();
-            Chat.SelectChannel("#global");
-        }
-        if (play.renderer && chat.onMapChat === false) {
-            chat.onMapChat = true;
-            $("#chatEntry").show();
-            $("#chatLine").hide();
-            $("#chatScroll").addClass("fullChatScroll");
-            $("#chatUserList").addClass("fullChatScroll");
-        }
-        else if (!play.renderer && chat.onMapChat === true) {
-            chat.onMapChat = false;
-            $("#chatEntry").hide();
-            $("#chatLine").show();
-            $("#chatScroll").removeClass("fullChatScroll");
-            $("#chatUserList").removeClass("fullChatScroll");
-        }
-        if ($("#chatCollapsed").is(":visible") && chat.chatNewMessage) {
-            if (chat.intervalCounter % 2)
-                $("#chatCollapsed .gamePanelContentNoHeader > div").html("- New message -");
-            else
-                $("#chatCollapsed .gamePanelContentNoHeader > div").html("Click to chat");
-        }
-        for (var item in chat.channels) {
-            if (chat.channels[item].newMessage) {
-                Chat.UpdateChannels();
-                break;
-            }
-        }
-        chat.intervalCounter = 1 - chat.intervalCounter;
-    };
-    Chat.Connect = function () {
-        if (!framework.Preferences['token'] || world.Edition == EditorEdition.Demo || framework.Preferences['token'] == "demo" || window['io'] == undefined || window['io'] == null)
-            return;
-        chat.socket.emit('join', world.Id, framework.Preferences['token'], "#global");
-        chat.channels["#global"] = { newMessage: false, messages: [], users: [] };
-        Chat.UpdateChannels();
-        Chat.SelectChannel("#global");
-        if (framework.Preferences["ChatVisible"] === false) {
-            $("#chatContainer").hide();
-            $("#chatCollapsed").show();
-        }
-        else {
-            $("#chatContainer").show();
-            $("#chatCollapsed").hide();
-        }
-        if (world.Player.ChatBannedTill && world.Player.ChatBannedTill.getTime() > (new Date()).getTime()) {
-            $("#chatContainer").hide();
-            $("#chatEntry").hide();
-            return;
-        }
-    };
-    Chat.Key = function (evt, field) {
-        switch (evt.keyCode) {
-            case 13:
-                Chat.SendLine($("#" + field).val());
-                $("#" + field).val("");
-                break;
-            case 27:
-                $("#" + field).blur();
-                if (chat.wasHidden == true)
-                    Chat.ShowHide();
-                break;
-            default:
-                break;
-        }
-    };
-    Chat.SelectChannel = function (channel) {
-        if (!chat.channels[channel])
-            return;
-        chat.currentChannel = channel;
-        chat.channels[channel].newMessage = false;
-        Chat.RedrawUserList();
-        Chat.RedrawChannelHistory();
-        /*$("#chatChannels div").removeClass("selectedChannel");
-        $("#" + channel.id()).addClass("selectedChannel");*/
-        Chat.UpdateChannels();
-    };
-    Chat.UpdateChannels = function () {
-        var html = "<span>Channels:</span>";
-        for (var item in chat.channels)
-            html += "<div onclick=\"Chat.SelectChannel('" + item.replace(/'/g, "\\'") + "');\" id=\"" + item.id() + "\" class='" + (item == chat.currentChannel ? " selectedChannel" : "") + (chat.channels[item].newMessage && chat.intervalCounter % 2 ? " channelNewMessage" : "") + "'>" + item + "</div>";
-        $("#chatChannels").html(html);
-    };
-    Chat.UpdateAllChannelsUserList = function () {
-        for (var i in chat.channels) {
-            Chat.UpdateChannelUserList(i);
-        }
-    };
-    Chat.UpdateChannelUserList = function (channel) {
-        chat.socket.emit('getChannelUserList', world.Id, channel);
-    };
-    Chat.ChannelUserList = function (channel, users) {
-        if (!chat.channels[channel])
-            return;
-        for (var i = 0; i < world.ChatBots.length; i++) {
-            // Skip the invisible bots
-            if (world.ChatBots[i].Name[0] == "~")
-                continue;
-            if (world.ChatBots[i].Channel == "*" || world.ChatBots[i].Channel == "" || world.ChatBots[i].Channel.toLowerCase() == channel.toLowerCase())
-                users.push(world.ChatBots[i].Name);
-        }
-        chat.channels[channel].users = users;
-        if (chat.currentChannel == channel)
-            Chat.RedrawUserList();
-    };
-    Chat.Join = function (user, channel) {
-        Chat.AddChatLine("", channel, "<b class='chatSystemMessage'>" + user + " joined " + channel + "</b>");
-        Chat.UpdateChannelUserList(channel);
-    };
-    Chat.Leave = function (user, channel) {
-        Chat.AddChatLine("", channel, "<b class='chatSystemMessage'>" + user + " left " + channel + "</b>");
-        Chat.UpdateChannelUserList(channel);
-    };
-    Chat.BotLine = function (botname, fromUser, channel, line) {
-        if (botname[0] == "~")
-            Chat.AddChatLine(null, channel, line.htmlEntities(false).replace(/\n/g, "<br />"));
-        else
-            Chat.AddChatLine(botname, channel, line.htmlEntities(false).replace(/\n/g, "<br />"));
-    };
-    Chat.SendBotLine = function (botname, channel, line) {
-        if (framework.Preferences['token'] == "demo") {
-            Chat.AddChatLine(null, chat.currentChannel, "The chat is disabled in the demo.");
-            return;
-        }
-        if (!chat || !chat.socket)
-            return;
-        if (!world.Player.ChatMutedTill || world.Player.ChatMutedTill.getTime() < (new Date()).getTime())
-            chat.socket.emit('bot', botname, channel, line);
-    };
-    Chat.SendLine = function (line, channel) {
-        if (channel === void 0) { channel = null; }
-        if (world.Player.ChatMutedTill && world.Player.ChatMutedTill.getTime() >= (new Date()).getTime()) {
-            Chat.AddChatLine(null, chat.currentChannel, "<b>!! you are chat muted till " + world.Player.ChatMutedTill + " !!</b>");
-            return;
-        }
-        if (world.Player.ChatBannedTill && world.Player.ChatBannedTill.getTime() >= (new Date()).getTime()) {
-            Chat.AddChatLine(null, chat.currentChannel, "<b>!! you are chat banned till " + world.Player.ChatBannedTill + " !!</b>");
-            return;
-        }
-        if (!chat || !chat.socket)
-            return;
-        if (framework.Preferences['token'] == "demo") {
-            Chat.AddChatLine(null, chat.currentChannel, "The chat is disabled in the demo.");
-            return;
-        }
-        var line = line.trim();
-        if (!line || line == "")
-            return;
-        var botToRun = 0;
-        var botHandled = false;
-        var normalHandling = function () {
-            if (botHandled == true || botToRun > 0)
-                return;
-            if (line.toLowerCase().indexOf("/e ") == 0 || line.toLowerCase().indexOf("/emote ") == 0) {
-                var emote = "--";
-                try {
-                    emote = line.split(' ')[1].toLowerCase();
-                }
-                catch (ex) {
-                }
-                if (EmotesArt[emote] !== undefined) {
-                    world.Player.EmoteTimer = 0;
-                    world.Player.CurrentEmote = EmotesArt[emote];
-                }
-                else
-                    Chat.AddChatLine(null, channel ? channel : chat.currentChannel, "Unknown emote.");
-            }
-            else if (line.toLowerCase().indexOf("/") == 0 && line.toLowerCase().indexOf("/me ") != 0) {
-                Chat.AddChatLine(null, channel ? channel : chat.currentChannel, "Unknown command.");
-            }
-            else
-                chat.socket.emit('send', channel ? channel : chat.currentChannel, line);
-        };
-        var toExecute = [];
-        for (var i = 0; i < world.ChatBots.length; i++) {
-            if (!(world.ChatBots[i].Channel == "*" || world.ChatBots[i].Channel == "" || world.ChatBots[i].Channel.toLowerCase() == channel.toLowerCase()))
-                continue;
-            botToRun++;
-        }
-        if (world.ChatBots.length > 0)
-            for (var i = 0; i < world.ChatBots.length; i++) {
-                if (!(world.ChatBots[i].Channel == "*" || world.ChatBots[i].Channel == "" || world.ChatBots[i].Channel.toLowerCase() == channel.toLowerCase()))
-                    continue;
-                var a = function () {
-                    var bot = world.ChatBots[i];
-                    bot.HandleChat(line, function (res) {
-                        botToRun--;
-                        if (res) {
-                            //Chat.AddChatLine(username, chat.currentChannel, line);
-                            //Chat.AddChatLine(world.ChatBots[i].Name, chat.currentChannel, res);
-                            if (res[0] == "/")
-                                chat.socket.emit('bot', bot.Name, channel ? channel : chat.currentChannel, "/" + res);
-                            else if (res[0] == "!")
-                                Chat.AddChatLine(bot.Name[0] == "~" ? null : bot.Name, channel ? channel : chat.currentChannel, res.substr(1).htmlEntities(false).replace(/\n/g, "<br />"));
-                            else {
-                                chat.socket.emit('send', channel ? channel : chat.currentChannel, line);
-                                chat.socket.emit('bot', bot.Name, channel ? channel : chat.currentChannel, res);
-                            }
-                            botHandled = true;
-                        }
-                        else
-                            normalHandling();
-                    });
-                }();
-            }
-        else
-            normalHandling();
-    };
-    Chat.Receive = function (sender, channel, message) {
-        if (!chat.channels[channel])
-            return;
-        if ($("#chatCollapsed").is(":visible"))
-            chat.chatNewMessage = true;
-        if (chat.currentChannel != channel)
-            chat.channels[channel].newMessage = true;
-        Chat.AddChatLine(sender, channel, message);
-    };
-    Chat.UrlChanger = function (str) {
-        return str.replace(/(^|\s|\>)(http[s]{0,1}:\/\/[a-zA-Z0-9\/\-\+:\.\?=_\&\#\;\%\,~]{1,30})([a-zA-Z0-9\/\-\+:\.\?=_\&\#\;\%\,~]*)/g, "$1[<A HREF='$2$3' TARGET='_BLANK'>$2 ...</A>]");
-    };
-    Chat.Smilies = function (str) {
-        if (!chat.smiliesDb) {
-            chat.smiliesDb = [];
-            for (var i = 0; i < chat.smilies_txt.length; i++) {
-                for (var j = 0; j < chat.smilies_txt[i].length; j++) {
-                    var e = chat.smilies_txt[i][j].replace(/([\.\+\|\\\$\^\(\)\:\?\*\/])/g, '\\$1');
-                    chat.smiliesDb.push({ regexp: new RegExp("(^|\\s|\\>)" + e + "(\\s|\\<|$)", "g"), html: "$1<div style='background-image: url(\"/art/tileset2/smilies.png\"); display: inline-block; width: 20px; height: 16px; background-position: -" + (i * 20) + "px 0px;'></div>$2" });
-                }
-            }
-        }
-        for (var i = 0; i < chat.smiliesDb.length; i++)
-            str = str.replace(chat.smiliesDb[i].regexp, chat.smiliesDb[i].html);
-        return str;
-    };
-    Chat.AddChatLine = function (sender, channel, message) {
-        if (!chat.channels[channel])
-            return;
-        //chat.channels[channel] = [];
-        chat.channels[channel].messages.push({ sender: sender, message: message });
-        while (chat.channels[channel].messages.length > 100)
-            chat.channels[channel].messages.shift();
-        if (channel == chat.currentChannel)
-            Chat.AddChatScrollLine(sender, message);
-    };
-    Chat.AddChatScrollLine = function (sender, message) {
-        if (!message || message.length == 0)
-            return;
-        if (message.toLowerCase().indexOf("/me ") == 0) {
-            message = "<b>-- " + ("" + sender).htmlEntities(false) + " " + message.substr(3).trim().htmlEntities(false) + " --</b>";
-            sender = null;
-        }
-        else if (message.indexOf("//") == 0 && sender != null) {
-            return;
-        }
-        else if (message.indexOf("//") == 0) {
-            message = "<b>** " + message.substr(2).trim() + " **</b>";
-            sender = null;
-        }
-        if (sender != null && sender != "")
-            message = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        if (world.ChatSmilies)
-            message = Chat.Smilies(message);
-        if (world.ChatLink)
-            message = Chat.UrlChanger(message);
-        var chatScroll = $("#chatScroll").first();
-        while (chatScroll.children.length > 100)
-            chatScroll.removeChild(chatScroll.children[0]);
-        $("#chatScroll").html($("#chatScroll").html() + "<div><div" + (sender ? " onclick='PublicViewPlayer.Show(\"" + sender + "\");'" : "") + ">" + (!sender || sender == "" ? "&nbsp;" : sender.htmlEntities(false)) + "</div><div>" + message + "</div></div>");
-        $("#chatScroll").scrollTop($("#chatScroll").scrollTop() + 60000);
-    };
-    Chat.RedrawUserList = function () {
-        var html = "";
-        var users = chat.channels[chat.currentChannel].users;
-        if (users) {
-            users.sort();
-            for (var i = 0; i < users.length; i++) {
-                html += "<div>" + users[i] + "</div>";
-            }
-        }
-        $("#chatUserList").html(html);
-    };
-    Chat.RedrawChannelHistory = function () {
-        $("#chatScroll").html("");
-        for (var i = 0; i < chat.channels[chat.currentChannel].messages.length; i++)
-            Chat.AddChatScrollLine(chat.channels[chat.currentChannel].messages[i].sender, chat.channels[chat.currentChannel].messages[i].message);
-    };
-    Chat.Focus = function () {
-        if ($("#chatCollapsed").is(":visible")) {
-            chat.wasHidden = true;
-            Chat.ShowHide();
-        }
-        else
-            chat.wasHidden = false;
-        if (chat.onMapChat)
-            $("#chatEntryLine").focus();
-        else
-            $("#chatLine").focus();
-    };
-    Chat.ShowHide = function () {
-        if ($("#chatCollapsed").is(":visible")) {
-            $("#chatContainer").show();
-            $("#chatCollapsed").hide();
-            chat.chatNewMessage = false;
-            $("#chatCollapsed .gamePanelContentNoHeader > div").html("Click to chat");
-        }
-        else {
-            $("#chatContainer").hide();
-            $("#chatCollapsed").show();
-        }
-        framework.Preferences["ChatVisible"] = !$("#chatCollapsed").is(":visible");
-        Framework.SavePreferences();
-    };
-    return Chat;
-}());
 var codeEditor = new ((function () {
     function class_12() {
         this.hideHelpTimer = null;
@@ -14265,6 +14265,81 @@ var MessageMenu = (function () {
     };
     return MessageMenu;
 }());
+var PublicViewPlayer = (function () {
+    function PublicViewPlayer() {
+    }
+    PublicViewPlayer.Show = function (name) {
+        $.ajax({
+            type: 'POST',
+            url: '/backend/PublicViewPlayer',
+            data: {
+                game: world.Id,
+                name: name
+            },
+            success: function (msg) {
+                var data = TryParse(msg);
+                if (!data)
+                    return;
+                $("#npcDialog").show();
+                $("#npcDialog .gamePanelHeader").html("View: " + name.htmlEntities());
+                var html = "";
+                html += "<table>";
+                html += "<tr><td>Name:</td><td>" + ("" + data.name).htmlEntities() + "</td></tr>";
+                html += "<tr><td>X:</td><td>" + ("" + data.x).htmlEntities() + "</td></tr>";
+                html += "<tr><td>Y:</td><td>" + ("" + data.x).htmlEntities() + "</td></tr>";
+                html += "<tr><td>Zone:</td><td>" + ("" + data.zone).htmlEntities() + "</td></tr>";
+                html += "</table>";
+                html += "<h3>Equiped with</h3>";
+                var items = [];
+                for (var item in data.equipedObjects)
+                    items.push(data.equipedObjects[item]);
+                items.sort();
+                for (var i = 0; i < items.length; i++)
+                    html += ("" + items[i].Name).htmlEntities() + "<br>";
+                html += "<h3>Stats</h3>";
+                html += "<table>";
+                data.stats.sort(function (a, b) {
+                    if (a.Name > b.Name)
+                        return 1;
+                    if (a.Name < b.Name)
+                        return -1;
+                    return 0;
+                });
+                for (var i = 0; i < data.stats.length; i++) {
+                    var stat = world.GetStat(data.stats[i].Name);
+                    if (!stat)
+                        continue;
+                    if (stat.CodeVariable("PlayerVisible") === "false")
+                        continue;
+                    html += "<tr><td>" + ("" + (stat.CodeVariable("DisplayName") ? stat.CodeVariable("DisplayName") : stat.Name)).htmlEntities() + "</td><td>" + ("" + data.stats[i].Value).htmlEntities() + "</td></tr>";
+                }
+                html += "<h3>Skills</h3>";
+                data.skills.sort(function (a, b) {
+                    if (a.Name > b.Name)
+                        return 1;
+                    if (a.Name < b.Name)
+                        return -1;
+                    return 0;
+                });
+                for (var i = 0; i < data.skills.length; i++) {
+                    var skill = world.GetSkill(data.skills[i].Name);
+                    if (!skill)
+                        continue;
+                    html += ("" + (skill.CodeVariable("DisplayName") ? skill.CodeVariable("DisplayName") : skill.Name)).htmlEntities() + "<br>";
+                }
+                $("#dialogSentence").html(html);
+                play.onDialogPaint = [];
+                $("#dialogAnswers").html("<div onclick='PublicViewPlayer.Close();' class='gameButton'>Close</div>");
+            },
+            error: function (msg, textStatus) {
+            }
+        });
+    };
+    PublicViewPlayer.Close = function () {
+        $("#npcDialog").hide();
+    };
+    return PublicViewPlayer;
+}());
 var profileMenu = new ((function () {
     function class_19() {
         this.profileDisplayed = false;
@@ -14467,81 +14542,6 @@ var ProfileMenu = (function () {
         ProfileMenu.Show();
     };
     return ProfileMenu;
-}());
-var PublicViewPlayer = (function () {
-    function PublicViewPlayer() {
-    }
-    PublicViewPlayer.Show = function (name) {
-        $.ajax({
-            type: 'POST',
-            url: '/backend/PublicViewPlayer',
-            data: {
-                game: world.Id,
-                name: name
-            },
-            success: function (msg) {
-                var data = TryParse(msg);
-                if (!data)
-                    return;
-                $("#npcDialog").show();
-                $("#npcDialog .gamePanelHeader").html("View: " + name.htmlEntities());
-                var html = "";
-                html += "<table>";
-                html += "<tr><td>Name:</td><td>" + ("" + data.name).htmlEntities() + "</td></tr>";
-                html += "<tr><td>X:</td><td>" + ("" + data.x).htmlEntities() + "</td></tr>";
-                html += "<tr><td>Y:</td><td>" + ("" + data.x).htmlEntities() + "</td></tr>";
-                html += "<tr><td>Zone:</td><td>" + ("" + data.zone).htmlEntities() + "</td></tr>";
-                html += "</table>";
-                html += "<h3>Equiped with</h3>";
-                var items = [];
-                for (var item in data.equipedObjects)
-                    items.push(data.equipedObjects[item]);
-                items.sort();
-                for (var i = 0; i < items.length; i++)
-                    html += ("" + items[i].Name).htmlEntities() + "<br>";
-                html += "<h3>Stats</h3>";
-                html += "<table>";
-                data.stats.sort(function (a, b) {
-                    if (a.Name > b.Name)
-                        return 1;
-                    if (a.Name < b.Name)
-                        return -1;
-                    return 0;
-                });
-                for (var i = 0; i < data.stats.length; i++) {
-                    var stat = world.GetStat(data.stats[i].Name);
-                    if (!stat)
-                        continue;
-                    if (stat.CodeVariable("PlayerVisible") === "false")
-                        continue;
-                    html += "<tr><td>" + ("" + (stat.CodeVariable("DisplayName") ? stat.CodeVariable("DisplayName") : stat.Name)).htmlEntities() + "</td><td>" + ("" + data.stats[i].Value).htmlEntities() + "</td></tr>";
-                }
-                html += "<h3>Skills</h3>";
-                data.skills.sort(function (a, b) {
-                    if (a.Name > b.Name)
-                        return 1;
-                    if (a.Name < b.Name)
-                        return -1;
-                    return 0;
-                });
-                for (var i = 0; i < data.skills.length; i++) {
-                    var skill = world.GetSkill(data.skills[i].Name);
-                    if (!skill)
-                        continue;
-                    html += ("" + (skill.CodeVariable("DisplayName") ? skill.CodeVariable("DisplayName") : skill.Name)).htmlEntities() + "<br>";
-                }
-                $("#dialogSentence").html(html);
-                play.onDialogPaint = [];
-                $("#dialogAnswers").html("<div onclick='PublicViewPlayer.Close();' class='gameButton'>Close</div>");
-            },
-            error: function (msg, textStatus) {
-            }
-        });
-    };
-    PublicViewPlayer.Close = function () {
-        $("#npcDialog").hide();
-    };
-    return PublicViewPlayer;
 }());
 var searchPanel = new ((function () {
     function class_20() {
@@ -15345,13 +15345,149 @@ var ArtCharacterEditor = (function () {
     };
     return ArtCharacterEditor;
 }());
-var artObjectEditor = new ((function () {
+var artPanelEditor = new ((function () {
     function class_23() {
+    }
+    return class_23;
+}()));
+var ArtPanelEditor = (function () {
+    function ArtPanelEditor() {
+    }
+    ArtPanelEditor.Dispose = function () {
+        if (artPanelEditor.refreshStyle)
+            clearInterval(artPanelEditor.refreshStyle);
+        artPanelEditor.refreshStyle = null;
+    };
+    ArtPanelEditor.IsAccessible = function () {
+        return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
+    };
+    ArtPanelEditor.Recover = function () {
+        if (Main.CheckNW()) {
+            $("#helpLink").first().onclick = function () {
+                StandaloneMaker.Help($("#helpLink").prop("href"));
+                return false;
+            };
+            $("#panelDetails").css("top", "5px");
+            $("#buttonUpload").html("Change");
+        }
+        artPanelEditor.panelStyle = new Image();
+        artPanelEditor.panelStyle.src = world.art.panelStyle.file;
+        artPanelEditor.refreshStyle = setInterval(ArtPanelEditor.UpdateStyle, 100);
+        $("#leftBorder").val(world.art.panelStyle.leftBorder);
+        $("#rightBorder").val(world.art.panelStyle.rightBorder);
+        $("#topBorder").val(world.art.panelStyle.topBorder);
+        $("#bottomBorder").val(world.art.panelStyle.bottomBorder);
+        $("#headerHeight").val(world.art.panelStyle.header);
+        $("#headerColor").val(world.art.panelStyle.headerColor);
+        $("#contentColor").val(world.art.panelStyle.contentColor);
+        $("#contentHeaderBackgroundColor").val(world.art.panelStyle.contentHeaderBackgroundColor);
+        $("#contentHeaderColor").val(world.art.panelStyle.contentHeaderColor);
+        $("#contentSelectedColor").val(world.art.panelStyle.contentSelectedColor);
+        $("#buttonBorder").val(world.art.panelStyle.buttonBorder);
+        $("#buttonBackground").val(world.art.panelStyle.buttonBackground);
+        $("#buttonBackgroundHover").val(world.art.panelStyle.buttonBackgroundHover);
+        $("#chatPlaceholderColor").val(world.art.panelStyle.chatPlaceholderColor ? world.art.panelStyle.chatPlaceholderColor : "#c7c7cd");
+        $("#chatNormalColor").val(world.art.panelStyle.chatNormalColor ? world.art.panelStyle.chatNormalColor : "#ffffff");
+        $("#chatSeparatorColor").val(world.art.panelStyle.chatSeparatorColor ? world.art.panelStyle.chatSeparatorColor : "#7a7ead");
+        $("#chatSystemMessageColor").val(world.art.panelStyle.chatSystemMessageColor ? world.art.panelStyle.chatSystemMessageColor : "#00e000");
+        Main.GenerateGameStyle();
+    };
+    ArtPanelEditor.ChangeParam = function (fieldName, paramName) {
+        var val = $("#" + fieldName).val();
+        if (typeof world.art.panelStyle[paramName] == "number") {
+            var nVal = parseInt(val);
+            if (!isNaN(nVal))
+                world.art.panelStyle[paramName] = nVal;
+        }
+        else
+            world.art.panelStyle[paramName] = val;
+        Main.GenerateGameStyle();
+    };
+    ArtPanelEditor.UpdateStyle = function () {
+        if (!artPanelEditor.panelStyle || !artPanelEditor.panelStyle.width)
+            return;
+        var canvas = $("#panelStyle").first();
+        if (canvas.width != artPanelEditor.panelStyle.width)
+            canvas.width = artPanelEditor.panelStyle.width;
+        if (canvas.height != artPanelEditor.panelStyle.height)
+            canvas.height = artPanelEditor.panelStyle.height;
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(artPanelEditor.panelStyle, 0, 0);
+        ctx.strokeStyle = "#E00000";
+        ctx.beginPath();
+        ctx.moveTo(0, world.art.panelStyle.topBorder + 0.5);
+        ctx.lineTo(canvas.width, world.art.panelStyle.topBorder + 0.5);
+        ctx.moveTo(0, world.art.panelStyle.topBorder + world.art.panelStyle.header + 0.5);
+        ctx.lineTo(canvas.width, world.art.panelStyle.topBorder + world.art.panelStyle.header + 0.5);
+        ctx.moveTo(0, canvas.height - world.art.panelStyle.bottomBorder + 0.5);
+        ctx.lineTo(canvas.width, canvas.height - world.art.panelStyle.bottomBorder + 0.5);
+        ctx.moveTo(world.art.panelStyle.leftBorder + 0.5, 0);
+        ctx.lineTo(world.art.panelStyle.leftBorder + 0.5, canvas.height);
+        ctx.moveTo(canvas.width - world.art.panelStyle.leftBorder + 0.5, 0);
+        ctx.lineTo(canvas.width - world.art.panelStyle.leftBorder + 0.5, canvas.height);
+        ctx.stroke();
+    };
+    ArtPanelEditor.GenerateHTML = function (divId) {
+        var html = "";
+        html += "<div id='" + divId + "' class='gamePanel'>\n";
+        html += "<div class='gamePanelTopBorder'></div>\n";
+        html += "<div class='gamePanelHeader'>Test Panel</div>\n";
+        html += "<div class='gamePanelContent'></div>\n";
+        html += "<div class='gamePanelBottomBorder'></div>\n";
+        html += "</div>";
+        return html;
+    };
+    ArtPanelEditor.ShowUpload = function () {
+        if (Main.CheckNW()) {
+            $("#fileOpenDialog").prop("accept", ".png");
+            $("#fileOpenDialog").unbind("change");
+            $("#fileOpenDialog").val("").bind("change", ArtPanelEditor.ImportFileImage).first().click();
+            return;
+        }
+        $("#uploadArtObject").show();
+        $("#uploadGameId").val("" + world.Id);
+        $("#uploadToken").val(framework.Preferences['token']);
+    };
+    ArtPanelEditor.ImportFileImage = function () {
+        ArtPanelEditor.FinishImport($("#fileOpenDialog").val());
+        $("#fileOpenDialog").unbind("change", ArtPanelEditor.ImportFileImage).val("");
+    };
+    ArtPanelEditor.CloseUpload = function () {
+        $("#uploadArtObject").hide();
+    };
+    ArtPanelEditor.Upload = function () {
+        $("#uploadArtObject").hide();
+        $("#artObjectUploadForm").submit();
+    };
+    ArtPanelEditor.Result = function (result) {
+        var data = JSON.parse(result);
+        if (data.error) {
+            Framework.Alert(data.error);
+            return;
+        }
+        else if (data.new_file) {
+            ArtPanelEditor.FinishImport(data.new_file);
+        }
+    };
+    ArtPanelEditor.FinishImport = function (filename) {
+        // Change background, we need to reset all the types, transitions, and world generators.
+        world.art.panelStyle.file = filename + "?v=" + Math.round((new Date()).getTime() / 1000);
+        artPanelEditor.panelStyle = new Image();
+        artPanelEditor.panelStyle.src = world.art.panelStyle.file;
+        artPanelEditor.panelStyle.onload = function () {
+            Main.GenerateGameStyle();
+        };
+        //artPanelEditor.refreshStyle = setInterval(ArtPanelEditor.UpdateStyle, 100);
+    };
+    return ArtPanelEditor;
+}());
+var artObjectEditor = new ((function () {
+    function class_24() {
         this.selector = null;
         this.positionSelection = null;
         this.groundSelection = null;
     }
-    return class_23;
+    return class_24;
 }()));
 var ArtObjectEditor = (function () {
     function ArtObjectEditor() {
@@ -16078,142 +16214,6 @@ var ArtObjectEditor = (function () {
     };
     return ArtObjectEditor;
 }());
-var artPanelEditor = new ((function () {
-    function class_24() {
-    }
-    return class_24;
-}()));
-var ArtPanelEditor = (function () {
-    function ArtPanelEditor() {
-    }
-    ArtPanelEditor.Dispose = function () {
-        if (artPanelEditor.refreshStyle)
-            clearInterval(artPanelEditor.refreshStyle);
-        artPanelEditor.refreshStyle = null;
-    };
-    ArtPanelEditor.IsAccessible = function () {
-        return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
-    };
-    ArtPanelEditor.Recover = function () {
-        if (Main.CheckNW()) {
-            $("#helpLink").first().onclick = function () {
-                StandaloneMaker.Help($("#helpLink").prop("href"));
-                return false;
-            };
-            $("#panelDetails").css("top", "5px");
-            $("#buttonUpload").html("Change");
-        }
-        artPanelEditor.panelStyle = new Image();
-        artPanelEditor.panelStyle.src = world.art.panelStyle.file;
-        artPanelEditor.refreshStyle = setInterval(ArtPanelEditor.UpdateStyle, 100);
-        $("#leftBorder").val(world.art.panelStyle.leftBorder);
-        $("#rightBorder").val(world.art.panelStyle.rightBorder);
-        $("#topBorder").val(world.art.panelStyle.topBorder);
-        $("#bottomBorder").val(world.art.panelStyle.bottomBorder);
-        $("#headerHeight").val(world.art.panelStyle.header);
-        $("#headerColor").val(world.art.panelStyle.headerColor);
-        $("#contentColor").val(world.art.panelStyle.contentColor);
-        $("#contentHeaderBackgroundColor").val(world.art.panelStyle.contentHeaderBackgroundColor);
-        $("#contentHeaderColor").val(world.art.panelStyle.contentHeaderColor);
-        $("#contentSelectedColor").val(world.art.panelStyle.contentSelectedColor);
-        $("#buttonBorder").val(world.art.panelStyle.buttonBorder);
-        $("#buttonBackground").val(world.art.panelStyle.buttonBackground);
-        $("#buttonBackgroundHover").val(world.art.panelStyle.buttonBackgroundHover);
-        $("#chatPlaceholderColor").val(world.art.panelStyle.chatPlaceholderColor ? world.art.panelStyle.chatPlaceholderColor : "#c7c7cd");
-        $("#chatNormalColor").val(world.art.panelStyle.chatNormalColor ? world.art.panelStyle.chatNormalColor : "#ffffff");
-        $("#chatSeparatorColor").val(world.art.panelStyle.chatSeparatorColor ? world.art.panelStyle.chatSeparatorColor : "#7a7ead");
-        $("#chatSystemMessageColor").val(world.art.panelStyle.chatSystemMessageColor ? world.art.panelStyle.chatSystemMessageColor : "#00e000");
-        Main.GenerateGameStyle();
-    };
-    ArtPanelEditor.ChangeParam = function (fieldName, paramName) {
-        var val = $("#" + fieldName).val();
-        if (typeof world.art.panelStyle[paramName] == "number") {
-            var nVal = parseInt(val);
-            if (!isNaN(nVal))
-                world.art.panelStyle[paramName] = nVal;
-        }
-        else
-            world.art.panelStyle[paramName] = val;
-        Main.GenerateGameStyle();
-    };
-    ArtPanelEditor.UpdateStyle = function () {
-        if (!artPanelEditor.panelStyle || !artPanelEditor.panelStyle.width)
-            return;
-        var canvas = $("#panelStyle").first();
-        if (canvas.width != artPanelEditor.panelStyle.width)
-            canvas.width = artPanelEditor.panelStyle.width;
-        if (canvas.height != artPanelEditor.panelStyle.height)
-            canvas.height = artPanelEditor.panelStyle.height;
-        var ctx = canvas.getContext("2d");
-        ctx.drawImage(artPanelEditor.panelStyle, 0, 0);
-        ctx.strokeStyle = "#E00000";
-        ctx.beginPath();
-        ctx.moveTo(0, world.art.panelStyle.topBorder + 0.5);
-        ctx.lineTo(canvas.width, world.art.panelStyle.topBorder + 0.5);
-        ctx.moveTo(0, world.art.panelStyle.topBorder + world.art.panelStyle.header + 0.5);
-        ctx.lineTo(canvas.width, world.art.panelStyle.topBorder + world.art.panelStyle.header + 0.5);
-        ctx.moveTo(0, canvas.height - world.art.panelStyle.bottomBorder + 0.5);
-        ctx.lineTo(canvas.width, canvas.height - world.art.panelStyle.bottomBorder + 0.5);
-        ctx.moveTo(world.art.panelStyle.leftBorder + 0.5, 0);
-        ctx.lineTo(world.art.panelStyle.leftBorder + 0.5, canvas.height);
-        ctx.moveTo(canvas.width - world.art.panelStyle.leftBorder + 0.5, 0);
-        ctx.lineTo(canvas.width - world.art.panelStyle.leftBorder + 0.5, canvas.height);
-        ctx.stroke();
-    };
-    ArtPanelEditor.GenerateHTML = function (divId) {
-        var html = "";
-        html += "<div id='" + divId + "' class='gamePanel'>\n";
-        html += "<div class='gamePanelTopBorder'></div>\n";
-        html += "<div class='gamePanelHeader'>Test Panel</div>\n";
-        html += "<div class='gamePanelContent'></div>\n";
-        html += "<div class='gamePanelBottomBorder'></div>\n";
-        html += "</div>";
-        return html;
-    };
-    ArtPanelEditor.ShowUpload = function () {
-        if (Main.CheckNW()) {
-            $("#fileOpenDialog").prop("accept", ".png");
-            $("#fileOpenDialog").unbind("change");
-            $("#fileOpenDialog").val("").bind("change", ArtPanelEditor.ImportFileImage).first().click();
-            return;
-        }
-        $("#uploadArtObject").show();
-        $("#uploadGameId").val("" + world.Id);
-        $("#uploadToken").val(framework.Preferences['token']);
-    };
-    ArtPanelEditor.ImportFileImage = function () {
-        ArtPanelEditor.FinishImport($("#fileOpenDialog").val());
-        $("#fileOpenDialog").unbind("change", ArtPanelEditor.ImportFileImage).val("");
-    };
-    ArtPanelEditor.CloseUpload = function () {
-        $("#uploadArtObject").hide();
-    };
-    ArtPanelEditor.Upload = function () {
-        $("#uploadArtObject").hide();
-        $("#artObjectUploadForm").submit();
-    };
-    ArtPanelEditor.Result = function (result) {
-        var data = JSON.parse(result);
-        if (data.error) {
-            Framework.Alert(data.error);
-            return;
-        }
-        else if (data.new_file) {
-            ArtPanelEditor.FinishImport(data.new_file);
-        }
-    };
-    ArtPanelEditor.FinishImport = function (filename) {
-        // Change background, we need to reset all the types, transitions, and world generators.
-        world.art.panelStyle.file = filename + "?v=" + Math.round((new Date()).getTime() / 1000);
-        artPanelEditor.panelStyle = new Image();
-        artPanelEditor.panelStyle.src = world.art.panelStyle.file;
-        artPanelEditor.panelStyle.onload = function () {
-            Main.GenerateGameStyle();
-        };
-        //artPanelEditor.refreshStyle = setInterval(ArtPanelEditor.UpdateStyle, 100);
-    };
-    return ArtPanelEditor;
-}());
 var artQuickslotEditor = new ((function () {
     function class_25() {
     }
@@ -16578,11 +16578,130 @@ var ArtSoundEditor = (function () {
     };
     return ArtSoundEditor;
 }());
-var artTileEditor = new ((function () {
+var artStartBarEditor = new ((function () {
     function class_27() {
-        this.loaded = false;
     }
     return class_27;
+}()));
+var ArtStartBarEditor = (function () {
+    function ArtStartBarEditor() {
+    }
+    ArtStartBarEditor.Dispose = function () {
+        if (artStartBarEditor.refreshStyle)
+            clearInterval(artStartBarEditor.refreshStyle);
+        artStartBarEditor.refreshStyle = null;
+    };
+    ArtStartBarEditor.IsAccessible = function () {
+        return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
+    };
+    ArtStartBarEditor.Recover = function () {
+        if (Main.CheckNW()) {
+            $("#helpLink").first().onclick = function () {
+                StandaloneMaker.Help($("#helpLink").prop("href"));
+                return false;
+            };
+            $("#panelDetails").css("top", "5px");
+            $("#buttonUpload").html("Change");
+        }
+        artStartBarEditor.statbarStyle = new Image();
+        artStartBarEditor.statbarStyle.src = world.art.statBarStyle.file;
+        artStartBarEditor.refreshStyle = setInterval(ArtStartBarEditor.UpdateQuickslot, 100);
+        $("#topBorder").val(world.art.statBarStyle.topBorder);
+        $("#bottomBorder").val(world.art.statBarStyle.bottomBorder);
+        if (world.art.statBarStyle.barsToDisplay == null || world.art.statBarStyle.barsToDisplay == undefined)
+            world.art.statBarStyle.barsToDisplay = 1;
+        $("#barsToDisplay").val("" + world.art.statBarStyle.barsToDisplay);
+    };
+    ArtStartBarEditor.ChangeParam = function (fieldName, paramName) {
+        var val = $("#" + fieldName).val();
+        if (typeof world.art.statBarStyle[paramName] == "number") {
+            var nVal = parseInt(val);
+            if (!isNaN(nVal))
+                world.art.statBarStyle[paramName] = nVal;
+        }
+        else
+            world.art.statBarStyle[paramName] = val;
+        Main.GenerateGameStyle();
+    };
+    ArtStartBarEditor.UpdateQuickslot = function () {
+        if (!artStartBarEditor.statbarStyle || !artStartBarEditor.statbarStyle.width)
+            return;
+        var canvas = $("#panelStyle").first();
+        if (canvas.width != artStartBarEditor.statbarStyle.width)
+            canvas.width = artStartBarEditor.statbarStyle.width;
+        if (canvas.height != artStartBarEditor.statbarStyle.height)
+            canvas.height = artStartBarEditor.statbarStyle.height;
+        var ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(artStartBarEditor.statbarStyle, 0, 0);
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = "#000000";
+        ctx.beginPath();
+        ctx.moveTo(0, world.art.statBarStyle.topBorder + 0.5);
+        ctx.lineTo(canvas.width, world.art.statBarStyle.topBorder + 0.5);
+        ctx.moveTo(0, artStartBarEditor.statbarStyle.height - world.art.statBarStyle.bottomBorder + 0.5);
+        ctx.lineTo(canvas.width, artStartBarEditor.statbarStyle.height - world.art.statBarStyle.bottomBorder + 0.5);
+        ctx.stroke();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "#E00000";
+        ctx.beginPath();
+        ctx.moveTo(0, world.art.statBarStyle.topBorder + 0.5);
+        ctx.lineTo(canvas.width, world.art.statBarStyle.topBorder + 0.5);
+        ctx.moveTo(0, artStartBarEditor.statbarStyle.height - world.art.statBarStyle.bottomBorder + 0.5);
+        ctx.lineTo(canvas.width, artStartBarEditor.statbarStyle.height - world.art.statBarStyle.bottomBorder + 0.5);
+        ctx.stroke();
+    };
+    ArtStartBarEditor.ShowUpload = function () {
+        if (Main.CheckNW()) {
+            $("#fileOpenDialog").prop("accept", ".png");
+            $("#fileOpenDialog").unbind("change");
+            $("#fileOpenDialog").val("").bind("change", ArtStartBarEditor.ImportFileImage).first().click();
+            return;
+        }
+        $("#uploadArtObject").show();
+        $("#uploadGameId").val("" + world.Id);
+        $("#uploadToken").val(framework.Preferences['token']);
+    };
+    ArtStartBarEditor.ImportFileImage = function () {
+        ArtStartBarEditor.FinishImport($("#fileOpenDialog").val());
+        $("#fileOpenDialog").unbind("change", ArtStartBarEditor.ImportFileImage).val("");
+    };
+    ArtStartBarEditor.CloseUpload = function () {
+        $("#uploadArtObject").hide();
+    };
+    ArtStartBarEditor.Upload = function () {
+        $("#uploadArtObject").hide();
+        $("#artObjectUploadForm").submit();
+    };
+    ArtStartBarEditor.Result = function (result) {
+        var data = JSON.parse(result);
+        if (data.error) {
+            Framework.Alert(data.error);
+            return;
+        }
+        else if (data.new_file) {
+            ArtStartBarEditor.FinishImport(data.new_file);
+        }
+    };
+    ArtStartBarEditor.FinishImport = function (filename) {
+        skillBar.StatBar = null;
+        // Change background, we need to reset all the types, transitions, and world generators.
+        world.art.statBarStyle.file = filename;
+        artStartBarEditor.statbarStyle = new Image();
+        artStartBarEditor.statbarStyle.src = world.art.statBarStyle.file + "?v=" + Math.round((new Date()).getTime() / 1000);
+        artStartBarEditor.statbarStyle.onload = function () {
+            world.art.statBarStyle.width = artStartBarEditor.statbarStyle.width;
+            world.art.statBarStyle.height = artStartBarEditor.statbarStyle.height;
+        };
+        //artStartBarEditor.refreshStyle = setInterval(ArtStartBarEditor.UpdateQuickslot, 100);
+    };
+    return ArtStartBarEditor;
+}());
+var artTileEditor = new ((function () {
+    function class_28() {
+        this.loaded = false;
+    }
+    return class_28;
 }()));
 var ArtTileEditor = (function () {
     function ArtTileEditor() {
@@ -17214,125 +17333,6 @@ var ArtTileEditor = (function () {
         }, false);
     };
     return ArtTileEditor;
-}());
-var artStartBarEditor = new ((function () {
-    function class_28() {
-    }
-    return class_28;
-}()));
-var ArtStartBarEditor = (function () {
-    function ArtStartBarEditor() {
-    }
-    ArtStartBarEditor.Dispose = function () {
-        if (artStartBarEditor.refreshStyle)
-            clearInterval(artStartBarEditor.refreshStyle);
-        artStartBarEditor.refreshStyle = null;
-    };
-    ArtStartBarEditor.IsAccessible = function () {
-        return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
-    };
-    ArtStartBarEditor.Recover = function () {
-        if (Main.CheckNW()) {
-            $("#helpLink").first().onclick = function () {
-                StandaloneMaker.Help($("#helpLink").prop("href"));
-                return false;
-            };
-            $("#panelDetails").css("top", "5px");
-            $("#buttonUpload").html("Change");
-        }
-        artStartBarEditor.statbarStyle = new Image();
-        artStartBarEditor.statbarStyle.src = world.art.statBarStyle.file;
-        artStartBarEditor.refreshStyle = setInterval(ArtStartBarEditor.UpdateQuickslot, 100);
-        $("#topBorder").val(world.art.statBarStyle.topBorder);
-        $("#bottomBorder").val(world.art.statBarStyle.bottomBorder);
-        if (world.art.statBarStyle.barsToDisplay == null || world.art.statBarStyle.barsToDisplay == undefined)
-            world.art.statBarStyle.barsToDisplay = 1;
-        $("#barsToDisplay").val("" + world.art.statBarStyle.barsToDisplay);
-    };
-    ArtStartBarEditor.ChangeParam = function (fieldName, paramName) {
-        var val = $("#" + fieldName).val();
-        if (typeof world.art.statBarStyle[paramName] == "number") {
-            var nVal = parseInt(val);
-            if (!isNaN(nVal))
-                world.art.statBarStyle[paramName] = nVal;
-        }
-        else
-            world.art.statBarStyle[paramName] = val;
-        Main.GenerateGameStyle();
-    };
-    ArtStartBarEditor.UpdateQuickslot = function () {
-        if (!artStartBarEditor.statbarStyle || !artStartBarEditor.statbarStyle.width)
-            return;
-        var canvas = $("#panelStyle").first();
-        if (canvas.width != artStartBarEditor.statbarStyle.width)
-            canvas.width = artStartBarEditor.statbarStyle.width;
-        if (canvas.height != artStartBarEditor.statbarStyle.height)
-            canvas.height = artStartBarEditor.statbarStyle.height;
-        var ctx = canvas.getContext("2d");
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(artStartBarEditor.statbarStyle, 0, 0);
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = "#000000";
-        ctx.beginPath();
-        ctx.moveTo(0, world.art.statBarStyle.topBorder + 0.5);
-        ctx.lineTo(canvas.width, world.art.statBarStyle.topBorder + 0.5);
-        ctx.moveTo(0, artStartBarEditor.statbarStyle.height - world.art.statBarStyle.bottomBorder + 0.5);
-        ctx.lineTo(canvas.width, artStartBarEditor.statbarStyle.height - world.art.statBarStyle.bottomBorder + 0.5);
-        ctx.stroke();
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = "#E00000";
-        ctx.beginPath();
-        ctx.moveTo(0, world.art.statBarStyle.topBorder + 0.5);
-        ctx.lineTo(canvas.width, world.art.statBarStyle.topBorder + 0.5);
-        ctx.moveTo(0, artStartBarEditor.statbarStyle.height - world.art.statBarStyle.bottomBorder + 0.5);
-        ctx.lineTo(canvas.width, artStartBarEditor.statbarStyle.height - world.art.statBarStyle.bottomBorder + 0.5);
-        ctx.stroke();
-    };
-    ArtStartBarEditor.ShowUpload = function () {
-        if (Main.CheckNW()) {
-            $("#fileOpenDialog").prop("accept", ".png");
-            $("#fileOpenDialog").unbind("change");
-            $("#fileOpenDialog").val("").bind("change", ArtStartBarEditor.ImportFileImage).first().click();
-            return;
-        }
-        $("#uploadArtObject").show();
-        $("#uploadGameId").val("" + world.Id);
-        $("#uploadToken").val(framework.Preferences['token']);
-    };
-    ArtStartBarEditor.ImportFileImage = function () {
-        ArtStartBarEditor.FinishImport($("#fileOpenDialog").val());
-        $("#fileOpenDialog").unbind("change", ArtStartBarEditor.ImportFileImage).val("");
-    };
-    ArtStartBarEditor.CloseUpload = function () {
-        $("#uploadArtObject").hide();
-    };
-    ArtStartBarEditor.Upload = function () {
-        $("#uploadArtObject").hide();
-        $("#artObjectUploadForm").submit();
-    };
-    ArtStartBarEditor.Result = function (result) {
-        var data = JSON.parse(result);
-        if (data.error) {
-            Framework.Alert(data.error);
-            return;
-        }
-        else if (data.new_file) {
-            ArtStartBarEditor.FinishImport(data.new_file);
-        }
-    };
-    ArtStartBarEditor.FinishImport = function (filename) {
-        skillBar.StatBar = null;
-        // Change background, we need to reset all the types, transitions, and world generators.
-        world.art.statBarStyle.file = filename;
-        artStartBarEditor.statbarStyle = new Image();
-        artStartBarEditor.statbarStyle.src = world.art.statBarStyle.file + "?v=" + Math.round((new Date()).getTime() / 1000);
-        artStartBarEditor.statbarStyle.onload = function () {
-            world.art.statBarStyle.width = artStartBarEditor.statbarStyle.width;
-            world.art.statBarStyle.height = artStartBarEditor.statbarStyle.height;
-        };
-        //artStartBarEditor.refreshStyle = setInterval(ArtStartBarEditor.UpdateQuickslot, 100);
-    };
-    return ArtStartBarEditor;
 }());
 var chatBotEditor = new ((function () {
     function class_29() {
@@ -27139,9 +27139,9 @@ var Play = (function () {
             try {
                 if (!world.Codes[i].code)
                     world.Codes[i].code = CodeParser.ParseWithParameters(world.Codes[i].Source, world.Codes[i].Parameters);
-                if (world.Codes[i].code.HasFunction("AutoRun"))
+                if (world.Codes[i].code && world.Codes[i].code.HasFunction("AutoRun"))
                     world.Codes[i].code.ExecuteFunction("AutoRun", []);
-                if (world.Codes[i].code.HasFunction("OnPaint"))
+                if (world.Codes[i].code && world.Codes[i].code.HasFunction("OnPaint"))
                     play.onPaint.push(world.Codes[i].code);
             }
             catch (ex) {
@@ -30986,6 +30986,315 @@ var Player = (function (_super) {
     };
     return Player;
 }(MovingActor));
+/// <reference path="ExecutionCode.ts" />
+var AddCode = (function () {
+    function AddCode() {
+    }
+    AddCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        var b = env.Pop();
+        if (a === null && b === null) {
+            env.Push(new VariableValue(null));
+            return;
+        }
+        if (a === null || a === undefined)
+            a = new VariableValue("(null)");
+        if (b === null || b === undefined)
+            b = new VariableValue("(null)");
+        var aType = a.Type;
+        var bType = b.Type;
+        if (aType == ValueType.String) {
+            var aValue = a.GetString();
+            if (!isNaN(parseFloat(aValue)) && ("" + parseFloat(aValue)) == aValue)
+                aType = ValueType.Number;
+        }
+        if (bType == ValueType.String) {
+            var bValue = b.GetString();
+            if (!isNaN(parseFloat(bValue)) && ("" + parseFloat(bValue)) == bValue)
+                bType = ValueType.Number;
+        }
+        if (aType == ValueType.String || bType == ValueType.String)
+            env.Push(new VariableValue(a.GetString() + b.GetString()));
+        else
+            env.Push(new VariableValue(a.GetNumber() + b.GetNumber()));
+        env.CodeLine++;
+    };
+    return AddCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var AndCode = (function () {
+    function AndCode() {
+    }
+    AndCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        var b = env.Pop();
+        env.Push(new VariableValue(a.GetBoolean() && b.GetBoolean()));
+        env.CodeLine++;
+    };
+    return AndCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var AssignCode = (function () {
+    function AssignCode(name, index) {
+        if (index === void 0) { index = false; }
+        this.Index = false;
+        this.Name = name;
+        this.Index = index;
+    }
+    AssignCode.prototype.Execute = function (env) {
+        if (this.Index == false) {
+            var a = env.Pop();
+            env.SetVariable(this.Name, a);
+        }
+        else {
+            var idx = env.Pop().GetNumber();
+            var a = env.Pop();
+            var v = env.GetVariable(this.Name);
+            v.Value[idx] = a;
+        }
+        env.CodeLine++;
+    };
+    return AssignCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var CompareCode = (function () {
+    function CompareCode(operation) {
+        this.Operation = operation;
+    }
+    CompareCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        var b = env.Pop();
+        if (!a)
+            a = new VariableValue(null);
+        if (!b)
+            b = new VariableValue(null);
+        switch (this.Operation) {
+            case "==":
+                if (a.Type == ValueType.Null || b.Type == ValueType.Null)
+                    env.Push(new VariableValue(a.Value === b.Value));
+                else
+                    env.Push(new VariableValue(a.Value == b.Value));
+                break;
+            case "!=":
+                if (a.Type == ValueType.Null || b.Type == ValueType.Null)
+                    env.Push(new VariableValue(a.Value !== b.Value));
+                else
+                    env.Push(new VariableValue(a.Value != b.Value));
+                break;
+            case "<=":
+                env.Push(new VariableValue(a.Value <= b.Value));
+                break;
+            case "<":
+                env.Push(new VariableValue(a.Value < b.Value));
+                break;
+            case ">=":
+                env.Push(new VariableValue(a.Value >= b.Value));
+                break;
+            case ">":
+                env.Push(new VariableValue(a.Value > b.Value));
+                break;
+            default:
+                throw "Unknown operator " + this.Operation;
+        }
+        env.CodeLine++;
+    };
+    return CompareCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var DivideCode = (function () {
+    function DivideCode() {
+    }
+    DivideCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        var b = env.Pop();
+        if (a === null || b === null)
+            env.Push(new VariableValue(null));
+        else
+            env.Push(new VariableValue(a.GetNumber() / b.GetNumber()));
+        env.CodeLine++;
+    };
+    return DivideCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var FlushVariableStackCode = (function () {
+    function FlushVariableStackCode() {
+    }
+    FlushVariableStackCode.prototype.Execute = function (env) {
+        env.Flush();
+        env.CodeLine++;
+    };
+    return FlushVariableStackCode;
+}());
+/// <refe/rence path="ExecutionCode.ts" />
+var FunctionCallCode = (function () {
+    function FunctionCallCode(name, parametersCount) {
+        this.Name = name;
+        this.ParametersCount = parametersCount;
+    }
+    FunctionCallCode.prototype.Execute = function (env) {
+        var values = [];
+        for (var i = this.ParametersCount - 1; i >= 0; i--)
+            values[i] = env.Pop();
+        env.CodeLine++;
+        if (!this.type) {
+            var parts = this.Name.split('.');
+            if (parts.length == 2 && env.HasWrapper(this.Name))
+                this.type = "wrapper";
+            else if (parts.length == 1 || parts.length == 3)
+                this.type = "sub";
+            else
+                this.type = "api";
+        }
+        switch (this.type) {
+            case "wrapper":
+                env.ExecuteWrapperFunctionCode(this.Name, values);
+                break;
+            case "sub":
+                env.ExecuteSubFunctionCode(this.Name, values);
+                break;
+            case "api":
+                var a = env.ExecuteFunction(this.Name, values);
+                if (a !== null)
+                    env.Push(a);
+                break;
+        }
+    };
+    return FunctionCallCode;
+}());
+var FunctionDefinitionCode = (function () {
+    function FunctionDefinitionCode() {
+        this.Code = [];
+        this.LoopExitStack = [];
+    }
+    return FunctionDefinitionCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var IfCode = (function () {
+    function IfCode(trueJump, falseJump) {
+        this.TrueJump = trueJump;
+        this.FalseJump = falseJump;
+    }
+    IfCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        if (a.GetBoolean() === true)
+            env.CodeLine = this.TrueJump;
+        else
+            env.CodeLine = this.FalseJump;
+    };
+    return IfCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var JumpCode = (function () {
+    function JumpCode(jumpLine) {
+        this.JumpLine = jumpLine;
+    }
+    JumpCode.prototype.Execute = function (env) {
+        env.CodeLine = this.JumpLine;
+    };
+    return JumpCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var MultiplyCode = (function () {
+    function MultiplyCode() {
+    }
+    MultiplyCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        var b = env.Pop();
+        if (a === null || b === null)
+            env.Push(new VariableValue(null));
+        else
+            env.Push(new VariableValue(a.GetNumber() * b.GetNumber()));
+        env.CodeLine++;
+    };
+    return MultiplyCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var NewArrayCode = (function () {
+    function NewArrayCode() {
+    }
+    NewArrayCode.prototype.Execute = function (env) {
+        env.Push(new VariableValue([]));
+        env.CodeLine++;
+    };
+    return NewArrayCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var NotCode = (function () {
+    function NotCode() {
+    }
+    NotCode.prototype.Execute = function (env) {
+        env.Push(new VariableValue(!(env.Pop().GetBoolean())));
+        env.CodeLine++;
+    };
+    return NotCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var OrCode = (function () {
+    function OrCode() {
+    }
+    OrCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        var b = env.Pop();
+        env.Push(new VariableValue(a.GetBoolean() || b.GetBoolean()));
+        env.CodeLine++;
+    };
+    return OrCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var PushCode = (function () {
+    function PushCode(value) {
+        this.Value = value;
+    }
+    PushCode.prototype.Execute = function (env) {
+        env.Push(new VariableValue(this.Value));
+        env.CodeLine++;
+    };
+    return PushCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var ReadCode = (function () {
+    function ReadCode(name, index) {
+        if (index === void 0) { index = false; }
+        this.Index = false;
+        this.Name = name;
+        this.Index = index;
+    }
+    ReadCode.prototype.Execute = function (env) {
+        if (this.Index == false)
+            env.Push(env.GetVariable(this.Name));
+        else {
+            var idx = env.Pop().GetNumber();
+            var v = env.GetVariable(this.Name);
+            env.Push(v.Value[idx]);
+        }
+        env.CodeLine++;
+    };
+    return ReadCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var ReturnCode = (function () {
+    function ReturnCode() {
+    }
+    ReturnCode.prototype.Execute = function (env) {
+        env.CodeLine = -1;
+    };
+    return ReturnCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var SubstractCode = (function () {
+    function SubstractCode() {
+    }
+    SubstractCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        var b = env.Pop();
+        if (a === null || b === null)
+            env.Push(new VariableValue(null));
+        else
+            env.Push(new VariableValue(a.GetNumber() - b.GetNumber()));
+        env.CodeLine++;
+    };
+    return SubstractCode;
+}());
 /// <reference path="../CodeEnvironement.ts" />
 var EngineActor = (function () {
     function EngineActor() {
@@ -34127,315 +34436,6 @@ EngineStorage = EngineStorage_1 = __decorate([
     ApiClass
 ], EngineStorage);
 var EngineStorage_1;
-/// <reference path="ExecutionCode.ts" />
-var AddCode = (function () {
-    function AddCode() {
-    }
-    AddCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        var b = env.Pop();
-        if (a === null && b === null) {
-            env.Push(new VariableValue(null));
-            return;
-        }
-        if (a === null || a === undefined)
-            a = new VariableValue("(null)");
-        if (b === null || b === undefined)
-            b = new VariableValue("(null)");
-        var aType = a.Type;
-        var bType = b.Type;
-        if (aType == ValueType.String) {
-            var aValue = a.GetString();
-            if (!isNaN(parseFloat(aValue)) && ("" + parseFloat(aValue)) == aValue)
-                aType = ValueType.Number;
-        }
-        if (bType == ValueType.String) {
-            var bValue = b.GetString();
-            if (!isNaN(parseFloat(bValue)) && ("" + parseFloat(bValue)) == bValue)
-                bType = ValueType.Number;
-        }
-        if (aType == ValueType.String || bType == ValueType.String)
-            env.Push(new VariableValue(a.GetString() + b.GetString()));
-        else
-            env.Push(new VariableValue(a.GetNumber() + b.GetNumber()));
-        env.CodeLine++;
-    };
-    return AddCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var AndCode = (function () {
-    function AndCode() {
-    }
-    AndCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        var b = env.Pop();
-        env.Push(new VariableValue(a.GetBoolean() && b.GetBoolean()));
-        env.CodeLine++;
-    };
-    return AndCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var AssignCode = (function () {
-    function AssignCode(name, index) {
-        if (index === void 0) { index = false; }
-        this.Index = false;
-        this.Name = name;
-        this.Index = index;
-    }
-    AssignCode.prototype.Execute = function (env) {
-        if (this.Index == false) {
-            var a = env.Pop();
-            env.SetVariable(this.Name, a);
-        }
-        else {
-            var idx = env.Pop().GetNumber();
-            var a = env.Pop();
-            var v = env.GetVariable(this.Name);
-            v.Value[idx] = a;
-        }
-        env.CodeLine++;
-    };
-    return AssignCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var CompareCode = (function () {
-    function CompareCode(operation) {
-        this.Operation = operation;
-    }
-    CompareCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        var b = env.Pop();
-        if (!a)
-            a = new VariableValue(null);
-        if (!b)
-            b = new VariableValue(null);
-        switch (this.Operation) {
-            case "==":
-                if (a.Type == ValueType.Null || b.Type == ValueType.Null)
-                    env.Push(new VariableValue(a.Value === b.Value));
-                else
-                    env.Push(new VariableValue(a.Value == b.Value));
-                break;
-            case "!=":
-                if (a.Type == ValueType.Null || b.Type == ValueType.Null)
-                    env.Push(new VariableValue(a.Value !== b.Value));
-                else
-                    env.Push(new VariableValue(a.Value != b.Value));
-                break;
-            case "<=":
-                env.Push(new VariableValue(a.Value <= b.Value));
-                break;
-            case "<":
-                env.Push(new VariableValue(a.Value < b.Value));
-                break;
-            case ">=":
-                env.Push(new VariableValue(a.Value >= b.Value));
-                break;
-            case ">":
-                env.Push(new VariableValue(a.Value > b.Value));
-                break;
-            default:
-                throw "Unknown operator " + this.Operation;
-        }
-        env.CodeLine++;
-    };
-    return CompareCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var DivideCode = (function () {
-    function DivideCode() {
-    }
-    DivideCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        var b = env.Pop();
-        if (a === null || b === null)
-            env.Push(new VariableValue(null));
-        else
-            env.Push(new VariableValue(a.GetNumber() / b.GetNumber()));
-        env.CodeLine++;
-    };
-    return DivideCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var FlushVariableStackCode = (function () {
-    function FlushVariableStackCode() {
-    }
-    FlushVariableStackCode.prototype.Execute = function (env) {
-        env.Flush();
-        env.CodeLine++;
-    };
-    return FlushVariableStackCode;
-}());
-/// <refe/rence path="ExecutionCode.ts" />
-var FunctionCallCode = (function () {
-    function FunctionCallCode(name, parametersCount) {
-        this.Name = name;
-        this.ParametersCount = parametersCount;
-    }
-    FunctionCallCode.prototype.Execute = function (env) {
-        var values = [];
-        for (var i = this.ParametersCount - 1; i >= 0; i--)
-            values[i] = env.Pop();
-        env.CodeLine++;
-        if (!this.type) {
-            var parts = this.Name.split('.');
-            if (parts.length == 2 && env.HasWrapper(this.Name))
-                this.type = "wrapper";
-            else if (parts.length == 1 || parts.length == 3)
-                this.type = "sub";
-            else
-                this.type = "api";
-        }
-        switch (this.type) {
-            case "wrapper":
-                env.ExecuteWrapperFunctionCode(this.Name, values);
-                break;
-            case "sub":
-                env.ExecuteSubFunctionCode(this.Name, values);
-                break;
-            case "api":
-                var a = env.ExecuteFunction(this.Name, values);
-                if (a !== null)
-                    env.Push(a);
-                break;
-        }
-    };
-    return FunctionCallCode;
-}());
-var FunctionDefinitionCode = (function () {
-    function FunctionDefinitionCode() {
-        this.Code = [];
-        this.LoopExitStack = [];
-    }
-    return FunctionDefinitionCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var IfCode = (function () {
-    function IfCode(trueJump, falseJump) {
-        this.TrueJump = trueJump;
-        this.FalseJump = falseJump;
-    }
-    IfCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        if (a.GetBoolean() === true)
-            env.CodeLine = this.TrueJump;
-        else
-            env.CodeLine = this.FalseJump;
-    };
-    return IfCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var JumpCode = (function () {
-    function JumpCode(jumpLine) {
-        this.JumpLine = jumpLine;
-    }
-    JumpCode.prototype.Execute = function (env) {
-        env.CodeLine = this.JumpLine;
-    };
-    return JumpCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var MultiplyCode = (function () {
-    function MultiplyCode() {
-    }
-    MultiplyCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        var b = env.Pop();
-        if (a === null || b === null)
-            env.Push(new VariableValue(null));
-        else
-            env.Push(new VariableValue(a.GetNumber() * b.GetNumber()));
-        env.CodeLine++;
-    };
-    return MultiplyCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var NewArrayCode = (function () {
-    function NewArrayCode() {
-    }
-    NewArrayCode.prototype.Execute = function (env) {
-        env.Push(new VariableValue([]));
-        env.CodeLine++;
-    };
-    return NewArrayCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var NotCode = (function () {
-    function NotCode() {
-    }
-    NotCode.prototype.Execute = function (env) {
-        env.Push(new VariableValue(!(env.Pop().GetBoolean())));
-        env.CodeLine++;
-    };
-    return NotCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var OrCode = (function () {
-    function OrCode() {
-    }
-    OrCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        var b = env.Pop();
-        env.Push(new VariableValue(a.GetBoolean() || b.GetBoolean()));
-        env.CodeLine++;
-    };
-    return OrCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var PushCode = (function () {
-    function PushCode(value) {
-        this.Value = value;
-    }
-    PushCode.prototype.Execute = function (env) {
-        env.Push(new VariableValue(this.Value));
-        env.CodeLine++;
-    };
-    return PushCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var ReadCode = (function () {
-    function ReadCode(name, index) {
-        if (index === void 0) { index = false; }
-        this.Index = false;
-        this.Name = name;
-        this.Index = index;
-    }
-    ReadCode.prototype.Execute = function (env) {
-        if (this.Index == false)
-            env.Push(env.GetVariable(this.Name));
-        else {
-            var idx = env.Pop().GetNumber();
-            var v = env.GetVariable(this.Name);
-            env.Push(v.Value[idx]);
-        }
-        env.CodeLine++;
-    };
-    return ReadCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var ReturnCode = (function () {
-    function ReturnCode() {
-    }
-    ReturnCode.prototype.Execute = function (env) {
-        env.CodeLine = -1;
-    };
-    return ReturnCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var SubstractCode = (function () {
-    function SubstractCode() {
-    }
-    SubstractCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        var b = env.Pop();
-        if (a === null || b === null)
-            env.Push(new VariableValue(null));
-        else
-            env.Push(new VariableValue(a.GetNumber() - b.GetNumber()));
-        env.CodeLine++;
-    };
-    return SubstractCode;
-}());
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['Add'] = { help: "Add two values and return the result. If one of the two is a string a concatenation will be made.", params: [{ name: 'AStatement', type: 'CodeStatement' }, { name: 'BStatement', type: 'CodeStatement' }] };
 var AddStatement = (function (_super) {

@@ -10792,6 +10792,315 @@ var Player = (function (_super) {
     };
     return Player;
 }(MovingActor));
+/// <reference path="ExecutionCode.ts" />
+var AddCode = (function () {
+    function AddCode() {
+    }
+    AddCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        var b = env.Pop();
+        if (a === null && b === null) {
+            env.Push(new VariableValue(null));
+            return;
+        }
+        if (a === null || a === undefined)
+            a = new VariableValue("(null)");
+        if (b === null || b === undefined)
+            b = new VariableValue("(null)");
+        var aType = a.Type;
+        var bType = b.Type;
+        if (aType == ValueType.String) {
+            var aValue = a.GetString();
+            if (!isNaN(parseFloat(aValue)) && ("" + parseFloat(aValue)) == aValue)
+                aType = ValueType.Number;
+        }
+        if (bType == ValueType.String) {
+            var bValue = b.GetString();
+            if (!isNaN(parseFloat(bValue)) && ("" + parseFloat(bValue)) == bValue)
+                bType = ValueType.Number;
+        }
+        if (aType == ValueType.String || bType == ValueType.String)
+            env.Push(new VariableValue(a.GetString() + b.GetString()));
+        else
+            env.Push(new VariableValue(a.GetNumber() + b.GetNumber()));
+        env.CodeLine++;
+    };
+    return AddCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var AndCode = (function () {
+    function AndCode() {
+    }
+    AndCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        var b = env.Pop();
+        env.Push(new VariableValue(a.GetBoolean() && b.GetBoolean()));
+        env.CodeLine++;
+    };
+    return AndCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var AssignCode = (function () {
+    function AssignCode(name, index) {
+        if (index === void 0) { index = false; }
+        this.Index = false;
+        this.Name = name;
+        this.Index = index;
+    }
+    AssignCode.prototype.Execute = function (env) {
+        if (this.Index == false) {
+            var a = env.Pop();
+            env.SetVariable(this.Name, a);
+        }
+        else {
+            var idx = env.Pop().GetNumber();
+            var a = env.Pop();
+            var v = env.GetVariable(this.Name);
+            v.Value[idx] = a;
+        }
+        env.CodeLine++;
+    };
+    return AssignCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var CompareCode = (function () {
+    function CompareCode(operation) {
+        this.Operation = operation;
+    }
+    CompareCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        var b = env.Pop();
+        if (!a)
+            a = new VariableValue(null);
+        if (!b)
+            b = new VariableValue(null);
+        switch (this.Operation) {
+            case "==":
+                if (a.Type == ValueType.Null || b.Type == ValueType.Null)
+                    env.Push(new VariableValue(a.Value === b.Value));
+                else
+                    env.Push(new VariableValue(a.Value == b.Value));
+                break;
+            case "!=":
+                if (a.Type == ValueType.Null || b.Type == ValueType.Null)
+                    env.Push(new VariableValue(a.Value !== b.Value));
+                else
+                    env.Push(new VariableValue(a.Value != b.Value));
+                break;
+            case "<=":
+                env.Push(new VariableValue(a.Value <= b.Value));
+                break;
+            case "<":
+                env.Push(new VariableValue(a.Value < b.Value));
+                break;
+            case ">=":
+                env.Push(new VariableValue(a.Value >= b.Value));
+                break;
+            case ">":
+                env.Push(new VariableValue(a.Value > b.Value));
+                break;
+            default:
+                throw "Unknown operator " + this.Operation;
+        }
+        env.CodeLine++;
+    };
+    return CompareCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var DivideCode = (function () {
+    function DivideCode() {
+    }
+    DivideCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        var b = env.Pop();
+        if (a === null || b === null)
+            env.Push(new VariableValue(null));
+        else
+            env.Push(new VariableValue(a.GetNumber() / b.GetNumber()));
+        env.CodeLine++;
+    };
+    return DivideCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var FlushVariableStackCode = (function () {
+    function FlushVariableStackCode() {
+    }
+    FlushVariableStackCode.prototype.Execute = function (env) {
+        env.Flush();
+        env.CodeLine++;
+    };
+    return FlushVariableStackCode;
+}());
+/// <refe/rence path="ExecutionCode.ts" />
+var FunctionCallCode = (function () {
+    function FunctionCallCode(name, parametersCount) {
+        this.Name = name;
+        this.ParametersCount = parametersCount;
+    }
+    FunctionCallCode.prototype.Execute = function (env) {
+        var values = [];
+        for (var i = this.ParametersCount - 1; i >= 0; i--)
+            values[i] = env.Pop();
+        env.CodeLine++;
+        if (!this.type) {
+            var parts = this.Name.split('.');
+            if (parts.length == 2 && env.HasWrapper(this.Name))
+                this.type = "wrapper";
+            else if (parts.length == 1 || parts.length == 3)
+                this.type = "sub";
+            else
+                this.type = "api";
+        }
+        switch (this.type) {
+            case "wrapper":
+                env.ExecuteWrapperFunctionCode(this.Name, values);
+                break;
+            case "sub":
+                env.ExecuteSubFunctionCode(this.Name, values);
+                break;
+            case "api":
+                var a = env.ExecuteFunction(this.Name, values);
+                if (a !== null)
+                    env.Push(a);
+                break;
+        }
+    };
+    return FunctionCallCode;
+}());
+var FunctionDefinitionCode = (function () {
+    function FunctionDefinitionCode() {
+        this.Code = [];
+        this.LoopExitStack = [];
+    }
+    return FunctionDefinitionCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var IfCode = (function () {
+    function IfCode(trueJump, falseJump) {
+        this.TrueJump = trueJump;
+        this.FalseJump = falseJump;
+    }
+    IfCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        if (a.GetBoolean() === true)
+            env.CodeLine = this.TrueJump;
+        else
+            env.CodeLine = this.FalseJump;
+    };
+    return IfCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var JumpCode = (function () {
+    function JumpCode(jumpLine) {
+        this.JumpLine = jumpLine;
+    }
+    JumpCode.prototype.Execute = function (env) {
+        env.CodeLine = this.JumpLine;
+    };
+    return JumpCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var MultiplyCode = (function () {
+    function MultiplyCode() {
+    }
+    MultiplyCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        var b = env.Pop();
+        if (a === null || b === null)
+            env.Push(new VariableValue(null));
+        else
+            env.Push(new VariableValue(a.GetNumber() * b.GetNumber()));
+        env.CodeLine++;
+    };
+    return MultiplyCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var NewArrayCode = (function () {
+    function NewArrayCode() {
+    }
+    NewArrayCode.prototype.Execute = function (env) {
+        env.Push(new VariableValue([]));
+        env.CodeLine++;
+    };
+    return NewArrayCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var NotCode = (function () {
+    function NotCode() {
+    }
+    NotCode.prototype.Execute = function (env) {
+        env.Push(new VariableValue(!(env.Pop().GetBoolean())));
+        env.CodeLine++;
+    };
+    return NotCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var OrCode = (function () {
+    function OrCode() {
+    }
+    OrCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        var b = env.Pop();
+        env.Push(new VariableValue(a.GetBoolean() || b.GetBoolean()));
+        env.CodeLine++;
+    };
+    return OrCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var PushCode = (function () {
+    function PushCode(value) {
+        this.Value = value;
+    }
+    PushCode.prototype.Execute = function (env) {
+        env.Push(new VariableValue(this.Value));
+        env.CodeLine++;
+    };
+    return PushCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var ReadCode = (function () {
+    function ReadCode(name, index) {
+        if (index === void 0) { index = false; }
+        this.Index = false;
+        this.Name = name;
+        this.Index = index;
+    }
+    ReadCode.prototype.Execute = function (env) {
+        if (this.Index == false)
+            env.Push(env.GetVariable(this.Name));
+        else {
+            var idx = env.Pop().GetNumber();
+            var v = env.GetVariable(this.Name);
+            env.Push(v.Value[idx]);
+        }
+        env.CodeLine++;
+    };
+    return ReadCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var ReturnCode = (function () {
+    function ReturnCode() {
+    }
+    ReturnCode.prototype.Execute = function (env) {
+        env.CodeLine = -1;
+    };
+    return ReturnCode;
+}());
+/// <reference path="ExecutionCode.ts" />
+var SubstractCode = (function () {
+    function SubstractCode() {
+    }
+    SubstractCode.prototype.Execute = function (env) {
+        var a = env.Pop();
+        var b = env.Pop();
+        if (a === null || b === null)
+            env.Push(new VariableValue(null));
+        else
+            env.Push(new VariableValue(a.GetNumber() - b.GetNumber()));
+        env.CodeLine++;
+    };
+    return SubstractCode;
+}());
 /// <reference path="../CodeEnvironement.ts" />
 var EngineActor = (function () {
     function EngineActor() {
@@ -13933,315 +14242,6 @@ EngineStorage = EngineStorage_1 = __decorate([
     ApiClass
 ], EngineStorage);
 var EngineStorage_1;
-/// <reference path="ExecutionCode.ts" />
-var AddCode = (function () {
-    function AddCode() {
-    }
-    AddCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        var b = env.Pop();
-        if (a === null && b === null) {
-            env.Push(new VariableValue(null));
-            return;
-        }
-        if (a === null || a === undefined)
-            a = new VariableValue("(null)");
-        if (b === null || b === undefined)
-            b = new VariableValue("(null)");
-        var aType = a.Type;
-        var bType = b.Type;
-        if (aType == ValueType.String) {
-            var aValue = a.GetString();
-            if (!isNaN(parseFloat(aValue)) && ("" + parseFloat(aValue)) == aValue)
-                aType = ValueType.Number;
-        }
-        if (bType == ValueType.String) {
-            var bValue = b.GetString();
-            if (!isNaN(parseFloat(bValue)) && ("" + parseFloat(bValue)) == bValue)
-                bType = ValueType.Number;
-        }
-        if (aType == ValueType.String || bType == ValueType.String)
-            env.Push(new VariableValue(a.GetString() + b.GetString()));
-        else
-            env.Push(new VariableValue(a.GetNumber() + b.GetNumber()));
-        env.CodeLine++;
-    };
-    return AddCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var AndCode = (function () {
-    function AndCode() {
-    }
-    AndCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        var b = env.Pop();
-        env.Push(new VariableValue(a.GetBoolean() && b.GetBoolean()));
-        env.CodeLine++;
-    };
-    return AndCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var AssignCode = (function () {
-    function AssignCode(name, index) {
-        if (index === void 0) { index = false; }
-        this.Index = false;
-        this.Name = name;
-        this.Index = index;
-    }
-    AssignCode.prototype.Execute = function (env) {
-        if (this.Index == false) {
-            var a = env.Pop();
-            env.SetVariable(this.Name, a);
-        }
-        else {
-            var idx = env.Pop().GetNumber();
-            var a = env.Pop();
-            var v = env.GetVariable(this.Name);
-            v.Value[idx] = a;
-        }
-        env.CodeLine++;
-    };
-    return AssignCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var CompareCode = (function () {
-    function CompareCode(operation) {
-        this.Operation = operation;
-    }
-    CompareCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        var b = env.Pop();
-        if (!a)
-            a = new VariableValue(null);
-        if (!b)
-            b = new VariableValue(null);
-        switch (this.Operation) {
-            case "==":
-                if (a.Type == ValueType.Null || b.Type == ValueType.Null)
-                    env.Push(new VariableValue(a.Value === b.Value));
-                else
-                    env.Push(new VariableValue(a.Value == b.Value));
-                break;
-            case "!=":
-                if (a.Type == ValueType.Null || b.Type == ValueType.Null)
-                    env.Push(new VariableValue(a.Value !== b.Value));
-                else
-                    env.Push(new VariableValue(a.Value != b.Value));
-                break;
-            case "<=":
-                env.Push(new VariableValue(a.Value <= b.Value));
-                break;
-            case "<":
-                env.Push(new VariableValue(a.Value < b.Value));
-                break;
-            case ">=":
-                env.Push(new VariableValue(a.Value >= b.Value));
-                break;
-            case ">":
-                env.Push(new VariableValue(a.Value > b.Value));
-                break;
-            default:
-                throw "Unknown operator " + this.Operation;
-        }
-        env.CodeLine++;
-    };
-    return CompareCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var DivideCode = (function () {
-    function DivideCode() {
-    }
-    DivideCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        var b = env.Pop();
-        if (a === null || b === null)
-            env.Push(new VariableValue(null));
-        else
-            env.Push(new VariableValue(a.GetNumber() / b.GetNumber()));
-        env.CodeLine++;
-    };
-    return DivideCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var FlushVariableStackCode = (function () {
-    function FlushVariableStackCode() {
-    }
-    FlushVariableStackCode.prototype.Execute = function (env) {
-        env.Flush();
-        env.CodeLine++;
-    };
-    return FlushVariableStackCode;
-}());
-/// <refe/rence path="ExecutionCode.ts" />
-var FunctionCallCode = (function () {
-    function FunctionCallCode(name, parametersCount) {
-        this.Name = name;
-        this.ParametersCount = parametersCount;
-    }
-    FunctionCallCode.prototype.Execute = function (env) {
-        var values = [];
-        for (var i = this.ParametersCount - 1; i >= 0; i--)
-            values[i] = env.Pop();
-        env.CodeLine++;
-        if (!this.type) {
-            var parts = this.Name.split('.');
-            if (parts.length == 2 && env.HasWrapper(this.Name))
-                this.type = "wrapper";
-            else if (parts.length == 1 || parts.length == 3)
-                this.type = "sub";
-            else
-                this.type = "api";
-        }
-        switch (this.type) {
-            case "wrapper":
-                env.ExecuteWrapperFunctionCode(this.Name, values);
-                break;
-            case "sub":
-                env.ExecuteSubFunctionCode(this.Name, values);
-                break;
-            case "api":
-                var a = env.ExecuteFunction(this.Name, values);
-                if (a !== null)
-                    env.Push(a);
-                break;
-        }
-    };
-    return FunctionCallCode;
-}());
-var FunctionDefinitionCode = (function () {
-    function FunctionDefinitionCode() {
-        this.Code = [];
-        this.LoopExitStack = [];
-    }
-    return FunctionDefinitionCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var IfCode = (function () {
-    function IfCode(trueJump, falseJump) {
-        this.TrueJump = trueJump;
-        this.FalseJump = falseJump;
-    }
-    IfCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        if (a.GetBoolean() === true)
-            env.CodeLine = this.TrueJump;
-        else
-            env.CodeLine = this.FalseJump;
-    };
-    return IfCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var JumpCode = (function () {
-    function JumpCode(jumpLine) {
-        this.JumpLine = jumpLine;
-    }
-    JumpCode.prototype.Execute = function (env) {
-        env.CodeLine = this.JumpLine;
-    };
-    return JumpCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var MultiplyCode = (function () {
-    function MultiplyCode() {
-    }
-    MultiplyCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        var b = env.Pop();
-        if (a === null || b === null)
-            env.Push(new VariableValue(null));
-        else
-            env.Push(new VariableValue(a.GetNumber() * b.GetNumber()));
-        env.CodeLine++;
-    };
-    return MultiplyCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var NewArrayCode = (function () {
-    function NewArrayCode() {
-    }
-    NewArrayCode.prototype.Execute = function (env) {
-        env.Push(new VariableValue([]));
-        env.CodeLine++;
-    };
-    return NewArrayCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var NotCode = (function () {
-    function NotCode() {
-    }
-    NotCode.prototype.Execute = function (env) {
-        env.Push(new VariableValue(!(env.Pop().GetBoolean())));
-        env.CodeLine++;
-    };
-    return NotCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var OrCode = (function () {
-    function OrCode() {
-    }
-    OrCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        var b = env.Pop();
-        env.Push(new VariableValue(a.GetBoolean() || b.GetBoolean()));
-        env.CodeLine++;
-    };
-    return OrCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var PushCode = (function () {
-    function PushCode(value) {
-        this.Value = value;
-    }
-    PushCode.prototype.Execute = function (env) {
-        env.Push(new VariableValue(this.Value));
-        env.CodeLine++;
-    };
-    return PushCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var ReadCode = (function () {
-    function ReadCode(name, index) {
-        if (index === void 0) { index = false; }
-        this.Index = false;
-        this.Name = name;
-        this.Index = index;
-    }
-    ReadCode.prototype.Execute = function (env) {
-        if (this.Index == false)
-            env.Push(env.GetVariable(this.Name));
-        else {
-            var idx = env.Pop().GetNumber();
-            var v = env.GetVariable(this.Name);
-            env.Push(v.Value[idx]);
-        }
-        env.CodeLine++;
-    };
-    return ReadCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var ReturnCode = (function () {
-    function ReturnCode() {
-    }
-    ReturnCode.prototype.Execute = function (env) {
-        env.CodeLine = -1;
-    };
-    return ReturnCode;
-}());
-/// <reference path="ExecutionCode.ts" />
-var SubstractCode = (function () {
-    function SubstractCode() {
-    }
-    SubstractCode.prototype.Execute = function (env) {
-        var a = env.Pop();
-        var b = env.Pop();
-        if (a === null || b === null)
-            env.Push(new VariableValue(null));
-        else
-            env.Push(new VariableValue(a.GetNumber() - b.GetNumber()));
-        env.CodeLine++;
-    };
-    return SubstractCode;
-}());
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['Add'] = { help: "Add two values and return the result. If one of the two is a string a concatenation will be made.", params: [{ name: 'AStatement', type: 'CodeStatement' }, { name: 'BStatement', type: 'CodeStatement' }] };
 var AddStatement = (function (_super) {
@@ -19625,6 +19625,81 @@ var MessageMenu = (function () {
     };
     return MessageMenu;
 }());
+var PublicViewPlayer = (function () {
+    function PublicViewPlayer() {
+    }
+    PublicViewPlayer.Show = function (name) {
+        $.ajax({
+            type: 'POST',
+            url: '/backend/PublicViewPlayer',
+            data: {
+                game: world.Id,
+                name: name
+            },
+            success: function (msg) {
+                var data = TryParse(msg);
+                if (!data)
+                    return;
+                $("#npcDialog").show();
+                $("#npcDialog .gamePanelHeader").html("View: " + name.htmlEntities());
+                var html = "";
+                html += "<table>";
+                html += "<tr><td>Name:</td><td>" + ("" + data.name).htmlEntities() + "</td></tr>";
+                html += "<tr><td>X:</td><td>" + ("" + data.x).htmlEntities() + "</td></tr>";
+                html += "<tr><td>Y:</td><td>" + ("" + data.x).htmlEntities() + "</td></tr>";
+                html += "<tr><td>Zone:</td><td>" + ("" + data.zone).htmlEntities() + "</td></tr>";
+                html += "</table>";
+                html += "<h3>Equiped with</h3>";
+                var items = [];
+                for (var item in data.equipedObjects)
+                    items.push(data.equipedObjects[item]);
+                items.sort();
+                for (var i = 0; i < items.length; i++)
+                    html += ("" + items[i].Name).htmlEntities() + "<br>";
+                html += "<h3>Stats</h3>";
+                html += "<table>";
+                data.stats.sort(function (a, b) {
+                    if (a.Name > b.Name)
+                        return 1;
+                    if (a.Name < b.Name)
+                        return -1;
+                    return 0;
+                });
+                for (var i = 0; i < data.stats.length; i++) {
+                    var stat = world.GetStat(data.stats[i].Name);
+                    if (!stat)
+                        continue;
+                    if (stat.CodeVariable("PlayerVisible") === "false")
+                        continue;
+                    html += "<tr><td>" + ("" + (stat.CodeVariable("DisplayName") ? stat.CodeVariable("DisplayName") : stat.Name)).htmlEntities() + "</td><td>" + ("" + data.stats[i].Value).htmlEntities() + "</td></tr>";
+                }
+                html += "<h3>Skills</h3>";
+                data.skills.sort(function (a, b) {
+                    if (a.Name > b.Name)
+                        return 1;
+                    if (a.Name < b.Name)
+                        return -1;
+                    return 0;
+                });
+                for (var i = 0; i < data.skills.length; i++) {
+                    var skill = world.GetSkill(data.skills[i].Name);
+                    if (!skill)
+                        continue;
+                    html += ("" + (skill.CodeVariable("DisplayName") ? skill.CodeVariable("DisplayName") : skill.Name)).htmlEntities() + "<br>";
+                }
+                $("#dialogSentence").html(html);
+                play.onDialogPaint = [];
+                $("#dialogAnswers").html("<div onclick='PublicViewPlayer.Close();' class='gameButton'>Close</div>");
+            },
+            error: function (msg, textStatus) {
+            }
+        });
+    };
+    PublicViewPlayer.Close = function () {
+        $("#npcDialog").hide();
+    };
+    return PublicViewPlayer;
+}());
 var profileMenu = new ((function () {
     function class_26() {
         this.profileDisplayed = false;
@@ -19827,81 +19902,6 @@ var ProfileMenu = (function () {
         ProfileMenu.Show();
     };
     return ProfileMenu;
-}());
-var PublicViewPlayer = (function () {
-    function PublicViewPlayer() {
-    }
-    PublicViewPlayer.Show = function (name) {
-        $.ajax({
-            type: 'POST',
-            url: '/backend/PublicViewPlayer',
-            data: {
-                game: world.Id,
-                name: name
-            },
-            success: function (msg) {
-                var data = TryParse(msg);
-                if (!data)
-                    return;
-                $("#npcDialog").show();
-                $("#npcDialog .gamePanelHeader").html("View: " + name.htmlEntities());
-                var html = "";
-                html += "<table>";
-                html += "<tr><td>Name:</td><td>" + ("" + data.name).htmlEntities() + "</td></tr>";
-                html += "<tr><td>X:</td><td>" + ("" + data.x).htmlEntities() + "</td></tr>";
-                html += "<tr><td>Y:</td><td>" + ("" + data.x).htmlEntities() + "</td></tr>";
-                html += "<tr><td>Zone:</td><td>" + ("" + data.zone).htmlEntities() + "</td></tr>";
-                html += "</table>";
-                html += "<h3>Equiped with</h3>";
-                var items = [];
-                for (var item in data.equipedObjects)
-                    items.push(data.equipedObjects[item]);
-                items.sort();
-                for (var i = 0; i < items.length; i++)
-                    html += ("" + items[i].Name).htmlEntities() + "<br>";
-                html += "<h3>Stats</h3>";
-                html += "<table>";
-                data.stats.sort(function (a, b) {
-                    if (a.Name > b.Name)
-                        return 1;
-                    if (a.Name < b.Name)
-                        return -1;
-                    return 0;
-                });
-                for (var i = 0; i < data.stats.length; i++) {
-                    var stat = world.GetStat(data.stats[i].Name);
-                    if (!stat)
-                        continue;
-                    if (stat.CodeVariable("PlayerVisible") === "false")
-                        continue;
-                    html += "<tr><td>" + ("" + (stat.CodeVariable("DisplayName") ? stat.CodeVariable("DisplayName") : stat.Name)).htmlEntities() + "</td><td>" + ("" + data.stats[i].Value).htmlEntities() + "</td></tr>";
-                }
-                html += "<h3>Skills</h3>";
-                data.skills.sort(function (a, b) {
-                    if (a.Name > b.Name)
-                        return 1;
-                    if (a.Name < b.Name)
-                        return -1;
-                    return 0;
-                });
-                for (var i = 0; i < data.skills.length; i++) {
-                    var skill = world.GetSkill(data.skills[i].Name);
-                    if (!skill)
-                        continue;
-                    html += ("" + (skill.CodeVariable("DisplayName") ? skill.CodeVariable("DisplayName") : skill.Name)).htmlEntities() + "<br>";
-                }
-                $("#dialogSentence").html(html);
-                play.onDialogPaint = [];
-                $("#dialogAnswers").html("<div onclick='PublicViewPlayer.Close();' class='gameButton'>Close</div>");
-            },
-            error: function (msg, textStatus) {
-            }
-        });
-    };
-    PublicViewPlayer.Close = function () {
-        $("#npcDialog").hide();
-    };
-    return PublicViewPlayer;
 }());
 var searchPanel = new ((function () {
     function class_27() {
@@ -22179,9 +22179,9 @@ var Play = (function () {
             try {
                 if (!world.Codes[i].code)
                     world.Codes[i].code = CodeParser.ParseWithParameters(world.Codes[i].Source, world.Codes[i].Parameters);
-                if (world.Codes[i].code.HasFunction("AutoRun"))
+                if (world.Codes[i].code && world.Codes[i].code.HasFunction("AutoRun"))
                     world.Codes[i].code.ExecuteFunction("AutoRun", []);
-                if (world.Codes[i].code.HasFunction("OnPaint"))
+                if (world.Codes[i].code && world.Codes[i].code.HasFunction("OnPaint"))
                     play.onPaint.push(world.Codes[i].code);
             }
             catch (ex) {
