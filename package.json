@@ -19,7 +19,7 @@
   "description": "Dot World Maker",
   "author": {
     "name": "Alain",
-    "email": "bertrand@nodalideas.com"
+    "email": "nodalideas@gmail.com"
   },
   "dependencies": {
     "express": "~4.9.0",
