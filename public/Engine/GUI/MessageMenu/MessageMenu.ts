@@ -39,7 +39,7 @@ class MessageMenu
         }
 
         $("#messageIcon").css("top", position + "px");
-        $("#messageIcon .gamePanelContentNoHeader").html("<img src='/art/tileset2/message_icon.png'><div>10</div>");
+        $("#messageIcon .gamePanelContentNoHeader").html("<img src='/art/tileset1/message_icon.png'><div>10</div>");
         $("#messageIcon div.gamePanelContentNoHeader > div").html("0").hide();
 
         if (messageMenu.firstInit && chat.socket)
@@ -52,7 +52,7 @@ class MessageMenu
                 {
                     if (world.Codes[i].Enabled === false)
                         continue;
-                    if (!world.Codes[i].code)
+                    if (!world.Codes[i].code && world.Codes[i].Source)
                         world.Codes[i].code = CodeParser.ParseWithParameters(world.Codes[i].Source, world.Codes[i].Parameters);
                     if (world.Codes[i].code.HasFunction("OnPrivateMessage"))
                         world.Codes[i].code.ExecuteFunction("OnPrivateMessage", []);
@@ -212,9 +212,9 @@ class MessageMenu
                     html += "<tr><td>Date:</td><td>" + Main.FormatDateTime(data.sentDate) + "</td></tr>";
                     html += "<tr><td>Subject:</td><td>" + ("" + data.subject).htmlEntities() + "</td></tr>";
                     html += "<tr><td>Message:</td><td>" + Main.TextTransform("" + data.message) + "</td></tr>";
-                    if (data.attachments)
+                    var attachments = <MessageAttachment[]>TryParse(data.attachments);
+                    if (attachments)
                     {
-                        var attachments = <MessageAttachment[]>TryParse(data.attachments);
                         if (attachments && attachments.length > 0)
                             html += "<tr><td>Attachments:</td><td>";
                         for (var i = 0; i < attachments.length; i++)
