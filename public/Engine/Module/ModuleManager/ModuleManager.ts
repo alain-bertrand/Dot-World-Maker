@@ -83,7 +83,7 @@ class ModuleManager
     {
         if (moduleManager.searchTimeout)
             clearTimeout(moduleManager.searchTimeout);
-        moduleManager.searchTimeout = setTimeout(ModuleManager.DoSearch(), 500);
+        moduleManager.searchTimeout = setTimeout(ModuleManager.DoSearch, 500);
     }
 
     static DoSearch()

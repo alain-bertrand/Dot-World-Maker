@@ -1265,7 +1265,7 @@
         }
     }
 
-    static MouseWheel(evt: MouseWheelEvent)
+    static MouseWheel(evt)
     {
         var delta = Math.max(-1, Math.min(1, (evt.wheelDelta || -evt.detail)));
         if (delta < 0 && MapEditor[mapEditor.currentOperation + "Next"])

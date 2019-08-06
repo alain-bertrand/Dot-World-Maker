@@ -382,7 +382,7 @@
         switch (data.type)
         {
             case "base":
-                newNode = new window[data.call]();
+                newNode = new (<any>window[data.call])();
                 break;
             case "api":
                 var params = [];
@@ -435,7 +435,7 @@
         switch (data.type)
         {
             case "base":
-                newNode = new window[data.call]();
+                newNode = new (<any>window[data.call])();
                 break;
             case "api":
                 var params = [];
@@ -618,7 +618,7 @@
 
             if (type == "base" && statementEditorInfo[call])
                 $("#node_help_" + this.element).html(statementEditorInfo[call].help);
-            else if(type == "api")
+            else if (type == "api")
             {
                 call = ("" + call).toLowerCase();
                 var p = call.split('.');
