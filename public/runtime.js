@@ -1,7 +1,10 @@
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -14,7 +17,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var ChatBot = (function () {
+var ChatBot = /** @class */ (function () {
     function ChatBot() {
         this.Name = "";
         this.Channel = "*";
@@ -63,7 +66,7 @@ var ChatBot = (function () {
     };
     return ChatBot;
 }());
-var ChatBotSentence = (function () {
+var ChatBotSentence = /** @class */ (function () {
     function ChatBotSentence() {
         this.Conditions = [];
         this.Trigger = "[hello,@bot@],[hi,@bot@],[hey,@bot@]";
@@ -171,7 +174,7 @@ var ChatBotSentence = (function () {
     };
     return ChatBotSentence;
 }());
-var dialogAction = new ((function () {
+var dialogAction = new (/** @class */ (function () {
     function class_1() {
         this.code = {};
         this.currentEditor = "NPCEditor";
@@ -187,7 +190,7 @@ function DialogActionClass(target) {
     else
         throw "Class \"" + className + "\" doesn't extends ActionClass.";
 }
-var ActionClass = (function () {
+var ActionClass = /** @class */ (function () {
     function ActionClass() {
     }
     ActionClass.prototype.OptionList = function (id, position, values, currentValue, updateFunction) {
@@ -219,7 +222,7 @@ var ActionClass = (function () {
     };
     return ActionClass;
 }());
-var DialogAction = (function () {
+var DialogAction = /** @class */ (function () {
     function DialogAction() {
         this.Values = [];
     }
@@ -227,7 +230,7 @@ var DialogAction = (function () {
 }());
 /// <reference path="../Dialogs/DialogAction.ts" />
 var lastMapMessageTimeout = null;
-var AddActorParticleEffect = (function (_super) {
+var AddActorParticleEffect = /** @class */ (function (_super) {
     __extends(AddActorParticleEffect, _super);
     function AddActorParticleEffect() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -260,13 +263,13 @@ var AddActorParticleEffect = (function (_super) {
         }
         return null;
     };
+    AddActorParticleEffect = __decorate([
+        DialogActionClass
+    ], AddActorParticleEffect);
     return AddActorParticleEffect;
 }(ActionClass));
-AddActorParticleEffect = __decorate([
-    DialogActionClass
-], AddActorParticleEffect);
 /// <reference path="../Dialogs/DialogAction.ts" />
-var AddJournalEntry = (function (_super) {
+var AddJournalEntry = /** @class */ (function (_super) {
     __extends(AddJournalEntry, _super);
     function AddJournalEntry() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -291,13 +294,13 @@ var AddJournalEntry = (function (_super) {
             throw "The action 'Add Journal Entry' requires the id of the journal entry (as number).";
         world.Player.AddQuestJournalEntry(values[0], parseInt(values[1]));
     };
+    AddJournalEntry = __decorate([
+        DialogActionClass
+    ], AddJournalEntry);
     return AddJournalEntry;
 }(ActionClass));
-AddJournalEntry = __decorate([
-    DialogActionClass
-], AddJournalEntry);
 /// <reference path="../Dialogs/DialogAction.ts" />
-var CompleteQuest = (function (_super) {
+var CompleteQuest = /** @class */ (function (_super) {
     __extends(CompleteQuest, _super);
     function CompleteQuest() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -318,13 +321,13 @@ var CompleteQuest = (function (_super) {
             throw "The action 'Complete Quest' requires a quest name.";
         world.Player.CompleteQuest(values[0]);
     };
+    CompleteQuest = __decorate([
+        DialogActionClass
+    ], CompleteQuest);
     return CompleteQuest;
 }(ActionClass));
-CompleteQuest = __decorate([
-    DialogActionClass
-], CompleteQuest);
 /// <reference path="../Dialogs/DialogAction.ts" />
-var DecreaseStat = (function (_super) {
+var DecreaseStat = /** @class */ (function (_super) {
     __extends(DecreaseStat, _super);
     function DecreaseStat() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -359,17 +362,18 @@ var DecreaseStat = (function (_super) {
         }
         world.Player.SetStat(values[0], world.Player.GetStat(values[0]) - val);
     };
+    DecreaseStat = __decorate([
+        DialogActionClass
+    ], DecreaseStat);
     return DecreaseStat;
 }(ActionClass));
-DecreaseStat = __decorate([
-    DialogActionClass
-], DecreaseStat);
 /// <reference path="../Dialogs/DialogAction.ts" />
-var ExecuteCodeFunction = ExecuteCodeFunction_1 = (function (_super) {
+var ExecuteCodeFunction = /** @class */ (function (_super) {
     __extends(ExecuteCodeFunction, _super);
     function ExecuteCodeFunction() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    ExecuteCodeFunction_1 = ExecuteCodeFunction;
     ExecuteCodeFunction.prototype.Display = function (id, values, updateFunction) {
         var html = "";
         html += this.Label("Function");
@@ -395,14 +399,14 @@ var ExecuteCodeFunction = ExecuteCodeFunction_1 = (function (_super) {
             throw "The expression used in 'Execute Code Function' is invalid.";
         }
     };
+    var ExecuteCodeFunction_1;
+    ExecuteCodeFunction = ExecuteCodeFunction_1 = __decorate([
+        DialogActionClass
+    ], ExecuteCodeFunction);
     return ExecuteCodeFunction;
 }(ActionClass));
-ExecuteCodeFunction = ExecuteCodeFunction_1 = __decorate([
-    DialogActionClass
-], ExecuteCodeFunction);
-var ExecuteCodeFunction_1;
 /// <reference path="../Dialogs/DialogAction.ts" />
-var GiveCurrentItem = (function (_super) {
+var GiveCurrentItem = /** @class */ (function (_super) {
     __extends(GiveCurrentItem, _super);
     function GiveCurrentItem() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -433,13 +437,13 @@ var GiveCurrentItem = (function (_super) {
         }
         world.Player.AddItem(env.GetVariable('currentItem').GetString(), val);
     };
+    GiveCurrentItem = __decorate([
+        DialogActionClass
+    ], GiveCurrentItem);
     return GiveCurrentItem;
 }(ActionClass));
-GiveCurrentItem = __decorate([
-    DialogActionClass
-], GiveCurrentItem);
 /// <reference path="../Dialogs/DialogAction.ts" />
-var GiveItem = (function (_super) {
+var GiveItem = /** @class */ (function (_super) {
     __extends(GiveItem, _super);
     function GiveItem() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -471,13 +475,13 @@ var GiveItem = (function (_super) {
         }
         world.Player.AddItem(values[0], val);
     };
+    GiveItem = __decorate([
+        DialogActionClass
+    ], GiveItem);
     return GiveItem;
 }(ActionClass));
-GiveItem = __decorate([
-    DialogActionClass
-], GiveItem);
 /// <reference path="../Dialogs/DialogAction.ts" />
-var GiveSkill = (function (_super) {
+var GiveSkill = /** @class */ (function (_super) {
     __extends(GiveSkill, _super);
     function GiveSkill() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -500,12 +504,12 @@ var GiveSkill = (function (_super) {
             throw "The action 'Give Skill' requires a name.";
         world.Player.GiveSkill(values[0]);
     };
+    GiveSkill = __decorate([
+        DialogActionClass
+    ], GiveSkill);
     return GiveSkill;
 }(ActionClass));
-GiveSkill = __decorate([
-    DialogActionClass
-], GiveSkill);
-var HideMinimap = (function (_super) {
+var HideMinimap = /** @class */ (function (_super) {
     __extends(HideMinimap, _super);
     function HideMinimap() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -517,13 +521,13 @@ var HideMinimap = (function (_super) {
     HideMinimap.prototype.Execute = function (values, env) {
         play.showMinimap = false;
     };
+    HideMinimap = __decorate([
+        DialogActionClass
+    ], HideMinimap);
     return HideMinimap;
 }(ActionClass));
-HideMinimap = __decorate([
-    DialogActionClass
-], HideMinimap);
 /// <reference path="../Dialogs/DialogAction.ts" />
-var IncreaseStat = (function (_super) {
+var IncreaseStat = /** @class */ (function (_super) {
     __extends(IncreaseStat, _super);
     function IncreaseStat() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -555,13 +559,13 @@ var IncreaseStat = (function (_super) {
         }
         world.Player.SetStat(values[0], world.Player.GetStat(values[0]) + val);
     };
+    IncreaseStat = __decorate([
+        DialogActionClass
+    ], IncreaseStat);
     return IncreaseStat;
 }(ActionClass));
-IncreaseStat = __decorate([
-    DialogActionClass
-], IncreaseStat);
 /// <reference path="../Dialogs/DialogAction.ts" />
-var PlayerFloatingMessage = (function (_super) {
+var PlayerFloatingMessage = /** @class */ (function (_super) {
     __extends(PlayerFloatingMessage, _super);
     function PlayerFloatingMessage() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -600,13 +604,13 @@ var PlayerFloatingMessage = (function (_super) {
             area.actors.push(MapMessage.Create(val, values[1] ? values[1] : "#FFFFFF", area, mx, my));
         }
     };
+    PlayerFloatingMessage = __decorate([
+        DialogActionClass
+    ], PlayerFloatingMessage);
     return PlayerFloatingMessage;
 }(ActionClass));
-PlayerFloatingMessage = __decorate([
-    DialogActionClass
-], PlayerFloatingMessage);
 /// <reference path="../Dialogs/DialogAction.ts" />
-var PlaySound = (function (_super) {
+var PlaySound = /** @class */ (function (_super) {
     __extends(PlaySound, _super);
     function PlaySound() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -637,13 +641,13 @@ var PlaySound = (function (_super) {
         }
         Sounds.Play(values[0], val);
     };
+    PlaySound = __decorate([
+        DialogActionClass
+    ], PlaySound);
     return PlaySound;
 }(ActionClass));
-PlaySound = __decorate([
-    DialogActionClass
-], PlaySound);
 /// <reference path="../Dialogs/DialogAction.ts" />
-var RemoveAllTemporaryEffects = (function (_super) {
+var RemoveAllTemporaryEffects = /** @class */ (function (_super) {
     __extends(RemoveAllTemporaryEffects, _super);
     function RemoveAllTemporaryEffects() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -659,13 +663,13 @@ var RemoveAllTemporaryEffects = (function (_super) {
         }
         world.Player.ClearTemporaryEffects();
     };
+    RemoveAllTemporaryEffects = __decorate([
+        DialogActionClass
+    ], RemoveAllTemporaryEffects);
     return RemoveAllTemporaryEffects;
 }(ActionClass));
-RemoveAllTemporaryEffects = __decorate([
-    DialogActionClass
-], RemoveAllTemporaryEffects);
 /// <reference path="../Dialogs/DialogAction.ts" />
-var RemoveCurrentItem = (function (_super) {
+var RemoveCurrentItem = /** @class */ (function (_super) {
     __extends(RemoveCurrentItem, _super);
     function RemoveCurrentItem() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -693,13 +697,13 @@ var RemoveCurrentItem = (function (_super) {
         }
         world.Player.RemoveItem(env.GetVariable('currentItem').GetString(), val);
     };
+    RemoveCurrentItem = __decorate([
+        DialogActionClass
+    ], RemoveCurrentItem);
     return RemoveCurrentItem;
 }(ActionClass));
-RemoveCurrentItem = __decorate([
-    DialogActionClass
-], RemoveCurrentItem);
 /// <reference path="../Dialogs/DialogAction.ts" />
-var RemoveItem = (function (_super) {
+var RemoveItem = /** @class */ (function (_super) {
     __extends(RemoveItem, _super);
     function RemoveItem() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -729,13 +733,13 @@ var RemoveItem = (function (_super) {
         }
         world.Player.RemoveItem(values[0], val);
     };
+    RemoveItem = __decorate([
+        DialogActionClass
+    ], RemoveItem);
     return RemoveItem;
 }(ActionClass));
-RemoveItem = __decorate([
-    DialogActionClass
-], RemoveItem);
 /// <reference path="../Dialogs/DialogAction.ts" />
-var RemoveTemporaryEffect = (function (_super) {
+var RemoveTemporaryEffect = /** @class */ (function (_super) {
     __extends(RemoveTemporaryEffect, _super);
     function RemoveTemporaryEffect() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -758,13 +762,13 @@ var RemoveTemporaryEffect = (function (_super) {
             throw "The action 'Remove Temporary Effect' requires an effect name.";
         world.Player.RemoveTemporaryEffect(values[0]);
     };
+    RemoveTemporaryEffect = __decorate([
+        DialogActionClass
+    ], RemoveTemporaryEffect);
     return RemoveTemporaryEffect;
 }(ActionClass));
-RemoveTemporaryEffect = __decorate([
-    DialogActionClass
-], RemoveTemporaryEffect);
 /// <reference path="../Dialogs/DialogAction.ts" />
-var Respawn = (function (_super) {
+var Respawn = /** @class */ (function (_super) {
     __extends(Respawn, _super);
     function Respawn() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -783,13 +787,13 @@ var Respawn = (function (_super) {
         else
             Teleport.Teleport(world.SpawnPoint.X, world.SpawnPoint.Y, world.SpawnPoint.Zone);
     };
+    Respawn = __decorate([
+        DialogActionClass
+    ], Respawn);
     return Respawn;
 }(ActionClass));
-Respawn = __decorate([
-    DialogActionClass
-], Respawn);
 /// <reference path="../Dialogs/DialogAction.ts" />
-var RestorePlayerLook = (function (_super) {
+var RestorePlayerLook = /** @class */ (function (_super) {
     __extends(RestorePlayerLook, _super);
     function RestorePlayerLook() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -807,13 +811,13 @@ var RestorePlayerLook = (function (_super) {
         world.Player.StoredCompare = world.Player.JSON();
         world.Player.Save();
     };
+    RestorePlayerLook = __decorate([
+        DialogActionClass
+    ], RestorePlayerLook);
     return RestorePlayerLook;
 }(ActionClass));
-RestorePlayerLook = __decorate([
-    DialogActionClass
-], RestorePlayerLook);
 /// <reference path="../Dialogs/DialogAction.ts" />
-var SetLook = (function (_super) {
+var SetLook = /** @class */ (function (_super) {
     __extends(SetLook, _super);
     function SetLook() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -840,13 +844,13 @@ var SetLook = (function (_super) {
         world.Player.StoredCompare = world.Player.JSON();
         world.Player.Save();
     };
+    SetLook = __decorate([
+        DialogActionClass
+    ], SetLook);
     return SetLook;
 }(ActionClass));
-SetLook = __decorate([
-    DialogActionClass
-], SetLook);
 /// <reference path="../Dialogs/DialogAction.ts" />
-var SetQuestVariable = (function (_super) {
+var SetQuestVariable = /** @class */ (function (_super) {
     __extends(SetQuestVariable, _super);
     function SetQuestVariable() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -878,13 +882,13 @@ var SetQuestVariable = (function (_super) {
         }
         world.Player.SetQuestVariable(values[0], val);
     };
+    SetQuestVariable = __decorate([
+        DialogActionClass
+    ], SetQuestVariable);
     return SetQuestVariable;
 }(ActionClass));
-SetQuestVariable = __decorate([
-    DialogActionClass
-], SetQuestVariable);
 /// <reference path="../Dialogs/DialogAction.ts" />
-var SetRespawnPoint = (function (_super) {
+var SetRespawnPoint = /** @class */ (function (_super) {
     __extends(SetRespawnPoint, _super);
     function SetRespawnPoint() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -927,13 +931,13 @@ var SetRespawnPoint = (function (_super) {
         world.Player.StoredCompare = world.Player.JSON();
         world.Player.Save();
     };
+    SetRespawnPoint = __decorate([
+        DialogActionClass
+    ], SetRespawnPoint);
     return SetRespawnPoint;
 }(ActionClass));
-SetRespawnPoint = __decorate([
-    DialogActionClass
-], SetRespawnPoint);
 /// <reference path="../Dialogs/DialogAction.ts" />
-var SetStat = (function (_super) {
+var SetStat = /** @class */ (function (_super) {
     __extends(SetStat, _super);
     function SetStat() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -965,14 +969,14 @@ var SetStat = (function (_super) {
         }
         world.Player.SetStat(values[0], val);
     };
+    SetStat = __decorate([
+        DialogActionClass
+    ], SetStat);
     return SetStat;
 }(ActionClass));
-SetStat = __decorate([
-    DialogActionClass
-], SetStat);
 /// <reference path="../Dialogs/DialogAction.ts" />
 var lastMapMessageTimeout = null;
-var ShowMapMessage = (function (_super) {
+var ShowMapMessage = /** @class */ (function (_super) {
     __extends(ShowMapMessage, _super);
     function ShowMapMessage() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -1000,12 +1004,12 @@ var ShowMapMessage = (function (_super) {
             $("#mapMessage").hide();
         }, 3000);
     };
+    ShowMapMessage = __decorate([
+        DialogActionClass
+    ], ShowMapMessage);
     return ShowMapMessage;
 }(ActionClass));
-ShowMapMessage = __decorate([
-    DialogActionClass
-], ShowMapMessage);
-var ShowMinimap = (function (_super) {
+var ShowMinimap = /** @class */ (function (_super) {
     __extends(ShowMinimap, _super);
     function ShowMinimap() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -1017,13 +1021,13 @@ var ShowMinimap = (function (_super) {
     ShowMinimap.prototype.Execute = function (values, env) {
         play.showMinimap = true;
     };
+    ShowMinimap = __decorate([
+        DialogActionClass
+    ], ShowMinimap);
     return ShowMinimap;
 }(ActionClass));
-ShowMinimap = __decorate([
-    DialogActionClass
-], ShowMinimap);
 /// <reference path="../Dialogs/DialogAction.ts" />
-var ShowShop = (function (_super) {
+var ShowShop = /** @class */ (function (_super) {
     __extends(ShowShop, _super);
     function ShowShop() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -1041,13 +1045,13 @@ var ShowShop = (function (_super) {
         npc.canJump = false;
         NPCActor.ShowShop();
     };
+    ShowShop = __decorate([
+        DialogActionClass
+    ], ShowShop);
     return ShowShop;
 }(ActionClass));
-ShowShop = __decorate([
-    DialogActionClass
-], ShowShop);
 /// <reference path="../Dialogs/DialogAction.ts" />
-var StartDialog = (function (_super) {
+var StartDialog = /** @class */ (function (_super) {
     __extends(StartDialog, _super);
     function StartDialog() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -1074,13 +1078,13 @@ var StartDialog = (function (_super) {
         $("#npcDialog .gamePanelHeader").html(npc.currentNPC.Name);
         NPCActor.ShowDialog(0);
     };
+    StartDialog = __decorate([
+        DialogActionClass
+    ], StartDialog);
     return StartDialog;
 }(ActionClass));
-StartDialog = __decorate([
-    DialogActionClass
-], StartDialog);
 /// <reference path="../Dialogs/DialogAction.ts" />
-var StartQuest = (function (_super) {
+var StartQuest = /** @class */ (function (_super) {
     __extends(StartQuest, _super);
     function StartQuest() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -1101,13 +1105,13 @@ var StartQuest = (function (_super) {
             throw "The action 'Start Quest' requires a quest name.";
         world.Player.StartQuest(values[0]);
     };
+    StartQuest = __decorate([
+        DialogActionClass
+    ], StartQuest);
     return StartQuest;
 }(ActionClass));
-StartQuest = __decorate([
-    DialogActionClass
-], StartQuest);
 /// <reference path="../Dialogs/DialogAction.ts" />
-var StartTemporaryEffect = (function (_super) {
+var StartTemporaryEffect = /** @class */ (function (_super) {
     __extends(StartTemporaryEffect, _super);
     function StartTemporaryEffect() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -1130,13 +1134,13 @@ var StartTemporaryEffect = (function (_super) {
             throw "The action 'Start Temporary Effect' requires an effect name.";
         world.Player.StartTemporaryEffect(values[0]);
     };
+    StartTemporaryEffect = __decorate([
+        DialogActionClass
+    ], StartTemporaryEffect);
     return StartTemporaryEffect;
 }(ActionClass));
-StartTemporaryEffect = __decorate([
-    DialogActionClass
-], StartTemporaryEffect);
 /// <reference path="../Dialogs/DialogAction.ts" />
-var StopAllMusic = (function (_super) {
+var StopAllMusic = /** @class */ (function (_super) {
     __extends(StopAllMusic, _super);
     function StopAllMusic() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -1147,13 +1151,13 @@ var StopAllMusic = (function (_super) {
     StopAllMusic.prototype.Execute = function (values, env) {
         Sounds.ClearSound();
     };
+    StopAllMusic = __decorate([
+        DialogActionClass
+    ], StopAllMusic);
     return StopAllMusic;
 }(ActionClass));
-StopAllMusic = __decorate([
-    DialogActionClass
-], StopAllMusic);
 /// <reference path="../Dialogs/DialogAction.ts" />
-var StorePlayerLook = (function (_super) {
+var StorePlayerLook = /** @class */ (function (_super) {
     __extends(StorePlayerLook, _super);
     function StorePlayerLook() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -1169,17 +1173,18 @@ var StorePlayerLook = (function (_super) {
         }
         world.Player.SetQuestVariable("__PlayerLook", world.Player.Name);
     };
+    StorePlayerLook = __decorate([
+        DialogActionClass
+    ], StorePlayerLook);
     return StorePlayerLook;
 }(ActionClass));
-StorePlayerLook = __decorate([
-    DialogActionClass
-], StorePlayerLook);
 /// <reference path="../Dialogs/DialogAction.ts" />
-var Teleport = Teleport_1 = (function (_super) {
+var Teleport = /** @class */ (function (_super) {
     __extends(Teleport, _super);
     function Teleport() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    Teleport_1 = Teleport;
     Teleport.prototype.Display = function (id, values, updateFunction) {
         var html = "";
         html += this.Label("Position X");
@@ -1255,13 +1260,13 @@ var Teleport = Teleport_1 = (function (_super) {
         play.path = null;
         world.Player.Save();
     };
+    var Teleport_1;
+    Teleport = Teleport_1 = __decorate([
+        DialogActionClass
+    ], Teleport);
     return Teleport;
 }(ActionClass));
-Teleport = Teleport_1 = __decorate([
-    DialogActionClass
-], Teleport);
-var Teleport_1;
-var KnownCode = (function () {
+var KnownCode = /** @class */ (function () {
     function KnownCode() {
         this.Parameters = {};
         this.Includes = [];
@@ -1283,7 +1288,7 @@ var KnownCode = (function () {
     };
     return KnownCode;
 }());
-var dialogCondition = new ((function () {
+var dialogCondition = new (/** @class */ (function () {
     function class_2() {
         this.code = {};
     }
@@ -1298,7 +1303,7 @@ function DialogConditionClass(target) {
     else
         throw "Class \"" + className + "\" doesn't extends ConditionClass.";
 }
-var ConditionClass = (function () {
+var ConditionClass = /** @class */ (function () {
     function ConditionClass() {
     }
     ConditionClass.prototype.OptionList = function (id, position, values, currentValue, updateFunction) {
@@ -1330,14 +1335,14 @@ var ConditionClass = (function () {
     };
     return ConditionClass;
 }());
-var DialogCondition = (function () {
+var DialogCondition = /** @class */ (function () {
     function DialogCondition() {
         this.Values = [];
     }
     return DialogCondition;
 }());
 /// <reference path="../Dialogs/DialogCondition.ts" />
-var CheckFalse = (function (_super) {
+var CheckFalse = /** @class */ (function (_super) {
     __extends(CheckFalse, _super);
     function CheckFalse() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -1349,13 +1354,13 @@ var CheckFalse = (function (_super) {
     CheckFalse.prototype.Check = function (values, env) {
         return false;
     };
+    CheckFalse = __decorate([
+        DialogConditionClass
+    ], CheckFalse);
     return CheckFalse;
 }(ConditionClass));
-CheckFalse = __decorate([
-    DialogConditionClass
-], CheckFalse);
 /// <reference path="../Dialogs/DialogCondition.ts" />
-var CheckHasSkill = (function (_super) {
+var CheckHasSkill = /** @class */ (function (_super) {
     __extends(CheckHasSkill, _super);
     function CheckHasSkill() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -1376,13 +1381,13 @@ var CheckHasSkill = (function (_super) {
                 return true;
         return false;
     };
+    CheckHasSkill = __decorate([
+        DialogConditionClass
+    ], CheckHasSkill);
     return CheckHasSkill;
 }(ConditionClass));
-CheckHasSkill = __decorate([
-    DialogConditionClass
-], CheckHasSkill);
 /// <reference path="../Dialogs/DialogCondition.ts" />
-var CheckInventory = (function (_super) {
+var CheckInventory = /** @class */ (function (_super) {
     __extends(CheckInventory, _super);
     function CheckInventory() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -1428,13 +1433,13 @@ var CheckInventory = (function (_super) {
         }
         return true;
     };
+    CheckInventory = __decorate([
+        DialogConditionClass
+    ], CheckInventory);
     return CheckInventory;
 }(ConditionClass));
-CheckInventory = __decorate([
-    DialogConditionClass
-], CheckInventory);
 /// <reference path="../Dialogs/DialogCondition.ts" />
-var CheckJournalEntryNotReceived = (function (_super) {
+var CheckJournalEntryNotReceived = /** @class */ (function (_super) {
     __extends(CheckJournalEntryNotReceived, _super);
     function CheckJournalEntryNotReceived() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -1454,13 +1459,13 @@ var CheckJournalEntryNotReceived = (function (_super) {
             throw "The condition 'Check Journal Entry Not Received' requires the id of the journal entry (as number).";
         return !world.Player.HaveQuestJournalEntry(values[0], parseInt(values[1]));
     };
+    CheckJournalEntryNotReceived = __decorate([
+        DialogConditionClass
+    ], CheckJournalEntryNotReceived);
     return CheckJournalEntryNotReceived;
 }(ConditionClass));
-CheckJournalEntryNotReceived = __decorate([
-    DialogConditionClass
-], CheckJournalEntryNotReceived);
 /// <reference path="../Dialogs/DialogCondition.ts" />
-var CheckJournalEntryReceived = (function (_super) {
+var CheckJournalEntryReceived = /** @class */ (function (_super) {
     __extends(CheckJournalEntryReceived, _super);
     function CheckJournalEntryReceived() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -1480,13 +1485,13 @@ var CheckJournalEntryReceived = (function (_super) {
             throw "The condition 'Check Journal Entry Received' requires the id of the journal entry (as number).";
         return world.Player.HaveQuestJournalEntry(values[0], parseInt(values[1]));
     };
+    CheckJournalEntryReceived = __decorate([
+        DialogConditionClass
+    ], CheckJournalEntryReceived);
     return CheckJournalEntryReceived;
 }(ConditionClass));
-CheckJournalEntryReceived = __decorate([
-    DialogConditionClass
-], CheckJournalEntryReceived);
 /// <reference path="../Dialogs/DialogCondition.ts" />
-var CheckLookIs = (function (_super) {
+var CheckLookIs = /** @class */ (function (_super) {
     __extends(CheckLookIs, _super);
     function CheckLookIs() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -1506,13 +1511,13 @@ var CheckLookIs = (function (_super) {
             throw "The condition 'Check Look Is' requires an look name.";
         return world.Player.Name == values[0];
     };
+    CheckLookIs = __decorate([
+        DialogConditionClass
+    ], CheckLookIs);
     return CheckLookIs;
 }(ConditionClass));
-CheckLookIs = __decorate([
-    DialogConditionClass
-], CheckLookIs);
 /// <reference path="../Dialogs/DialogCondition.ts" />
-var CheckLookIsNot = (function (_super) {
+var CheckLookIsNot = /** @class */ (function (_super) {
     __extends(CheckLookIsNot, _super);
     function CheckLookIsNot() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -1532,13 +1537,13 @@ var CheckLookIsNot = (function (_super) {
             throw "The condition 'Check Look Is Not' requires an look name.";
         return world.Player.Name != values[0];
     };
+    CheckLookIsNot = __decorate([
+        DialogConditionClass
+    ], CheckLookIsNot);
     return CheckLookIsNot;
 }(ConditionClass));
-CheckLookIsNot = __decorate([
-    DialogConditionClass
-], CheckLookIsNot);
 /// <reference path="../Dialogs/DialogCondition.ts" />
-var CheckMinimapIsHidden = (function (_super) {
+var CheckMinimapIsHidden = /** @class */ (function (_super) {
     __extends(CheckMinimapIsHidden, _super);
     function CheckMinimapIsHidden() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -1550,13 +1555,13 @@ var CheckMinimapIsHidden = (function (_super) {
     CheckMinimapIsHidden.prototype.Check = function (values, env) {
         return !play.showMinimap;
     };
+    CheckMinimapIsHidden = __decorate([
+        DialogConditionClass
+    ], CheckMinimapIsHidden);
     return CheckMinimapIsHidden;
 }(ConditionClass));
-CheckMinimapIsHidden = __decorate([
-    DialogConditionClass
-], CheckMinimapIsHidden);
 /// <reference path="../Dialogs/DialogCondition.ts" />
-var CheckMinimapIsVisible = (function (_super) {
+var CheckMinimapIsVisible = /** @class */ (function (_super) {
     __extends(CheckMinimapIsVisible, _super);
     function CheckMinimapIsVisible() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -1568,13 +1573,13 @@ var CheckMinimapIsVisible = (function (_super) {
     CheckMinimapIsVisible.prototype.Check = function (values, env) {
         return play.showMinimap;
     };
+    CheckMinimapIsVisible = __decorate([
+        DialogConditionClass
+    ], CheckMinimapIsVisible);
     return CheckMinimapIsVisible;
 }(ConditionClass));
-CheckMinimapIsVisible = __decorate([
-    DialogConditionClass
-], CheckMinimapIsVisible);
 /// <reference path="../Dialogs/DialogCondition.ts" />
-var CheckNotHasSkill = (function (_super) {
+var CheckNotHasSkill = /** @class */ (function (_super) {
     __extends(CheckNotHasSkill, _super);
     function CheckNotHasSkill() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -1595,13 +1600,13 @@ var CheckNotHasSkill = (function (_super) {
                 return false;
         return true;
     };
+    CheckNotHasSkill = __decorate([
+        DialogConditionClass
+    ], CheckNotHasSkill);
     return CheckNotHasSkill;
 }(ConditionClass));
-CheckNotHasSkill = __decorate([
-    DialogConditionClass
-], CheckNotHasSkill);
 /// <reference path="../Dialogs/DialogCondition.ts" />
-var CheckQuestCompleted = (function (_super) {
+var CheckQuestCompleted = /** @class */ (function (_super) {
     __extends(CheckQuestCompleted, _super);
     function CheckQuestCompleted() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -1617,13 +1622,13 @@ var CheckQuestCompleted = (function (_super) {
             throw "The condition 'Check Quest Completed' requires a quest name.";
         return world.Player.IsQuestCompleted(values[0]);
     };
+    CheckQuestCompleted = __decorate([
+        DialogConditionClass
+    ], CheckQuestCompleted);
     return CheckQuestCompleted;
 }(ConditionClass));
-CheckQuestCompleted = __decorate([
-    DialogConditionClass
-], CheckQuestCompleted);
 /// <reference path="../Dialogs/DialogCondition.ts" />
-var CheckQuestNotCompleted = (function (_super) {
+var CheckQuestNotCompleted = /** @class */ (function (_super) {
     __extends(CheckQuestNotCompleted, _super);
     function CheckQuestNotCompleted() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -1639,13 +1644,13 @@ var CheckQuestNotCompleted = (function (_super) {
             throw "The condition 'Check Quest Not Completed' requires a quest name.";
         return !world.Player.IsQuestCompleted(values[0]);
     };
+    CheckQuestNotCompleted = __decorate([
+        DialogConditionClass
+    ], CheckQuestNotCompleted);
     return CheckQuestNotCompleted;
 }(ConditionClass));
-CheckQuestNotCompleted = __decorate([
-    DialogConditionClass
-], CheckQuestNotCompleted);
 /// <reference path="../Dialogs/DialogCondition.ts" />
-var CheckQuestNotStarted = (function (_super) {
+var CheckQuestNotStarted = /** @class */ (function (_super) {
     __extends(CheckQuestNotStarted, _super);
     function CheckQuestNotStarted() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -1661,13 +1666,13 @@ var CheckQuestNotStarted = (function (_super) {
             throw "The condition 'Check Quest Not Started' requires a quest name.";
         return !world.Player.IsQuestStarted(values[0]);
     };
+    CheckQuestNotStarted = __decorate([
+        DialogConditionClass
+    ], CheckQuestNotStarted);
     return CheckQuestNotStarted;
 }(ConditionClass));
-CheckQuestNotStarted = __decorate([
-    DialogConditionClass
-], CheckQuestNotStarted);
 /// <reference path="../Dialogs/DialogCondition.ts" />
-var CheckQuestStarted = (function (_super) {
+var CheckQuestStarted = /** @class */ (function (_super) {
     __extends(CheckQuestStarted, _super);
     function CheckQuestStarted() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -1683,13 +1688,13 @@ var CheckQuestStarted = (function (_super) {
             throw "The condition 'Check Quest Started' requires a quest name.";
         return world.Player.IsQuestStarted(values[0]);
     };
+    CheckQuestStarted = __decorate([
+        DialogConditionClass
+    ], CheckQuestStarted);
     return CheckQuestStarted;
 }(ConditionClass));
-CheckQuestStarted = __decorate([
-    DialogConditionClass
-], CheckQuestStarted);
 /// <reference path="../Dialogs/DialogCondition.ts" />
-var CheckQuestVariable = (function (_super) {
+var CheckQuestVariable = /** @class */ (function (_super) {
     __extends(CheckQuestVariable, _super);
     function CheckQuestVariable() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -1735,13 +1740,13 @@ var CheckQuestVariable = (function (_super) {
         }
         return true;
     };
+    CheckQuestVariable = __decorate([
+        DialogConditionClass
+    ], CheckQuestVariable);
     return CheckQuestVariable;
 }(ConditionClass));
-CheckQuestVariable = __decorate([
-    DialogConditionClass
-], CheckQuestVariable);
 /// <reference path="../Dialogs/DialogCondition.ts" />
-var CheckUserStat = (function (_super) {
+var CheckUserStat = /** @class */ (function (_super) {
     __extends(CheckUserStat, _super);
     function CheckUserStat() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -1788,12 +1793,12 @@ var CheckUserStat = (function (_super) {
         }
         return true;
     };
+    CheckUserStat = __decorate([
+        DialogConditionClass
+    ], CheckUserStat);
     return CheckUserStat;
 }(ConditionClass));
-CheckUserStat = __decorate([
-    DialogConditionClass
-], CheckUserStat);
-var Dialog = (function () {
+var Dialog = /** @class */ (function () {
     function Dialog() {
         this.Answers = [];
     }
@@ -1807,13 +1812,13 @@ function MapEffectClass(target) {
     knownEffects.push(className.substr(0, className.length - 6));
     knownEffects.sort();
 }
-var MapEffect = (function () {
+var MapEffect = /** @class */ (function () {
     function MapEffect() {
     }
     return MapEffect;
 }());
 /// <reference path="MapEffect.ts" />
-var FogEffect = (function (_super) {
+var FogEffect = /** @class */ (function (_super) {
     __extends(FogEffect, _super);
     function FogEffect() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -1834,26 +1839,26 @@ var FogEffect = (function (_super) {
         ctx.drawImage(this.gofImage, Math.floor(width / 2) - 256, Math.floor(height / 2) - 256);
         ctx.globalAlpha = 1;
     };
+    FogEffect = __decorate([
+        MapEffectClass
+    ], FogEffect);
     return FogEffect;
 }(MapEffect));
-FogEffect = __decorate([
-    MapEffectClass
-], FogEffect);
 /// <reference path="MapEffect.ts" />
-var NoneEffect = (function (_super) {
+var NoneEffect = /** @class */ (function (_super) {
     __extends(NoneEffect, _super);
     function NoneEffect() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     NoneEffect.prototype.Render = function (ctx, width, height) {
     };
+    NoneEffect = __decorate([
+        MapEffectClass
+    ], NoneEffect);
     return NoneEffect;
 }(MapEffect));
-NoneEffect = __decorate([
-    MapEffectClass
-], NoneEffect);
 /// <reference path="MapEffect.ts" />
-var SightEffect = (function (_super) {
+var SightEffect = /** @class */ (function (_super) {
     __extends(SightEffect, _super);
     function SightEffect() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -1872,12 +1877,12 @@ var SightEffect = (function (_super) {
         ctx.fillRect(0, Math.floor(height / 2) + 256, width, height);
         ctx.drawImage(this.sightImage, Math.floor(width / 2) - 256, Math.floor(height / 2) - 256);
     };
+    SightEffect = __decorate([
+        MapEffectClass
+    ], SightEffect);
     return SightEffect;
 }(MapEffect));
-SightEffect = __decorate([
-    MapEffectClass
-], SightEffect);
-var InventoryObject = (function () {
+var InventoryObject = /** @class */ (function () {
     function InventoryObject(name, count, usage) {
         if (count === void 0) { count = 1; }
         if (usage === void 0) { usage = null; }
@@ -1896,7 +1901,7 @@ var InventoryObject = (function () {
     };
     return InventoryObject;
 }());
-var InventorySlot = (function () {
+var InventorySlot = /** @class */ (function () {
     function InventorySlot(name) {
         this.Name = name;
     }
@@ -1915,7 +1920,7 @@ var InventorySlot = (function () {
     };
     return InventorySlot;
 }());
-var KnownObject = (function () {
+var KnownObject = /** @class */ (function () {
     function KnownObject(name, objectType, slots, weight, price, description, maxStack, action, actionCode, parameters) {
         this.UsageConditions = [];
         this.UnwearConditions = [];
@@ -2085,21 +2090,21 @@ var KnownObject = (function () {
     };
     return KnownObject;
 }());
-var ObjectDefinedParameter = (function () {
+var ObjectDefinedParameter = /** @class */ (function () {
     function ObjectDefinedParameter(name, defaultValue) {
         this.Name = name;
         this.DefaultValue = defaultValue;
     }
     return ObjectDefinedParameter;
 }());
-var ObjectParameter = (function () {
+var ObjectParameter = /** @class */ (function () {
     function ObjectParameter(name, value) {
         this.Name = name;
         this.Value = value;
     }
     return ObjectParameter;
 }());
-var ObjectType = (function () {
+var ObjectType = /** @class */ (function () {
     function ObjectType(name, group, action, actionCode, parameters) {
         this.UsageConditions = [];
         this.WearConditions = [];
@@ -2129,12 +2134,12 @@ var ObjectType = (function () {
     };
     return ObjectType;
 }());
-var mapBag = new ((function () {
+var mapBag = new (/** @class */ (function () {
     function class_3() {
     }
     return class_3;
 }()));
-var MapBag = (function () {
+var MapBag = /** @class */ (function () {
     function MapBag() {
     }
     MapBag.ShowBag = function (obj) {
@@ -2218,7 +2223,7 @@ var MapBag = (function () {
     return MapBag;
 }());
 var numberCompressionPossibleChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-var NumberCompression = (function () {
+var NumberCompression = /** @class */ (function () {
     function NumberCompression() {
     }
     NumberCompression.StringToNumber = function (source, position, nbChar) {
@@ -2304,7 +2309,7 @@ var NumberCompression = (function () {
     return NumberCompression;
 }());
 ///<reference path="../../Libs/NumberCompression.ts" />
-var WorldArea = (function () {
+var WorldArea = /** @class */ (function () {
     function WorldArea() {
         this.objects = [];
         this.actors = [];
@@ -2955,7 +2960,7 @@ var WorldArea = (function () {
     return WorldArea;
 }());
 ///<reference path="../World/WorldArea.ts" />
-var TemporaryWorldObject = (function () {
+var TemporaryWorldObject = /** @class */ (function () {
     function TemporaryWorldObject(name, x, y, currentArea) {
         this.MouseCallback = null;
         this.Name = name;
@@ -2993,7 +2998,7 @@ var TemporaryWorldObject = (function () {
 }());
 /// <reference path="../World/WorldArea.ts" />
 /// <reference path="TemporaryWorldObject.ts" />
-var TemporaryParticleEffect = (function (_super) {
+var TemporaryParticleEffect = /** @class */ (function (_super) {
     __extends(TemporaryParticleEffect, _super);
     function TemporaryParticleEffect(name, x, y, currentArea, end) {
         var _this = _super.call(this, name, x, y, currentArea) || this;
@@ -3012,7 +3017,7 @@ var TemporaryParticleEffect = (function (_super) {
     return TemporaryParticleEffect;
 }(TemporaryWorldObject));
 ///<reference path="../World/WorldArea.ts" />
-var WorldObject = (function () {
+var WorldObject = /** @class */ (function () {
     function WorldObject(name, x, y) {
         this.currentFrame = 0;
         this.Name = name;
@@ -3031,6 +3036,7 @@ var WorldObject = (function () {
             if (this.currentFrame >= artInfo.nbAnimationFrames * s)
                 this.currentFrame = 0;
         }
+        // Single frame
         else
             ctx.drawImage(img, artInfo.x, artInfo.y, artInfo.width, artInfo.height, x - (artInfo.groundX ? artInfo.groundX : 0), y - (artInfo.groundY ? artInfo.groundY : 0), artInfo.width, artInfo.height);
         if (artInfo.particleEffect) {
@@ -3132,12 +3138,12 @@ var WorldObject = (function () {
     return WorldObject;
 }());
 /// <reference path="WorldObject.ts" />
-var worldChest = new ((function () {
+var worldChest = new (/** @class */ (function () {
     function class_4() {
     }
     return class_4;
 }()));
-var WorldChest = (function () {
+var WorldChest = /** @class */ (function () {
     function WorldChest(name, x, y, ax, ay) {
         this.DisplayName = "Chest";
         this.Stats = [];
@@ -3375,7 +3381,7 @@ var WorldChest = (function () {
     return WorldChest;
 }());
 ///<reference path="../World/WorldArea.ts" />
-var WorldHouse = (function () {
+var WorldHouse = /** @class */ (function () {
     function WorldHouse(name, x, y) {
         this.Name = name;
         this.X = x;
@@ -3430,7 +3436,7 @@ var WorldHouse = (function () {
     };
     return WorldHouse;
 }());
-var ActorTimer = (function () {
+var ActorTimer = /** @class */ (function () {
     function ActorTimer(name, length) {
         this.StartTime = new Date();
         this.Length = length;
@@ -3449,7 +3455,7 @@ var ActorTimer = (function () {
     };
     return ActorTimer;
 }());
-var PathSolver = (function () {
+var PathSolver = /** @class */ (function () {
     function PathSolver(startX, startY, goalX, goalY, maxDistance, canWalkOn) {
         this.visitedStep = [];
         this.todoStep = [];
@@ -3559,7 +3565,7 @@ var PathSolver = (function () {
 }());
 /// <reference path="../World/WorldArea.ts" />
 ///<reference path="PathSolver.ts" />
-var movingActor = new ((function () {
+var movingActor = new (/** @class */ (function () {
     function class_5() {
         this.lastId = 1;
     }
@@ -3577,7 +3583,7 @@ var sideAttack = [{ x: 0, y: 0 },
     { x: 16, y: 7 },
     { x: 18, y: 4 },
     { x: 20, y: 0 }];
-var MovingActor = (function () {
+var MovingActor = /** @class */ (function () {
     function MovingActor(world) {
         this.X = 0;
         this.Y = 0;
@@ -4065,7 +4071,7 @@ function GetApiDescription(apiName) {
     else
         return apiFunction.description;
 }
-var CodeEnvironement = (function () {
+var CodeEnvironement = /** @class */ (function () {
     function CodeEnvironement() {
         this.variables = {};
         this.CodeVariables = {};
@@ -4311,7 +4317,7 @@ var CodeEnvironement = (function () {
     };
     return CodeEnvironement;
 }());
-var codeParser = new ((function () {
+var codeParser = new (/** @class */ (function () {
     function class_6() {
         this.codeTokenizer = {};
     }
@@ -4326,7 +4332,7 @@ function Token(target) {
     else
         throw "Class \"" + className + "\" doesn't extends CodeToken.";
 }
-var CodeParser = (function () {
+var CodeParser = /** @class */ (function () {
     function CodeParser(source) {
         this.position = 0;
         this.line = 1;
@@ -4519,7 +4525,7 @@ function TopBlockStatementClass(target) {
     var className = tName.match(/function ([^\(]+)\(/)[1];
     topBlockStatements.push(className);
 }
-var CodeStatement = (function () {
+var CodeStatement = /** @class */ (function () {
     function CodeStatement() {
     }
     // Static Members
@@ -4826,6 +4832,7 @@ var CodeStatement = (function () {
                     res.index = index;
                     return res;
                 }
+                // A variable
                 else {
                     switch (name.Value) {
                         case "true":
@@ -4967,7 +4974,7 @@ var CodeStatement = (function () {
     };
     return CodeStatement;
 }());
-var CodeToken = (function () {
+var CodeToken = /** @class */ (function () {
     function CodeToken() {
     }
     return CodeToken;
@@ -4980,7 +4987,7 @@ var ValueType;
     ValueType[ValueType["Null"] = 3] = "Null";
     ValueType[ValueType["Array"] = 4] = "Array";
 })(ValueType || (ValueType = {}));
-var VariableValue = (function () {
+var VariableValue = /** @class */ (function () {
     function VariableValue(source) {
         if (source === null) {
             this.Value = null;
@@ -5006,6 +5013,7 @@ var VariableValue = (function () {
             this.Value = source.Value;
             this.Type = source.Type;
         }
+        // Convert from a CodeVariable
         else if (source.name && source.value && source.type) {
             switch (source.type) {
                 case "number":
@@ -5055,11 +5063,32 @@ var VariableValue = (function () {
     };
     return VariableValue;
 }());
+var JournalEntry = /** @class */ (function () {
+    function JournalEntry() {
+    }
+    return JournalEntry;
+}());
+var KnownQuest = /** @class */ (function () {
+    function KnownQuest() {
+    }
+    return KnownQuest;
+}());
+var Quest = /** @class */ (function () {
+    function Quest() {
+        this.JournalEntries = [];
+    }
+    return Quest;
+}());
+var ReceivedJournalEntry = /** @class */ (function () {
+    function ReceivedJournalEntry() {
+    }
+    return ReceivedJournalEntry;
+}());
 var defaultParticleSystems = [{
         "Name": "blood", "InitialParticles": 0, "MaxParticles": 1000, "MaxAge": 100, "MaxSpeed": 10, "Emitter": { "SpawnRate": 4, "Velocity": 1, "Direction": -90, "JitterDirection": 5, "JitterVelocity": 0.5, "JitterX": 3, "JitterY": 3, "StopEmittingAfter": 100, "__type": "ParticleEmitterPoint" }, "Effectors": [{ "Gravity": 0.02, "GravityDirection": 90, "__type": "ParticleGravity" }, { "StartColor": "#FF0000", "EndColor": "", "__type": "ParticleColor" }, { "ParticleStartSize": 1, "ParticleStartAgeSizeChange": 0, "ParticleEndSize": 3, "__type": "ParticleSize" }, { "ParticleStartOpacity": 1, "ParticleStartAgeOpacityChange": 10, "ParticleEndOpacity": 0, "__type": "ParticleOpacity" }]
     },
     { "Name": "torch", "InitialParticles": 0, "MaxParticles": 1000, "MaxAge": 100, "MaxSpeed": 10, "Emitter": { "OffsetX": 0, "OffsetY": 0, "SpawnRate": 0.5, "Velocity": 1, "Direction": -90, "JitterDirection": 10, "JitterVelocity": 0.1, "JitterX": 5, "JitterY": 5, "StopEmittingAfter": null, "__type": "ParticleEmitterPoint" }, "Effectors": [{ "Strength": 0.005, "FrequencyAlphaX": 20, "FrequencyAlphaY": 20, "FrequencyBetaX": 10, "FrequencyBetaY": 10, "AgeFactor": 0.5, "__type": "ParticleWave" }, { "Gravity": 0.002, "GravityDirection": 180, "__type": "ParticleGravity" }, { "StartColor": "#FFFF00", "EndColor": "#FF0000", "__type": "ParticleColor" }, { "ParticleStartSize": 2, "ParticleStartAgeSizeChange": 50, "ParticleEndSize": 6, "__type": "ParticleSize" }, { "ParticleStartOpacity": 1, "ParticleStartAgeOpacityChange": 50, "ParticleEndOpacity": 0, "__type": "ParticleOpacity" }] }];
-var Particle = (function () {
+var Particle = /** @class */ (function () {
     function Particle(system) {
         this.Color = "#000000";
         this.Opacity = 1;
@@ -5155,7 +5184,7 @@ var particleSystemParameters = ["Name",
     "MaxAge",
     "MaxSpeed",
 ];
-var ParticleSystem = (function () {
+var ParticleSystem = /** @class */ (function () {
     function ParticleSystem() {
         this.Name = "particles_1";
         this.ParticleType = 1;
@@ -5254,7 +5283,7 @@ var ParticleSystem = (function () {
     return ParticleSystem;
 }());
 /// <reference path="ParticleSystem.ts" />
-var ParticleAttractor = (function () {
+var ParticleAttractor = /** @class */ (function () {
     function ParticleAttractor() {
         this.X = 0;
         this.Y = 0;
@@ -5283,25 +5312,25 @@ var ParticleAttractor = (function () {
         ctx.lineTo(this.X + 0.5, this.Y + 10);
         ctx.stroke();
     };
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleAttractor.prototype, "X", void 0);
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleAttractor.prototype, "Y", void 0);
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleAttractor.prototype, "Strength", void 0);
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleAttractor.prototype, "EffectDistance", void 0);
+    ParticleAttractor = __decorate([
+        ParticleEffectorClass
+    ], ParticleAttractor);
     return ParticleAttractor;
 }());
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleAttractor.prototype, "X", void 0);
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleAttractor.prototype, "Y", void 0);
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleAttractor.prototype, "Strength", void 0);
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleAttractor.prototype, "EffectDistance", void 0);
-ParticleAttractor = __decorate([
-    ParticleEffectorClass
-], ParticleAttractor);
 var blobs = {};
-var ParticleBlob = (function () {
+var ParticleBlob = /** @class */ (function () {
     function ParticleBlob() {
     }
     ParticleBlob.GetColorComponents = function (color) {
@@ -5358,7 +5387,7 @@ var ParticleBlob = (function () {
     return ParticleBlob;
 }());
 /// <reference path="ParticleSystem.ts" />
-var ParticleBounce = (function () {
+var ParticleBounce = /** @class */ (function () {
     function ParticleBounce() {
         this.BouncePlane = 30;
         this.BounceEnergy = 0.8;
@@ -5381,19 +5410,19 @@ var ParticleBounce = (function () {
         ctx.fillStyle = "#FF0000";
         ctx.fillRect(-10000, this.BouncePlane + 0.5, 20000, 20000);
     };
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleBounce.prototype, "BouncePlane", void 0);
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleBounce.prototype, "BounceEnergy", void 0);
+    ParticleBounce = __decorate([
+        ParticleEffectorClass
+    ], ParticleBounce);
     return ParticleBounce;
 }());
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleBounce.prototype, "BouncePlane", void 0);
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleBounce.prototype, "BounceEnergy", void 0);
-ParticleBounce = __decorate([
-    ParticleEffectorClass
-], ParticleBounce);
 /// <reference path="ParticleSystem.ts" />
-var ParticleColor = (function () {
+var ParticleColor = /** @class */ (function () {
     function ParticleColor() {
         this.StartColor = "#FF0000";
         this.EndColor = "#00FF00";
@@ -5423,16 +5452,16 @@ var ParticleColor = (function () {
     };
     ParticleColor.prototype.Draw = function (ctx) {
     };
+    __decorate([
+        ParticleEffectorPropertyNullable
+    ], ParticleColor.prototype, "EndColor", void 0);
+    ParticleColor = __decorate([
+        ParticleEffectorClass
+    ], ParticleColor);
     return ParticleColor;
 }());
-__decorate([
-    ParticleEffectorPropertyNullable
-], ParticleColor.prototype, "EndColor", void 0);
-ParticleColor = __decorate([
-    ParticleEffectorClass
-], ParticleColor);
 var disks = {};
-var ParticleDisk = (function () {
+var ParticleDisk = /** @class */ (function () {
     function ParticleDisk() {
     }
     ParticleDisk.GetDisk = function (color) {
@@ -5457,7 +5486,7 @@ var ParticleDisk = (function () {
     return ParticleDisk;
 }());
 /// <reference path="ParticleSystem.ts" />
-var ParticleEmitter = (function () {
+var ParticleEmitter = /** @class */ (function () {
     function ParticleEmitter() {
         this.OffsetX = 0;
         this.OffsetY = 0;
@@ -5472,13 +5501,13 @@ var ParticleEmitter = (function () {
     }
     ParticleEmitter.prototype.SystemStep = function () {
     };
+    __decorate([
+        ParticleEffectorPropertyNullable
+    ], ParticleEmitter.prototype, "StopEmittingAfter", void 0);
     return ParticleEmitter;
 }());
-__decorate([
-    ParticleEffectorPropertyNullable
-], ParticleEmitter.prototype, "StopEmittingAfter", void 0);
 /// <reference path="ParticleSystem.ts" />
-var ParticleEmitterCircle = (function (_super) {
+var ParticleEmitterCircle = /** @class */ (function (_super) {
     __extends(ParticleEmitterCircle, _super);
     function ParticleEmitterCircle() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -5515,16 +5544,16 @@ var ParticleEmitterCircle = (function (_super) {
         //ctx.arc(this.OffsetX, this.OffsetY, this.Radius, 0, Math.PI * 2);
         ctx.stroke();
     };
+    __decorate([
+        ParticleEffectorPropertyNullable
+    ], ParticleEmitterCircle.prototype, "Height", void 0);
+    ParticleEmitterCircle = __decorate([
+        ParticleEmitterClass
+    ], ParticleEmitterCircle);
     return ParticleEmitterCircle;
 }(ParticleEmitter));
-__decorate([
-    ParticleEffectorPropertyNullable
-], ParticleEmitterCircle.prototype, "Height", void 0);
-ParticleEmitterCircle = __decorate([
-    ParticleEmitterClass
-], ParticleEmitterCircle);
 /// <reference path="ParticleSystem.ts" />
-var ParticleEmitterPoint = (function (_super) {
+var ParticleEmitterPoint = /** @class */ (function (_super) {
     __extends(ParticleEmitterPoint, _super);
     function ParticleEmitterPoint() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -5552,13 +5581,13 @@ var ParticleEmitterPoint = (function (_super) {
         ctx.lineTo(this.OffsetX + 20, this.OffsetY + 0.5);
         ctx.stroke();
     };
+    ParticleEmitterPoint = __decorate([
+        ParticleEmitterClass
+    ], ParticleEmitterPoint);
     return ParticleEmitterPoint;
 }(ParticleEmitter));
-ParticleEmitterPoint = __decorate([
-    ParticleEmitterClass
-], ParticleEmitterPoint);
 /// <reference path="ParticleSystem.ts" />
-var ParticleEmitterRotating = (function (_super) {
+var ParticleEmitterRotating = /** @class */ (function (_super) {
     __extends(ParticleEmitterRotating, _super);
     function ParticleEmitterRotating() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -5599,16 +5628,16 @@ var ParticleEmitterRotating = (function (_super) {
         //ctx.arc(this.OffsetX, this.OffsetY, this.Radius, 0, Math.PI * 2);
         ctx.stroke();
     };
+    __decorate([
+        ParticleEffectorPropertyNullable
+    ], ParticleEmitterRotating.prototype, "Height", void 0);
+    ParticleEmitterRotating = __decorate([
+        ParticleEmitterClass
+    ], ParticleEmitterRotating);
     return ParticleEmitterRotating;
 }(ParticleEmitter));
-__decorate([
-    ParticleEffectorPropertyNullable
-], ParticleEmitterRotating.prototype, "Height", void 0);
-ParticleEmitterRotating = __decorate([
-    ParticleEmitterClass
-], ParticleEmitterRotating);
 /// <reference path="ParticleSystem.ts" />
-var ParticleFriction = (function () {
+var ParticleFriction = /** @class */ (function () {
     function ParticleFriction() {
         this.EnergyConservation = 1;
     }
@@ -5618,16 +5647,16 @@ var ParticleFriction = (function () {
     };
     ParticleFriction.prototype.Draw = function (ctx) {
     };
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleFriction.prototype, "EnergyConservation", void 0);
+    ParticleFriction = __decorate([
+        ParticleEffectorClass
+    ], ParticleFriction);
     return ParticleFriction;
 }());
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleFriction.prototype, "EnergyConservation", void 0);
-ParticleFriction = __decorate([
-    ParticleEffectorClass
-], ParticleFriction);
 /// <reference path="ParticleSystem.ts" />
-var ParticleGravity = (function () {
+var ParticleGravity = /** @class */ (function () {
     function ParticleGravity() {
         this.Gravity = 0.01;
         this.GravityDirection = 90;
@@ -5641,19 +5670,19 @@ var ParticleGravity = (function () {
     };
     ParticleGravity.prototype.Draw = function (ctx) {
     };
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleGravity.prototype, "Gravity", void 0);
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleGravity.prototype, "GravityDirection", void 0);
+    ParticleGravity = __decorate([
+        ParticleEffectorClass
+    ], ParticleGravity);
     return ParticleGravity;
 }());
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleGravity.prototype, "Gravity", void 0);
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleGravity.prototype, "GravityDirection", void 0);
-ParticleGravity = __decorate([
-    ParticleEffectorClass
-], ParticleGravity);
 /// <reference path="ParticleSystem.ts" />
-var ParticleOpacity = (function () {
+var ParticleOpacity = /** @class */ (function () {
     function ParticleOpacity() {
         this.ParticleStartOpacity = 1;
         this.ParticleStartAgeOpacityChange = 500;
@@ -5676,24 +5705,24 @@ var ParticleOpacity = (function () {
     };
     ParticleOpacity.prototype.Draw = function (ctx) {
     };
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleOpacity.prototype, "ParticleStartOpacity", void 0);
+    __decorate([
+        ParticleEffectorPropertyNumber,
+        ParticleEffectorPropertyNullable
+    ], ParticleOpacity.prototype, "ParticleStartAgeOpacityChange", void 0);
+    __decorate([
+        ParticleEffectorPropertyNumber,
+        ParticleEffectorPropertyNullable
+    ], ParticleOpacity.prototype, "ParticleEndOpacity", void 0);
+    ParticleOpacity = __decorate([
+        ParticleEffectorClass
+    ], ParticleOpacity);
     return ParticleOpacity;
 }());
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleOpacity.prototype, "ParticleStartOpacity", void 0);
-__decorate([
-    ParticleEffectorPropertyNumber,
-    ParticleEffectorPropertyNullable
-], ParticleOpacity.prototype, "ParticleStartAgeOpacityChange", void 0);
-__decorate([
-    ParticleEffectorPropertyNumber,
-    ParticleEffectorPropertyNullable
-], ParticleOpacity.prototype, "ParticleEndOpacity", void 0);
-ParticleOpacity = __decorate([
-    ParticleEffectorClass
-], ParticleOpacity);
 /// <reference path="ParticleSystem.ts" />
-var ParticleRepulsor = (function () {
+var ParticleRepulsor = /** @class */ (function () {
     function ParticleRepulsor() {
         this.X = 0;
         this.Y = 0;
@@ -5722,25 +5751,25 @@ var ParticleRepulsor = (function () {
         ctx.lineTo(this.X + 0.5, this.Y + 10);
         ctx.stroke();
     };
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleRepulsor.prototype, "X", void 0);
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleRepulsor.prototype, "Y", void 0);
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleRepulsor.prototype, "Strength", void 0);
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleRepulsor.prototype, "EffectDistance", void 0);
+    ParticleRepulsor = __decorate([
+        ParticleEffectorClass
+    ], ParticleRepulsor);
     return ParticleRepulsor;
 }());
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleRepulsor.prototype, "X", void 0);
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleRepulsor.prototype, "Y", void 0);
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleRepulsor.prototype, "Strength", void 0);
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleRepulsor.prototype, "EffectDistance", void 0);
-ParticleRepulsor = __decorate([
-    ParticleEffectorClass
-], ParticleRepulsor);
 /// <reference path="ParticleSystem.ts" />
-var ParticleSize = (function () {
+var ParticleSize = /** @class */ (function () {
     function ParticleSize() {
         this.ParticleStartSize = 2;
         this.ParticleStartAgeSizeChange = 500;
@@ -5763,24 +5792,24 @@ var ParticleSize = (function () {
     };
     ParticleSize.prototype.Draw = function (ctx) {
     };
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleSize.prototype, "ParticleStartSize", void 0);
+    __decorate([
+        ParticleEffectorPropertyNumber,
+        ParticleEffectorPropertyNullable
+    ], ParticleSize.prototype, "ParticleStartAgeSizeChange", void 0);
+    __decorate([
+        ParticleEffectorPropertyNumber,
+        ParticleEffectorPropertyNullable
+    ], ParticleSize.prototype, "ParticleEndSize", void 0);
+    ParticleSize = __decorate([
+        ParticleEffectorClass
+    ], ParticleSize);
     return ParticleSize;
 }());
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleSize.prototype, "ParticleStartSize", void 0);
-__decorate([
-    ParticleEffectorPropertyNumber,
-    ParticleEffectorPropertyNullable
-], ParticleSize.prototype, "ParticleStartAgeSizeChange", void 0);
-__decorate([
-    ParticleEffectorPropertyNumber,
-    ParticleEffectorPropertyNullable
-], ParticleSize.prototype, "ParticleEndSize", void 0);
-ParticleSize = __decorate([
-    ParticleEffectorClass
-], ParticleSize);
 var sparcles = {};
-var ParticleSparkle = (function () {
+var ParticleSparkle = /** @class */ (function () {
     function ParticleSparkle() {
     }
     ParticleSparkle.GetSparkle = function (color) {
@@ -5821,7 +5850,7 @@ var ParticleSparkle = (function () {
     return ParticleSparkle;
 }());
 /// <reference path="ParticleSystem.ts" />
-var ParticleWave = (function () {
+var ParticleWave = /** @class */ (function () {
     function ParticleWave() {
         this.Strength = 0.005;
         this.FrequencyAlphaX = 20;
@@ -5844,49 +5873,28 @@ var ParticleWave = (function () {
     };
     ParticleWave.prototype.Draw = function (ctx) {
     };
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleWave.prototype, "Strength", void 0);
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleWave.prototype, "FrequencyAlphaX", void 0);
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleWave.prototype, "FrequencyAlphaY", void 0);
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleWave.prototype, "FrequencyBetaX", void 0);
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleWave.prototype, "FrequencyBetaY", void 0);
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleWave.prototype, "AgeFactor", void 0);
+    ParticleWave = __decorate([
+        ParticleEffectorClass
+    ], ParticleWave);
     return ParticleWave;
-}());
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleWave.prototype, "Strength", void 0);
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleWave.prototype, "FrequencyAlphaX", void 0);
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleWave.prototype, "FrequencyAlphaY", void 0);
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleWave.prototype, "FrequencyBetaX", void 0);
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleWave.prototype, "FrequencyBetaY", void 0);
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleWave.prototype, "AgeFactor", void 0);
-ParticleWave = __decorate([
-    ParticleEffectorClass
-], ParticleWave);
-var JournalEntry = (function () {
-    function JournalEntry() {
-    }
-    return JournalEntry;
-}());
-var KnownQuest = (function () {
-    function KnownQuest() {
-    }
-    return KnownQuest;
-}());
-var Quest = (function () {
-    function Quest() {
-        this.JournalEntries = [];
-    }
-    return Quest;
-}());
-var ReceivedJournalEntry = (function () {
-    function ReceivedJournalEntry() {
-    }
-    return ReceivedJournalEntry;
 }());
 var skillCodes = ["// Default attack skill. Will be invoked while clicking on a monster.\n\
 \n\
@@ -5967,7 +5975,7 @@ function Activate()\n\
     return false;\n\
 }\n\
 "];
-var DefaultSkills = (function () {
+var DefaultSkills = /** @class */ (function () {
     function DefaultSkills() {
     }
     DefaultSkills.Generate = function (game) {
@@ -5989,7 +5997,7 @@ var DefaultSkills = (function () {
     };
     return DefaultSkills;
 }());
-var KnownSkill = (function () {
+var KnownSkill = /** @class */ (function () {
     function KnownSkill() {
         this.AutoReceive = false;
     }
@@ -6085,13 +6093,13 @@ var KnownSkill = (function () {
     };
     return KnownSkill;
 }());
-var Skill = (function () {
+var Skill = /** @class */ (function () {
     function Skill() {
     }
     return Skill;
 }());
 var sounds = {};
-var Sounds = (function () {
+var Sounds = /** @class */ (function () {
     function Sounds() {
     }
     Sounds.Init = function (clearAtStart) {
@@ -6387,7 +6395,7 @@ function CanUpgrade()\n\
 {\n\
     return (Player.GetStat('Level')*3+5)-(Player.GetStat('Strength')+Player.GetStat('Dexterity')+Player.GetStat('Intelligence')) > 0;\n\
 }"];
-var DefaultStats = (function () {
+var DefaultStats = /** @class */ (function () {
     function DefaultStats() {
     }
     DefaultStats.Generate = function (game) {
@@ -6406,7 +6414,7 @@ var DefaultStats = (function () {
     };
     return DefaultStats;
 }());
-var KnownStat = (function () {
+var KnownStat = /** @class */ (function () {
     function KnownStat() {
         this.MonsterStat = false;
     }
@@ -6496,17 +6504,17 @@ var KnownStat = (function () {
     };
     return KnownStat;
 }());
-var Stat = (function () {
+var Stat = /** @class */ (function () {
     function Stat() {
     }
     return Stat;
 }());
-var RunningEffect = (function () {
+var RunningEffect = /** @class */ (function () {
     function RunningEffect() {
     }
     return RunningEffect;
 }());
-var TemporaryEffect = (function () {
+var TemporaryEffect = /** @class */ (function () {
     function TemporaryEffect() {
         this.MultipleInstance = true;
         this.Timer = 30;
@@ -6517,12 +6525,12 @@ var TemporaryEffect = (function () {
     }
     return TemporaryEffect;
 }());
-var areaFragment = new ((function () {
+var areaFragment = new (/** @class */ (function () {
     function class_7() {
     }
     return class_7;
 }()));
-var AreaFragment = (function () {
+var AreaFragment = /** @class */ (function () {
     function AreaFragment() {
         this.backgroundTiles = [];
         this.objects = [];
@@ -6590,7 +6598,7 @@ var AreaFragment = (function () {
     };
     return AreaFragment;
 }());
-var MapAction = (function () {
+var MapAction = /** @class */ (function () {
     function MapAction() {
         this.Actions = [];
         this.Conditions = [];
@@ -6730,25 +6738,25 @@ var MapAction = (function () {
     };
     return MapAction;
 }());
-var MapFragment = (function () {
+var MapFragment = /** @class */ (function () {
     function MapFragment() {
         this.Conditions = [];
         this.Modifications = [];
     }
     return MapFragment;
 }());
-var MapModification = (function () {
+var MapModification = /** @class */ (function () {
     function MapModification() {
     }
     return MapModification;
 }());
-var mapUtilities = new ((function () {
+var mapUtilities = new (/** @class */ (function () {
     function class_8() {
         this.openModifications = [];
     }
     return class_8;
 }()));
-var MapUtilities = (function () {
+var MapUtilities = /** @class */ (function () {
     function MapUtilities() {
     }
     MapUtilities.Modify = function (what, oldName, newName) {
@@ -6841,7 +6849,7 @@ var EditorEdition;
     EditorEdition[EditorEdition["Demo"] = 0] = "Demo";
     EditorEdition[EditorEdition["Standard"] = 1] = "Standard";
 })(EditorEdition || (EditorEdition = {}));
-var World = (function () {
+var World = /** @class */ (function () {
     function World() {
         this.areaWidth = 100;
         this.areaHeight = 100;
@@ -7602,11 +7610,11 @@ var World = (function () {
 }());
 ///<reference path="World.ts" />
 ///<reference path="WorldArea.ts" />
-var WorldRender = (function () {
+var WorldRender = /** @class */ (function () {
     function WorldRender(world, canvasElement, zoomLevel) {
+        var _this = this;
         if (canvasElement === void 0) { canvasElement = "gameCanvas"; }
         if (zoomLevel === void 0) { zoomLevel = 1; }
-        var _this = this;
         this.objectSprites = {};
         this.objectImages = {};
         this.houseImages = {};
@@ -8040,7 +8048,7 @@ var WorldRender = (function () {
     };
     return WorldRender;
 }());
-var WorldZone = (function () {
+var WorldZone = /** @class */ (function () {
     function WorldZone() {
         this.GeneratorParameters = null;
         this.Objects = [];
@@ -8057,7 +8065,7 @@ function WorldGeneratorClass(target) {
     knownGenerators.push(className.substr(0, className.length - 9));
     knownGenerators.sort();
 }
-var WorldGenerator = (function () {
+var WorldGenerator = /** @class */ (function () {
     function WorldGenerator(world, seed, zoneInfo) {
         this.zoneInfo = zoneInfo;
         this.seed = seed;
@@ -8224,11 +8232,12 @@ var WorldGenerator = (function () {
     return WorldGenerator;
 }());
 /// <reference path="WorldGenerator.ts" />
-var CaveGenerator = CaveGenerator_1 = (function (_super) {
+var CaveGenerator = /** @class */ (function (_super) {
     __extends(CaveGenerator, _super);
     function CaveGenerator(world, seed, zoneInfo) {
         return _super.call(this, world, seed, zoneInfo) || this;
     }
+    CaveGenerator_1 = CaveGenerator;
     CaveGenerator.prototype.Generate = function (x, y, zone) {
         var worldArea = new WorldArea();
         worldArea.X = x;
@@ -8516,14 +8525,14 @@ var CaveGenerator = CaveGenerator_1 = (function (_super) {
         if (caveData.walkTile == oldName)
             caveData.walkTile = newName;
     };
+    var CaveGenerator_1;
+    CaveGenerator = CaveGenerator_1 = __decorate([
+        WorldGeneratorClass
+    ], CaveGenerator);
     return CaveGenerator;
 }(WorldGenerator));
-CaveGenerator = CaveGenerator_1 = __decorate([
-    WorldGeneratorClass
-], CaveGenerator);
-var CaveGenerator_1;
 /// <reference path="WorldGenerator.ts" />
-var ConstantGenerator = (function (_super) {
+var ConstantGenerator = /** @class */ (function (_super) {
     __extends(ConstantGenerator, _super);
     function ConstantGenerator(world, seed, zoneInfo) {
         return _super.call(this, world, seed, zoneInfo) || this;
@@ -8565,17 +8574,18 @@ var ConstantGenerator = (function (_super) {
     };
     ConstantGenerator.prototype.RenameTileType = function (oldName, newName) {
     };
+    ConstantGenerator = __decorate([
+        WorldGeneratorClass
+    ], ConstantGenerator);
     return ConstantGenerator;
 }(WorldGenerator));
-ConstantGenerator = __decorate([
-    WorldGeneratorClass
-], ConstantGenerator);
 /// <reference path="WorldGenerator.ts" />
-var MazeGenerator = MazeGenerator_1 = (function (_super) {
+var MazeGenerator = /** @class */ (function (_super) {
     __extends(MazeGenerator, _super);
     function MazeGenerator(world, seed, zoneInfo) {
         return _super.call(this, world, seed, zoneInfo) || this;
     }
+    MazeGenerator_1 = MazeGenerator;
     MazeGenerator.prototype.Generate = function (x, y, zone) {
         var worldArea = new WorldArea();
         worldArea.X = x;
@@ -8862,24 +8872,25 @@ var MazeGenerator = MazeGenerator_1 = (function (_super) {
         if (mazeData.walkTile == oldName)
             mazeData.walkTile = newName;
     };
+    var MazeGenerator_1;
+    MazeGenerator = MazeGenerator_1 = __decorate([
+        WorldGeneratorClass
+    ], MazeGenerator);
     return MazeGenerator;
 }(WorldGenerator));
-MazeGenerator = MazeGenerator_1 = __decorate([
-    WorldGeneratorClass
-], MazeGenerator);
-var MazeGenerator_1;
 /// <reference path="WorldGenerator.ts" />
-var perlinGenerator = new ((function () {
+var perlinGenerator = new (/** @class */ (function () {
     function class_9() {
         this.perlin = null;
     }
     return class_9;
 }()));
-var PerlinGenerator = PerlinGenerator_1 = (function (_super) {
+var PerlinGenerator = /** @class */ (function (_super) {
     __extends(PerlinGenerator, _super);
     function PerlinGenerator(world, seed, zoneInfo) {
         return _super.call(this, world, seed, zoneInfo) || this;
     }
+    PerlinGenerator_1 = PerlinGenerator;
     PerlinGenerator.prototype.Generate = function (x, y, zone) {
         var worldArea = new WorldArea();
         worldArea.X = x;
@@ -9033,12 +9044,66 @@ var PerlinGenerator = PerlinGenerator_1 = (function (_super) {
             if (perlinData.levels[i].type == oldName)
                 perlinData.levels[i].type = newName;
     };
+    var PerlinGenerator_1;
+    PerlinGenerator = PerlinGenerator_1 = __decorate([
+        WorldGeneratorClass
+    ], PerlinGenerator);
     return PerlinGenerator;
 }(WorldGenerator));
-PerlinGenerator = PerlinGenerator_1 = __decorate([
-    WorldGeneratorClass
-], PerlinGenerator);
-var PerlinGenerator_1;
+///<reference path="../MovingActor.ts" />
+var MapMessage = /** @class */ (function (_super) {
+    __extends(MapMessage, _super);
+    function MapMessage(world) {
+        var _this = _super.call(this, world) || this;
+        _this.life = 0;
+        return _this;
+    }
+    MapMessage.Create = function (message, color, worldArea, x, y) {
+        var result = new MapMessage(world);
+        result.CurrentArea = worldArea;
+        result.X = x;
+        result.Y = y;
+        result.message = message;
+        result.color = color;
+        return result;
+    };
+    MapMessage.prototype.CanReachArea = function (x, y) {
+        return true;
+    };
+    MapMessage.prototype.Handle = function () {
+        this.Y -= 0.4;
+        this.life++;
+        if (this.life > 100)
+            this.Kill();
+        else
+            this.UpdatePosition();
+    };
+    MapMessage.prototype.Draw = function (renderEngine, ctx, x, y) {
+        var width = ctx.measureText(this.message).width;
+        if (this.life < 50)
+            ctx.globalAlpha = 1;
+        else {
+            var a = (50 - (this.life - 50)) / 50;
+            if (a < 0)
+                return;
+            ctx.globalAlpha = a;
+        }
+        var cx = x + Math.sin(this.life / 10) * 5;
+        ctx.font = "13px sans-serif";
+        ctx.strokeStyle = "#000000";
+        ctx.lineWidth = 4;
+        ctx.strokeText(this.message, Math.floor(cx) + 0.5, y + 0.5);
+        ctx.fillStyle = this.color;
+        ctx.fillText(this.message, Math.floor(cx) + 0.5, y + 0.5);
+        ctx.globalAlpha = 1;
+    };
+    MapMessage.prototype.PlayerInteract = function (ax, ay) {
+    };
+    MapMessage.prototype.PlayerMouseInteract = function (ax, ay) {
+        return false;
+    };
+    return MapMessage;
+}(MovingActor));
 var monsterCodes = ["/// Name: DefaultMonster,string\n\
 /// Speed: 2,number\n\
 /// BaseDamage: 5,number\n\
@@ -9118,7 +9183,7 @@ function AttackAnimationDone(monster)\n\
 /// Life: 50,number\n\
 /// StatDrop: [{'Name':'Experience','Quantity':25,'Probability':100},{'Name':'Money','Quantity':50,'Probability':50}],string\n\
 "];
-var DefaultMonsters = (function () {
+var DefaultMonsters = /** @class */ (function () {
     function DefaultMonsters() {
     }
     DefaultMonsters.Generate = function (game) {
@@ -9150,7 +9215,7 @@ var DefaultMonsters = (function () {
     };
     return DefaultMonsters;
 }());
-var KnownMonster = (function () {
+var KnownMonster = /** @class */ (function () {
     function KnownMonster() {
         this.StatDrop = [];
         this.ItemDrop = [];
@@ -9238,7 +9303,7 @@ var KnownMonster = (function () {
     return KnownMonster;
 }());
 ///<reference path="../MovingActor.ts" />
-var Monster = (function (_super) {
+var Monster = /** @class */ (function (_super) {
     __extends(Monster, _super);
     function Monster(world) {
         var _this = _super.call(this, world) || this;
@@ -9360,6 +9425,7 @@ var Monster = (function (_super) {
             this.Y = ny;
             this.UpdatePosition();
         }
+        // Let's try to turn 180°
         else {
             this.realDirection += Math.PI;
             if (this.realDirection < 0)
@@ -9465,18 +9531,18 @@ var Monster = (function (_super) {
                 var ox = sideAttack[Math.floor(this.ActionAnimationStep * sideAttack.length / 40)].x;
                 var oy = sideAttack[Math.floor(this.ActionAnimationStep * sideAttack.length / 40)].y;
                 switch (this.Direction) {
-                    case 0:
+                    case 0: // Down
                         iy -= ox;
                         break;
-                    case 1:
+                    case 1: // Left
                         ix += ox;
                         iy -= oy;
                         break;
-                    case 2:
+                    case 2: // Right
                         ix -= ox;
                         iy -= oy;
                         break;
-                    case 3:
+                    case 3: // Up
                         iy += ox;
                         break;
                     default:
@@ -9546,61 +9612,7 @@ var Monster = (function (_super) {
     };
     return Monster;
 }(MovingActor));
-///<reference path="../MovingActor.ts" />
-var MapMessage = (function (_super) {
-    __extends(MapMessage, _super);
-    function MapMessage(world) {
-        var _this = _super.call(this, world) || this;
-        _this.life = 0;
-        return _this;
-    }
-    MapMessage.Create = function (message, color, worldArea, x, y) {
-        var result = new MapMessage(world);
-        result.CurrentArea = worldArea;
-        result.X = x;
-        result.Y = y;
-        result.message = message;
-        result.color = color;
-        return result;
-    };
-    MapMessage.prototype.CanReachArea = function (x, y) {
-        return true;
-    };
-    MapMessage.prototype.Handle = function () {
-        this.Y -= 0.4;
-        this.life++;
-        if (this.life > 100)
-            this.Kill();
-        else
-            this.UpdatePosition();
-    };
-    MapMessage.prototype.Draw = function (renderEngine, ctx, x, y) {
-        var width = ctx.measureText(this.message).width;
-        if (this.life < 50)
-            ctx.globalAlpha = 1;
-        else {
-            var a = (50 - (this.life - 50)) / 50;
-            if (a < 0)
-                return;
-            ctx.globalAlpha = a;
-        }
-        var cx = x + Math.sin(this.life / 10) * 5;
-        ctx.font = "13px sans-serif";
-        ctx.strokeStyle = "#000000";
-        ctx.lineWidth = 4;
-        ctx.strokeText(this.message, Math.floor(cx) + 0.5, y + 0.5);
-        ctx.fillStyle = this.color;
-        ctx.fillText(this.message, Math.floor(cx) + 0.5, y + 0.5);
-        ctx.globalAlpha = 1;
-    };
-    MapMessage.prototype.PlayerInteract = function (ax, ay) {
-    };
-    MapMessage.prototype.PlayerMouseInteract = function (ax, ay) {
-        return false;
-    };
-    return MapMessage;
-}(MovingActor));
-var Answer = (function () {
+var Answer = /** @class */ (function () {
     function Answer() {
         this.Text = "Ok";
         this.Actions = [];
@@ -9609,7 +9621,7 @@ var Answer = (function () {
     }
     return Answer;
 }());
-var npcNames = new ((function () {
+var npcNames = new (/** @class */ (function () {
     function class_10() {
         this.firstNames = ["Adelaide", "Aleida", "Alexia", "Alianor", "Alice", "Althalos", "Amelia", "Anastas", "Angmar", "Anne", "Arabella", "Ariana",
             "Arthur", "Asher", "Atheena", "Ayleth", "Barda", "Beatrix", "Benedict", "Benevolence", "Berinon", "Borin", "Brangian", "Brom",
@@ -9636,7 +9648,7 @@ var npcNames = new ((function () {
     }
     return class_10;
 }()));
-var NPC = (function () {
+var NPC = /** @class */ (function () {
     function NPC() {
     }
     NPC.GenerateName = function (firstNameOnly) {
@@ -9665,12 +9677,12 @@ var NPC = (function () {
     return NPC;
 }());
 /// <reference path="../MovingActor.ts" />
-var npc = new ((function () {
+var npc = new (/** @class */ (function () {
     function class_11() {
     }
     return class_11;
 }()));
-var NPCActor = (function (_super) {
+var NPCActor = /** @class */ (function (_super) {
     __extends(NPCActor, _super);
     function NPCActor() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -9879,7 +9891,7 @@ var NPCActor = (function (_super) {
     return NPCActor;
 }(MovingActor));
 ///<reference path="../MovingActor.ts" />
-var OtherPlayer = (function (_super) {
+var OtherPlayer = /** @class */ (function (_super) {
     __extends(OtherPlayer, _super);
     function OtherPlayer() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -9966,7 +9978,7 @@ var OtherPlayer = (function (_super) {
     return OtherPlayer;
 }(MovingActor));
 ///<reference path="../MovingActor.ts" />
-var playerEffects = new ((function () {
+var playerEffects = new (/** @class */ (function () {
     function class_12() {
     }
     return class_12;
@@ -9988,7 +10000,7 @@ var EmotesArt;
     EmotesArt[EmotesArt["grr"] = 12] = "grr";
     EmotesArt[EmotesArt["ah"] = 13] = "ah";
 })(EmotesArt || (EmotesArt = {}));
-var Player = (function (_super) {
+var Player = /** @class */ (function (_super) {
     __extends(Player, _super);
     function Player(world) {
         var _this = _super.call(this, world) || this;
@@ -10238,18 +10250,18 @@ var Player = (function (_super) {
                     var ox = sideAttack[Math.floor(this.ActionAnimationStep * sideAttack.length / 40)].x;
                     var oy = sideAttack[Math.floor(this.ActionAnimationStep * sideAttack.length / 40)].y;
                     switch (this.Direction) {
-                        case 0:
+                        case 0: // Down
                             iy -= ox;
                             break;
-                        case 1:
+                        case 1: // Left
                             ix += ox;
                             iy -= oy;
                             break;
-                        case 2:
+                        case 2: // Right
                             ix -= ox;
                             iy -= oy;
                             break;
-                        case 3:
+                        case 3: // Up
                             iy += ox;
                             break;
                         default:
@@ -10793,7 +10805,7 @@ var Player = (function (_super) {
     return Player;
 }(MovingActor));
 /// <reference path="../CodeEnvironement.ts" />
-var EngineActor = (function () {
+var EngineActor = /** @class */ (function () {
     function EngineActor() {
     }
     EngineActor.prototype.Kill = function (values, env) {
@@ -11189,85 +11201,85 @@ var EngineActor = (function () {
         if (!world.GetParticleSystem(values[1]))
             throw "The particle effect '" + values[1] + "' is unknown at " + line + ":" + column;
     };
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the monster to kill." }], "Kills an a monster and remove it from the map.")
+    ], EngineActor.prototype, "Kill", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the monster to evaluate." }], "Distance between the player and the monster.")
+    ], EngineActor.prototype, "DistanceToPlayer", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "statName", description: "The STAT to check." }], "Returns true if the actor's stat has a maximum value.")
+    ], EngineActor.prototype, "HasMaxValue", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "statName", description: "The STAT to check." }], "Returns the maximum the given stat of the checked actor is.")
+    ], EngineActor.prototype, "GetMaxValue", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "statName", description: "The STAT to increase." }, { name: "value", description: "Quantity to increase." }], "Increase the actor stat by the given value.")
+    ], EngineActor.prototype, "IncreaseStat", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "statName", description: "The STAT to reduce." }, { name: "value", description: "Quantity to reduce." }], "Reduce the actor stat by the given value.")
+    ], EngineActor.prototype, "ReduceStat", null);
+    __decorate([
+        ApiMethod([{ name: "x", description: "X coordinate of the center of effect." }, { name: "y", description: "Y coordinate of the center of effect." }, { name: "statName", description: "The STAT to reduce." }, { name: "value", description: "Quantity to reduce." }, { name: "radius", description: "Area of effect." }], "Reduce all the actor (non player) within the radius stat by the given value.")
+    ], EngineActor.prototype, "RadiusReduceStat", null);
+    __decorate([
+        ApiMethod([{ name: "x", description: "X coordinate of the center of effect." }, { name: "y", description: "Y coordinate of the center of effect." }, { name: "statName", description: "The STAT to reduce." }, { name: "value", description: "Quantity to reduce." }, { name: "radius", description: "Area of effect." }], "Increase all the actor (non player) within the radius stat by the given value.")
+    ], EngineActor.prototype, "RadiusIncreaseStat", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "statName", description: "The STAT to read." }], "Get the player stat by the given value.")
+    ], EngineActor.prototype, "GetStat", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "statName", description: "The STAT to modify." }, { name: "value", description: "Value to set." }], "Set the player stat by the given value.")
+    ], EngineActor.prototype, "SetStat", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }], "Returns true if the actor is a monser.")
+    ], EngineActor.prototype, "IsMonster", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "timerName", description: "The name of the timer to check." }], "Returns true if the actor's timer is currently running. If it's finished it will return false.")
+    ], EngineActor.prototype, "TimerRunning", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "timerName", description: "The name of the timer to set." }, { name: "time", description: "The time the actor's timer needs to be set to." }], "Sets a timer which will run till the full time is elapsed.")
+    ], EngineActor.prototype, "StartTimer", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "timerName", description: "The name of the timer to stop." }], "Stops a currently actor's running timer.")
+    ], EngineActor.prototype, "StopTimer", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "timerName", description: "The name of the timer to check." }], "Returns the time left or 0 on the given actor's timer.")
+    ], EngineActor.prototype, "GetTimer", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }], "Returns the X coordinate of the actor.")
+    ], EngineActor.prototype, "GetX", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }], "Returns the Y coordinate of the actor.")
+    ], EngineActor.prototype, "GetY", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "name", description: "The variable to set." }, { name: "value", description: "The value to set." }], "Set a variable which can be read from another function or later on.")
+    ], EngineActor.prototype, "SetVariable", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "name", description: "The variable to read." }], "Retreives a variable previously stored.")
+    ], EngineActor.prototype, "GetVariable", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }], "Returns true if an animation is currently running.")
+    ], EngineActor.prototype, "IsAnimationRunning", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "name", description: "The animation effect to set. Can be either 'none', 'attack' or 'damage'." }], "Sets the animation effect.")
+    ], EngineActor.prototype, "SetAnimation", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "name", description: "The function name to execute when the player animation is over." }], "Will execute the function of the current block when the animation is over.")
+    ], EngineActor.prototype, "ExecuteWhenAnimationDone", null);
+    __decorate([
+        ApiMethod([], "Returns the current actor ID.")
+    ], EngineActor.prototype, "GetCurrentActor", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "name", description: "The particle effect name." }, { name: "time", description: "Time to keep this particle effect on the map." }], "Place particle effect on an actor for a given time.")
+    ], EngineActor.prototype, "AddParticleEffect", null);
+    EngineActor = __decorate([
+        ApiClass
+    ], EngineActor);
     return EngineActor;
 }());
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the monster to kill." }], "Kills an a monster and remove it from the map.")
-], EngineActor.prototype, "Kill", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the monster to evaluate." }], "Distance between the player and the monster.")
-], EngineActor.prototype, "DistanceToPlayer", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "statName", description: "The STAT to check." }], "Returns true if the actor's stat has a maximum value.")
-], EngineActor.prototype, "HasMaxValue", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "statName", description: "The STAT to check." }], "Returns the maximum the given stat of the checked actor is.")
-], EngineActor.prototype, "GetMaxValue", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "statName", description: "The STAT to increase." }, { name: "value", description: "Quantity to increase." }], "Increase the actor stat by the given value.")
-], EngineActor.prototype, "IncreaseStat", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "statName", description: "The STAT to reduce." }, { name: "value", description: "Quantity to reduce." }], "Reduce the actor stat by the given value.")
-], EngineActor.prototype, "ReduceStat", null);
-__decorate([
-    ApiMethod([{ name: "x", description: "X coordinate of the center of effect." }, { name: "y", description: "Y coordinate of the center of effect." }, { name: "statName", description: "The STAT to reduce." }, { name: "value", description: "Quantity to reduce." }, { name: "radius", description: "Area of effect." }], "Reduce all the actor (non player) within the radius stat by the given value.")
-], EngineActor.prototype, "RadiusReduceStat", null);
-__decorate([
-    ApiMethod([{ name: "x", description: "X coordinate of the center of effect." }, { name: "y", description: "Y coordinate of the center of effect." }, { name: "statName", description: "The STAT to reduce." }, { name: "value", description: "Quantity to reduce." }, { name: "radius", description: "Area of effect." }], "Increase all the actor (non player) within the radius stat by the given value.")
-], EngineActor.prototype, "RadiusIncreaseStat", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "statName", description: "The STAT to read." }], "Get the player stat by the given value.")
-], EngineActor.prototype, "GetStat", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "statName", description: "The STAT to modify." }, { name: "value", description: "Value to set." }], "Set the player stat by the given value.")
-], EngineActor.prototype, "SetStat", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }], "Returns true if the actor is a monser.")
-], EngineActor.prototype, "IsMonster", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "timerName", description: "The name of the timer to check." }], "Returns true if the actor's timer is currently running. If it's finished it will return false.")
-], EngineActor.prototype, "TimerRunning", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "timerName", description: "The name of the timer to set." }, { name: "time", description: "The time the actor's timer needs to be set to." }], "Sets a timer which will run till the full time is elapsed.")
-], EngineActor.prototype, "StartTimer", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "timerName", description: "The name of the timer to stop." }], "Stops a currently actor's running timer.")
-], EngineActor.prototype, "StopTimer", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "timerName", description: "The name of the timer to check." }], "Returns the time left or 0 on the given actor's timer.")
-], EngineActor.prototype, "GetTimer", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }], "Returns the X coordinate of the actor.")
-], EngineActor.prototype, "GetX", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }], "Returns the Y coordinate of the actor.")
-], EngineActor.prototype, "GetY", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "name", description: "The variable to set." }, { name: "value", description: "The value to set." }], "Set a variable which can be read from another function or later on.")
-], EngineActor.prototype, "SetVariable", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "name", description: "The variable to read." }], "Retreives a variable previously stored.")
-], EngineActor.prototype, "GetVariable", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }], "Returns true if an animation is currently running.")
-], EngineActor.prototype, "IsAnimationRunning", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "name", description: "The animation effect to set. Can be either 'none', 'attack' or 'damage'." }], "Sets the animation effect.")
-], EngineActor.prototype, "SetAnimation", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "name", description: "The function name to execute when the player animation is over." }], "Will execute the function of the current block when the animation is over.")
-], EngineActor.prototype, "ExecuteWhenAnimationDone", null);
-__decorate([
-    ApiMethod([], "Returns the current actor ID.")
-], EngineActor.prototype, "GetCurrentActor", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "name", description: "The particle effect name." }, { name: "time", description: "Time to keep this particle effect on the map." }], "Place particle effect on an actor for a given time.")
-], EngineActor.prototype, "AddParticleEffect", null);
-EngineActor = __decorate([
-    ApiClass
-], EngineActor);
 /// <reference path="../CodeEnvironement.ts" />
-var EngineArray = (function () {
+var EngineArray = /** @class */ (function () {
     function EngineArray() {
     }
     EngineArray.prototype.IsArray = function (values, env) {
@@ -11286,22 +11298,22 @@ var EngineArray = (function () {
         values[0].Value.splice(values[1].GetNumber(), 1);
         return null;
     };
+    __decorate([
+        ApiMethod([{ name: "variable", description: "The variable to check." }], "Checks if a variable is an array.")
+    ], EngineArray.prototype, "IsArray", null);
+    __decorate([
+        ApiMethod([{ name: "variable", description: "The variable to check." }], "Returns the number of elements of an array.")
+    ], EngineArray.prototype, "Count", null);
+    __decorate([
+        ApiMethod([{ name: "variable", description: "The variable to modify." }, { name: "index", description: "The position of the array to remove." }], "Removes an element from the array.")
+    ], EngineArray.prototype, "Remove", null);
+    EngineArray = __decorate([
+        ApiClass
+    ], EngineArray);
     return EngineArray;
 }());
-__decorate([
-    ApiMethod([{ name: "variable", description: "The variable to check." }], "Checks if a variable is an array.")
-], EngineArray.prototype, "IsArray", null);
-__decorate([
-    ApiMethod([{ name: "variable", description: "The variable to check." }], "Returns the number of elements of an array.")
-], EngineArray.prototype, "Count", null);
-__decorate([
-    ApiMethod([{ name: "variable", description: "The variable to modify." }, { name: "index", description: "The position of the array to remove." }], "Removes an element from the array.")
-], EngineArray.prototype, "Remove", null);
-EngineArray = __decorate([
-    ApiClass
-], EngineArray);
 /// <reference path="../CodeEnvironement.ts" />
-var EngineChat = (function () {
+var EngineChat = /** @class */ (function () {
     function EngineChat() {
     }
     EngineChat.prototype.SendMessage = function (values, env) {
@@ -11356,31 +11368,31 @@ var EngineChat = (function () {
         });
         return null;
     };
+    __decorate([
+        ApiMethod([{ name: "channel", description: "Name of the channel to send it to." }, { name: "message", description: "Message to send" }], "Sends a chat message.")
+    ], EngineChat.prototype, "SendMessage", null);
+    __decorate([
+        ApiMethod([{ name: "botName", description: "Bot name used for posting the message." }, { name: "channel", description: "Name of the channel to send it to." }, { name: "message", description: "Message to send" }], "Sends a chat message as a bot.")
+    ], EngineChat.prototype, "SendBotMessage", null);
+    __decorate([
+        ApiMethod([], "Returns the current active channel.")
+    ], EngineChat.prototype, "CurrentChannel", null);
+    __decorate([
+        ApiMethod([{ name: "line", description: "Chat line to split" }], "Split a chat line into words.")
+    ], EngineChat.prototype, "SplitLine", null);
+    __decorate([
+        ApiMethod([{ name: "playerName", description: "The player to ban." }, { name: "days", description: "The number of days to ban." }], "Ban a player from the chat for the specified number of days.")
+    ], EngineChat.prototype, "Ban", null);
+    __decorate([
+        ApiMethod([{ name: "playerName", description: "The player to mute." }, { name: "minutes", description: "The minutes to mute." }], "Mute a player for the specified number of minutes.")
+    ], EngineChat.prototype, "Mute", null);
+    EngineChat = __decorate([
+        ApiClass
+    ], EngineChat);
     return EngineChat;
 }());
-__decorate([
-    ApiMethod([{ name: "channel", description: "Name of the channel to send it to." }, { name: "message", description: "Message to send" }], "Sends a chat message.")
-], EngineChat.prototype, "SendMessage", null);
-__decorate([
-    ApiMethod([{ name: "botName", description: "Bot name used for posting the message." }, { name: "channel", description: "Name of the channel to send it to." }, { name: "message", description: "Message to send" }], "Sends a chat message as a bot.")
-], EngineChat.prototype, "SendBotMessage", null);
-__decorate([
-    ApiMethod([], "Returns the current active channel.")
-], EngineChat.prototype, "CurrentChannel", null);
-__decorate([
-    ApiMethod([{ name: "line", description: "Chat line to split" }], "Split a chat line into words.")
-], EngineChat.prototype, "SplitLine", null);
-__decorate([
-    ApiMethod([{ name: "playerName", description: "The player to ban." }, { name: "days", description: "The number of days to ban." }], "Ban a player from the chat for the specified number of days.")
-], EngineChat.prototype, "Ban", null);
-__decorate([
-    ApiMethod([{ name: "playerName", description: "The player to mute." }, { name: "minutes", description: "The minutes to mute." }], "Mute a player for the specified number of minutes.")
-], EngineChat.prototype, "Mute", null);
-EngineChat = __decorate([
-    ApiClass
-], EngineChat);
 /// <reference path="../CodeEnvironement.ts" />
-var engineDisplay = new ((function () {
+var engineDisplay = new (/** @class */ (function () {
     function class_13() {
         this.dialogSideButtons = [];
         this.dialogButtons = [];
@@ -11388,9 +11400,10 @@ var engineDisplay = new ((function () {
     }
     return class_13;
 }()));
-var EngineDisplay = EngineDisplay_1 = (function () {
+var EngineDisplay = /** @class */ (function () {
     function EngineDisplay() {
     }
+    EngineDisplay_1 = EngineDisplay;
     EngineDisplay.prototype.AddMapMessage = function (values, env) {
         if (values[0] === null || values[1] === null || values[2] === null)
             return;
@@ -11684,98 +11697,99 @@ var EngineDisplay = EngineDisplay_1 = (function () {
         var env = CodeParser.Parse("function buttonToExec() { " + func + "}");
         env.ExecuteFunction("buttonToExec", []);
     };
+    var EngineDisplay_1;
+    __decorate([
+        ApiMethod([{ name: "x", description: "The X coordinate where to place the map message" }, { name: "y", description: "The Y coordinate where to place the map message" }, { name: "message", description: "The message to place the map message" }, { name: "color", description: "(optional) The color to use to display the message. If skipped it will be white. Otherwise use the web color format." }], "Place a small floating temporary message on the map.")
+    ], EngineDisplay.prototype, "AddMapMessage", null);
+    __decorate([
+        ApiMethod([], "Shows the minimap on the screen.")
+    ], EngineDisplay.prototype, "ShowMinimap", null);
+    __decorate([
+        ApiMethod([], "Hides the minimap on the screen.")
+    ], EngineDisplay.prototype, "HideMinimap", null);
+    __decorate([
+        ApiMethod([{ name: "x", description: "The X coordinate where to place the map message" }, { name: "y", description: "The Y coordinate where to place the map message" }, { name: "name", description: "The particle effect name." }, { name: "time", description: "Time to keep this particle effect on the map." }], "Place particle effect on a map for a given time.")
+    ], EngineDisplay.prototype, "ParticleEffect", null);
+    __decorate([
+        ApiMethod([{ name: "message", description: "The message to show on the error log" }], "Display a message in the error log.")
+    ], EngineDisplay.prototype, "Log", null);
+    __decorate([
+        ApiMethod([{ name: "title", description: "The title of the dialog box." }], "Set the title of the dialog box.")
+    ], EngineDisplay.prototype, "SetDialogTitle", null);
+    __decorate([
+        ApiMethod([], "Shows the dialog box.")
+    ], EngineDisplay.prototype, "ShowDialog", null);
+    __decorate([
+        ApiMethod([{ name: "content", description: "The content as BB code." }], "Set the content of the dialog box.")
+    ], EngineDisplay.prototype, "SetDialogText", null);
+    __decorate([
+        ApiMethod([{ name: "imageId", description: "The id of the image." }, { name: "src", description: "Image source info." }], "Replace the current image with a new image.")
+    ], EngineDisplay.prototype, "ReplaceImage", null);
+    __decorate([
+        ApiMethod([{ name: "fieldName", description: "The field to read." }], "Reads a field and returns the value.")
+    ], EngineDisplay.prototype, "GetFieldValue", null);
+    __decorate([
+        ApiMethod([{ name: "fieldName", description: "The field to set." }, { name: "value", description: "The value to set." }], "Set the value of a field.")
+    ], EngineDisplay.prototype, "SetFieldValue", null);
+    __decorate([
+        ApiMethod([{ name: "fieldName", description: "The field to change." }, { name: "value", description: "The value of the option to set." }, { name: "text", description: "(optional) The text to display for the option." }], "Add a value to a dropdown menu.")
+    ], EngineDisplay.prototype, "AddOption", null);
+    __decorate([
+        ApiMethod([{ name: "fieldName", description: "The field to change." }], "Remove all the options of a dropdown.")
+    ], EngineDisplay.prototype, "ClearOptions", null);
+    __decorate([
+        ApiMethod([], "Clear up all the buttons on the side of the dialog.")
+    ], EngineDisplay.prototype, "ClearDialogSideButtons", null);
+    __decorate([
+        ApiMethod([{ name: "label", description: "Label of the button to add." }, { name: "functionToCall", description: "Function to call back when the button is pressed." }], "Add a button to the side of the dialog.")
+    ], EngineDisplay.prototype, "AddDialogSideButton", null);
+    __decorate([
+        ApiMethod([], "Dock the dialog to the bottom of the screen.")
+    ], EngineDisplay.prototype, "DockDialogBottom", null);
+    __decorate([
+        ApiMethod([], "Dock the dialog to the top of the screen.")
+    ], EngineDisplay.prototype, "DockDialogTop", null);
+    __decorate([
+        ApiMethod([], "Dock the dialog to the left of the screen.")
+    ], EngineDisplay.prototype, "DockDialogLeft", null);
+    __decorate([
+        ApiMethod([], "Dock the dialog to the right of the screen.")
+    ], EngineDisplay.prototype, "DockDialogRight", null);
+    __decorate([
+        ApiMethod([], "Place the dialog in the center.")
+    ], EngineDisplay.prototype, "DialogCenter", null);
+    __decorate([
+        ApiMethod([], "Dialog will take all the width of the screen.")
+    ], EngineDisplay.prototype, "DialogFillWidth", null);
+    __decorate([
+        ApiMethod([], "Dialog will take all the height of the screen.")
+    ], EngineDisplay.prototype, "DialogFillHeight", null);
+    __decorate([
+        ApiMethod([{ name: "height", description: "The wished height of the dialog box. If the parameter is a string and ends with a % sign it will be taken as % of the screen size." }], "Dialog will take all the height of the screen.")
+    ], EngineDisplay.prototype, "DialogHeight", null);
+    __decorate([
+        ApiMethod([{ name: "width", description: "The wished width of the dialog box. If the parameter is a string and ends with a % sign it will be taken as % of the screen size." }], "Dialog will take all the height of the screen.")
+    ], EngineDisplay.prototype, "DialogWidth", null);
+    __decorate([
+        ApiMethod([], "Hide the dialog box.")
+    ], EngineDisplay.prototype, "HideDialog", null);
+    __decorate([
+        ApiMethod([{ name: "source", description: "Source text to cleanup." }], "Removes all the BB codes.")
+    ], EngineDisplay.prototype, "CleanupBBCodes", null);
+    __decorate([
+        ApiMethod([{ name: "label", description: "Label of the button to add." }, { name: "functionToCall", description: "Function to call back when the button is pressed." }], "Generate button BB code to place within the text of a dialog.")
+    ], EngineDisplay.prototype, "InlineButton", null);
+    EngineDisplay = EngineDisplay_1 = __decorate([
+        ApiClass
+    ], EngineDisplay);
     return EngineDisplay;
 }());
-__decorate([
-    ApiMethod([{ name: "x", description: "The X coordinate where to place the map message" }, { name: "y", description: "The Y coordinate where to place the map message" }, { name: "message", description: "The message to place the map message" }, { name: "color", description: "(optional) The color to use to display the message. If skipped it will be white. Otherwise use the web color format." }], "Place a small floating temporary message on the map.")
-], EngineDisplay.prototype, "AddMapMessage", null);
-__decorate([
-    ApiMethod([], "Shows the minimap on the screen.")
-], EngineDisplay.prototype, "ShowMinimap", null);
-__decorate([
-    ApiMethod([], "Hides the minimap on the screen.")
-], EngineDisplay.prototype, "HideMinimap", null);
-__decorate([
-    ApiMethod([{ name: "x", description: "The X coordinate where to place the map message" }, { name: "y", description: "The Y coordinate where to place the map message" }, { name: "name", description: "The particle effect name." }, { name: "time", description: "Time to keep this particle effect on the map." }], "Place particle effect on a map for a given time.")
-], EngineDisplay.prototype, "ParticleEffect", null);
-__decorate([
-    ApiMethod([{ name: "message", description: "The message to show on the error log" }], "Display a message in the error log.")
-], EngineDisplay.prototype, "Log", null);
-__decorate([
-    ApiMethod([{ name: "title", description: "The title of the dialog box." }], "Set the title of the dialog box.")
-], EngineDisplay.prototype, "SetDialogTitle", null);
-__decorate([
-    ApiMethod([], "Shows the dialog box.")
-], EngineDisplay.prototype, "ShowDialog", null);
-__decorate([
-    ApiMethod([{ name: "content", description: "The content as BB code." }], "Set the content of the dialog box.")
-], EngineDisplay.prototype, "SetDialogText", null);
-__decorate([
-    ApiMethod([{ name: "imageId", description: "The id of the image." }, { name: "src", description: "Image source info." }], "Replace the current image with a new image.")
-], EngineDisplay.prototype, "ReplaceImage", null);
-__decorate([
-    ApiMethod([{ name: "fieldName", description: "The field to read." }], "Reads a field and returns the value.")
-], EngineDisplay.prototype, "GetFieldValue", null);
-__decorate([
-    ApiMethod([{ name: "fieldName", description: "The field to set." }, { name: "value", description: "The value to set." }], "Set the value of a field.")
-], EngineDisplay.prototype, "SetFieldValue", null);
-__decorate([
-    ApiMethod([{ name: "fieldName", description: "The field to change." }, { name: "value", description: "The value of the option to set." }, { name: "text", description: "(optional) The text to display for the option." }], "Add a value to a dropdown menu.")
-], EngineDisplay.prototype, "AddOption", null);
-__decorate([
-    ApiMethod([{ name: "fieldName", description: "The field to change." }], "Remove all the options of a dropdown.")
-], EngineDisplay.prototype, "ClearOptions", null);
-__decorate([
-    ApiMethod([], "Clear up all the buttons on the side of the dialog.")
-], EngineDisplay.prototype, "ClearDialogSideButtons", null);
-__decorate([
-    ApiMethod([{ name: "label", description: "Label of the button to add." }, { name: "functionToCall", description: "Function to call back when the button is pressed." }], "Add a button to the side of the dialog.")
-], EngineDisplay.prototype, "AddDialogSideButton", null);
-__decorate([
-    ApiMethod([], "Dock the dialog to the bottom of the screen.")
-], EngineDisplay.prototype, "DockDialogBottom", null);
-__decorate([
-    ApiMethod([], "Dock the dialog to the top of the screen.")
-], EngineDisplay.prototype, "DockDialogTop", null);
-__decorate([
-    ApiMethod([], "Dock the dialog to the left of the screen.")
-], EngineDisplay.prototype, "DockDialogLeft", null);
-__decorate([
-    ApiMethod([], "Dock the dialog to the right of the screen.")
-], EngineDisplay.prototype, "DockDialogRight", null);
-__decorate([
-    ApiMethod([], "Place the dialog in the center.")
-], EngineDisplay.prototype, "DialogCenter", null);
-__decorate([
-    ApiMethod([], "Dialog will take all the width of the screen.")
-], EngineDisplay.prototype, "DialogFillWidth", null);
-__decorate([
-    ApiMethod([], "Dialog will take all the height of the screen.")
-], EngineDisplay.prototype, "DialogFillHeight", null);
-__decorate([
-    ApiMethod([{ name: "height", description: "The wished height of the dialog box. If the parameter is a string and ends with a % sign it will be taken as % of the screen size." }], "Dialog will take all the height of the screen.")
-], EngineDisplay.prototype, "DialogHeight", null);
-__decorate([
-    ApiMethod([{ name: "width", description: "The wished width of the dialog box. If the parameter is a string and ends with a % sign it will be taken as % of the screen size." }], "Dialog will take all the height of the screen.")
-], EngineDisplay.prototype, "DialogWidth", null);
-__decorate([
-    ApiMethod([], "Hide the dialog box.")
-], EngineDisplay.prototype, "HideDialog", null);
-__decorate([
-    ApiMethod([{ name: "source", description: "Source text to cleanup." }], "Removes all the BB codes.")
-], EngineDisplay.prototype, "CleanupBBCodes", null);
-__decorate([
-    ApiMethod([{ name: "label", description: "Label of the button to add." }, { name: "functionToCall", description: "Function to call back when the button is pressed." }], "Generate button BB code to place within the text of a dialog.")
-], EngineDisplay.prototype, "InlineButton", null);
-EngineDisplay = EngineDisplay_1 = __decorate([
-    ApiClass
-], EngineDisplay);
-var EngineDisplay_1;
 /// <reference path="../CodeEnvironement.ts" />
 var gp = 0;
-var EngineGame = EngineGame_1 = (function () {
+var EngineGame = /** @class */ (function () {
     function EngineGame() {
     }
+    EngineGame_1 = EngineGame;
     EngineGame.prototype.AddStatistic = function (values, env) {
         if (Main.CheckNW())
             return;
@@ -11861,35 +11875,36 @@ var EngineGame = EngineGame_1 = (function () {
         play.keyHook[values[0].GetString()] = values[1].GetString();
         return null;
     };
+    var EngineGame_1;
+    __decorate([
+        ApiMethod([{ name: "statisticName", description: "The statistic type to add ('monster_kill', 'level_up', 'player_kill')." }], "Increment the statistic counter (visible in the \"Admin\" =&gt; \"Game Stat\" menu).")
+    ], EngineGame.prototype, "AddStatistic", null);
+    __decorate([
+        ApiMethod([{ name: "time", description: "Time in millisecond to pause the execution." }], "Pause the execution of the scripts and then continues.")
+    ], EngineGame.prototype, "Pause", null);
+    __decorate([
+        ApiMethod([], "Returns the date as string format (YYYY/MM/DD).")
+    ], EngineGame.prototype, "GetDateString", null);
+    __decorate([
+        ApiMethod([{ name: "key", description: "Key to bind." }, { name: "callback", description: "The function to call back once the key is pressed." }], "Hook a function to a key binding. Can be placed in the \"AutoRun\" function of your generic code to have it always set.")
+    ], EngineGame.prototype, "AddKeyBinding", null);
+    EngineGame = EngineGame_1 = __decorate([
+        ApiClass
+    ], EngineGame);
     return EngineGame;
 }());
-__decorate([
-    ApiMethod([{ name: "statisticName", description: "The statistic type to add ('monster_kill', 'level_up', 'player_kill')." }], "Increment the statistic counter (visible in the \"Admin\" =&gt; \"Game Stat\" menu).")
-], EngineGame.prototype, "AddStatistic", null);
-__decorate([
-    ApiMethod([{ name: "time", description: "Time in millisecond to pause the execution." }], "Pause the execution of the scripts and then continues.")
-], EngineGame.prototype, "Pause", null);
-__decorate([
-    ApiMethod([], "Returns the date as string format (YYYY/MM/DD).")
-], EngineGame.prototype, "GetDateString", null);
-__decorate([
-    ApiMethod([{ name: "key", description: "Key to bind." }, { name: "callback", description: "The function to call back once the key is pressed." }], "Hook a function to a key binding. Can be placed in the \"AutoRun\" function of your generic code to have it always set.")
-], EngineGame.prototype, "AddKeyBinding", null);
-EngineGame = EngineGame_1 = __decorate([
-    ApiClass
-], EngineGame);
-var EngineGame_1;
 /// <reference path="../CodeEnvironement.ts" />
-var engineGraphics = new ((function () {
+var engineGraphics = new (/** @class */ (function () {
     function class_14() {
         this.currentCanvas = null;
         this.imageCache = {};
     }
     return class_14;
 }()));
-var EngineGraphics = EngineGraphics_1 = (function () {
+var EngineGraphics = /** @class */ (function () {
     function EngineGraphics() {
     }
+    EngineGraphics_1 = EngineGraphics;
     EngineGraphics.prototype.Canvas = function (values, env) {
         engineGraphics.currentContext = $("#" + values[0].GetString()).first().getContext("2d");
         engineGraphics.currentCanvas = values[0].GetString();
@@ -12046,47 +12061,47 @@ var EngineGraphics = EngineGraphics_1 = (function () {
             engineGraphics.currentContext.drawImage(img, 0, 0, img.width, img.height, x, y, img.width, img.height);
         return null;
     };
+    var EngineGraphics_1;
+    __decorate([
+        ApiMethod([{ name: "canvasId", description: "The id of the canvas to recover the context from." }], "Set the current drawing context.")
+    ], EngineGraphics.prototype, "Canvas", null);
+    __decorate([
+        ApiMethod([{ name: "color", description: "The color to set." }], "Set the color for the further draw functions.")
+    ], EngineGraphics.prototype, "Color", null);
+    __decorate([
+        ApiMethod([{ name: "width", description: "The width to set." }], "Set the line width.")
+    ], EngineGraphics.prototype, "LineWidth", null);
+    __decorate([
+        ApiMethod([{ name: "x1", description: "First X coordinate." }, { name: "y1", description: "First Y coordinate." }, { name: "x2", description: "Second X coordinate." }, { name: "y2", description: "Second Y coordinate." }], "Draw a line.")
+    ], EngineGraphics.prototype, "Line", null);
+    __decorate([
+        ApiMethod([{ name: "text", description: "The text to draw." }, { name: "x", description: "X coordinate." }, { name: "y", description: "Y coordinate." }, { name: "size", description: "(optional) Font size. By default 12px." }], "Draw a line.")
+    ], EngineGraphics.prototype, "Text", null);
+    __decorate([
+        ApiMethod([{ name: "x", description: "X coordinate." }, { name: "y", description: "Y coordinate." }, { name: "width", description: "Rectangle width." }, { name: "height", description: "Rectangle height" }], "Draw the contour of a rectangle.")
+    ], EngineGraphics.prototype, "Rectangle", null);
+    __decorate([
+        ApiMethod([{ name: "x", description: "X coordinate." }, { name: "y", description: "Y coordinate." }, { name: "width", description: "Rectangle width." }, { name: "height", description: "Rectangle height" }], "Fill a rectangle.")
+    ], EngineGraphics.prototype, "FillRectangle", null);
+    __decorate([
+        ApiMethod([{ name: "x", description: "X coordinate." }, { name: "y", description: "Y coordinate." }, { name: "width", description: "Ellipse width." }, { name: "height", description: "Ellipse height" }], "Draw the contour of an ellipse.")
+    ], EngineGraphics.prototype, "Ellipse", null);
+    __decorate([
+        ApiMethod([{ name: "x", description: "X coordinate." }, { name: "y", description: "Y coordinate." }, { name: "width", description: "Ellipse width." }, { name: "height", description: "Ellipse height" }], "Fill an ellipse.")
+    ], EngineGraphics.prototype, "FillEllipse", null);
+    __decorate([
+        ApiMethod([{ name: "image", description: "Image to draw." }], "Draw an image on the coordinate specified.")
+    ], EngineGraphics.prototype, "LoadImage", null);
+    __decorate([
+        ApiMethod([{ name: "image", description: "Image to draw." }, { name: "x", description: "X coordinate." }, { name: "y", description: "Y coordinate." }], "Draw an image on the coordinate specified.")
+    ], EngineGraphics.prototype, "DrawImage", null);
+    EngineGraphics = EngineGraphics_1 = __decorate([
+        ApiClass
+    ], EngineGraphics);
     return EngineGraphics;
 }());
-__decorate([
-    ApiMethod([{ name: "canvasId", description: "The id of the canvas to recover the context from." }], "Set the current drawing context.")
-], EngineGraphics.prototype, "Canvas", null);
-__decorate([
-    ApiMethod([{ name: "color", description: "The color to set." }], "Set the color for the further draw functions.")
-], EngineGraphics.prototype, "Color", null);
-__decorate([
-    ApiMethod([{ name: "width", description: "The width to set." }], "Set the line width.")
-], EngineGraphics.prototype, "LineWidth", null);
-__decorate([
-    ApiMethod([{ name: "x1", description: "First X coordinate." }, { name: "y1", description: "First Y coordinate." }, { name: "x2", description: "Second X coordinate." }, { name: "y2", description: "Second Y coordinate." }], "Draw a line.")
-], EngineGraphics.prototype, "Line", null);
-__decorate([
-    ApiMethod([{ name: "text", description: "The text to draw." }, { name: "x", description: "X coordinate." }, { name: "y", description: "Y coordinate." }, { name: "size", description: "(optional) Font size. By default 12px." }], "Draw a line.")
-], EngineGraphics.prototype, "Text", null);
-__decorate([
-    ApiMethod([{ name: "x", description: "X coordinate." }, { name: "y", description: "Y coordinate." }, { name: "width", description: "Rectangle width." }, { name: "height", description: "Rectangle height" }], "Draw the contour of a rectangle.")
-], EngineGraphics.prototype, "Rectangle", null);
-__decorate([
-    ApiMethod([{ name: "x", description: "X coordinate." }, { name: "y", description: "Y coordinate." }, { name: "width", description: "Rectangle width." }, { name: "height", description: "Rectangle height" }], "Fill a rectangle.")
-], EngineGraphics.prototype, "FillRectangle", null);
-__decorate([
-    ApiMethod([{ name: "x", description: "X coordinate." }, { name: "y", description: "Y coordinate." }, { name: "width", description: "Ellipse width." }, { name: "height", description: "Ellipse height" }], "Draw the contour of an ellipse.")
-], EngineGraphics.prototype, "Ellipse", null);
-__decorate([
-    ApiMethod([{ name: "x", description: "X coordinate." }, { name: "y", description: "Y coordinate." }, { name: "width", description: "Ellipse width." }, { name: "height", description: "Ellipse height" }], "Fill an ellipse.")
-], EngineGraphics.prototype, "FillEllipse", null);
-__decorate([
-    ApiMethod([{ name: "image", description: "Image to draw." }], "Draw an image on the coordinate specified.")
-], EngineGraphics.prototype, "LoadImage", null);
-__decorate([
-    ApiMethod([{ name: "image", description: "Image to draw." }, { name: "x", description: "X coordinate." }, { name: "y", description: "Y coordinate." }], "Draw an image on the coordinate specified.")
-], EngineGraphics.prototype, "DrawImage", null);
-EngineGraphics = EngineGraphics_1 = __decorate([
-    ApiClass
-], EngineGraphics);
-var EngineGraphics_1;
 /// <reference path="../CodeEnvironement.ts" />
-var EngineInventory = (function () {
+var EngineInventory = /** @class */ (function () {
     function EngineInventory() {
     }
     EngineInventory.prototype.AddItem = function (values, env) {
@@ -12214,34 +12229,34 @@ var EngineInventory = (function () {
         }
         return null;
     };
+    __decorate([
+        ApiMethod([{ name: "itemName", description: "Item to add." }, { name: "quantity", description: "Quantity to add." }], "(optional) Adds an item to the player inventory. If skipped it will remove one.")
+    ], EngineInventory.prototype, "AddItem", null);
+    __decorate([
+        ApiMethod([{ name: "itemName", description: "Item to add." }, { name: "quantity", description: "(optional) Quantity to remove. If skipped it will remove one." }], "Removes an item from the player inventory.")
+    ], EngineInventory.prototype, "RemoveItem", null);
+    __decorate([
+        ApiMethod([{ name: "itemName", description: "Item to check." }, { name: "parameterName", description: "Name of the parameter to check." }], "Returns true if the item do have this parameter defined.")
+    ], EngineInventory.prototype, "ObjectParameterExists", null);
+    __decorate([
+        ApiMethod([{ name: "itemName", description: "Item to check." }, { name: "parameterName", description: "Value to calculate." }], "Returns the value of the item's parameter value.")
+    ], EngineInventory.prototype, "ObjectParameter", null);
+    __decorate([
+        ApiMethod([{ name: "statName", description: "The stat to evaluate." }], "Calculates the stat effect of all the items the player is currently wearing.")
+    ], EngineInventory.prototype, "GetWearedEffect", null);
+    __decorate([
+        ApiMethod([{ name: "itemName", description: "The inventory object to check." }], "Checks if the player is currently wearing the item.")
+    ], EngineInventory.prototype, "IsWearing", null);
+    __decorate([
+        ApiMethod([], "Executing all the Use actions of the weared items.")
+    ], EngineInventory.prototype, "ExecuteWearingUsage", null);
+    EngineInventory = __decorate([
+        ApiClass
+    ], EngineInventory);
     return EngineInventory;
 }());
-__decorate([
-    ApiMethod([{ name: "itemName", description: "Item to add." }, { name: "quantity", description: "Quantity to add." }], "(optional) Adds an item to the player inventory. If skipped it will remove one.")
-], EngineInventory.prototype, "AddItem", null);
-__decorate([
-    ApiMethod([{ name: "itemName", description: "Item to add." }, { name: "quantity", description: "(optional) Quantity to remove. If skipped it will remove one." }], "Removes an item from the player inventory.")
-], EngineInventory.prototype, "RemoveItem", null);
-__decorate([
-    ApiMethod([{ name: "itemName", description: "Item to check." }, { name: "parameterName", description: "Name of the parameter to check." }], "Returns true if the item do have this parameter defined.")
-], EngineInventory.prototype, "ObjectParameterExists", null);
-__decorate([
-    ApiMethod([{ name: "itemName", description: "Item to check." }, { name: "parameterName", description: "Value to calculate." }], "Returns the value of the item's parameter value.")
-], EngineInventory.prototype, "ObjectParameter", null);
-__decorate([
-    ApiMethod([{ name: "statName", description: "The stat to evaluate." }], "Calculates the stat effect of all the items the player is currently wearing.")
-], EngineInventory.prototype, "GetWearedEffect", null);
-__decorate([
-    ApiMethod([{ name: "itemName", description: "The inventory object to check." }], "Checks if the player is currently wearing the item.")
-], EngineInventory.prototype, "IsWearing", null);
-__decorate([
-    ApiMethod([], "Executing all the Use actions of the weared items.")
-], EngineInventory.prototype, "ExecuteWearingUsage", null);
-EngineInventory = __decorate([
-    ApiClass
-], EngineInventory);
 /// <reference path="../CodeEnvironement.ts" />
-var EngineMap = (function () {
+var EngineMap = /** @class */ (function () {
     function EngineMap() {
     }
     EngineMap.prototype.SpawnMapObject = function (values, env) {
@@ -12278,19 +12293,19 @@ var EngineMap = (function () {
         if (!world.art.objects[values[2]])
             throw "The map object '" + values[2] + "' is unknown at " + line + ":" + column;
     };
+    __decorate([
+        ApiMethod([{ name: "x", description: "Position x on the map." },
+            { name: "y", description: "Position y on the map." },
+            { name: "name", description: "Name of the object to place." },
+            { name: "timeToLive", description: "(optional) Time to live expressed in seconds." }], "Creates a new temporaty object on the map.")
+    ], EngineMap.prototype, "SpawnMapObject", null);
+    EngineMap = __decorate([
+        ApiClass
+    ], EngineMap);
     return EngineMap;
 }());
-__decorate([
-    ApiMethod([{ name: "x", description: "Position x on the map." },
-        { name: "y", description: "Position y on the map." },
-        { name: "name", description: "Name of the object to place." },
-        { name: "timeToLive", description: "(optional) Time to live expressed in seconds." }], "Creates a new temporaty object on the map.")
-], EngineMap.prototype, "SpawnMapObject", null);
-EngineMap = __decorate([
-    ApiClass
-], EngineMap);
 /// <reference path="../CodeEnvironement.ts" />
-var EngineMath = (function () {
+var EngineMath = /** @class */ (function () {
     function EngineMath() {
     }
     EngineMath.prototype.PI = function (values, env) {
@@ -12385,7 +12400,7 @@ var EngineMath = (function () {
     };
     EngineMath.CalculateAngle = function (ad, op) {
         var angle = 0.0;
-        if (ad == 0.0)
+        if (ad == 0.0) // Avoid angles of 0 where it would make a division by 0
             ad = 0.00001;
         // Get the angle formed by the line
         angle = Math.atan(op / ad);
@@ -12397,64 +12412,64 @@ var EngineMath = (function () {
             angle += Math.PI * 2.0;
         return angle;
     };
+    __decorate([
+        ApiMethod([], "Returns the mathematical constant PI which is 3.141592653589793 .")
+    ], EngineMath.prototype, "PI", null);
+    __decorate([
+        ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the sinusoidal of the given value.")
+    ], EngineMath.prototype, "Sin", null);
+    __decorate([
+        ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the arc sinusoidal of the given value.")
+    ], EngineMath.prototype, "ASin", null);
+    __decorate([
+        ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the cosinusoidal of the given value.")
+    ], EngineMath.prototype, "Cos", null);
+    __decorate([
+        ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the arc cosinusoidal of the given value.")
+    ], EngineMath.prototype, "ACos", null);
+    __decorate([
+        ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the tangent of the given value.")
+    ], EngineMath.prototype, "Tan", null);
+    __decorate([
+        ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the arc tangent of the given value.")
+    ], EngineMath.prototype, "ATan", null);
+    __decorate([
+        ApiMethod([{ name: "base", description: "Base number to calculate." }, { name: "exponent", description: "Exponent number to calculate." }], "Returns the base number power exponent.")
+    ], EngineMath.prototype, "Pow", null);
+    __decorate([
+        ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the rounded value (< 0.5 will be 0, >= 0.5 will be 1).")
+    ], EngineMath.prototype, "Round", null);
+    __decorate([
+        ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the floored value (< 1 will be 0).")
+    ], EngineMath.prototype, "Floor", null);
+    __decorate([
+        ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the ceiled value (> 0 will be 1).")
+    ], EngineMath.prototype, "Ceil", null);
+    __decorate([
+        ApiMethod([{ name: "var1", description: "The value to divide." }, { name: "var2", description: "The value to divide width." }], "Returns the remainder operator value when deviding the first variable with the second.")
+    ], EngineMath.prototype, "Mod", null);
+    __decorate([
+        ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the square root of the value.")
+    ], EngineMath.prototype, "Sqrt", null);
+    __decorate([
+        ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the natural logarithm (base e) of the value.")
+    ], EngineMath.prototype, "Log", null);
+    __decorate([
+        ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the e power of the value.")
+    ], EngineMath.prototype, "Exp", null);
+    __decorate([
+        ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the absolute number of the value.")
+    ], EngineMath.prototype, "Abs", null);
+    __decorate([
+        ApiMethod([{ name: "max", description: "(optional) max value to return (inclusive)." }, { name: "min", description: "(optional) min value to return (inclusive)." }], "Returns a random number. If no min/max is given the value is between 0 and 1.")
+    ], EngineMath.prototype, "Rnd", null);
+    EngineMath = __decorate([
+        ApiClass
+    ], EngineMath);
     return EngineMath;
 }());
-__decorate([
-    ApiMethod([], "Returns the mathematical constant PI which is 3.141592653589793 .")
-], EngineMath.prototype, "PI", null);
-__decorate([
-    ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the sinusoidal of the given value.")
-], EngineMath.prototype, "Sin", null);
-__decorate([
-    ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the arc sinusoidal of the given value.")
-], EngineMath.prototype, "ASin", null);
-__decorate([
-    ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the cosinusoidal of the given value.")
-], EngineMath.prototype, "Cos", null);
-__decorate([
-    ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the arc cosinusoidal of the given value.")
-], EngineMath.prototype, "ACos", null);
-__decorate([
-    ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the tangent of the given value.")
-], EngineMath.prototype, "Tan", null);
-__decorate([
-    ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the arc tangent of the given value.")
-], EngineMath.prototype, "ATan", null);
-__decorate([
-    ApiMethod([{ name: "base", description: "Base number to calculate." }, { name: "exponent", description: "Exponent number to calculate." }], "Returns the base number power exponent.")
-], EngineMath.prototype, "Pow", null);
-__decorate([
-    ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the rounded value (< 0.5 will be 0, >= 0.5 will be 1).")
-], EngineMath.prototype, "Round", null);
-__decorate([
-    ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the floored value (< 1 will be 0).")
-], EngineMath.prototype, "Floor", null);
-__decorate([
-    ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the ceiled value (> 0 will be 1).")
-], EngineMath.prototype, "Ceil", null);
-__decorate([
-    ApiMethod([{ name: "var1", description: "The value to divide." }, { name: "var2", description: "The value to divide width." }], "Returns the remainder operator value when deviding the first variable with the second.")
-], EngineMath.prototype, "Mod", null);
-__decorate([
-    ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the square root of the value.")
-], EngineMath.prototype, "Sqrt", null);
-__decorate([
-    ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the natural logarithm (base e) of the value.")
-], EngineMath.prototype, "Log", null);
-__decorate([
-    ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the e power of the value.")
-], EngineMath.prototype, "Exp", null);
-__decorate([
-    ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the absolute number of the value.")
-], EngineMath.prototype, "Abs", null);
-__decorate([
-    ApiMethod([{ name: "max", description: "(optional) max value to return (inclusive)." }, { name: "min", description: "(optional) min value to return (inclusive)." }], "Returns a random number. If no min/max is given the value is between 0 and 1.")
-], EngineMath.prototype, "Rnd", null);
-EngineMath = __decorate([
-    ApiClass
-], EngineMath);
 /// <reference path="../CodeEnvironement.ts" />
-var EngineMessage = (function () {
+var EngineMessage = /** @class */ (function () {
     function EngineMessage() {
     }
     EngineMessage.prototype.SendMessage = function (values, env) {
@@ -12464,19 +12479,19 @@ var EngineMessage = (function () {
     EngineMessage.prototype.HasNewMessage = function (values, env) {
         return new VariableValue(messageMenu.nonRead > 0);
     };
+    __decorate([
+        ApiMethod([{ name: "username", description: "Destination user." }, { name: "subject", description: "The subject of the message" }, { name: "message", description: "Message to send" }], "Sends an offline message (in-game email).")
+    ], EngineMessage.prototype, "SendMessage", null);
+    __decorate([
+        ApiMethod([], "Returns true if there is a new non-read message.")
+    ], EngineMessage.prototype, "HasNewMessage", null);
+    EngineMessage = __decorate([
+        ApiClass
+    ], EngineMessage);
     return EngineMessage;
 }());
-__decorate([
-    ApiMethod([{ name: "username", description: "Destination user." }, { name: "subject", description: "The subject of the message" }, { name: "message", description: "Message to send" }], "Sends an offline message (in-game email).")
-], EngineMessage.prototype, "SendMessage", null);
-__decorate([
-    ApiMethod([], "Returns true if there is a new non-read message.")
-], EngineMessage.prototype, "HasNewMessage", null);
-EngineMessage = __decorate([
-    ApiClass
-], EngineMessage);
 /// <reference path="../CodeEnvironement.ts" />
-var EngineMonster = (function () {
+var EngineMonster = /** @class */ (function () {
     function EngineMonster() {
     }
     EngineMonster.prototype.RetreiveSetting = function (values, env) {
@@ -12515,25 +12530,25 @@ var EngineMonster = (function () {
             return new VariableValue("");
         return new VariableValue(actor.Name);
     };
+    __decorate([
+        ApiMethod([{ name: "monsterId", description: "Monster ID to check." }, { name: "parameterName", description: "Monster parameter to read." }], "Returns the value of the monster parameter.")
+    ], EngineMonster.prototype, "RetreiveSetting", null);
+    __decorate([
+        ApiMethod([{ name: "monsterId", description: "Monster ID to handle." }, { name: "maxDistance", description: "Max distance in tiles before we use a random walk (must be between 5 and 20)." }], "Moves the monster toward the player if possible.")
+    ], EngineMonster.prototype, "HuntWalk", null);
+    __decorate([
+        ApiMethod([{ name: "monsterId", description: "Monster ID to handle." }], "Moves the monster randomly.")
+    ], EngineMonster.prototype, "RandomWalk", null);
+    __decorate([
+        ApiMethod([{ name: "monsterId", description: "Monster ID to handle." }], "Returns the name of the monster.")
+    ], EngineMonster.prototype, "GetName", null);
+    EngineMonster = __decorate([
+        ApiClass
+    ], EngineMonster);
     return EngineMonster;
 }());
-__decorate([
-    ApiMethod([{ name: "monsterId", description: "Monster ID to check." }, { name: "parameterName", description: "Monster parameter to read." }], "Returns the value of the monster parameter.")
-], EngineMonster.prototype, "RetreiveSetting", null);
-__decorate([
-    ApiMethod([{ name: "monsterId", description: "Monster ID to handle." }, { name: "maxDistance", description: "Max distance in tiles before we use a random walk (must be between 5 and 20)." }], "Moves the monster toward the player if possible.")
-], EngineMonster.prototype, "HuntWalk", null);
-__decorate([
-    ApiMethod([{ name: "monsterId", description: "Monster ID to handle." }], "Moves the monster randomly.")
-], EngineMonster.prototype, "RandomWalk", null);
-__decorate([
-    ApiMethod([{ name: "monsterId", description: "Monster ID to handle." }], "Returns the name of the monster.")
-], EngineMonster.prototype, "GetName", null);
-EngineMonster = __decorate([
-    ApiClass
-], EngineMonster);
 /// <reference path="../CodeEnvironement.ts" />
-var EngineObject = (function () {
+var EngineObject = /** @class */ (function () {
     function EngineObject() {
     }
     EngineObject.prototype.ObjectExists = function (values, env) {
@@ -12562,28 +12577,28 @@ var EngineObject = (function () {
         obj.UsageActions = [{ Name: "ExecuteCodeFunction", Values: [values[2].GetString()] }];
         return null;
     };
+    __decorate([
+        ApiMethod([{ name: "name", description: "The name to check." }], "Returns true if the object is defined in the object database.")
+    ], EngineObject.prototype, "ObjectExists", null);
+    __decorate([
+        ApiMethod([{ name: "name", description: "The name to create." }, { name: "typeName", description: "The name of the object type." }], "Returns the name of the created object or the existing object.")
+    ], EngineObject.prototype, "CreateObject", null);
+    __decorate([
+        ApiMethod([{ name: "name", description: "The name to check." }], "Returns true if the object type is defined in the object database.")
+    ], EngineObject.prototype, "TypeExists", null);
+    __decorate([
+        ApiMethod([{ name: "name", description: "The name to create." }, { name: "group", description: "(optional) The name of the object type." }], "Returns the name of the created object or the existing object.")
+    ], EngineObject.prototype, "CreateType", null);
+    __decorate([
+        ApiMethod([{ name: "name", description: "The name of the object." }, { name: "actionText", description: "Name of the action to show" }, { name: "actionCode", description: "Script code to execute" }], "Set an action to an object.")
+    ], EngineObject.prototype, "SetObjectUseAction", null);
+    EngineObject = __decorate([
+        ApiClass
+    ], EngineObject);
     return EngineObject;
 }());
-__decorate([
-    ApiMethod([{ name: "name", description: "The name to check." }], "Returns true if the object is defined in the object database.")
-], EngineObject.prototype, "ObjectExists", null);
-__decorate([
-    ApiMethod([{ name: "name", description: "The name to create." }, { name: "typeName", description: "The name of the object type." }], "Returns the name of the created object or the existing object.")
-], EngineObject.prototype, "CreateObject", null);
-__decorate([
-    ApiMethod([{ name: "name", description: "The name to check." }], "Returns true if the object type is defined in the object database.")
-], EngineObject.prototype, "TypeExists", null);
-__decorate([
-    ApiMethod([{ name: "name", description: "The name to create." }, { name: "group", description: "(optional) The name of the object type." }], "Returns the name of the created object or the existing object.")
-], EngineObject.prototype, "CreateType", null);
-__decorate([
-    ApiMethod([{ name: "name", description: "The name of the object." }, { name: "actionText", description: "Name of the action to show" }, { name: "actionCode", description: "Script code to execute" }], "Set an action to an object.")
-], EngineObject.prototype, "SetObjectUseAction", null);
-EngineObject = __decorate([
-    ApiClass
-], EngineObject);
 /// <reference path="../CodeEnvironement.ts" />
-var EnginePlayer = (function () {
+var EnginePlayer = /** @class */ (function () {
     function EnginePlayer() {
     }
     EnginePlayer.prototype.IsOnline = function (values, env) {
@@ -12983,118 +12998,118 @@ var EnginePlayer = (function () {
     EnginePlayer.prototype.GetName = function (values, env) {
         return new VariableValue(world.Player.Username);
     };
+    __decorate([
+        ApiMethod([{ name: "playerName", description: "The player to check." }], "Checks if a player is online.")
+    ], EnginePlayer.prototype, "IsOnline", null);
+    __decorate([
+        ApiMethod([{ name: "role", description: "The role to check." }], "Checks if the current player has a given role.")
+    ], EnginePlayer.prototype, "HasRole", null);
+    __decorate([
+        ApiMethod([{ name: "statName", description: "The STAT to increase." }, { name: "value", description: "Quantity to increase." }], "Increase the player stat by the given value.")
+    ], EnginePlayer.prototype, "IncreaseStat", null);
+    __decorate([
+        ApiMethod([{ name: "statName", description: "The STAT to decrease." }, { name: "value", description: "Quantity to decrease." }], "Decrease the player stat by the given value.")
+    ], EnginePlayer.prototype, "ReduceStat", null);
+    __decorate([
+        ApiMethod([{ name: "statName", description: "The STAT to read." }], "Get the player stat by the given value.")
+    ], EnginePlayer.prototype, "GetStat", null);
+    __decorate([
+        ApiMethod([{ name: "statName", description: "The STAT to check." }], "Returns true if the player's stat has a maximum value.")
+    ], EnginePlayer.prototype, "HasMaxValue", null);
+    __decorate([
+        ApiMethod([{ name: "statName", description: "The STAT to read." }], "Get the player stat max value by the given value.")
+    ], EnginePlayer.prototype, "GetStatMaxValue", null);
+    __decorate([
+        ApiMethod([{ name: "statName", description: "The STAT to modify." }, { name: "value", description: "Value to set." }], "Set the player stat by the given value.")
+    ], EnginePlayer.prototype, "SetStat", null);
+    __decorate([
+        ApiMethod([{ name: "timerName", description: "The name of the timer to check." }], "Returns true if the player's timer is currently running. If it's finished it will return false.")
+    ], EnginePlayer.prototype, "TimerRunning", null);
+    __decorate([
+        ApiMethod([{ name: "timerName", description: "The name of the timer to set." }, { name: "time", description: "The time the player's timer needs to be set to." }], "Sets a timer which will run till the full time is elapsed.")
+    ], EnginePlayer.prototype, "StartTimer", null);
+    __decorate([
+        ApiMethod([{ name: "timerName", description: "The name of the timer to stop." }], "Stops a currently player's running timer.")
+    ], EnginePlayer.prototype, "StopTimer", null);
+    __decorate([
+        ApiMethod([{ name: "timerName", description: "The name of the timer to check." }], "Returns the time left or 0 on the given player's timer.")
+    ], EnginePlayer.prototype, "GetTimer", null);
+    __decorate([
+        ApiMethod([], "Respawn the player to the initial position.")
+    ], EnginePlayer.prototype, "Respawn", null);
+    __decorate([
+        ApiMethod([{ name: "x", description: "The X coordinate where to place the player." }, { name: "y", description: "The Y coordinate where to place the player." }, { name: "zone", description: "The Zone where to place the player." }], "Set the respawn point of the player.")
+    ], EnginePlayer.prototype, "SetRespawn", null);
+    __decorate([
+        ApiMethod([{ name: "x", description: "The X coordinate where to place the player." }, { name: "y", description: "The Y coordinate where to place the player." }, { name: "zone", description: "The Zone where to place the player." }], "Place the player on another position on the same map or on another one.")
+    ], EnginePlayer.prototype, "Teleport", null);
+    __decorate([
+        ApiMethod([], "Returns the X coordinate of the player.")
+    ], EnginePlayer.prototype, "GetX", null);
+    __decorate([
+        ApiMethod([], "Returns the Y coordinate of the player.")
+    ], EnginePlayer.prototype, "GetY", null);
+    __decorate([
+        ApiMethod([], "Returns true if an animation is currently running.")
+    ], EnginePlayer.prototype, "IsAnimationRunning", null);
+    __decorate([
+        ApiMethod([{ name: "name", description: "The animation effect to set. Can be either 'none', 'attack' or 'damage'." }], "Sets the animation effect.")
+    ], EnginePlayer.prototype, "SetAnimation", null);
+    __decorate([
+        ApiMethod([{ name: "name", description: "The function name to execute when the player animation is over." }], "Will execute the function of the current block when the animation is over.")
+    ], EnginePlayer.prototype, "ExecuteWhenAnimationDone", null);
+    __decorate([
+        ApiMethod([{ name: "name", description: "The variable to set." }, { name: "value", description: "The value to set." }], "Set a variable which can be read from another function or later on.")
+    ], EnginePlayer.prototype, "SetVariable", null);
+    __decorate([
+        ApiMethod([{ name: "name", description: "The variable to read." }], "Retreives a variable previously stored.")
+    ], EnginePlayer.prototype, "GetVariable", null);
+    __decorate([
+        ApiMethod([{ name: "name", description: "The variable to set." }, { name: "value", description: "The value to set." }], "Set a quest variable which can be read from another function or later on.")
+    ], EnginePlayer.prototype, "SetQuestVariable", null);
+    __decorate([
+        ApiMethod([{ name: "name", description: "The variable to read." }], "Retreives a quest variable previously stored.")
+    ], EnginePlayer.prototype, "GetQuestVariable", null);
+    __decorate([
+        ApiMethod([{ name: "name", description: "The name of the character art to use." }], "Set the player look to the wished character art.")
+    ], EnginePlayer.prototype, "SetLook", null);
+    __decorate([
+        ApiMethod([], "Returns the player the current character art used by the player.")
+    ], EnginePlayer.prototype, "GetLook", null);
+    __decorate([
+        ApiMethod([], "Returns the currently player selected skill.")
+    ], EnginePlayer.prototype, "GetCurrentSkill", null);
+    __decorate([
+        ApiMethod([], "Returns the true if the player is currently within a NPC dialog / shop.")
+    ], EnginePlayer.prototype, "IsInDialog", null);
+    __decorate([
+        ApiMethod([{ name: "name", description: "The name of the temporary effect to add." }], "Adds a temporary effect.")
+    ], EnginePlayer.prototype, "StartTemporaryEffect", null);
+    __decorate([
+        ApiMethod([{ name: "name", description: "The name of the temporary effect to remove." }], "Removes the player temporary effects.")
+    ], EnginePlayer.prototype, "RemoveTemporaryEffect", null);
+    __decorate([
+        ApiMethod([], "Removes all the player temporary effects.")
+    ], EnginePlayer.prototype, "RemoveAllTemporaryEffects", null);
+    __decorate([
+        ApiMethod([], "Stores the current player look.")
+    ], EnginePlayer.prototype, "StorePlayerLook", null);
+    __decorate([
+        ApiMethod([], "Restores the current player look.")
+    ], EnginePlayer.prototype, "RestorePlayerLook", null);
+    __decorate([
+        ApiMethod([{ name: "name", description: "The particle effect name." }, { name: "time", description: "Time to keep this particle effect on the map." }], "Place particle effect on the player for a given time.")
+    ], EnginePlayer.prototype, "AddParticleEffect", null);
+    __decorate([
+        ApiMethod([], "Returns the player name.")
+    ], EnginePlayer.prototype, "GetName", null);
+    EnginePlayer = __decorate([
+        ApiClass
+    ], EnginePlayer);
     return EnginePlayer;
 }());
-__decorate([
-    ApiMethod([{ name: "playerName", description: "The player to check." }], "Checks if a player is online.")
-], EnginePlayer.prototype, "IsOnline", null);
-__decorate([
-    ApiMethod([{ name: "role", description: "The role to check." }], "Checks if the current player has a given role.")
-], EnginePlayer.prototype, "HasRole", null);
-__decorate([
-    ApiMethod([{ name: "statName", description: "The STAT to increase." }, { name: "value", description: "Quantity to increase." }], "Increase the player stat by the given value.")
-], EnginePlayer.prototype, "IncreaseStat", null);
-__decorate([
-    ApiMethod([{ name: "statName", description: "The STAT to decrease." }, { name: "value", description: "Quantity to decrease." }], "Decrease the player stat by the given value.")
-], EnginePlayer.prototype, "ReduceStat", null);
-__decorate([
-    ApiMethod([{ name: "statName", description: "The STAT to read." }], "Get the player stat by the given value.")
-], EnginePlayer.prototype, "GetStat", null);
-__decorate([
-    ApiMethod([{ name: "statName", description: "The STAT to check." }], "Returns true if the player's stat has a maximum value.")
-], EnginePlayer.prototype, "HasMaxValue", null);
-__decorate([
-    ApiMethod([{ name: "statName", description: "The STAT to read." }], "Get the player stat max value by the given value.")
-], EnginePlayer.prototype, "GetStatMaxValue", null);
-__decorate([
-    ApiMethod([{ name: "statName", description: "The STAT to modify." }, { name: "value", description: "Value to set." }], "Set the player stat by the given value.")
-], EnginePlayer.prototype, "SetStat", null);
-__decorate([
-    ApiMethod([{ name: "timerName", description: "The name of the timer to check." }], "Returns true if the player's timer is currently running. If it's finished it will return false.")
-], EnginePlayer.prototype, "TimerRunning", null);
-__decorate([
-    ApiMethod([{ name: "timerName", description: "The name of the timer to set." }, { name: "time", description: "The time the player's timer needs to be set to." }], "Sets a timer which will run till the full time is elapsed.")
-], EnginePlayer.prototype, "StartTimer", null);
-__decorate([
-    ApiMethod([{ name: "timerName", description: "The name of the timer to stop." }], "Stops a currently player's running timer.")
-], EnginePlayer.prototype, "StopTimer", null);
-__decorate([
-    ApiMethod([{ name: "timerName", description: "The name of the timer to check." }], "Returns the time left or 0 on the given player's timer.")
-], EnginePlayer.prototype, "GetTimer", null);
-__decorate([
-    ApiMethod([], "Respawn the player to the initial position.")
-], EnginePlayer.prototype, "Respawn", null);
-__decorate([
-    ApiMethod([{ name: "x", description: "The X coordinate where to place the player." }, { name: "y", description: "The Y coordinate where to place the player." }, { name: "zone", description: "The Zone where to place the player." }], "Set the respawn point of the player.")
-], EnginePlayer.prototype, "SetRespawn", null);
-__decorate([
-    ApiMethod([{ name: "x", description: "The X coordinate where to place the player." }, { name: "y", description: "The Y coordinate where to place the player." }, { name: "zone", description: "The Zone where to place the player." }], "Place the player on another position on the same map or on another one.")
-], EnginePlayer.prototype, "Teleport", null);
-__decorate([
-    ApiMethod([], "Returns the X coordinate of the player.")
-], EnginePlayer.prototype, "GetX", null);
-__decorate([
-    ApiMethod([], "Returns the Y coordinate of the player.")
-], EnginePlayer.prototype, "GetY", null);
-__decorate([
-    ApiMethod([], "Returns true if an animation is currently running.")
-], EnginePlayer.prototype, "IsAnimationRunning", null);
-__decorate([
-    ApiMethod([{ name: "name", description: "The animation effect to set. Can be either 'none', 'attack' or 'damage'." }], "Sets the animation effect.")
-], EnginePlayer.prototype, "SetAnimation", null);
-__decorate([
-    ApiMethod([{ name: "name", description: "The function name to execute when the player animation is over." }], "Will execute the function of the current block when the animation is over.")
-], EnginePlayer.prototype, "ExecuteWhenAnimationDone", null);
-__decorate([
-    ApiMethod([{ name: "name", description: "The variable to set." }, { name: "value", description: "The value to set." }], "Set a variable which can be read from another function or later on.")
-], EnginePlayer.prototype, "SetVariable", null);
-__decorate([
-    ApiMethod([{ name: "name", description: "The variable to read." }], "Retreives a variable previously stored.")
-], EnginePlayer.prototype, "GetVariable", null);
-__decorate([
-    ApiMethod([{ name: "name", description: "The variable to set." }, { name: "value", description: "The value to set." }], "Set a quest variable which can be read from another function or later on.")
-], EnginePlayer.prototype, "SetQuestVariable", null);
-__decorate([
-    ApiMethod([{ name: "name", description: "The variable to read." }], "Retreives a quest variable previously stored.")
-], EnginePlayer.prototype, "GetQuestVariable", null);
-__decorate([
-    ApiMethod([{ name: "name", description: "The name of the character art to use." }], "Set the player look to the wished character art.")
-], EnginePlayer.prototype, "SetLook", null);
-__decorate([
-    ApiMethod([], "Returns the player the current character art used by the player.")
-], EnginePlayer.prototype, "GetLook", null);
-__decorate([
-    ApiMethod([], "Returns the currently player selected skill.")
-], EnginePlayer.prototype, "GetCurrentSkill", null);
-__decorate([
-    ApiMethod([], "Returns the true if the player is currently within a NPC dialog / shop.")
-], EnginePlayer.prototype, "IsInDialog", null);
-__decorate([
-    ApiMethod([{ name: "name", description: "The name of the temporary effect to add." }], "Adds a temporary effect.")
-], EnginePlayer.prototype, "StartTemporaryEffect", null);
-__decorate([
-    ApiMethod([{ name: "name", description: "The name of the temporary effect to remove." }], "Removes the player temporary effects.")
-], EnginePlayer.prototype, "RemoveTemporaryEffect", null);
-__decorate([
-    ApiMethod([], "Removes all the player temporary effects.")
-], EnginePlayer.prototype, "RemoveAllTemporaryEffects", null);
-__decorate([
-    ApiMethod([], "Stores the current player look.")
-], EnginePlayer.prototype, "StorePlayerLook", null);
-__decorate([
-    ApiMethod([], "Restores the current player look.")
-], EnginePlayer.prototype, "RestorePlayerLook", null);
-__decorate([
-    ApiMethod([{ name: "name", description: "The particle effect name." }, { name: "time", description: "Time to keep this particle effect on the map." }], "Place particle effect on the player for a given time.")
-], EnginePlayer.prototype, "AddParticleEffect", null);
-__decorate([
-    ApiMethod([], "Returns the player name.")
-], EnginePlayer.prototype, "GetName", null);
-EnginePlayer = __decorate([
-    ApiClass
-], EnginePlayer);
 /// <reference path="../CodeEnvironement.ts" />
-var EngineQuest = (function () {
+var EngineQuest = /** @class */ (function () {
     function EngineQuest() {
     }
     EngineQuest.prototype.Start = function (values, env) {
@@ -13222,31 +13237,31 @@ var EngineQuest = (function () {
         if (!quest)
             throw "The quest '" + values[0] + "' doesn't contain a journal entry with the id '" + id + "' at " + line + ":" + column;
     };
+    __decorate([
+        ApiMethod([{ name: "questName", description: "The name of the quest to start." }], "Starts a player quest.")
+    ], EngineQuest.prototype, "Start", null);
+    __decorate([
+        ApiMethod([{ name: "questName", description: "The name of the quest to check." }], "Returns true if the player started this quest.")
+    ], EngineQuest.prototype, "CheckStarted", null);
+    __decorate([
+        ApiMethod([{ name: "questName", description: "The name of the quest to check." }], "Returns true if the player completed this quest.")
+    ], EngineQuest.prototype, "CheckCompleted", null);
+    __decorate([
+        ApiMethod([{ name: "questName", description: "The name of the quest to complete." }], "Completes a player quest.")
+    ], EngineQuest.prototype, "Complete", null);
+    __decorate([
+        ApiMethod([{ name: "questName", description: "The name of the quest." }, { name: "journalEntryId", description: "The id of the journal entry to add." }], "Adds a quest journal entry.")
+    ], EngineQuest.prototype, "AddJournalEntry", null);
+    __decorate([
+        ApiMethod([{ name: "questName", description: "The name of the quest." }, { name: "journalEntryId", description: "The id of the journal entry to check." }], "Returns true if the player received this journal entry.")
+    ], EngineQuest.prototype, "JournalEntryReceived", null);
+    EngineQuest = __decorate([
+        ApiClass
+    ], EngineQuest);
     return EngineQuest;
 }());
-__decorate([
-    ApiMethod([{ name: "questName", description: "The name of the quest to start." }], "Starts a player quest.")
-], EngineQuest.prototype, "Start", null);
-__decorate([
-    ApiMethod([{ name: "questName", description: "The name of the quest to check." }], "Returns true if the player started this quest.")
-], EngineQuest.prototype, "CheckStarted", null);
-__decorate([
-    ApiMethod([{ name: "questName", description: "The name of the quest to check." }], "Returns true if the player completed this quest.")
-], EngineQuest.prototype, "CheckCompleted", null);
-__decorate([
-    ApiMethod([{ name: "questName", description: "The name of the quest to complete." }], "Completes a player quest.")
-], EngineQuest.prototype, "Complete", null);
-__decorate([
-    ApiMethod([{ name: "questName", description: "The name of the quest." }, { name: "journalEntryId", description: "The id of the journal entry to add." }], "Adds a quest journal entry.")
-], EngineQuest.prototype, "AddJournalEntry", null);
-__decorate([
-    ApiMethod([{ name: "questName", description: "The name of the quest." }, { name: "journalEntryId", description: "The id of the journal entry to check." }], "Returns true if the player received this journal entry.")
-], EngineQuest.prototype, "JournalEntryReceived", null);
-EngineQuest = __decorate([
-    ApiClass
-], EngineQuest);
 /// <reference path="../CodeEnvironement.ts" />
-var EngineSkill = (function () {
+var EngineSkill = /** @class */ (function () {
     function EngineSkill() {
     }
     EngineSkill.prototype.RetreiveSetting = function (values, env) {
@@ -13327,25 +13342,25 @@ var EngineSkill = (function () {
         if (!world.GetSkill(values[0]))
             throw "The skill '" + values[0] + "' is unknown at " + line + ":" + column;
     };
+    __decorate([
+        ApiMethod([{ name: "parameterName", description: "Skill parameter to read." }], "Returns the value of the current skill parameter.")
+    ], EngineSkill.prototype, "RetreiveSetting", null);
+    __decorate([
+        ApiMethod([{ name: "skillName", description: "Skill to given to the player." }], "Adds a skill to the player.")
+    ], EngineSkill.prototype, "GiveSkill", null);
+    __decorate([
+        ApiMethod([{ name: "skillName", description: "Skill to check." }], "Checks if the player has the skill.")
+    ], EngineSkill.prototype, "HasSkill", null);
+    __decorate([
+        ApiMethod([{ name: "skillName", description: "Skill to activate." }], "Activate a player skill.")
+    ], EngineSkill.prototype, "ActivateSkill", null);
+    EngineSkill = __decorate([
+        ApiClass
+    ], EngineSkill);
     return EngineSkill;
 }());
-__decorate([
-    ApiMethod([{ name: "parameterName", description: "Skill parameter to read." }], "Returns the value of the current skill parameter.")
-], EngineSkill.prototype, "RetreiveSetting", null);
-__decorate([
-    ApiMethod([{ name: "skillName", description: "Skill to given to the player." }], "Adds a skill to the player.")
-], EngineSkill.prototype, "GiveSkill", null);
-__decorate([
-    ApiMethod([{ name: "skillName", description: "Skill to check." }], "Checks if the player has the skill.")
-], EngineSkill.prototype, "HasSkill", null);
-__decorate([
-    ApiMethod([{ name: "skillName", description: "Skill to activate." }], "Activate a player skill.")
-], EngineSkill.prototype, "ActivateSkill", null);
-EngineSkill = __decorate([
-    ApiClass
-], EngineSkill);
 /// <reference path="../CodeEnvironement.ts" />
-var EngineSound = (function () {
+var EngineSound = /** @class */ (function () {
     function EngineSound() {
     }
     EngineSound.prototype.Play = function (values, env) {
@@ -13366,19 +13381,19 @@ var EngineSound = (function () {
         Sounds.ClearSound();
         return null;
     };
+    __decorate([
+        ApiMethod([{ name: "soundName", description: "The unique ID of the sound to be played." }, { name: "volume", description: "(optional) The volume at which to play the sound." }], "Plays a sound once at the specified level.")
+    ], EngineSound.prototype, "Play", null);
+    __decorate([
+        ApiMethod([], "Stops all the currently played music and sounds.")
+    ], EngineSound.prototype, "StopAll", null);
+    EngineSound = __decorate([
+        ApiClass
+    ], EngineSound);
     return EngineSound;
 }());
-__decorate([
-    ApiMethod([{ name: "soundName", description: "The unique ID of the sound to be played." }, { name: "volume", description: "(optional) The volume at which to play the sound." }], "Plays a sound once at the specified level.")
-], EngineSound.prototype, "Play", null);
-__decorate([
-    ApiMethod([], "Stops all the currently played music and sounds.")
-], EngineSound.prototype, "StopAll", null);
-EngineSound = __decorate([
-    ApiClass
-], EngineSound);
 /// <reference path="../CodeEnvironement.ts" />
-var engineStorage = new ((function () {
+var engineStorage = new (/** @class */ (function () {
     function class_15() {
         this.lastRowId = null;
         this.nextQueryId = 1;
@@ -13401,9 +13416,10 @@ var charsMap = {
     '\'': '\\\'',
     '\\': '\\\\'
 };
-var EngineStorage = EngineStorage_1 = (function () {
+var EngineStorage = /** @class */ (function () {
     function EngineStorage() {
     }
+    EngineStorage_1 = EngineStorage;
     EngineStorage.prototype.AddNewData = function (values, env) {
         var table = values[0].GetString();
         var found = null;
@@ -13853,88 +13869,88 @@ var EngineStorage = EngineStorage_1 = (function () {
         });
         return new VariableValue(null);
     };
+    var EngineStorage_1;
+    __decorate([
+        ApiMethod([{ name: "tableName", description: "The table name." },
+            { name: "columnName", description: "The name of the column where to store the data." },
+            { name: "value", description: "The data to store." }], "Add a new column / row to the database.")
+    ], EngineStorage.prototype, "AddNewData", null);
+    __decorate([
+        ApiMethod([{ name: "tableName", description: "The table name." }], "Submit the data to add.")
+    ], EngineStorage.prototype, "StoreData", null);
+    __decorate([
+        ApiMethod([], "Returns the last rowId inserted.")
+    ], EngineStorage.prototype, "GetLastRowId", null);
+    __decorate([
+        ApiMethod([{ name: "tableName", description: "The table name." }], "Create a new read query and returns the id of the query.")
+    ], EngineStorage.prototype, "QueryData", null);
+    __decorate([
+        ApiMethod([{ name: "queryId", description: "The ID of the query." }, { name: "condition", description: "SQL Like condition." },
+            { name: "parameters", description: "(...) Parameters" }], "Allows to add one ore more SQL like conditions (E.g.: column = value). Use ? in the condition and optional parameters to avoid code injections.")
+    ], EngineStorage.prototype, "Where", null);
+    __decorate([
+        ApiMethod([{ name: "queryId", description: "The ID of the query." }], "Execute a query.")
+    ], EngineStorage.prototype, "ExecuteQuery", null);
+    __decorate([
+        ApiMethod([{ name: "queryId", description: "The ID of the query." }], "Returns the number of rows returned.")
+    ], EngineStorage.prototype, "GetNbRows", null);
+    __decorate([
+        ApiMethod([{ name: "queryId", description: "The ID of the query." }], "Moves to the next (or first) row of the query and returns true if there is more data to be queried.")
+    ], EngineStorage.prototype, "NextRow", null);
+    __decorate([
+        ApiMethod([{ name: "queryId", description: "The ID of the query." }, { name: "columnName", description: "The name of the column to read." }], "Returns the value of the column (identified either by the position or the name).")
+    ], EngineStorage.prototype, "GetValue", null);
+    __decorate([
+        ApiMethod([{ name: "queryId", description: "The ID of the query." }], "Close the query and free up the resources.")
+    ], EngineStorage.prototype, "CloseQuery", null);
+    __decorate([
+        ApiMethod([{ name: "table", description: "The name of the table to cleanup." }, { name: "nbToKeep", description: "The number of rows to keep." }], "Delete all the rows beside the nbToKeep last rows.")
+    ], EngineStorage.prototype, "KeepOnlyLast", null);
+    __decorate([
+        ApiMethod([{ name: "table", description: "The name of the table to cleanup." }, { name: "rowId", description: "The rowId to delete." }], "Delete a rowId.")
+    ], EngineStorage.prototype, "DeleteRow", null);
+    __decorate([
+        ApiMethod([{ name: "table", description: "The name of the table to cleanup." }, { name: "column", description: "The column to modify." },
+            { name: "value", description: "The column to set." }, { name: "condition", description: "Rows must match the condition to be modified." },
+            { name: "parameters", description: "(...) Parameters" }], "Modify data within the database.")
+    ], EngineStorage.prototype, "Update", null);
+    __decorate([
+        ApiMethod([{ name: "table", description: "The name of the table to cleanup." },
+            { name: "condition", description: "Rows must match the condition to be deleted." },
+            { name: "parameters", description: "(...) Parameters" }], "Delete data within the database.")
+    ], EngineStorage.prototype, "Delete", null);
+    __decorate([
+        ApiMethod([{ name: "table", description: "The name of the table to cleanup." }], "Drop completely a table of the database.")
+    ], EngineStorage.prototype, "Drop", null);
+    __decorate([
+        ApiMethod([], "Retrieve the list of all the tables stored by this game.")
+    ], EngineStorage.prototype, "RetrieveTableList", null);
+    __decorate([
+        ApiMethod([], "Number of tables retrieved with RetrieveTableList.")
+    ], EngineStorage.prototype, "NBTables", null);
+    __decorate([
+        ApiMethod([{ name: "position", description: "Position in the list." }], "Get the name of the table at the position.")
+    ], EngineStorage.prototype, "GetTableName", null);
+    __decorate([
+        ApiMethod([{ name: "table", description: "Name of the table to check." }], "Retrieve the list of all the columns of a given table stored by this game.")
+    ], EngineStorage.prototype, "RetrieveColumnList", null);
+    __decorate([
+        ApiMethod([], "Number of columns retrieved with RetrieveColumnList.")
+    ], EngineStorage.prototype, "NBColumns", null);
+    __decorate([
+        ApiMethod([{ name: "position", description: "Position in the list." }], "Get the name of the column at the position.")
+    ], EngineStorage.prototype, "GetColumnName", null);
+    __decorate([
+        ApiMethod([{ name: "table", description: "Name of the table to check." }], "Returns true if the table exists. Don't use directly the function, store the value within a variable and then use the value."),
+        ApiWrapper("function Storage_TableExists(table) { Storage._TableExists(table); return stackResult; }")
+    ], EngineStorage.prototype, "TableExists", null);
+    EngineStorage = EngineStorage_1 = __decorate([
+        ApiClass
+    ], EngineStorage);
     return EngineStorage;
 }());
-__decorate([
-    ApiMethod([{ name: "tableName", description: "The table name." },
-        { name: "columnName", description: "The name of the column where to store the data." },
-        { name: "value", description: "The data to store." }], "Add a new column / row to the database.")
-], EngineStorage.prototype, "AddNewData", null);
-__decorate([
-    ApiMethod([{ name: "tableName", description: "The table name." }], "Submit the data to add.")
-], EngineStorage.prototype, "StoreData", null);
-__decorate([
-    ApiMethod([], "Returns the last rowId inserted.")
-], EngineStorage.prototype, "GetLastRowId", null);
-__decorate([
-    ApiMethod([{ name: "tableName", description: "The table name." }], "Create a new read query and returns the id of the query.")
-], EngineStorage.prototype, "QueryData", null);
-__decorate([
-    ApiMethod([{ name: "queryId", description: "The ID of the query." }, { name: "condition", description: "SQL Like condition." },
-        { name: "parameters", description: "(...) Parameters" }], "Allows to add one ore more SQL like conditions (E.g.: column = value). Use ? in the condition and optional parameters to avoid code injections.")
-], EngineStorage.prototype, "Where", null);
-__decorate([
-    ApiMethod([{ name: "queryId", description: "The ID of the query." }], "Execute a query.")
-], EngineStorage.prototype, "ExecuteQuery", null);
-__decorate([
-    ApiMethod([{ name: "queryId", description: "The ID of the query." }], "Returns the number of rows returned.")
-], EngineStorage.prototype, "GetNbRows", null);
-__decorate([
-    ApiMethod([{ name: "queryId", description: "The ID of the query." }], "Moves to the next (or first) row of the query and returns true if there is more data to be queried.")
-], EngineStorage.prototype, "NextRow", null);
-__decorate([
-    ApiMethod([{ name: "queryId", description: "The ID of the query." }, { name: "columnName", description: "The name of the column to read." }], "Returns the value of the column (identified either by the position or the name).")
-], EngineStorage.prototype, "GetValue", null);
-__decorate([
-    ApiMethod([{ name: "queryId", description: "The ID of the query." }], "Close the query and free up the resources.")
-], EngineStorage.prototype, "CloseQuery", null);
-__decorate([
-    ApiMethod([{ name: "table", description: "The name of the table to cleanup." }, { name: "nbToKeep", description: "The number of rows to keep." }], "Delete all the rows beside the nbToKeep last rows.")
-], EngineStorage.prototype, "KeepOnlyLast", null);
-__decorate([
-    ApiMethod([{ name: "table", description: "The name of the table to cleanup." }, { name: "rowId", description: "The rowId to delete." }], "Delete a rowId.")
-], EngineStorage.prototype, "DeleteRow", null);
-__decorate([
-    ApiMethod([{ name: "table", description: "The name of the table to cleanup." }, { name: "column", description: "The column to modify." },
-        { name: "value", description: "The column to set." }, { name: "condition", description: "Rows must match the condition to be modified." },
-        { name: "parameters", description: "(...) Parameters" }], "Modify data within the database.")
-], EngineStorage.prototype, "Update", null);
-__decorate([
-    ApiMethod([{ name: "table", description: "The name of the table to cleanup." },
-        { name: "condition", description: "Rows must match the condition to be deleted." },
-        { name: "parameters", description: "(...) Parameters" }], "Delete data within the database.")
-], EngineStorage.prototype, "Delete", null);
-__decorate([
-    ApiMethod([{ name: "table", description: "The name of the table to cleanup." }], "Drop completely a table of the database.")
-], EngineStorage.prototype, "Drop", null);
-__decorate([
-    ApiMethod([], "Retrieve the list of all the tables stored by this game.")
-], EngineStorage.prototype, "RetrieveTableList", null);
-__decorate([
-    ApiMethod([], "Number of tables retrieved with RetrieveTableList.")
-], EngineStorage.prototype, "NBTables", null);
-__decorate([
-    ApiMethod([{ name: "position", description: "Position in the list." }], "Get the name of the table at the position.")
-], EngineStorage.prototype, "GetTableName", null);
-__decorate([
-    ApiMethod([{ name: "table", description: "Name of the table to check." }], "Retrieve the list of all the columns of a given table stored by this game.")
-], EngineStorage.prototype, "RetrieveColumnList", null);
-__decorate([
-    ApiMethod([], "Number of columns retrieved with RetrieveColumnList.")
-], EngineStorage.prototype, "NBColumns", null);
-__decorate([
-    ApiMethod([{ name: "position", description: "Position in the list." }], "Get the name of the column at the position.")
-], EngineStorage.prototype, "GetColumnName", null);
-__decorate([
-    ApiMethod([{ name: "table", description: "Name of the table to check." }], "Returns true if the table exists. Don't use directly the function, store the value within a variable and then use the value."),
-    ApiWrapper("function Storage_TableExists(table) { Storage._TableExists(table); return stackResult; }")
-], EngineStorage.prototype, "TableExists", null);
-EngineStorage = EngineStorage_1 = __decorate([
-    ApiClass
-], EngineStorage);
-var EngineStorage_1;
 /// <reference path="ExecutionCode.ts" />
-var AddCode = (function () {
+var AddCode = /** @class */ (function () {
     function AddCode() {
     }
     AddCode.prototype.Execute = function (env) {
@@ -13969,7 +13985,7 @@ var AddCode = (function () {
     return AddCode;
 }());
 /// <reference path="ExecutionCode.ts" />
-var AndCode = (function () {
+var AndCode = /** @class */ (function () {
     function AndCode() {
     }
     AndCode.prototype.Execute = function (env) {
@@ -13981,7 +13997,7 @@ var AndCode = (function () {
     return AndCode;
 }());
 /// <reference path="ExecutionCode.ts" />
-var AssignCode = (function () {
+var AssignCode = /** @class */ (function () {
     function AssignCode(name, index) {
         if (index === void 0) { index = false; }
         this.Index = false;
@@ -14004,7 +14020,7 @@ var AssignCode = (function () {
     return AssignCode;
 }());
 /// <reference path="ExecutionCode.ts" />
-var CompareCode = (function () {
+var CompareCode = /** @class */ (function () {
     function CompareCode(operation) {
         this.Operation = operation;
     }
@@ -14048,7 +14064,7 @@ var CompareCode = (function () {
     return CompareCode;
 }());
 /// <reference path="ExecutionCode.ts" />
-var DivideCode = (function () {
+var DivideCode = /** @class */ (function () {
     function DivideCode() {
     }
     DivideCode.prototype.Execute = function (env) {
@@ -14063,7 +14079,7 @@ var DivideCode = (function () {
     return DivideCode;
 }());
 /// <reference path="ExecutionCode.ts" />
-var FlushVariableStackCode = (function () {
+var FlushVariableStackCode = /** @class */ (function () {
     function FlushVariableStackCode() {
     }
     FlushVariableStackCode.prototype.Execute = function (env) {
@@ -14073,7 +14089,7 @@ var FlushVariableStackCode = (function () {
     return FlushVariableStackCode;
 }());
 /// <refe/rence path="ExecutionCode.ts" />
-var FunctionCallCode = (function () {
+var FunctionCallCode = /** @class */ (function () {
     function FunctionCallCode(name, parametersCount) {
         this.Name = name;
         this.ParametersCount = parametersCount;
@@ -14108,7 +14124,7 @@ var FunctionCallCode = (function () {
     };
     return FunctionCallCode;
 }());
-var FunctionDefinitionCode = (function () {
+var FunctionDefinitionCode = /** @class */ (function () {
     function FunctionDefinitionCode() {
         this.Code = [];
         this.LoopExitStack = [];
@@ -14116,7 +14132,7 @@ var FunctionDefinitionCode = (function () {
     return FunctionDefinitionCode;
 }());
 /// <reference path="ExecutionCode.ts" />
-var IfCode = (function () {
+var IfCode = /** @class */ (function () {
     function IfCode(trueJump, falseJump) {
         this.TrueJump = trueJump;
         this.FalseJump = falseJump;
@@ -14131,7 +14147,7 @@ var IfCode = (function () {
     return IfCode;
 }());
 /// <reference path="ExecutionCode.ts" />
-var JumpCode = (function () {
+var JumpCode = /** @class */ (function () {
     function JumpCode(jumpLine) {
         this.JumpLine = jumpLine;
     }
@@ -14141,7 +14157,7 @@ var JumpCode = (function () {
     return JumpCode;
 }());
 /// <reference path="ExecutionCode.ts" />
-var MultiplyCode = (function () {
+var MultiplyCode = /** @class */ (function () {
     function MultiplyCode() {
     }
     MultiplyCode.prototype.Execute = function (env) {
@@ -14156,7 +14172,7 @@ var MultiplyCode = (function () {
     return MultiplyCode;
 }());
 /// <reference path="ExecutionCode.ts" />
-var NewArrayCode = (function () {
+var NewArrayCode = /** @class */ (function () {
     function NewArrayCode() {
     }
     NewArrayCode.prototype.Execute = function (env) {
@@ -14166,7 +14182,7 @@ var NewArrayCode = (function () {
     return NewArrayCode;
 }());
 /// <reference path="ExecutionCode.ts" />
-var NotCode = (function () {
+var NotCode = /** @class */ (function () {
     function NotCode() {
     }
     NotCode.prototype.Execute = function (env) {
@@ -14176,7 +14192,7 @@ var NotCode = (function () {
     return NotCode;
 }());
 /// <reference path="ExecutionCode.ts" />
-var OrCode = (function () {
+var OrCode = /** @class */ (function () {
     function OrCode() {
     }
     OrCode.prototype.Execute = function (env) {
@@ -14188,7 +14204,7 @@ var OrCode = (function () {
     return OrCode;
 }());
 /// <reference path="ExecutionCode.ts" />
-var PushCode = (function () {
+var PushCode = /** @class */ (function () {
     function PushCode(value) {
         this.Value = value;
     }
@@ -14199,7 +14215,7 @@ var PushCode = (function () {
     return PushCode;
 }());
 /// <reference path="ExecutionCode.ts" />
-var ReadCode = (function () {
+var ReadCode = /** @class */ (function () {
     function ReadCode(name, index) {
         if (index === void 0) { index = false; }
         this.Index = false;
@@ -14219,7 +14235,7 @@ var ReadCode = (function () {
     return ReadCode;
 }());
 /// <reference path="ExecutionCode.ts" />
-var ReturnCode = (function () {
+var ReturnCode = /** @class */ (function () {
     function ReturnCode() {
     }
     ReturnCode.prototype.Execute = function (env) {
@@ -14228,7 +14244,7 @@ var ReturnCode = (function () {
     return ReturnCode;
 }());
 /// <reference path="ExecutionCode.ts" />
-var SubstractCode = (function () {
+var SubstractCode = /** @class */ (function () {
     function SubstractCode() {
     }
     SubstractCode.prototype.Execute = function (env) {
@@ -14244,7 +14260,7 @@ var SubstractCode = (function () {
 }());
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['Add'] = { help: "Add two values and return the result. If one of the two is a string a concatenation will be made.", params: [{ name: 'AStatement', type: 'CodeStatement' }, { name: 'BStatement', type: 'CodeStatement' }] };
-var AddStatement = (function (_super) {
+var AddStatement = /** @class */ (function (_super) {
     __extends(AddStatement, _super);
     function AddStatement(statementA, statementB) {
         var _this = _super.call(this) || this;
@@ -14267,14 +14283,14 @@ var AddStatement = (function (_super) {
     AddStatement.prototype.ToCode = function (indent) {
         return this.AStatement.ToCode(0) + " + " + this.BStatement.ToCode(0);
     };
+    AddStatement = __decorate([
+        StatementClass
+    ], AddStatement);
     return AddStatement;
 }(CodeStatement));
-AddStatement = __decorate([
-    StatementClass
-], AddStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['And'] = { help: "Returns a boolean AND operation. Both values must be true to returns true otherwise returns false.", params: [{ name: 'AStatement', type: 'CodeStatement' }, { name: 'BStatement', type: 'CodeStatement' }] };
-var AndStatement = (function (_super) {
+var AndStatement = /** @class */ (function (_super) {
     __extends(AndStatement, _super);
     function AndStatement(statementA, statementB) {
         var _this = _super.call(this) || this;
@@ -14297,14 +14313,14 @@ var AndStatement = (function (_super) {
     AndStatement.prototype.ToCode = function (indent) {
         return this.AStatement.ToCode(0) + " && " + this.BStatement.ToCode(0);
     };
+    AndStatement = __decorate([
+        StatementClass
+    ], AndStatement);
     return AndStatement;
 }(CodeStatement));
-AndStatement = __decorate([
-    StatementClass
-], AndStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['Assign'] = { help: "Set the variable to the value passed. A variable is like a box allowing you to store a number or a string inside.", params: [{ name: 'Variable', type: 'string' }, { name: 'Statement', type: 'CodeStatement' }] };
-var AssignStatement = (function (_super) {
+var AssignStatement = /** @class */ (function (_super) {
     __extends(AssignStatement, _super);
     function AssignStatement(variable, statement) {
         var _this = _super.call(this) || this;
@@ -14333,14 +14349,14 @@ var AssignStatement = (function (_super) {
     AssignStatement.prototype.ToCode = function (indent) {
         return this.Variable + (this.index ? "[" + this.index.ToCode(0) + "]" : "") + " = " + this.Statement.ToCode(0);
     };
+    AssignStatement = __decorate([
+        TopBlockStatementClass,
+        StatementClass
+    ], AssignStatement);
     return AssignStatement;
 }(CodeStatement));
-AssignStatement = __decorate([
-    TopBlockStatementClass,
-    StatementClass
-], AssignStatement);
 /// <reference path="../CodeStatement.ts" />
-var BlockStatement = (function (_super) {
+var BlockStatement = /** @class */ (function (_super) {
     __extends(BlockStatement, _super);
     function BlockStatement(statements) {
         var _this = _super.call(this) || this;
@@ -14384,14 +14400,14 @@ var BlockStatement = (function (_super) {
         html += "<span class='emptyBlock' path='" + path + "'>Empty</span>";
         return html;
     };
+    BlockStatement = __decorate([
+        StatementClass
+    ], BlockStatement);
     return BlockStatement;
 }(CodeStatement));
-BlockStatement = __decorate([
-    StatementClass
-], BlockStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['Boolean'] = { help: "A boolean value which can be either true or false. Click on the node to change from true to false and reverse.", params: [] };
-var BooleanStatement = (function (_super) {
+var BooleanStatement = /** @class */ (function (_super) {
     __extends(BooleanStatement, _super);
     function BooleanStatement(value) {
         if (value === void 0) { value = true; }
@@ -14416,14 +14432,14 @@ var BooleanStatement = (function (_super) {
         html += "</div>";
         return html;
     };
+    BooleanStatement = __decorate([
+        StatementClass
+    ], BooleanStatement);
     return BooleanStatement;
 }(CodeStatement));
-BooleanStatement = __decorate([
-    StatementClass
-], BooleanStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['Break'] = { help: "Stops the current loop (while, do while or for).", params: [] };
-var BreakStatement = (function (_super) {
+var BreakStatement = /** @class */ (function (_super) {
     __extends(BreakStatement, _super);
     function BreakStatement() {
         return _super.call(this) || this;
@@ -14439,15 +14455,15 @@ var BreakStatement = (function (_super) {
     };
     BreakStatement.prototype.Verify = function (env) {
     };
+    BreakStatement = __decorate([
+        TopBlockStatementClass,
+        StatementClass
+    ], BreakStatement);
     return BreakStatement;
 }(CodeStatement));
-BreakStatement = __decorate([
-    TopBlockStatementClass,
-    StatementClass
-], BreakStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['CodeVariable'] = { help: "Allows to create a parameter for extensions or stat / skills.", params: [{ name: 'Name', type: 'string' }] };
-var CodeVariableStatement = (function (_super) {
+var CodeVariableStatement = /** @class */ (function (_super) {
     __extends(CodeVariableStatement, _super);
     function CodeVariableStatement(name, startLine, startColumn) {
         var _this = _super.call(this) || this;
@@ -14465,14 +14481,14 @@ var CodeVariableStatement = (function (_super) {
     CodeVariableStatement.prototype.ToCode = function (indent) {
         return "@" + this.Name + "@";
     };
+    CodeVariableStatement = __decorate([
+        StatementClass
+    ], CodeVariableStatement);
     return CodeVariableStatement;
 }(CodeStatement));
-CodeVariableStatement = __decorate([
-    StatementClass
-], CodeVariableStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['Comment'] = { help: "Allows to put a comment on the code. It doesn't influence the logic otherwise.", params: [{ name: 'Comment', type: 'string', display: 'embed' }] };
-var CommentStatement = (function (_super) {
+var CommentStatement = /** @class */ (function (_super) {
     __extends(CommentStatement, _super);
     function CommentStatement(comment) {
         var _this = _super.call(this) || this;
@@ -14489,15 +14505,15 @@ var CommentStatement = (function (_super) {
     CommentStatement.prototype.ToCode = function (indent) {
         return "/* " + this.Comment + " */";
     };
+    CommentStatement = __decorate([
+        TopBlockStatementClass,
+        StatementClass
+    ], CommentStatement);
     return CommentStatement;
 }(CodeStatement));
-CommentStatement = __decorate([
-    TopBlockStatementClass,
-    StatementClass
-], CommentStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['Compare'] = { help: "Compares two values and if the comparison is correct returns true, otherwise returns false.", params: [{ name: 'AStatement', type: 'CodeStatement' }, { name: 'Operator', type: 'string' }, { name: 'BStatement', type: 'CodeStatement' }] };
-var CompareStatement = (function (_super) {
+var CompareStatement = /** @class */ (function (_super) {
     __extends(CompareStatement, _super);
     function CompareStatement(statementA, operator, statementB) {
         var _this = _super.call(this) || this;
@@ -14521,14 +14537,14 @@ var CompareStatement = (function (_super) {
     CompareStatement.prototype.ToCode = function (indent) {
         return this.AStatement.ToCode(0) + " " + this.Operator + " " + this.BStatement.ToCode(0);
     };
+    CompareStatement = __decorate([
+        StatementClass
+    ], CompareStatement);
     return CompareStatement;
 }(CodeStatement));
-CompareStatement = __decorate([
-    StatementClass
-], CompareStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['Divide'] = { help: "Divides A by B and returns the result.", params: [{ name: 'AStatement', type: 'CodeStatement' }, { name: 'BStatement', type: 'CodeStatement' }] };
-var DivideStatement = (function (_super) {
+var DivideStatement = /** @class */ (function (_super) {
     __extends(DivideStatement, _super);
     function DivideStatement(statementA, statementB) {
         var _this = _super.call(this) || this;
@@ -14551,14 +14567,14 @@ var DivideStatement = (function (_super) {
     DivideStatement.prototype.ToCode = function (indent) {
         return this.AStatement.ToCode(0) + " / " + this.BStatement.ToCode(0);
     };
+    DivideStatement = __decorate([
+        StatementClass
+    ], DivideStatement);
     return DivideStatement;
 }(CodeStatement));
-DivideStatement = __decorate([
-    StatementClass
-], DivideStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['DoWhile'] = { help: "Repeat the code as long as the condition is matched but runs at least once the code.", params: [{ name: 'Condition', type: 'CodeStatement' }, { name: 'BlockStatement', type: 'CodeStatement' }] };
-var DoWhileStatement = DoWhileStatement_1 = (function (_super) {
+var DoWhileStatement = /** @class */ (function (_super) {
     __extends(DoWhileStatement, _super);
     function DoWhileStatement(condition, blockStatement) {
         var _this = _super.call(this) || this;
@@ -14569,6 +14585,7 @@ var DoWhileStatement = DoWhileStatement_1 = (function (_super) {
             _this.BlockStatement = new BlockStatement([_this.BlockStatement]);
         return _this;
     }
+    DoWhileStatement_1 = DoWhileStatement;
     DoWhileStatement.Parse = function (parser) {
         var blockStatement = CodeStatement.Top(parser);
         if (!(parser.HasToken() && parser.PeekToken().Type == "TokenName" && parser.PeekToken().Value == "while"))
@@ -14606,15 +14623,15 @@ var DoWhileStatement = DoWhileStatement_1 = (function (_super) {
     DoWhileStatement.prototype.ToCode = function (indent) {
         return "do\n" + this.BlockStatement.ToCode(indent) + " while(" + this.Condition.ToCode(0) + ")";
     };
+    var DoWhileStatement_1;
+    DoWhileStatement = DoWhileStatement_1 = __decorate([
+        TopBlockStatementClass,
+        StatementClass
+    ], DoWhileStatement);
     return DoWhileStatement;
 }(CodeStatement));
-DoWhileStatement = DoWhileStatement_1 = __decorate([
-    TopBlockStatementClass,
-    StatementClass
-], DoWhileStatement);
-var DoWhileStatement_1;
 /// <reference path="../CodeStatement.ts" />
-var EmptyArrayStatement = (function (_super) {
+var EmptyArrayStatement = /** @class */ (function (_super) {
     __extends(EmptyArrayStatement, _super);
     function EmptyArrayStatement(startLine, startColumn) {
         return _super.call(this) || this;
@@ -14630,13 +14647,13 @@ var EmptyArrayStatement = (function (_super) {
     EmptyArrayStatement.prototype.ToCode = function (indent) {
         return "[]";
     };
+    EmptyArrayStatement = __decorate([
+        StatementClass
+    ], EmptyArrayStatement);
     return EmptyArrayStatement;
 }(CodeStatement));
-EmptyArrayStatement = __decorate([
-    StatementClass
-], EmptyArrayStatement);
 /// <reference path="../CodeStatement.ts" />
-var EmptyStatement = (function (_super) {
+var EmptyStatement = /** @class */ (function (_super) {
     __extends(EmptyStatement, _super);
     function EmptyStatement() {
         return _super.call(this) || this;
@@ -14651,14 +14668,14 @@ var EmptyStatement = (function (_super) {
     EmptyStatement.prototype.ToCode = function (indent) {
         return "";
     };
+    EmptyStatement = __decorate([
+        StatementClass
+    ], EmptyStatement);
     return EmptyStatement;
 }(CodeStatement));
-EmptyStatement = __decorate([
-    StatementClass
-], EmptyStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['For'] = { help: "First run the init code, then as long as the condition is matched runs the block code and at every repeatition runs the loop code.", params: [{ name: 'InitCode', type: 'CodeStatement' }, { name: 'Condition', type: 'CodeStatement' }, { name: 'LoopCode', type: 'CodeStatement' }, { name: 'BlockStatement', type: 'CodeStatement' }] };
-var ForStatement = ForStatement_1 = (function (_super) {
+var ForStatement = /** @class */ (function (_super) {
     __extends(ForStatement, _super);
     function ForStatement(initCode, condition, loopCode, blockStatement) {
         var _this = _super.call(this) || this;
@@ -14671,6 +14688,7 @@ var ForStatement = ForStatement_1 = (function (_super) {
             _this.BlockStatement = new BlockStatement([_this.BlockStatement]);
         return _this;
     }
+    ForStatement_1 = ForStatement;
     ForStatement.Parse = function (parser) {
         if (parser.PeekToken().Type != "TokenOpenParenthesis")
             throw "Was expecting a ( at " + parser.PeekToken().Line + ":" + parser.PeekToken().Column;
@@ -14714,16 +14732,16 @@ var ForStatement = ForStatement_1 = (function (_super) {
     ForStatement.prototype.ToCode = function (indent) {
         return "for(" + this.InitCode.ToCode(0) + ";" + this.Condition.ToCode(0) + ";" + this.LoopCode.ToCode(0) + ")\n" + this.BlockStatement.ToCode(indent);
     };
+    var ForStatement_1;
+    ForStatement = ForStatement_1 = __decorate([
+        TopBlockStatementClass,
+        StatementClass
+    ], ForStatement);
     return ForStatement;
 }(CodeStatement));
-ForStatement = ForStatement_1 = __decorate([
-    TopBlockStatementClass,
-    StatementClass
-], ForStatement);
-var ForStatement_1;
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['FunctionCall'] = { help: "", params: [{ name: 'Name', type: 'string' }, { name: 'values', type: 'any[]' }] };
-var FunctionCallStatement = FunctionCallStatement_1 = (function (_super) {
+var FunctionCallStatement = /** @class */ (function (_super) {
     __extends(FunctionCallStatement, _super);
     function FunctionCallStatement(name, values, startLine, startColumn) {
         var _this = _super.call(this) || this;
@@ -14735,6 +14753,7 @@ var FunctionCallStatement = FunctionCallStatement_1 = (function (_super) {
         _this.startColumn = startColumn - name.length;
         return _this;
     }
+    FunctionCallStatement_1 = FunctionCallStatement;
     FunctionCallStatement.Parse = function (name, parser) {
         var nodes = [];
         if (!parser.HasToken())
@@ -14886,16 +14905,16 @@ var FunctionCallStatement = FunctionCallStatement_1 = (function (_super) {
         html += "</div>";
         return html;
     };
+    var FunctionCallStatement_1;
+    FunctionCallStatement = FunctionCallStatement_1 = __decorate([
+        TopBlockStatementClass,
+        StatementClass
+    ], FunctionCallStatement);
     return FunctionCallStatement;
 }(CodeStatement));
-FunctionCallStatement = FunctionCallStatement_1 = __decorate([
-    TopBlockStatementClass,
-    StatementClass
-], FunctionCallStatement);
-var FunctionCallStatement_1;
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['FunctionDefinition'] = { help: "Defines a new function which will can be used by yourself or can be invoked by the engine.", params: [{ name: 'Name', display: 'embed' }, { name: 'Variables', type: 'string[]', display: 'Parameter Names' }, { name: 'Statement', type: 'CodeStatement' }] };
-var FunctionDefinitionStatement = FunctionDefinitionStatement_1 = (function (_super) {
+var FunctionDefinitionStatement = /** @class */ (function (_super) {
     __extends(FunctionDefinitionStatement, _super);
     function FunctionDefinitionStatement(name, variables, statement) {
         var _this = _super.call(this) || this;
@@ -14904,6 +14923,7 @@ var FunctionDefinitionStatement = FunctionDefinitionStatement_1 = (function (_su
         _this.Statement = (statement ? statement : new BlockStatement([]));
         return _this;
     }
+    FunctionDefinitionStatement_1 = FunctionDefinitionStatement;
     FunctionDefinitionStatement.Parse = function (name, parser) {
         var variables = [];
         parser.NextToken();
@@ -14963,15 +14983,15 @@ var FunctionDefinitionStatement = FunctionDefinitionStatement_1 = (function (_su
             code += "{\n}\n";
         return code + "\n";
     };
+    var FunctionDefinitionStatement_1;
+    FunctionDefinitionStatement = FunctionDefinitionStatement_1 = __decorate([
+        StatementClass
+    ], FunctionDefinitionStatement);
     return FunctionDefinitionStatement;
 }(CodeStatement));
-FunctionDefinitionStatement = FunctionDefinitionStatement_1 = __decorate([
-    StatementClass
-], FunctionDefinitionStatement);
-var FunctionDefinitionStatement_1;
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['If'] = { help: "If the condition is matched the \"true\" code will be run, otherwise the \"false\" code will be.", params: [{ name: 'Condition', type: 'CodeStatement' }, { name: 'TrueStatement', type: 'CodeStatement' }, { name: 'FalseStatement', type: 'CodeStatement' }] };
-var IfStatement = IfStatement_1 = (function (_super) {
+var IfStatement = /** @class */ (function (_super) {
     __extends(IfStatement, _super);
     function IfStatement(condition, statement, elseStatement) {
         var _this = _super.call(this) || this;
@@ -14985,6 +15005,7 @@ var IfStatement = IfStatement_1 = (function (_super) {
             _this.FalseStatement = new BlockStatement([_this.FalseStatement]);
         return _this;
     }
+    IfStatement_1 = IfStatement;
     IfStatement.Parse = function (parser) {
         parser.NextToken();
         var condition = CodeStatement.Element(parser);
@@ -15037,16 +15058,16 @@ var IfStatement = IfStatement_1 = (function (_super) {
         }
         return code;
     };
+    var IfStatement_1;
+    IfStatement = IfStatement_1 = __decorate([
+        TopBlockStatementClass,
+        StatementClass
+    ], IfStatement);
     return IfStatement;
 }(CodeStatement));
-IfStatement = IfStatement_1 = __decorate([
-    TopBlockStatementClass,
-    StatementClass
-], IfStatement);
-var IfStatement_1;
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['Multiply'] = { help: "Returns the multiplication of A by B.", params: [{ name: 'AStatement', type: 'CodeStatement' }, { name: 'BStatement', type: 'CodeStatement' }] };
-var MultiplyStatement = (function (_super) {
+var MultiplyStatement = /** @class */ (function (_super) {
     __extends(MultiplyStatement, _super);
     function MultiplyStatement(statementA, statementB) {
         var _this = _super.call(this) || this;
@@ -15069,14 +15090,14 @@ var MultiplyStatement = (function (_super) {
     MultiplyStatement.prototype.ToCode = function (indent) {
         return this.AStatement.ToCode(0) + " * " + this.BStatement.ToCode(0);
     };
+    MultiplyStatement = __decorate([
+        StatementClass
+    ], MultiplyStatement);
     return MultiplyStatement;
 }(CodeStatement));
-MultiplyStatement = __decorate([
-    StatementClass
-], MultiplyStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['Not'] = { help: "If the statement is true returns false otherwise returns true.", params: [{ name: 'Statement', type: 'CodeStatement' }] };
-var NotStatement = (function (_super) {
+var NotStatement = /** @class */ (function (_super) {
     __extends(NotStatement, _super);
     function NotStatement(statement) {
         var _this = _super.call(this) || this;
@@ -15098,14 +15119,14 @@ var NotStatement = (function (_super) {
     NotStatement.prototype.ToCode = function (indent) {
         return "!" + this.Statement.ToCode(0);
     };
+    NotStatement = __decorate([
+        StatementClass
+    ], NotStatement);
     return NotStatement;
 }(CodeStatement));
-NotStatement = __decorate([
-    StatementClass
-], NotStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['Null'] = { help: "Returns an (empty) or (null) value.", params: [] };
-var NullStatement = (function (_super) {
+var NullStatement = /** @class */ (function (_super) {
     __extends(NullStatement, _super);
     function NullStatement() {
         var _this = _super.call(this) || this;
@@ -15123,14 +15144,14 @@ var NullStatement = (function (_super) {
     NullStatement.prototype.ToCode = function (indent) {
         return "null";
     };
+    NullStatement = __decorate([
+        StatementClass
+    ], NullStatement);
     return NullStatement;
 }(CodeStatement));
-NullStatement = __decorate([
-    StatementClass
-], NullStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['Number'] = { help: "Returns a number.", params: [{ name: 'Value', display: 'embed', type: 'VariableValue', valueType: 'number' }] };
-var NumberStatement = (function (_super) {
+var NumberStatement = /** @class */ (function (_super) {
     __extends(NumberStatement, _super);
     function NumberStatement(stringValue, startLine, startColumn) {
         var _this = _super.call(this) || this;
@@ -15153,14 +15174,14 @@ var NumberStatement = (function (_super) {
     NumberStatement.prototype.ToCode = function (indent) {
         return "" + this.Value.GetNumber();
     };
+    NumberStatement = __decorate([
+        StatementClass
+    ], NumberStatement);
     return NumberStatement;
 }(CodeStatement));
-NumberStatement = __decorate([
-    StatementClass
-], NumberStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['Or'] = { help: "Returns a boolean OR operation. If any of the two values is true returns true ortherwise returns false.", params: [{ name: 'AStatement', type: 'CodeStatement' }, { name: 'BStatement', type: 'CodeStatement' }] };
-var OrStatement = (function (_super) {
+var OrStatement = /** @class */ (function (_super) {
     __extends(OrStatement, _super);
     function OrStatement(statementA, statementB) {
         var _this = _super.call(this) || this;
@@ -15183,14 +15204,14 @@ var OrStatement = (function (_super) {
     OrStatement.prototype.ToCode = function (indent) {
         return this.AStatement.ToCode(0) + " || " + this.BStatement.ToCode(0);
     };
+    OrStatement = __decorate([
+        StatementClass
+    ], OrStatement);
     return OrStatement;
 }(CodeStatement));
-OrStatement = __decorate([
-    StatementClass
-], OrStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['Return'] = { help: "Exits the current function and pass an optional returning value.", params: [{ name: 'Statement', type: 'CodeStatement' }] };
-var ReturnStatement = (function (_super) {
+var ReturnStatement = /** @class */ (function (_super) {
     __extends(ReturnStatement, _super);
     function ReturnStatement(statement) {
         var _this = _super.call(this) || this;
@@ -15216,15 +15237,15 @@ var ReturnStatement = (function (_super) {
         else
             return "return";
     };
+    ReturnStatement = __decorate([
+        TopBlockStatementClass,
+        StatementClass
+    ], ReturnStatement);
     return ReturnStatement;
 }(CodeStatement));
-ReturnStatement = __decorate([
-    TopBlockStatementClass,
-    StatementClass
-], ReturnStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['String'] = { help: "Returns a constant string value.", params: [{ name: 'Value', display: 'embed', type: 'VariableValue' }] };
-var StringStatement = (function (_super) {
+var StringStatement = /** @class */ (function (_super) {
     __extends(StringStatement, _super);
     function StringStatement(value) {
         var _this = _super.call(this) || this;
@@ -15242,14 +15263,14 @@ var StringStatement = (function (_super) {
     StringStatement.prototype.ToCode = function (indent) {
         return "\"" + this.Value.GetString().replace(/"/g, "\\\"") + "\"";
     };
+    StringStatement = __decorate([
+        StatementClass
+    ], StringStatement);
     return StringStatement;
 }(CodeStatement));
-StringStatement = __decorate([
-    StatementClass
-], StringStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['Substract'] = { help: "Returns the substraction of A by B.", params: [{ name: 'AStatement', type: 'CodeStatement' }, { name: 'BStatement', type: 'CodeStatement' }] };
-var SubstractStatement = (function (_super) {
+var SubstractStatement = /** @class */ (function (_super) {
     __extends(SubstractStatement, _super);
     function SubstractStatement(statementA, statementB) {
         var _this = _super.call(this) || this;
@@ -15274,14 +15295,14 @@ var SubstractStatement = (function (_super) {
     SubstractStatement.prototype.ToCode = function (indent) {
         return this.AStatement.ToCode(0) + " - " + this.BStatement.ToCode(0);
     };
+    SubstractStatement = __decorate([
+        StatementClass
+    ], SubstractStatement);
     return SubstractStatement;
 }(CodeStatement));
-SubstractStatement = __decorate([
-    StatementClass
-], SubstractStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['Variable'] = { help: "Returns the value of the variable. A variable is like a box allowing you to store a number or a string inside.", params: [{ name: 'Name', display: 'embed' }] };
-var VariableStatement = (function (_super) {
+var VariableStatement = /** @class */ (function (_super) {
     __extends(VariableStatement, _super);
     function VariableStatement(name, line, column, index) {
         if (index === void 0) { index = null; }
@@ -15306,7 +15327,7 @@ var VariableStatement = (function (_super) {
         return true;
     };
     VariableStatement.prototype.Verify = function (env) {
-        if (this.Name == "stackresult")
+        if (this.Name == "stackresult") // Special variable
             return;
         if (env.HasVariable(this.Name) || this.Name.toLowerCase() == "null" || this.Name.toLocaleLowerCase() == "true" || this.Name.toLocaleLowerCase() == "false")
             //if (env.GetVariablePosition(this.name) != -1 || this.name.toLowerCase() == "null" || this.name.toLocaleLowerCase() == "true" || this.name.toLocaleLowerCase() == "false")        
@@ -15316,14 +15337,14 @@ var VariableStatement = (function (_super) {
     VariableStatement.prototype.ToCode = function (indent) {
         return this.Name + (this.index ? "[" + this.index.ToCode(0) + "]" : "");
     };
+    VariableStatement = __decorate([
+        StatementClass
+    ], VariableStatement);
     return VariableStatement;
 }(CodeStatement));
-VariableStatement = __decorate([
-    StatementClass
-], VariableStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['While'] = { help: "Repeat the code as long as the condition is matched may never run the code if the condition is not matched at the begining.", params: [{ name: 'Condition', type: 'CodeStatement' }, { name: 'BlockStatement', type: 'CodeStatement' }] };
-var WhileStatement = WhileStatement_1 = (function (_super) {
+var WhileStatement = /** @class */ (function (_super) {
     __extends(WhileStatement, _super);
     function WhileStatement(condition, blockStatement) {
         var _this = _super.call(this) || this;
@@ -15334,6 +15355,7 @@ var WhileStatement = WhileStatement_1 = (function (_super) {
             _this.BlockStatement = new BlockStatement([_this.BlockStatement]);
         return _this;
     }
+    WhileStatement_1 = WhileStatement;
     WhileStatement.Parse = function (parser) {
         if (parser.PeekToken().Type != "TokenOpenParenthesis")
             throw "Was expecting a ( at " + parser.PeekToken().Line + ":" + parser.PeekToken().Column;
@@ -15368,15 +15390,15 @@ var WhileStatement = WhileStatement_1 = (function (_super) {
     WhileStatement.prototype.ToCode = function (indent) {
         return "while(" + this.Condition.ToCode(0) + ") " + this.BlockStatement.ToCode(indent);
     };
+    var WhileStatement_1;
+    WhileStatement = WhileStatement_1 = __decorate([
+        TopBlockStatementClass,
+        StatementClass
+    ], WhileStatement);
     return WhileStatement;
 }(CodeStatement));
-WhileStatement = WhileStatement_1 = __decorate([
-    TopBlockStatementClass,
-    StatementClass
-], WhileStatement);
-var WhileStatement_1;
 /// <reference path="../CodeParser.ts" />
-var TokenAnd = (function (_super) {
+var TokenAnd = /** @class */ (function (_super) {
     __extends(TokenAnd, _super);
     function TokenAnd() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -15389,13 +15411,13 @@ var TokenAnd = (function (_super) {
         parser.SkipSpaces();
         return parser.NextChar() + parser.NextChar();
     };
+    TokenAnd = __decorate([
+        Token
+    ], TokenAnd);
     return TokenAnd;
 }(CodeToken));
-TokenAnd = __decorate([
-    Token
-], TokenAnd);
 /// <reference path="../CodeParser.ts" />
-var TokenAssign = (function (_super) {
+var TokenAssign = /** @class */ (function (_super) {
     __extends(TokenAssign, _super);
     function TokenAssign() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -15408,13 +15430,13 @@ var TokenAssign = (function (_super) {
         parser.SkipSpaces();
         return parser.NextChar();
     };
+    TokenAssign = __decorate([
+        Token
+    ], TokenAssign);
     return TokenAssign;
 }(CodeToken));
-TokenAssign = __decorate([
-    Token
-], TokenAssign);
 /// <reference path="../CodeParser.ts" />
-var TokenCloseParenthesis = (function (_super) {
+var TokenCloseParenthesis = /** @class */ (function (_super) {
     __extends(TokenCloseParenthesis, _super);
     function TokenCloseParenthesis() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -15427,13 +15449,13 @@ var TokenCloseParenthesis = (function (_super) {
         parser.SkipSpaces();
         return parser.NextChar();
     };
+    TokenCloseParenthesis = __decorate([
+        Token
+    ], TokenCloseParenthesis);
     return TokenCloseParenthesis;
 }(CodeToken));
-TokenCloseParenthesis = __decorate([
-    Token
-], TokenCloseParenthesis);
 /// <reference path="../CodeParser.ts" />
-var TokenCloseSquareBracket = (function (_super) {
+var TokenCloseSquareBracket = /** @class */ (function (_super) {
     __extends(TokenCloseSquareBracket, _super);
     function TokenCloseSquareBracket() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -15446,13 +15468,13 @@ var TokenCloseSquareBracket = (function (_super) {
         parser.SkipSpaces();
         return parser.NextChar();
     };
+    TokenCloseSquareBracket = __decorate([
+        Token
+    ], TokenCloseSquareBracket);
     return TokenCloseSquareBracket;
 }(CodeToken));
-TokenCloseSquareBracket = __decorate([
-    Token
-], TokenCloseSquareBracket);
 /// <reference path="../CodeParser.ts" />
-var TokenCodeVariable = (function (_super) {
+var TokenCodeVariable = /** @class */ (function (_super) {
     __extends(TokenCodeVariable, _super);
     function TokenCodeVariable() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -15472,14 +15494,14 @@ var TokenCodeVariable = (function (_super) {
         return extracted.substr(1, extracted.length - 2);
     };
     ;
+    TokenCodeVariable = __decorate([
+        Token
+    ], TokenCodeVariable);
     return TokenCodeVariable;
 }(CodeToken));
-TokenCodeVariable = __decorate([
-    Token
-], TokenCodeVariable);
 /// <reference path="../CodeToken.ts" />
 /// <reference path="../CodeParser.ts" />
-var TokenComment = (function (_super) {
+var TokenComment = /** @class */ (function (_super) {
     __extends(TokenComment, _super);
     function TokenComment() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -15516,13 +15538,13 @@ var TokenComment = (function (_super) {
         }
         return extracted;
     };
+    TokenComment = __decorate([
+        Token
+    ], TokenComment);
     return TokenComment;
 }(CodeToken));
-TokenComment = __decorate([
-    Token
-], TokenComment);
 /// <reference path="../CodeParser.ts" />
-var TokenCompare = (function (_super) {
+var TokenCompare = /** @class */ (function (_super) {
     __extends(TokenCompare, _super);
     function TokenCompare() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -15540,13 +15562,13 @@ var TokenCompare = (function (_super) {
             return parser.NextChar();
         return parser.NextChar() + parser.NextChar();
     };
+    TokenCompare = __decorate([
+        Token
+    ], TokenCompare);
     return TokenCompare;
 }(CodeToken));
-TokenCompare = __decorate([
-    Token
-], TokenCompare);
 /// <reference path="../CodeParser.ts" />
-var TokenDecrement = (function (_super) {
+var TokenDecrement = /** @class */ (function (_super) {
     __extends(TokenDecrement, _super);
     function TokenDecrement() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -15559,13 +15581,13 @@ var TokenDecrement = (function (_super) {
         parser.SkipSpaces();
         return parser.NextChar() + parser.NextChar();
     };
+    TokenDecrement = __decorate([
+        Token
+    ], TokenDecrement);
     return TokenDecrement;
 }(CodeToken));
-TokenDecrement = __decorate([
-    Token
-], TokenDecrement);
 /// <reference path="../CodeParser.ts" />
-var TokenDot = (function (_super) {
+var TokenDot = /** @class */ (function (_super) {
     __extends(TokenDot, _super);
     function TokenDot() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -15580,13 +15602,13 @@ var TokenDot = (function (_super) {
         parser.SkipSpaces();
         return parser.NextChar();
     };
+    TokenDot = __decorate([
+        Token
+    ], TokenDot);
     return TokenDot;
 }(CodeToken));
-TokenDot = __decorate([
-    Token
-], TokenDot);
 /// <reference path="../CodeParser.ts" />
-var TokenEndBlock = (function (_super) {
+var TokenEndBlock = /** @class */ (function (_super) {
     __extends(TokenEndBlock, _super);
     function TokenEndBlock() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -15599,13 +15621,13 @@ var TokenEndBlock = (function (_super) {
         parser.SkipSpaces();
         return parser.NextChar();
     };
+    TokenEndBlock = __decorate([
+        Token
+    ], TokenEndBlock);
     return TokenEndBlock;
 }(CodeToken));
-TokenEndBlock = __decorate([
-    Token
-], TokenEndBlock);
 /// <reference path="../CodeParser.ts" />
-var TokenEndLine = (function (_super) {
+var TokenEndLine = /** @class */ (function (_super) {
     __extends(TokenEndLine, _super);
     function TokenEndLine() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -15618,13 +15640,13 @@ var TokenEndLine = (function (_super) {
         parser.SkipSpaces();
         return parser.NextChar();
     };
+    TokenEndLine = __decorate([
+        Token
+    ], TokenEndLine);
     return TokenEndLine;
 }(CodeToken));
-TokenEndLine = __decorate([
-    Token
-], TokenEndLine);
 /// <reference path="../CodeParser.ts" />
-var TokenIncrement = (function (_super) {
+var TokenIncrement = /** @class */ (function (_super) {
     __extends(TokenIncrement, _super);
     function TokenIncrement() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -15637,13 +15659,13 @@ var TokenIncrement = (function (_super) {
         parser.SkipSpaces();
         return parser.NextChar() + parser.NextChar();
     };
+    TokenIncrement = __decorate([
+        Token
+    ], TokenIncrement);
     return TokenIncrement;
 }(CodeToken));
-TokenIncrement = __decorate([
-    Token
-], TokenIncrement);
 /// <reference path="../CodeParser.ts" />
-var TokenName = (function (_super) {
+var TokenName = /** @class */ (function (_super) {
     __extends(TokenName, _super);
     function TokenName() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -15667,13 +15689,13 @@ var TokenName = (function (_super) {
         }
         return extracted;
     };
+    TokenName = __decorate([
+        Token
+    ], TokenName);
     return TokenName;
 }(CodeToken));
-TokenName = __decorate([
-    Token
-], TokenName);
 /// <reference path="../CodeParser.ts" />
-var TokenNot = (function (_super) {
+var TokenNot = /** @class */ (function (_super) {
     __extends(TokenNot, _super);
     function TokenNot() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -15686,13 +15708,13 @@ var TokenNot = (function (_super) {
         parser.SkipSpaces();
         return parser.NextChar();
     };
+    TokenNot = __decorate([
+        Token
+    ], TokenNot);
     return TokenNot;
 }(CodeToken));
-TokenNot = __decorate([
-    Token
-], TokenNot);
 /// <reference path="../CodeParser.ts" />
-var TokenNumber = (function (_super) {
+var TokenNumber = /** @class */ (function (_super) {
     __extends(TokenNumber, _super);
     function TokenNumber() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -15715,13 +15737,13 @@ var TokenNumber = (function (_super) {
         }
         return extracted;
     };
+    TokenNumber = __decorate([
+        Token
+    ], TokenNumber);
     return TokenNumber;
 }(CodeToken));
-TokenNumber = __decorate([
-    Token
-], TokenNumber);
 /// <reference path="../CodeParser.ts" />
-var TokenOpenParenthesis = (function (_super) {
+var TokenOpenParenthesis = /** @class */ (function (_super) {
     __extends(TokenOpenParenthesis, _super);
     function TokenOpenParenthesis() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -15734,13 +15756,13 @@ var TokenOpenParenthesis = (function (_super) {
         parser.SkipSpaces();
         return parser.NextChar();
     };
+    TokenOpenParenthesis = __decorate([
+        Token
+    ], TokenOpenParenthesis);
     return TokenOpenParenthesis;
 }(CodeToken));
-TokenOpenParenthesis = __decorate([
-    Token
-], TokenOpenParenthesis);
 /// <reference path="../CodeParser.ts" />
-var TokenOpenSquareBracket = (function (_super) {
+var TokenOpenSquareBracket = /** @class */ (function (_super) {
     __extends(TokenOpenSquareBracket, _super);
     function TokenOpenSquareBracket() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -15753,13 +15775,13 @@ var TokenOpenSquareBracket = (function (_super) {
         parser.SkipSpaces();
         return parser.NextChar();
     };
+    TokenOpenSquareBracket = __decorate([
+        Token
+    ], TokenOpenSquareBracket);
     return TokenOpenSquareBracket;
 }(CodeToken));
-TokenOpenSquareBracket = __decorate([
-    Token
-], TokenOpenSquareBracket);
 /// <reference path="../CodeParser.ts" />
-var TokenOperator = (function (_super) {
+var TokenOperator = /** @class */ (function (_super) {
     __extends(TokenOperator, _super);
     function TokenOperator() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -15774,13 +15796,13 @@ var TokenOperator = (function (_super) {
         parser.SkipSpaces();
         return parser.NextChar();
     };
+    TokenOperator = __decorate([
+        Token
+    ], TokenOperator);
     return TokenOperator;
 }(CodeToken));
-TokenOperator = __decorate([
-    Token
-], TokenOperator);
 /// <reference path="../CodeParser.ts" />
-var TokenOperatorAssign = (function (_super) {
+var TokenOperatorAssign = /** @class */ (function (_super) {
     __extends(TokenOperatorAssign, _super);
     function TokenOperatorAssign() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -15795,13 +15817,13 @@ var TokenOperatorAssign = (function (_super) {
         parser.SkipSpaces();
         return parser.NextChar() + parser.NextChar();
     };
+    TokenOperatorAssign = __decorate([
+        Token
+    ], TokenOperatorAssign);
     return TokenOperatorAssign;
 }(CodeToken));
-TokenOperatorAssign = __decorate([
-    Token
-], TokenOperatorAssign);
 /// <reference path="../CodeParser.ts" />
-var TokenOr = (function (_super) {
+var TokenOr = /** @class */ (function (_super) {
     __extends(TokenOr, _super);
     function TokenOr() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -15814,13 +15836,13 @@ var TokenOr = (function (_super) {
         parser.SkipSpaces();
         return parser.NextChar() + parser.NextChar();
     };
+    TokenOr = __decorate([
+        Token
+    ], TokenOr);
     return TokenOr;
 }(CodeToken));
-TokenOr = __decorate([
-    Token
-], TokenOr);
 /// <reference path="../CodeParser.ts" />
-var TokenSplitParameter = (function (_super) {
+var TokenSplitParameter = /** @class */ (function (_super) {
     __extends(TokenSplitParameter, _super);
     function TokenSplitParameter() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -15833,13 +15855,13 @@ var TokenSplitParameter = (function (_super) {
         parser.SkipSpaces();
         return parser.NextChar();
     };
+    TokenSplitParameter = __decorate([
+        Token
+    ], TokenSplitParameter);
     return TokenSplitParameter;
 }(CodeToken));
-TokenSplitParameter = __decorate([
-    Token
-], TokenSplitParameter);
 /// <reference path="../CodeParser.ts" />
-var TokenStartBlock = (function (_super) {
+var TokenStartBlock = /** @class */ (function (_super) {
     __extends(TokenStartBlock, _super);
     function TokenStartBlock() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -15852,13 +15874,13 @@ var TokenStartBlock = (function (_super) {
         parser.SkipSpaces();
         return parser.NextChar();
     };
+    TokenStartBlock = __decorate([
+        Token
+    ], TokenStartBlock);
     return TokenStartBlock;
 }(CodeToken));
-TokenStartBlock = __decorate([
-    Token
-], TokenStartBlock);
 /// <reference path="../CodeParser.ts" />
-var TokenString = (function (_super) {
+var TokenString = /** @class */ (function (_super) {
     __extends(TokenString, _super);
     function TokenString() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -15878,11 +15900,11 @@ var TokenString = (function (_super) {
         return extracted.substr(1, extracted.length - 2);
     };
     ;
+    TokenString = __decorate([
+        Token
+    ], TokenString);
     return TokenString;
 }(CodeToken));
-TokenString = __decorate([
-    Token
-], TokenString);
 ///<reference path="../TilesetInformation.ts" />
 defaultTilesets['tileset2'] = {
     "background": { "file": "/art/tileset2/background.png?v=2", "height": 32, "width": 32, "types": { "grass": [43, 61], "dark_grass": [51], "water": [7], "sand": [25, 33], "empty": [115], "dirt": [64] }, "mainType": "grass", "nbColumns": 6, "nonWalkable": [7, 0, 1, 2, 8, 14, 13, 12, 6, 3, 9, 4, 5, 11, 17, 35, 53, 69, 83, 101, 107, 106, 125, 112, 118, 124, 123, 143, 142, 141, 117, 111, 110, 116, 122, 121, 115, 109, 108, 114, 120, 119, 113, 15], "lastTile": 144, "paths": { "grass_path": [126, 139, 140, 133, 134, 131, 132, 129, 130, 127, 128, 135, 136, 137, 138] }, "transitions": [{ "from": "water", "to": "grass", "size": 12, "transition": [5, 3, 11, 9, 14, 12, 2, 0, 13, 8, 6, 1] }, { "from": "grass", "to": "sand", "size": 12, "transition": [18, 20, 30, 32, 27, 29, 21, 23, 19, 24, 26, 31] }, { "from": "dark_grass", "to": "grass", "size": 12, "transition": [36, 38, 48, 50, 45, 47, 39, 41, 37, 42, 44, 49] }, { "from": "grass", "to": "grass", "size": 12, "transition": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] }, { "from": "grass", "to": "dirt", "size": 12, "transition": [59, 57, 65, 63, 68, 66, 56, 54, 67, 62, 60, 55] }, { "from": "empty", "to": "dirt", "size": 12, "transition": [113, 111, 119, 117, 122, 120, 110, 108, 121, 116, 114, 109] }] },
@@ -16253,7 +16275,7 @@ defaultTilesets['tileset2'] = {
         }
     }
 };
-var mapEditor = new ((function () {
+var mapEditor = new (/** @class */ (function () {
     function class_16() {
         this.currentCellTile = 0;
         this.currentCellType = "water";
@@ -16278,7 +16300,7 @@ var mapEditor = new ((function () {
     }
     return class_16;
 }()));
-var zoneEditor = new ((function () {
+var zoneEditor = new (/** @class */ (function () {
     function class_17() {
         this.selectedZone = null;
         this.selector = null;
@@ -16289,7 +16311,7 @@ var zoneEditor = new ((function () {
     }
     return class_17;
 }()));
-var chat = new ((function () {
+var chat = new (/** @class */ (function () {
     function class_18() {
         this.intervalCounter = 0;
         this.chatNewMessage = false;
@@ -16304,7 +16326,7 @@ var chat = new ((function () {
     }
     return class_18;
 }()));
-var Chat = (function () {
+var Chat = /** @class */ (function () {
     function Chat() {
     }
     Chat.AdditionalCSS = function () {
@@ -16651,7 +16673,8 @@ var Chat = (function () {
         return str.replace(/(^|\s|\>)(http[s]{0,1}:\/\/[a-zA-Z0-9\/\-\+:\.\?=_\&\#\;\%\,~]{1,30})([a-zA-Z0-9\/\-\+:\.\?=_\&\#\;\%\,~]*)/g, "$1[<A HREF='$2$3' TARGET='_BLANK'>$2 ...</A>]");
     };
     Chat.Smilies = function (str) {
-        if (!chat.smiliesDb) {
+        if (!chat.smiliesDb) // Build the db
+         {
             chat.smiliesDb = [];
             for (var i = 0; i < chat.smilies_txt.length; i++) {
                 for (var j = 0; j < chat.smilies_txt[i].length; j++) {
@@ -16744,7 +16767,7 @@ var Chat = (function () {
     };
     return Chat;
 }());
-var codeEditor = new ((function () {
+var codeEditor = new (/** @class */ (function () {
     function class_19() {
         this.hideHelpTimer = null;
         this.currentEditor = null;
@@ -16755,7 +16778,7 @@ var codeEditor = new ((function () {
     }
     return class_19;
 }()));
-var CodeEditor = (function () {
+var CodeEditor = /** @class */ (function () {
     function CodeEditor() {
     }
     CodeEditor.Create = function (element) {
@@ -16984,11 +17007,11 @@ var CodeEditor = (function () {
     };
     return CodeEditor;
 }());
-var CodeGraphEditor = (function () {
+var CodeGraphEditor = /** @class */ (function () {
     function CodeGraphEditor(element, isGenericCode, tab) {
+        var _this = this;
         if (isGenericCode === void 0) { isGenericCode = false; }
         if (tab === void 0) { tab = null; }
-        var _this = this;
         this.expandedBlocks = [];
         this.OnChange = null;
         this.inUpdate = false;
@@ -17054,6 +17077,7 @@ var CodeGraphEditor = (function () {
                 _this.FromNodeToCode();
                 _this.RenderNodes();
             }
+            // Try to add at the bottom
             else {
                 _this.DropOnEmpty(evt);
             }
@@ -17605,13 +17629,13 @@ var CodeGraphEditor = (function () {
     };
     return CodeGraphEditor;
 }());
-var inventoryMenu = new ((function () {
+var inventoryMenu = new (/** @class */ (function () {
     function class_20() {
         this.inventoryDisplayed = false;
     }
     return class_20;
 }()));
-var InventoryMenu = (function () {
+var InventoryMenu = /** @class */ (function () {
     function InventoryMenu() {
     }
     InventoryMenu.AdditionalCSS = function () {
@@ -17831,13 +17855,13 @@ var InventoryMenu = (function () {
     };
     return InventoryMenu;
 }());
-var journalMenu = new ((function () {
+var journalMenu = new (/** @class */ (function () {
     function class_21() {
         this.journalDisplayed = false;
     }
     return class_21;
 }()));
-var JournalMenu = (function () {
+var JournalMenu = /** @class */ (function () {
     function JournalMenu() {
     }
     JournalMenu.AdditionalCSS = function () {
@@ -18040,7 +18064,7 @@ $.ajax = function (settings) {
         http.send(null);
     return http;
 };
-var MiniQuery = (function () {
+var MiniQuery = /** @class */ (function () {
     function MiniQuery(elements) {
         this.parentMiniQuery = null;
         this.elements = elements;
@@ -18321,14 +18345,14 @@ var MiniQuery = (function () {
     return MiniQuery;
 }());
 /// <reference path="../../Common/Libs/MiniQuery.ts"/>
-var Routing = (function () {
+var Routing = /** @class */ (function () {
     function Routing(action, callback) {
         this.Action = action;
         this.Callback = callback;
     }
     return Routing;
 }());
-var GuiPart = (function () {
+var GuiPart = /** @class */ (function () {
     function GuiPart(position, callback) {
         this.Position = position;
         this.Callback = callback;
@@ -18397,7 +18421,7 @@ function IfIsNull(value, defaultValue) {
  * https://github.com/Microsoft/TypeScript/issues/5549
  *
  */
-var framework = new ((function () {
+var framework = new (/** @class */ (function () {
     function class_22() {
         this.DefaultModule = "Play";
         this.Routing = [];
@@ -18432,7 +18456,7 @@ var framework = new ((function () {
  * an <script id="XXX" type="text/html"> tag in the index.html where XXX is the name of the typescript class.
  *
  */
-var Framework = (function () {
+var Framework = /** @class */ (function () {
     function Framework() {
     }
     /**
@@ -18922,13 +18946,13 @@ var Framework = (function () {
     return Framework;
 }());
 /// <reference path="../../../Common/Libs/Framework.ts" />
-var listSelector = new ((function () {
+var listSelector = new (/** @class */ (function () {
     function class_23() {
         this.CurrentSelectors = {};
     }
     return class_23;
 }()));
-var ListSelector = (function () {
+var ListSelector = /** @class */ (function () {
     /**
      * Creates a selection list (sorted) with search box.
      * @param HTML element id to put the list on (should be a div)
@@ -19035,6 +19059,7 @@ var ListSelector = (function () {
         $("#display_list_selector_" + this.element + " tr").removeClass("listSelectorSelectedRow");
         if (this.displayColumn)
             $("#display_list_selector_" + this.element + "_" + row).addClass("listSelectorSelectedRow");
+        //$("#display_list_selector_" + this.element + " tr:nth-child(" + (row + 1) + ")").addClass("listSelectorSelectedRow");
         else if (row !== null)
             $("#display_list_selector_" + this.element + "_" + row.id()).addClass("listSelectorSelectedRow");
         if (this.OnSelect)
@@ -19042,17 +19067,188 @@ var ListSelector = (function () {
     };
     return ListSelector;
 }());
-var messageMenu = new ((function () {
+/// <reference path="../../../Common/Libs/MiniQuery.ts"/>
+/// <reference path="../../../Common/Libs/Framework.ts"/>
+var MenuItem = /** @class */ (function () {
+    function MenuItem(label, link) {
+        this.Label = label;
+        this.Link = link;
+    }
+    return MenuItem;
+}());
+var menubarStatic = new (/** @class */ (function () {
     function class_24() {
+        this.previousItem = null;
+        this.KnownItems = [];
+        this.hoverHideTimer = null;
+    }
+    return class_24;
+}()));
+var Menubar = /** @class */ (function () {
+    function Menubar() {
+    }
+    Menubar.InitFunction = function () {
+        var menu = document.getElementById("menubar");
+        if (!menu)
+            return;
+        /*var pos = 5;
+        for (var i = 0; i < menu.children.length; i++)
+        {
+            var item: HTMLElement = <HTMLElement>menu.children[i];
+            item.style.left = pos + "px";
+            pos += $(item).width();
+        }*/
+        $("#menubar a").bind("dragstart", function () { return false; }).bind("drop", function () { return false; });
+        $("#hideMenu").mouseover(Menubar.HoverHideMenus).mouseout(Menubar.StopHoverHideMenus);
+        $("#searchPanel").mouseover(Menubar.HoverHideMenus);
+        for (var i = 0; i < menu.children.length; i++) {
+            var item = menu.children[i];
+            if (item.children.length > 0) {
+                item.onmouseover = function () {
+                    var currentSubmenu = item.children[0];
+                    return function () {
+                        if (menubarStatic.previousItem == currentSubmenu.textContent)
+                            return;
+                        Menubar.HideMenus();
+                        menubarStatic.previousItem = currentSubmenu.textContent;
+                        $("#hideMenu").show();
+                        $(currentSubmenu).show();
+                    };
+                }();
+                Menubar.HookSubmenu(item.children[0]);
+            }
+            else
+                item.onmouseover = Menubar.HideMenus;
+        }
+        Menubar.ExtractItems();
+    };
+    Menubar.ExtractItems = function (menuItem) {
+        if (menuItem === void 0) { menuItem = null; }
+        if (!menuItem) {
+            menubarStatic.KnownItems = [];
+            menuItem = document.getElementById("menubar");
+        }
+        for (var i = 0; i < menuItem.children.length; i++) {
+            var item = menuItem.children[i];
+            if (item.children.length > 0) {
+                //if($(item).is(":visible"))
+                if (item.style.display !== "none")
+                    Menubar.ExtractItems(item.children[0]);
+            }
+            else if (item.style.display !== "none") {
+                var n = new MenuItem((item.attributes["label"] ? item.attributes["label"].textContent : item.textContent), (item.attributes["href"] ? item.attributes["href"].textContent : ""));
+                if (item.onclick && (!n.Link || n.Link == "" || n.Link == "#"))
+                    n.Link = item.onclick;
+                menubarStatic.KnownItems.push(n);
+            }
+            if (item.tagName.toLowerCase() == "a") {
+                $(item).bind("click", function () {
+                    $("#hideMenu").hide();
+                    Menubar.HideMenus();
+                });
+            }
+        }
+    };
+    Menubar.HookSubmenu = function (menuItem) {
+        for (var i = 0; i < menuItem.children.length; i++) {
+            var item = menuItem.children[i];
+            if (item.children.length > 0) {
+                item.onmouseover = function () {
+                    var child = item.children[0];
+                    $(child).addClass("childMenuBar");
+                    return function (e) {
+                        $("#menubar .childMenuBar").hide();
+                        $(child).show();
+                        e.stopPropagation();
+                    };
+                }();
+            }
+            else
+                item.onmouseover = function () {
+                    $("#menubar .childMenuBar").hide();
+                };
+        }
+    };
+    Menubar.HideMenus = function () {
+        menubarStatic.previousItem = null;
+        menubarStatic.hoverHideTimer = null;
+        $("#hideMenu").hide();
+        $("#menubar > div > div").hide();
+        $("#menubar .childMenuBar").hide();
+    };
+    Menubar.HoverHideMenus = function () {
+        if (menubarStatic.hoverHideTimer)
+            clearTimeout(menubarStatic.hoverHideTimer);
+        menubarStatic.hoverHideTimer = setTimeout(Menubar.HideMenus, 500);
+    };
+    Menubar.StopHoverHideMenus = function () {
+        if (menubarStatic.hoverHideTimer)
+            clearTimeout(menubarStatic.hoverHideTimer);
+        menubarStatic.hoverHideTimer = null;
+    };
+    /**
+     * Allows to disable a menu entry
+     * @param menuPath searched path in the form Main>Child>SubChild
+     */
+    Menubar.DisableMenu = function (menuPath, menuSection, currentPath) {
+        if (menuSection === void 0) { menuSection = null; }
+        if (currentPath === void 0) { currentPath = ""; }
+        if (!menuSection)
+            menuSection = document.getElementById("menubar");
+        for (var i = 0; i < menuSection.children.length; i++) {
+            var t = menuSection.children[i].textContent.trim();
+            var p = currentPath + t.split('\n')[0];
+            if (p == menuPath) {
+                $(menuSection.children[i]).hide();
+                Menubar.ExtractItems();
+                return true;
+            }
+            else if (menuSection.children[i].children.length > 0) {
+                var r = Menubar.DisableMenu(menuPath, menuSection.children[i].children[0], p + ">");
+                if (r == true)
+                    return true;
+            }
+        }
+        return false;
+    };
+    /**
+     * Allows to enable a menu entry
+     * @param menuPath searched path in the form Main>Child>SubChild
+     */
+    Menubar.EnableMenu = function (menuPath, menuSection, currentPath) {
+        if (menuSection === void 0) { menuSection = null; }
+        if (currentPath === void 0) { currentPath = ""; }
+        if (!menuSection)
+            menuSection = document.getElementById("menubar");
+        for (var i = 0; i < menuSection.children.length; i++) {
+            var t = menuSection.children[i].textContent.trim();
+            var p = currentPath + t.split('\n')[0];
+            if (p == menuPath) {
+                $(menuSection.children[i]).show();
+                Menubar.ExtractItems();
+                return true;
+            }
+            else if (menuSection.children[i].children.length > 0) {
+                var r = Menubar.EnableMenu(menuPath, menuSection.children[i].children[0], p + ">");
+                if (r == true)
+                    return true;
+            }
+        }
+        return false;
+    };
+    return Menubar;
+}());
+var messageMenu = new (/** @class */ (function () {
+    function class_25() {
         this.messageDisplayed = false;
         this.firstInit = true;
         this.selectedMessage = null;
         this.nonRead = 0;
         this.attachments = null;
     }
-    return class_24;
+    return class_25;
 }()));
-var MessageMenu = (function () {
+var MessageMenu = /** @class */ (function () {
     function MessageMenu() {
     }
     MessageMenu.AdditionalCSS = function () {
@@ -19454,184 +19650,13 @@ var MessageMenu = (function () {
     };
     return MessageMenu;
 }());
-/// <reference path="../../../Common/Libs/MiniQuery.ts"/>
-/// <reference path="../../../Common/Libs/Framework.ts"/>
-var MenuItem = (function () {
-    function MenuItem(label, link) {
-        this.Label = label;
-        this.Link = link;
-    }
-    return MenuItem;
-}());
-var menubarStatic = new ((function () {
-    function class_25() {
-        this.previousItem = null;
-        this.KnownItems = [];
-        this.hoverHideTimer = null;
-    }
-    return class_25;
-}()));
-var Menubar = (function () {
-    function Menubar() {
-    }
-    Menubar.InitFunction = function () {
-        var menu = document.getElementById("menubar");
-        if (!menu)
-            return;
-        /*var pos = 5;
-        for (var i = 0; i < menu.children.length; i++)
-        {
-            var item: HTMLElement = <HTMLElement>menu.children[i];
-            item.style.left = pos + "px";
-            pos += $(item).width();
-        }*/
-        $("#menubar a").bind("dragstart", function () { return false; }).bind("drop", function () { return false; });
-        $("#hideMenu").mouseover(Menubar.HoverHideMenus).mouseout(Menubar.StopHoverHideMenus);
-        $("#searchPanel").mouseover(Menubar.HoverHideMenus);
-        for (var i = 0; i < menu.children.length; i++) {
-            var item = menu.children[i];
-            if (item.children.length > 0) {
-                item.onmouseover = function () {
-                    var currentSubmenu = item.children[0];
-                    return function () {
-                        if (menubarStatic.previousItem == currentSubmenu.textContent)
-                            return;
-                        Menubar.HideMenus();
-                        menubarStatic.previousItem = currentSubmenu.textContent;
-                        $("#hideMenu").show();
-                        $(currentSubmenu).show();
-                    };
-                }();
-                Menubar.HookSubmenu(item.children[0]);
-            }
-            else
-                item.onmouseover = Menubar.HideMenus;
-        }
-        Menubar.ExtractItems();
-    };
-    Menubar.ExtractItems = function (menuItem) {
-        if (menuItem === void 0) { menuItem = null; }
-        if (!menuItem) {
-            menubarStatic.KnownItems = [];
-            menuItem = document.getElementById("menubar");
-        }
-        for (var i = 0; i < menuItem.children.length; i++) {
-            var item = menuItem.children[i];
-            if (item.children.length > 0) {
-                //if($(item).is(":visible"))
-                if (item.style.display !== "none")
-                    Menubar.ExtractItems(item.children[0]);
-            }
-            else if (item.style.display !== "none") {
-                var n = new MenuItem((item.attributes["label"] ? item.attributes["label"].textContent : item.textContent), (item.attributes["href"] ? item.attributes["href"].textContent : ""));
-                if (item.onclick && (!n.Link || n.Link == "" || n.Link == "#"))
-                    n.Link = item.onclick;
-                menubarStatic.KnownItems.push(n);
-            }
-            if (item.tagName.toLowerCase() == "a") {
-                $(item).bind("click", function () {
-                    $("#hideMenu").hide();
-                    Menubar.HideMenus();
-                });
-            }
-        }
-    };
-    Menubar.HookSubmenu = function (menuItem) {
-        for (var i = 0; i < menuItem.children.length; i++) {
-            var item = menuItem.children[i];
-            if (item.children.length > 0) {
-                item.onmouseover = function () {
-                    var child = item.children[0];
-                    $(child).addClass("childMenuBar");
-                    return function (e) {
-                        $("#menubar .childMenuBar").hide();
-                        $(child).show();
-                        e.stopPropagation();
-                    };
-                }();
-            }
-            else
-                item.onmouseover = function () {
-                    $("#menubar .childMenuBar").hide();
-                };
-        }
-    };
-    Menubar.HideMenus = function () {
-        menubarStatic.previousItem = null;
-        menubarStatic.hoverHideTimer = null;
-        $("#hideMenu").hide();
-        $("#menubar > div > div").hide();
-        $("#menubar .childMenuBar").hide();
-    };
-    Menubar.HoverHideMenus = function () {
-        if (menubarStatic.hoverHideTimer)
-            clearTimeout(menubarStatic.hoverHideTimer);
-        menubarStatic.hoverHideTimer = setTimeout(Menubar.HideMenus, 500);
-    };
-    Menubar.StopHoverHideMenus = function () {
-        if (menubarStatic.hoverHideTimer)
-            clearTimeout(menubarStatic.hoverHideTimer);
-        menubarStatic.hoverHideTimer = null;
-    };
-    /**
-     * Allows to disable a menu entry
-     * @param menuPath searched path in the form Main>Child>SubChild
-     */
-    Menubar.DisableMenu = function (menuPath, menuSection, currentPath) {
-        if (menuSection === void 0) { menuSection = null; }
-        if (currentPath === void 0) { currentPath = ""; }
-        if (!menuSection)
-            menuSection = document.getElementById("menubar");
-        for (var i = 0; i < menuSection.children.length; i++) {
-            var t = menuSection.children[i].textContent.trim();
-            var p = currentPath + t.split('\n')[0];
-            if (p == menuPath) {
-                $(menuSection.children[i]).hide();
-                Menubar.ExtractItems();
-                return true;
-            }
-            else if (menuSection.children[i].children.length > 0) {
-                var r = Menubar.DisableMenu(menuPath, menuSection.children[i].children[0], p + ">");
-                if (r == true)
-                    return true;
-            }
-        }
-        return false;
-    };
-    /**
-     * Allows to enable a menu entry
-     * @param menuPath searched path in the form Main>Child>SubChild
-     */
-    Menubar.EnableMenu = function (menuPath, menuSection, currentPath) {
-        if (menuSection === void 0) { menuSection = null; }
-        if (currentPath === void 0) { currentPath = ""; }
-        if (!menuSection)
-            menuSection = document.getElementById("menubar");
-        for (var i = 0; i < menuSection.children.length; i++) {
-            var t = menuSection.children[i].textContent.trim();
-            var p = currentPath + t.split('\n')[0];
-            if (p == menuPath) {
-                $(menuSection.children[i]).show();
-                Menubar.ExtractItems();
-                return true;
-            }
-            else if (menuSection.children[i].children.length > 0) {
-                var r = Menubar.EnableMenu(menuPath, menuSection.children[i].children[0], p + ">");
-                if (r == true)
-                    return true;
-            }
-        }
-        return false;
-    };
-    return Menubar;
-}());
-var profileMenu = new ((function () {
+var profileMenu = new (/** @class */ (function () {
     function class_26() {
         this.profileDisplayed = false;
     }
     return class_26;
 }()));
-var ProfileMenu = (function () {
+var ProfileMenu = /** @class */ (function () {
     function ProfileMenu() {
     }
     ProfileMenu.AdditionalCSS = function () {
@@ -19828,7 +19853,7 @@ var ProfileMenu = (function () {
     };
     return ProfileMenu;
 }());
-var PublicViewPlayer = (function () {
+var PublicViewPlayer = /** @class */ (function () {
     function PublicViewPlayer() {
     }
     PublicViewPlayer.Show = function (name) {
@@ -19903,13 +19928,13 @@ var PublicViewPlayer = (function () {
     };
     return PublicViewPlayer;
 }());
-var searchPanel = new ((function () {
+var searchPanel = new (/** @class */ (function () {
     function class_27() {
         this.links = [];
     }
     return class_27;
 }()));
-var SearchPanel = (function () {
+var SearchPanel = /** @class */ (function () {
     function SearchPanel() {
     }
     SearchPanel.InitFunction = function () {
@@ -20022,14 +20047,14 @@ var SearchPanel = (function () {
     };
     return SearchPanel;
 }());
-var skillBar = new ((function () {
+var skillBar = new (/** @class */ (function () {
     function class_28() {
         this.SkillIcons = {};
         this.lastCheckInventory = 0;
     }
     return class_28;
 }()));
-var SkillBar = (function () {
+var SkillBar = /** @class */ (function () {
     function SkillBar() {
     }
     SkillBar.Render = function () {
@@ -20197,7 +20222,7 @@ var SkillBar = (function () {
     };
     return SkillBar;
 }());
-var ColorHandling = (function () {
+var ColorHandling = /** @class */ (function () {
     function ColorHandling() {
     }
     ColorHandling.RgbToHex = function (r, g, b) {
@@ -20231,7 +20256,7 @@ var ColorHandling = (function () {
                 return { Red: p, Green: q, Blue: v };
             case 4:
                 return { Red: t, Green: p, Blue: v };
-            default:
+            default: // case 5:
                 return { Red: v, Green: p, Blue: q };
         }
     };
@@ -20278,7 +20303,7 @@ var ColorHandling = (function () {
  * You can pass in a random number generator object if you like.
  * It is assumed to have a random() method.
  */
-var Perlin = (function () {
+var Perlin = /** @class */ (function () {
     function Perlin(rnd) {
         this.dot = function (g, x, y) {
             return g[0] * x + g[1] * y;
@@ -20507,7 +20532,7 @@ var Perlin = (function () {
 /**
  * All code is in an anonymous closure to keep the global namespace clean.
  */
-var SeededRandom = (function () {
+var SeededRandom = /** @class */ (function () {
     function SeededRandom(width, chunks, digits) {
         this.pool = [];
         // width: each RC4 output is 0 <= x < 256
@@ -20559,12 +20584,12 @@ var SeededRandom = (function () {
         var n = this.arc4.g(this.chunks), // Start with a numerator n < 2 ^ 48
         d = this.startdenom, //   and denominator d = 2 ^ 48.
         x = 0; //   and no 'extra last byte'.
-        while (n < this.significance) {
+        while (n < this.significance) { // Fill up all significant digits by
             n = (n + x) * this.width; //   shifting numerator and
             d *= this.width; //   denominator and generating a
             x = this.arc4.g(1); //   new least-significant-byte.
         }
-        while (n >= this.overflow) {
+        while (n >= this.overflow) { // To avoid rounding up, before adding
             n /= 2; //   last byte, shift everything
             d /= 2; //   right using integer math until
             x >>>= 1; //   we have exactly the desired bits.
@@ -20638,7 +20663,7 @@ var SeededRandom = (function () {
 // the next (count) outputs from ARC4.  Its return value is a number x
 // that is in the range 0 <= x < (width ^ count).
 //
-var ARC4 = (function () {
+var ARC4 = /** @class */ (function () {
     function ARC4(key, width, mask) {
         this.S = [];
         this.i = 0;
@@ -20682,7 +20707,7 @@ var username;
 var userRoles;
 var selfHosted = false;
 var databaseNameRule = new RegExp("[^a-z _01-9\(\)\-]", "gi");
-var Main = (function () {
+var Main = /** @class */ (function () {
     function Main() {
     }
     Main.NbCores = function () {
@@ -20713,6 +20738,7 @@ var Main = (function () {
         // Node 5.10+
         if (typeof (window['Buffer']).from === "function")
             return (window['Buffer']).from(source, 'base64');
+        // older Node versions
         else
             return new window['Buffer'](source, 'base64');
     };
@@ -21039,7 +21065,6 @@ var Main = (function () {
                         Main.AfterAccessCheck();
                     },
                     error: function (msg, textStatus) {
-                        //if (("" + document.location).indexOf("dotworld.me") == -1 && ("" + document.location).indexOf("/play.html") == -1)
                         if (("" + document.location).indexOf("maker.html") != -1)
                             Main.ReLogin(Main.CheckAccess);
                         else
@@ -21049,7 +21074,6 @@ var Main = (function () {
                 });
             },
             error: function (msg, textStatus) {
-                //if (("" + document.location).indexOf("dotworld.me") == -1 && ("" + document.location).indexOf("/play.html") == -1)
                 if (("" + document.location).indexOf("maker.html") != -1)
                     Main.ReLogin(Main.CheckAccess);
                 else
@@ -21587,7 +21611,7 @@ background-color: " + Main.EnsureColor(world.art.panelStyle.contentSelectedColor
     return Main;
 }());
 var isHtmlStandalone = false;
-var Runtime = (function () {
+var Runtime = /** @class */ (function () {
     function Runtime() {
     }
     Runtime.HtmlInit = function () {
@@ -21750,13 +21774,13 @@ var nwjsFiles = ["credits.html",
     "locales/vi.pak",
     "locales/zh-CN.pak",
     "locales/zh-TW.pak"];
-var standaloneMaker = new ((function () {
+var standaloneMaker = new (/** @class */ (function () {
     function class_29() {
         this.currentFile = null;
     }
     return class_29;
 }()));
-var StandaloneMaker = (function () {
+var StandaloneMaker = /** @class */ (function () {
     function StandaloneMaker() {
     }
     StandaloneMaker.Init = function () {
@@ -22088,7 +22112,7 @@ var StandaloneMaker = (function () {
     return StandaloneMaker;
 }());
 ///<reference path="../../Logic/MovingActors/PathSolver.ts" />
-var play = new ((function () {
+var play = new (/** @class */ (function () {
     function class_30() {
         this.keys = [];
         this.path = null;
@@ -22113,7 +22137,7 @@ var play = new ((function () {
     }
     return class_30;
 }()));
-var Play = (function () {
+var Play = /** @class */ (function () {
     function Play() {
     }
     Play.Dispose = function () {
@@ -22418,11 +22442,11 @@ var Play = (function () {
         if (play.inField)
             return;
         var keyString = evt.key.toLowerCase();
-        if (play.keys[16])
+        if (play.keys[16]) // Shift key
             keyString = keyString.toUpperCase();
-        if (play.keys[17])
+        if (play.keys[17]) // Control key
             keyString = "^" + keyString;
-        if (play.keys[18])
+        if (play.keys[18]) // Alt key
             keyString = "!" + keyString;
         if (play.keyHook[keyString]) {
             ExecuteCodeFunction.ExecuteFunction([play.keyHook[keyString]]);
@@ -22433,16 +22457,16 @@ var Play = (function () {
             case 13:
                 Chat.Focus();
                 break;
-            case 73:
+            case 73: // i
                 InventoryMenu.Toggle();
                 break;
-            case 74:
+            case 74: // j
                 JournalMenu.Toggle();
                 break;
-            case 77:
+            case 77: // m
                 MessageMenu.Toggle();
                 break;
-            case 80:
+            case 80: // p
                 ProfileMenu.Toggle();
                 break;
             case 48: // 0
@@ -22454,7 +22478,7 @@ var Play = (function () {
             case 54: // 6
             case 55: // 7
             case 56: // 8
-            case 57:
+            case 57: // 9
                 SkillBar.SelectQuickslot(evt.keyCode - 48);
                 break;
             default:
@@ -22771,12 +22795,12 @@ var Play = (function () {
     };
     return Play;
 }());
-var gameList = new ((function () {
+var gameList = new (/** @class */ (function () {
     function class_31() {
     }
     return class_31;
 }()));
-var GameList = (function () {
+var GameList = /** @class */ (function () {
     function GameList() {
     }
     GameList.Dispose = function () {
@@ -22878,7 +22902,7 @@ var GameList = (function () {
     };
     return GameList;
 }());
-var Logout = (function () {
+var Logout = /** @class */ (function () {
     function Logout() {
     }
     Logout.Dispose = function () {
@@ -22888,7 +22912,7 @@ var Logout = (function () {
         delete framework.Preferences['user'];
         Framework.SavePreferences();
         var query = Framework.ParseQuery();
-        if (selfHosted)
+        if (selfHosted) // Special url for self-hosted engines.
             document.location.assign("/");
         else if (("" + document.location).indexOf("/maker.html?") != -1)
             document.location.assign("/");

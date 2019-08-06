@@ -1,7 +1,10 @@
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -100,7 +103,7 @@ $.ajax = function (settings) {
         http.send(null);
     return http;
 };
-var MiniQuery = (function () {
+var MiniQuery = /** @class */ (function () {
     function MiniQuery(elements) {
         this.parentMiniQuery = null;
         this.elements = elements;
@@ -389,7 +392,7 @@ var username;
 var userRoles;
 var selfHosted = false;
 var databaseNameRule = new RegExp("[^a-z _01-9\(\)\-]", "gi");
-var Main = (function () {
+var Main = /** @class */ (function () {
     function Main() {
     }
     Main.NbCores = function () {
@@ -420,6 +423,7 @@ var Main = (function () {
         // Node 5.10+
         if (typeof (window['Buffer']).from === "function")
             return (window['Buffer']).from(source, 'base64');
+        // older Node versions
         else
             return new window['Buffer'](source, 'base64');
     };
@@ -746,7 +750,6 @@ var Main = (function () {
                         Main.AfterAccessCheck();
                     },
                     error: function (msg, textStatus) {
-                        //if (("" + document.location).indexOf("dotworld.me") == -1 && ("" + document.location).indexOf("/play.html") == -1)
                         if (("" + document.location).indexOf("maker.html") != -1)
                             Main.ReLogin(Main.CheckAccess);
                         else
@@ -756,7 +759,6 @@ var Main = (function () {
                 });
             },
             error: function (msg, textStatus) {
-                //if (("" + document.location).indexOf("dotworld.me") == -1 && ("" + document.location).indexOf("/play.html") == -1)
                 if (("" + document.location).indexOf("maker.html") != -1)
                     Main.ReLogin(Main.CheckAccess);
                 else
@@ -1294,7 +1296,7 @@ background-color: " + Main.EnsureColor(world.art.panelStyle.contentSelectedColor
     return Main;
 }());
 var isHtmlStandalone = false;
-var Runtime = (function () {
+var Runtime = /** @class */ (function () {
     function Runtime() {
     }
     Runtime.HtmlInit = function () {
@@ -1457,13 +1459,13 @@ var nwjsFiles = ["credits.html",
     "locales/vi.pak",
     "locales/zh-CN.pak",
     "locales/zh-TW.pak"];
-var standaloneMaker = new ((function () {
+var standaloneMaker = new (/** @class */ (function () {
     function class_1() {
         this.currentFile = null;
     }
     return class_1;
 }()));
-var StandaloneMaker = (function () {
+var StandaloneMaker = /** @class */ (function () {
     function StandaloneMaker() {
     }
     StandaloneMaker.Init = function () {
@@ -1794,7 +1796,7 @@ var StandaloneMaker = (function () {
     };
     return StandaloneMaker;
 }());
-var ColorHandling = (function () {
+var ColorHandling = /** @class */ (function () {
     function ColorHandling() {
     }
     ColorHandling.RgbToHex = function (r, g, b) {
@@ -1828,7 +1830,7 @@ var ColorHandling = (function () {
                 return { Red: p, Green: q, Blue: v };
             case 4:
                 return { Red: t, Green: p, Blue: v };
-            default:
+            default: // case 5:
                 return { Red: v, Green: p, Blue: q };
         }
     };
@@ -1863,7 +1865,7 @@ var ColorHandling = (function () {
     return ColorHandling;
 }());
 var numberCompressionPossibleChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-var NumberCompression = (function () {
+var NumberCompression = /** @class */ (function () {
     function NumberCompression() {
     }
     NumberCompression.StringToNumber = function (source, position, nbChar) {
@@ -1961,7 +1963,7 @@ var NumberCompression = (function () {
  * You can pass in a random number generator object if you like.
  * It is assumed to have a random() method.
  */
-var Perlin = (function () {
+var Perlin = /** @class */ (function () {
     function Perlin(rnd) {
         this.dot = function (g, x, y) {
             return g[0] * x + g[1] * y;
@@ -2190,7 +2192,7 @@ var Perlin = (function () {
 /**
  * All code is in an anonymous closure to keep the global namespace clean.
  */
-var SeededRandom = (function () {
+var SeededRandom = /** @class */ (function () {
     function SeededRandom(width, chunks, digits) {
         this.pool = [];
         // width: each RC4 output is 0 <= x < 256
@@ -2242,12 +2244,12 @@ var SeededRandom = (function () {
         var n = this.arc4.g(this.chunks), // Start with a numerator n < 2 ^ 48
         d = this.startdenom, //   and denominator d = 2 ^ 48.
         x = 0; //   and no 'extra last byte'.
-        while (n < this.significance) {
+        while (n < this.significance) { // Fill up all significant digits by
             n = (n + x) * this.width; //   shifting numerator and
             d *= this.width; //   denominator and generating a
             x = this.arc4.g(1); //   new least-significant-byte.
         }
-        while (n >= this.overflow) {
+        while (n >= this.overflow) { // To avoid rounding up, before adding
             n /= 2; //   last byte, shift everything
             d /= 2; //   right using integer math until
             x >>>= 1; //   we have exactly the desired bits.
@@ -2321,7 +2323,7 @@ var SeededRandom = (function () {
 // the next (count) outputs from ARC4.  Its return value is a number x
 // that is in the range 0 <= x < (width ^ count).
 //
-var ARC4 = (function () {
+var ARC4 = /** @class */ (function () {
     function ARC4(key, width, mask) {
         this.S = [];
         this.i = 0;
@@ -2356,7 +2358,4644 @@ var ARC4 = (function () {
     };
     return ARC4;
 }());
-var ChatBot = (function () {
+var codeEditor = new (/** @class */ (function () {
+    function class_2() {
+        this.hideHelpTimer = null;
+        this.currentEditor = null;
+        this.currentSelection = null;
+        this.currentList = null;
+        this.currentSelectedCompletion = null;
+        this.currentTextToTheEnd = null;
+    }
+    return class_2;
+}()));
+var CodeEditor = /** @class */ (function () {
+    function CodeEditor() {
+    }
+    CodeEditor.Create = function (element) {
+        var editor = CodeMirror.fromTextArea($("#" + element).first(), {
+            lineNumbers: true,
+            matchBrackets: true,
+            continueComments: "Enter",
+            showCursorWhenSelecting: true,
+            tabSize: 4,
+            indentUnit: 4
+        });
+        codeEditor.currentEditor = editor;
+        editor.on("blur", function () {
+            if (codeEditor.hideHelpTimer) {
+                clearTimeout(codeEditor.hideHelpTimer);
+                codeEditor.hideHelpTimer = null;
+            }
+            codeEditor.hideHelpTimer = setTimeout(function () { CodeEditor.HideHelp(element); }, 500);
+        });
+        editor.setOption("extraKeys", {
+            "Enter": function () {
+                if (codeEditor.currentList && codeEditor.currentSelectedCompletion !== null) {
+                    CodeEditor.Add(codeEditor.currentList[codeEditor.currentSelectedCompletion]);
+                    event.preventDefault();
+                    event.stopPropagation();
+                    return false;
+                }
+                return CodeMirror.Pass;
+            },
+            "Tab": function () {
+                if (codeEditor.currentList && codeEditor.currentSelectedCompletion !== null) {
+                    CodeEditor.Add(codeEditor.currentList[codeEditor.currentSelectedCompletion]);
+                    event.preventDefault();
+                    event.stopPropagation();
+                    return false;
+                }
+                return CodeMirror.Pass;
+            },
+            "Up": function () {
+                if (codeEditor.currentList && codeEditor.currentSelectedCompletion !== null && codeEditor.currentList[0].indexOf(".") != -1) {
+                    codeEditor.currentSelectedCompletion--;
+                    if (codeEditor.currentSelectedCompletion < 0)
+                        codeEditor.currentSelectedCompletion = codeEditor.currentList.length - 1;
+                    CodeEditor.UpdateList(element);
+                    $("#codeHelp_" + element + " .selectedInsertion").first().scrollIntoView();
+                    return false;
+                }
+                return CodeMirror.Pass;
+            },
+            "Down": function () {
+                if (codeEditor.currentList && codeEditor.currentSelectedCompletion !== null && codeEditor.currentList[0].indexOf(".") != -1) {
+                    codeEditor.currentSelectedCompletion++;
+                    if (codeEditor.currentSelectedCompletion >= codeEditor.currentList.length)
+                        codeEditor.currentSelectedCompletion = 0;
+                    CodeEditor.UpdateList(element);
+                    $("#codeHelp_" + element + " .selectedInsertion").first().scrollIntoView();
+                    return false;
+                }
+                return CodeMirror.Pass;
+            },
+            "Esc": function () {
+                if (codeEditor.hideHelpTimer) {
+                    if (codeEditor.hideHelpTimer) {
+                        clearTimeout(codeEditor.hideHelpTimer);
+                        codeEditor.hideHelpTimer = null;
+                    }
+                    CodeEditor.HideHelp(element);
+                    return false;
+                }
+                return CodeMirror.Pass;
+            },
+            "Ctrl-Q": "toggleComment"
+        });
+        editor.on("cursorActivity", function () {
+            codeEditor.currentList = null;
+            codeEditor.currentSelectedCompletion = null;
+            if (codeEditor.hideHelpTimer) {
+                clearTimeout(codeEditor.hideHelpTimer);
+                codeEditor.hideHelpTimer = null;
+            }
+            var line = editor.getCursor().line;
+            var char = editor.getCursor().ch;
+            var code = editor.getValue();
+            var lines = code.split('\n');
+            if (lines[line]) {
+                var allowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._";
+                var overText = "";
+                var toTheEnd = 0;
+                char--;
+                for (var i = char; i >= 0; i--) {
+                    //var c = lines[line].charAt(i);
+                    var c = CodeEditor.GetCharAt(line, i);
+                    if (allowedChars.indexOf(c) == -1)
+                        break;
+                    overText = c + overText;
+                }
+                if (overText.length > 0)
+                    for (var i = char + 1; i < lines[line].length; i++) {
+                        var c = CodeEditor.GetCharAt(line, i);
+                        if (allowedChars.indexOf(c) == -1)
+                            break;
+                        overText += c;
+                        toTheEnd++;
+                    }
+                codeEditor.currentTextToTheEnd = toTheEnd;
+                codeEditor.currentSelection = overText;
+                var foundApi = GetApiDescription(overText);
+                if (foundApi) {
+                    var domLine = $(".CodeMirror-line").eq(line + 1);
+                    var coords = codeEditor.currentEditor.cursorCoords(true, "page");
+                    var y = coords.top;
+                    var x = coords.left - 150;
+                    $("#codeHelp_" + element).show();
+                    if (y + 200 > window.innerHeight - 35)
+                        $("#codeHelp_" + element).css("top", "" + (y - 110) + "px");
+                    else
+                        $("#codeHelp_" + element).css("top", "" + (y + 20) + "px");
+                    if (x < 0)
+                        x = 0;
+                    if (x > window.innerHeight - 310)
+                        x = window.innerHeight - 310;
+                    $("#codeHelp_" + element).css("left", "" + x + "px");
+                    $("#codeHelp_" + element).html(GetApiSignature(overText) + foundApi);
+                    codeEditor.hideHelpTimer = setTimeout(function () { CodeEditor.HideHelp(element); }, 5000);
+                }
+                else {
+                    // We still have to choose an API
+                    var list = [];
+                    if (overText != "") {
+                        if (overText.indexOf(".") == -1) {
+                            var last = null;
+                            for (var i = 0; i < apiFunctions.length; i++) {
+                                var f = apiFunctions[i].name.split('.')[0];
+                                if (last == f)
+                                    continue;
+                                if (f.toLowerCase().indexOf(overText.toLowerCase()) == 0)
+                                    list.push(f);
+                                last = f;
+                            }
+                        }
+                        else {
+                            for (var i = 0; i < apiFunctions.length; i++)
+                                if (apiFunctions[i].name.toLowerCase().indexOf(overText.toLowerCase()) == 0)
+                                    list.push(apiFunctions[i].name);
+                        }
+                        list.sort();
+                    }
+                    if (list && list.length > 0) {
+                        codeEditor.currentList = list;
+                        codeEditor.currentSelectedCompletion = 0;
+                        CodeEditor.UpdateList(element);
+                        var domLine = $(".CodeMirror-line").eq(line + 1);
+                        var coords = codeEditor.currentEditor.cursorCoords(true, "page");
+                        var y = coords.top;
+                        var x = coords.left - 150;
+                        $("#codeHelp_" + element).show();
+                        if (y + 200 > window.innerHeight - 35)
+                            $("#codeHelp_" + element).css("top", "" + (y - 110) + "px");
+                        else
+                            $("#codeHelp_" + element).css("top", "" + (y + 20) + "px");
+                        if (x < 0)
+                            x = 0;
+                        if (x > window.innerHeight - 310)
+                            x = window.innerHeight - 310;
+                        $("#codeHelp_" + element).css("left", "" + x + "px");
+                    }
+                    else
+                        CodeEditor.HideHelp(element);
+                }
+            }
+            else
+                CodeEditor.HideHelp(element);
+        });
+        editor.on('change', function () {
+            $("#codeError_" + element).hide();
+            var nblines = editor.getDoc().lineCount();
+            for (var i = 0; i < nblines; i++)
+                editor.removeLineClass(i, 'background', "line-error");
+            var code = editor.getValue();
+            try {
+                CodeParser.Parse(code.replace(/\@[a-z0-9_]+\@/gi, "1"));
+            }
+            catch (ex) {
+                var m = ("" + ex).match(/ ([0-9]+):([0-9]+)/);
+                if (m != null)
+                    editor.addLineClass(parseInt(m[1]) - 1, 'background', "line-error");
+                setTimeout(function () { $("#codeError_" + element).show().html(ex); }, 10);
+            }
+        });
+        return editor;
+    };
+    CodeEditor.GetCharAt = function (line, col) {
+        return codeEditor.currentEditor.getRange({ line: line, ch: col }, { line: line, ch: col + 1 });
+    };
+    CodeEditor.UpdateList = function (element) {
+        if (codeEditor.hideHelpTimer) {
+            clearTimeout(codeEditor.hideHelpTimer);
+            codeEditor.hideHelpTimer = null;
+        }
+        var html = "";
+        for (var i = 0; i < codeEditor.currentList.length; i++) {
+            html += "<div onclick='CodeEditor.Add(\"" + codeEditor.currentList[i] + "\");'" + (codeEditor.currentSelectedCompletion == i ? " class='selectedInsertion'" : "") + ">" + codeEditor.currentList[i] + "</div>";
+        }
+        $("#codeHelp_" + element).html(html);
+        codeEditor.hideHelpTimer = setTimeout(function () { CodeEditor.HideHelp(element); }, 5000);
+    };
+    CodeEditor.Add = function (text) {
+        if (codeEditor.hideHelpTimer) {
+            clearTimeout(codeEditor.hideHelpTimer);
+            codeEditor.hideHelpTimer = null;
+        }
+        if (text.indexOf('.') == -1)
+            text += '.';
+        else {
+            var api = GetApiSignature(text).replace(/<.{0,1}span[^>]*>/gi, "").replace(";", "");
+            text += api.substr(text.length);
+        }
+        var pos = codeEditor.currentEditor.getCursor();
+        codeEditor.currentEditor.replaceRange(text.substr(codeEditor.currentSelection.length), { line: pos.line, ch: pos.ch + (codeEditor.currentTextToTheEnd > 0 ? codeEditor.currentTextToTheEnd + 1 : 0) });
+    };
+    CodeEditor.HideHelp = function (element) {
+        $("#codeHelp_" + element).hide();
+        codeEditor.hideHelpTimer = null;
+        codeEditor.currentList = null;
+        codeEditor.currentSelectedCompletion = null;
+    };
+    return CodeEditor;
+}());
+var chat = new (/** @class */ (function () {
+    function class_3() {
+        this.intervalCounter = 0;
+        this.chatNewMessage = false;
+        this.wasHidden = false;
+        this.onMapChat = false;
+        this.channels = {};
+        this.smilies_txt = [[":-)", ":)"], [":-P", ":P", ":-p", ":p"], [":O", ":o", ":-o", ":-O"], [":-(", ":("], [":-/"], [";-)",
+                ";)"], [":D", ":-D"], ["8)", "8-)"], ["B)", "B-)"], ["XD", "xD", "X-D"], ["T.T"], ["^^'", "^.^'"], ["^^", "^.^"], ["O.O", "o.o"],
+            ["8|", "8-|"], ["\M/"], ["&gt;.&lt;"], ["XP", "X-P"], ["oO", "o.O", "o0", "o.0"], ["-.-"], ["(:&lt;"], ["'W'"], [":S", ":-S"],
+            ["*.*"], [":X"], ["X.X", "x.x"], ["$.$"], ["o@@o"], ["9.9"], ["O:&lt;"], ["B|"], ["B("], ["B0"], ["@.@"], ["^**^"], ["9.6"],
+            ["/.O"], ["d.b"], ["&gt;.&gt;"], ["=^_^="]];
+    }
+    return class_3;
+}()));
+var Chat = /** @class */ (function () {
+    function Chat() {
+    }
+    Chat.AdditionalCSS = function () {
+        var r = parseInt(Main.EnsureColor(world.art.panelStyle.buttonBackground).substr(1, 2), 16);
+        var g = parseInt(Main.EnsureColor(world.art.panelStyle.buttonBackground).substr(3, 2), 16);
+        var b = parseInt(Main.EnsureColor(world.art.panelStyle.buttonBackground).substr(5, 2), 16);
+        return "#chatEntry\n\
+{\n\
+    width: calc(100% - " + (95 + world.art.panelStyle.leftBorder) + "px);\n\
+    top: " + (("" + document.location).indexOf("maker.html") != -1 ? "35px" : "5px") + ";\n\
+}\n\
+#chatEntryLine {\n\
+    background-color: rgba(" + r + "," + g + "," + b + ",0.6);\n\
+    color: " + Main.EnsureColor(world.art.panelStyle.contentColor) + ";\n\
+    border: solid 1px " + Main.EnsureColor(world.art.panelStyle.buttonBorder) + ";\n\
+}\n\
+#chatContainer {\n\
+    width: calc(100% - 95px);\n\
+    top: " + (("" + document.location).indexOf("maker.html") != -1 ? "65px" : "35px") + ";\n\
+}\n\
+@media (min-width: 1000px)\n\
+{\n\
+    #chatContainer {\n\
+        left: calc(50% + " + (parseInt("" + world.art.quickslotStyle.width) / 2 + 5) + "px);\n\
+        top: auto;\n\
+        bottom: 40px;\n\
+        width: auto;\n\
+    }\n\
+    #chatEntry\n\
+    {\n\
+        left: calc(50% + " + (parseInt("" + world.art.quickslotStyle.width) / 2 + 5) + "px);\n\
+        width: auto;\n\
+        top: auto;\n\
+        bottom: 5px;\n\
+    }\n\
+}\n\
+#chatChannels div {\n\
+    border: solid 1px " + Main.EnsureColor(world.art.panelStyle.buttonBorder) + ";\n\
+}\n\
+.selectedChannel {\n\
+    background-color: " + Main.EnsureColor(world.art.panelStyle.buttonBorder) + ";\n\
+}";
+    };
+    Chat.Init = function () {
+        if (!framework.Preferences['token'] || world.Edition == EditorEdition.Demo || framework.Preferences['token'] == "demo" || window['io'] == undefined || window['io'] == null || world.ChatEnabled === false) {
+            $("#chatEntry").hide();
+            return;
+        }
+        if (world.Player.ChatBannedTill && typeof world.Player.ChatBannedTill == "string")
+            world.Player.ChatBannedTill = new Date(world.Player.ChatBannedTill);
+        if (world.Player.ChatMutedTill && typeof world.Player.ChatMutedTill == "string")
+            world.Player.ChatMutedTill = new Date(world.Player.ChatMutedTill);
+        if (world.Player.ChatBannedTill && world.Player.ChatBannedTill.getTime() < (new Date()).getTime())
+            world.Player.ChatBannedTill = null;
+        if (world.Player.ChatMutedTill && world.Player.ChatMutedTill.getTime() < (new Date()).getTime())
+            world.Player.ChatMutedTill = null;
+        if (world.Player.ChatBannedTill && world.Player.ChatBannedTill.getTime() > (new Date()).getTime()) {
+            $("#chatContainer").hide();
+            $("#chatEntry").hide();
+            return;
+        }
+        chat.socket = window['io']();
+        chat.socket.on('connect', Chat.Connect);
+        chat.socket.on('chat', Chat.Receive);
+        chat.socket.on('join', Chat.Join);
+        chat.socket.on('leave', Chat.Leave);
+        chat.socket.on('channelUserList', Chat.ChannelUserList);
+        chat.socket.on('chatBot', Chat.BotLine);
+        chat.socket.on('mute', function (till) {
+            world.Player.ChatMutedTill = new Date(till);
+            world.Player.StoredCompare = world.Player.JSON();
+            Framework.ShowMessage("You have been chat muted till " + world.Player.ChatMutedTill);
+        });
+        chat.socket.on('ban', function (till) {
+            world.Player.ChatBannedTill = new Date(till);
+            world.Player.StoredCompare = world.Player.JSON();
+            Framework.ShowMessage("You have been chat banned till " + world.Player.ChatBannedTill);
+            $("#chatContainer").hide();
+            $("#chatEntry").hide();
+        });
+        $("#chatTitle").bind("click", Chat.ShowHide);
+        $("#chatCollapsed").bind("click", Chat.ShowHide);
+        if (!chat.chatInterval)
+            chat.chatInterval = setInterval(Chat.ChatInterval, 500);
+    };
+    Chat.ChatInterval = function () {
+        if (world.Player.ChatBannedTill && world.Player.ChatBannedTill.getTime() > (new Date()).getTime()) {
+            $("#chatContainer").hide();
+            $("#chatEntry").hide();
+            return;
+        }
+        // We entered in a zone
+        if (play.renderer && !chat.channels[world.Player.Zone.replace(/\./g, "_")]) {
+            chat.socket.emit('join', world.Id, framework.Preferences['token'], world.Player.Zone.replace(/\./g, "_"));
+            var items = [];
+            for (var item in chat.channels)
+                items.push(item);
+            chat.channels[world.Player.Zone.replace(/\./g, "_")] = { newMessage: false, messages: [], users: [] };
+            for (var i = 0; i < items.length; i++) {
+                var item = items[i];
+                if (item == "#global" || item == world.Player.Zone.replace(/\./g, "_"))
+                    continue;
+                chat.socket.emit('leave', world.Id, framework.Preferences['token'], item.replace(/\./g, "_"));
+                delete chat.channels[item];
+            }
+            Chat.UpdateChannels();
+            if (chat.currentChannel != "#global" || items.length == 1)
+                Chat.SelectChannel(world.Player.Zone.replace(/\./g, "_"));
+        }
+        // We left the play page
+        if (!play.renderer) {
+            var updated = false;
+            var items = [];
+            for (var item in chat.channels)
+                items.push(item);
+            for (var i = 0; i < items.length; i++) {
+                var item = items[i];
+                if (item == "#global")
+                    continue;
+                updated = true;
+                delete chat.channels[item];
+                chat.socket.emit('leave', world.Id, framework.Preferences['token'], item);
+            }
+            if (updated)
+                Chat.UpdateChannels();
+            Chat.SelectChannel("#global");
+        }
+        if (play.renderer && chat.onMapChat === false) {
+            chat.onMapChat = true;
+            $("#chatEntry").show();
+            $("#chatLine").hide();
+            $("#chatScroll").addClass("fullChatScroll");
+            $("#chatUserList").addClass("fullChatScroll");
+        }
+        else if (!play.renderer && chat.onMapChat === true) {
+            chat.onMapChat = false;
+            $("#chatEntry").hide();
+            $("#chatLine").show();
+            $("#chatScroll").removeClass("fullChatScroll");
+            $("#chatUserList").removeClass("fullChatScroll");
+        }
+        if ($("#chatCollapsed").is(":visible") && chat.chatNewMessage) {
+            if (chat.intervalCounter % 2)
+                $("#chatCollapsed .gamePanelContentNoHeader > div").html("- New message -");
+            else
+                $("#chatCollapsed .gamePanelContentNoHeader > div").html("Click to chat");
+        }
+        for (var item in chat.channels) {
+            if (chat.channels[item].newMessage) {
+                Chat.UpdateChannels();
+                break;
+            }
+        }
+        chat.intervalCounter = 1 - chat.intervalCounter;
+    };
+    Chat.Connect = function () {
+        if (!framework.Preferences['token'] || world.Edition == EditorEdition.Demo || framework.Preferences['token'] == "demo" || window['io'] == undefined || window['io'] == null)
+            return;
+        chat.socket.emit('join', world.Id, framework.Preferences['token'], "#global");
+        chat.channels["#global"] = { newMessage: false, messages: [], users: [] };
+        Chat.UpdateChannels();
+        Chat.SelectChannel("#global");
+        if (framework.Preferences["ChatVisible"] === false) {
+            $("#chatContainer").hide();
+            $("#chatCollapsed").show();
+        }
+        else {
+            $("#chatContainer").show();
+            $("#chatCollapsed").hide();
+        }
+        if (world.Player.ChatBannedTill && world.Player.ChatBannedTill.getTime() > (new Date()).getTime()) {
+            $("#chatContainer").hide();
+            $("#chatEntry").hide();
+            return;
+        }
+    };
+    Chat.Key = function (evt, field) {
+        switch (evt.keyCode) {
+            case 13:
+                Chat.SendLine($("#" + field).val());
+                $("#" + field).val("");
+                break;
+            case 27:
+                $("#" + field).blur();
+                if (chat.wasHidden == true)
+                    Chat.ShowHide();
+                break;
+            default:
+                break;
+        }
+    };
+    Chat.SelectChannel = function (channel) {
+        if (!chat.channels[channel])
+            return;
+        chat.currentChannel = channel;
+        chat.channels[channel].newMessage = false;
+        Chat.RedrawUserList();
+        Chat.RedrawChannelHistory();
+        /*$("#chatChannels div").removeClass("selectedChannel");
+        $("#" + channel.id()).addClass("selectedChannel");*/
+        Chat.UpdateChannels();
+    };
+    Chat.UpdateChannels = function () {
+        var html = "<span>Channels:</span>";
+        for (var item in chat.channels)
+            html += "<div onclick=\"Chat.SelectChannel('" + item.replace(/'/g, "\\'") + "');\" id=\"" + item.id() + "\" class='" + (item == chat.currentChannel ? " selectedChannel" : "") + (chat.channels[item].newMessage && chat.intervalCounter % 2 ? " channelNewMessage" : "") + "'>" + item + "</div>";
+        $("#chatChannels").html(html);
+    };
+    Chat.UpdateAllChannelsUserList = function () {
+        for (var i in chat.channels) {
+            Chat.UpdateChannelUserList(i);
+        }
+    };
+    Chat.UpdateChannelUserList = function (channel) {
+        chat.socket.emit('getChannelUserList', world.Id, channel);
+    };
+    Chat.ChannelUserList = function (channel, users) {
+        if (!chat.channels[channel])
+            return;
+        for (var i = 0; i < world.ChatBots.length; i++) {
+            // Skip the invisible bots
+            if (world.ChatBots[i].Name[0] == "~")
+                continue;
+            if (world.ChatBots[i].Channel == "*" || world.ChatBots[i].Channel == "" || world.ChatBots[i].Channel.toLowerCase() == channel.toLowerCase())
+                users.push(world.ChatBots[i].Name);
+        }
+        chat.channels[channel].users = users;
+        if (chat.currentChannel == channel)
+            Chat.RedrawUserList();
+    };
+    Chat.Join = function (user, channel) {
+        Chat.AddChatLine("", channel, "<b class='chatSystemMessage'>" + user + " joined " + channel + "</b>");
+        Chat.UpdateChannelUserList(channel);
+    };
+    Chat.Leave = function (user, channel) {
+        Chat.AddChatLine("", channel, "<b class='chatSystemMessage'>" + user + " left " + channel + "</b>");
+        Chat.UpdateChannelUserList(channel);
+    };
+    Chat.BotLine = function (botname, fromUser, channel, line) {
+        if (botname[0] == "~")
+            Chat.AddChatLine(null, channel, line.htmlEntities(false).replace(/\n/g, "<br />"));
+        else
+            Chat.AddChatLine(botname, channel, line.htmlEntities(false).replace(/\n/g, "<br />"));
+    };
+    Chat.SendBotLine = function (botname, channel, line) {
+        if (framework.Preferences['token'] == "demo") {
+            Chat.AddChatLine(null, chat.currentChannel, "The chat is disabled in the demo.");
+            return;
+        }
+        if (!chat || !chat.socket)
+            return;
+        if (!world.Player.ChatMutedTill || world.Player.ChatMutedTill.getTime() < (new Date()).getTime())
+            chat.socket.emit('bot', botname, channel, line);
+    };
+    Chat.SendLine = function (line, channel) {
+        if (channel === void 0) { channel = null; }
+        if (world.Player.ChatMutedTill && world.Player.ChatMutedTill.getTime() >= (new Date()).getTime()) {
+            Chat.AddChatLine(null, chat.currentChannel, "<b>!! you are chat muted till " + world.Player.ChatMutedTill + " !!</b>");
+            return;
+        }
+        if (world.Player.ChatBannedTill && world.Player.ChatBannedTill.getTime() >= (new Date()).getTime()) {
+            Chat.AddChatLine(null, chat.currentChannel, "<b>!! you are chat banned till " + world.Player.ChatBannedTill + " !!</b>");
+            return;
+        }
+        if (!chat || !chat.socket)
+            return;
+        if (framework.Preferences['token'] == "demo") {
+            Chat.AddChatLine(null, chat.currentChannel, "The chat is disabled in the demo.");
+            return;
+        }
+        var line = line.trim();
+        if (!line || line == "")
+            return;
+        var botToRun = 0;
+        var botHandled = false;
+        var normalHandling = function () {
+            if (botHandled == true || botToRun > 0)
+                return;
+            if (line.toLowerCase().indexOf("/e ") == 0 || line.toLowerCase().indexOf("/emote ") == 0) {
+                var emote = "--";
+                try {
+                    emote = line.split(' ')[1].toLowerCase();
+                }
+                catch (ex) {
+                }
+                if (EmotesArt[emote] !== undefined) {
+                    world.Player.EmoteTimer = 0;
+                    world.Player.CurrentEmote = EmotesArt[emote];
+                }
+                else
+                    Chat.AddChatLine(null, channel ? channel : chat.currentChannel, "Unknown emote.");
+            }
+            else if (line.toLowerCase().indexOf("/") == 0 && line.toLowerCase().indexOf("/me ") != 0) {
+                Chat.AddChatLine(null, channel ? channel : chat.currentChannel, "Unknown command.");
+            }
+            else
+                chat.socket.emit('send', channel ? channel : chat.currentChannel, line);
+        };
+        var toExecute = [];
+        for (var i = 0; i < world.ChatBots.length; i++) {
+            if (!(world.ChatBots[i].Channel == "*" || world.ChatBots[i].Channel == "" || world.ChatBots[i].Channel.toLowerCase() == channel.toLowerCase()))
+                continue;
+            botToRun++;
+        }
+        if (world.ChatBots.length > 0)
+            for (var i = 0; i < world.ChatBots.length; i++) {
+                if (!(world.ChatBots[i].Channel == "*" || world.ChatBots[i].Channel == "" || world.ChatBots[i].Channel.toLowerCase() == channel.toLowerCase()))
+                    continue;
+                var a = function () {
+                    var bot = world.ChatBots[i];
+                    bot.HandleChat(line, function (res) {
+                        botToRun--;
+                        if (res) {
+                            //Chat.AddChatLine(username, chat.currentChannel, line);
+                            //Chat.AddChatLine(world.ChatBots[i].Name, chat.currentChannel, res);
+                            if (res[0] == "/")
+                                chat.socket.emit('bot', bot.Name, channel ? channel : chat.currentChannel, "/" + res);
+                            else if (res[0] == "!")
+                                Chat.AddChatLine(bot.Name[0] == "~" ? null : bot.Name, channel ? channel : chat.currentChannel, res.substr(1).htmlEntities(false).replace(/\n/g, "<br />"));
+                            else {
+                                chat.socket.emit('send', channel ? channel : chat.currentChannel, line);
+                                chat.socket.emit('bot', bot.Name, channel ? channel : chat.currentChannel, res);
+                            }
+                            botHandled = true;
+                        }
+                        else
+                            normalHandling();
+                    });
+                }();
+            }
+        else
+            normalHandling();
+    };
+    Chat.Receive = function (sender, channel, message) {
+        if (!chat.channels[channel])
+            return;
+        if ($("#chatCollapsed").is(":visible"))
+            chat.chatNewMessage = true;
+        if (chat.currentChannel != channel)
+            chat.channels[channel].newMessage = true;
+        Chat.AddChatLine(sender, channel, message);
+    };
+    Chat.UrlChanger = function (str) {
+        return str.replace(/(^|\s|\>)(http[s]{0,1}:\/\/[a-zA-Z0-9\/\-\+:\.\?=_\&\#\;\%\,~]{1,30})([a-zA-Z0-9\/\-\+:\.\?=_\&\#\;\%\,~]*)/g, "$1[<A HREF='$2$3' TARGET='_BLANK'>$2 ...</A>]");
+    };
+    Chat.Smilies = function (str) {
+        if (!chat.smiliesDb) // Build the db
+         {
+            chat.smiliesDb = [];
+            for (var i = 0; i < chat.smilies_txt.length; i++) {
+                for (var j = 0; j < chat.smilies_txt[i].length; j++) {
+                    var e = chat.smilies_txt[i][j].replace(/([\.\+\|\\\$\^\(\)\:\?\*\/])/g, '\\$1');
+                    chat.smiliesDb.push({ regexp: new RegExp("(^|\\s|\\>)" + e + "(\\s|\\<|$)", "g"), html: "$1<div style='background-image: url(\"/art/tileset2/smilies.png\"); display: inline-block; width: 20px; height: 16px; background-position: -" + (i * 20) + "px 0px;'></div>$2" });
+                }
+            }
+        }
+        for (var i = 0; i < chat.smiliesDb.length; i++)
+            str = str.replace(chat.smiliesDb[i].regexp, chat.smiliesDb[i].html);
+        return str;
+    };
+    Chat.AddChatLine = function (sender, channel, message) {
+        if (!chat.channels[channel])
+            return;
+        //chat.channels[channel] = [];
+        chat.channels[channel].messages.push({ sender: sender, message: message });
+        while (chat.channels[channel].messages.length > 100)
+            chat.channels[channel].messages.shift();
+        if (channel == chat.currentChannel)
+            Chat.AddChatScrollLine(sender, message);
+    };
+    Chat.AddChatScrollLine = function (sender, message) {
+        if (!message || message.length == 0)
+            return;
+        if (message.toLowerCase().indexOf("/me ") == 0) {
+            message = "<b>-- " + ("" + sender).htmlEntities(false) + " " + message.substr(3).trim().htmlEntities(false) + " --</b>";
+            sender = null;
+        }
+        else if (message.indexOf("//") == 0 && sender != null) {
+            return;
+        }
+        else if (message.indexOf("//") == 0) {
+            message = "<b>** " + message.substr(2).trim() + " **</b>";
+            sender = null;
+        }
+        if (sender != null && sender != "")
+            message = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        if (world.ChatSmilies)
+            message = Chat.Smilies(message);
+        if (world.ChatLink)
+            message = Chat.UrlChanger(message);
+        var chatScroll = $("#chatScroll").first();
+        while (chatScroll.children.length > 100)
+            chatScroll.removeChild(chatScroll.children[0]);
+        $("#chatScroll").html($("#chatScroll").html() + "<div><div" + (sender ? " onclick='PublicViewPlayer.Show(\"" + sender + "\");'" : "") + ">" + (!sender || sender == "" ? "&nbsp;" : sender.htmlEntities(false)) + "</div><div>" + message + "</div></div>");
+        $("#chatScroll").scrollTop($("#chatScroll").scrollTop() + 60000);
+    };
+    Chat.RedrawUserList = function () {
+        var html = "";
+        var users = chat.channels[chat.currentChannel].users;
+        if (users) {
+            users.sort();
+            for (var i = 0; i < users.length; i++) {
+                html += "<div>" + users[i] + "</div>";
+            }
+        }
+        $("#chatUserList").html(html);
+    };
+    Chat.RedrawChannelHistory = function () {
+        $("#chatScroll").html("");
+        for (var i = 0; i < chat.channels[chat.currentChannel].messages.length; i++)
+            Chat.AddChatScrollLine(chat.channels[chat.currentChannel].messages[i].sender, chat.channels[chat.currentChannel].messages[i].message);
+    };
+    Chat.Focus = function () {
+        if ($("#chatCollapsed").is(":visible")) {
+            chat.wasHidden = true;
+            Chat.ShowHide();
+        }
+        else
+            chat.wasHidden = false;
+        if (chat.onMapChat)
+            $("#chatEntryLine").focus();
+        else
+            $("#chatLine").focus();
+    };
+    Chat.ShowHide = function () {
+        if ($("#chatCollapsed").is(":visible")) {
+            $("#chatContainer").show();
+            $("#chatCollapsed").hide();
+            chat.chatNewMessage = false;
+            $("#chatCollapsed .gamePanelContentNoHeader > div").html("Click to chat");
+        }
+        else {
+            $("#chatContainer").hide();
+            $("#chatCollapsed").show();
+        }
+        framework.Preferences["ChatVisible"] = !$("#chatCollapsed").is(":visible");
+        Framework.SavePreferences();
+    };
+    return Chat;
+}());
+var CodeGraphEditor = /** @class */ (function () {
+    function CodeGraphEditor(element, isGenericCode, tab) {
+        var _this = this;
+        if (isGenericCode === void 0) { isGenericCode = false; }
+        if (tab === void 0) { tab = null; }
+        this.expandedBlocks = [];
+        this.OnChange = null;
+        this.inUpdate = false;
+        this.isGenericCode = false;
+        var hasHelp = false;
+        this.element = element;
+        this.isGenericCode = isGenericCode;
+        this.parent = $("#" + element).first().parentElement.id;
+        var elemHtml = $("#" + element).first().outerHTML;
+        $("#" + element).first().outerHTML = "<div id='codeError_" + element + "' class='elementCodeWarning' style='position: absolute; left: 0px; right: 0px; top: 0px; width: auto;'>Error!</div><div class='codeGraphTextContainer'>" + elemHtml + "</div>";
+        var html = "<div id='graph_" + this.element + "' class='codeGraphArea' path=''></div>";
+        html += "<input type='text' id='search_graph_" + this.element + "' placeholder='Search...' class='codeGraphSearchNodes'>";
+        html += "<div id='selector_" + this.element + "' class='codeGraphSelector'></div>";
+        if ($($("#" + element).first().parentElement).height() > 400) {
+            html += "<div id='node_help_" + this.element + "' class='codeGraphNodeHelp'></div>";
+            hasHelp = true;
+        }
+        //if (("" + document.location).indexOf("localhost") != -1 || ("" + document.location).indexOf("test_grapheditor") != -1)
+        html += "<div class='codeGraphTabs'><span id='btn_" + element + "_text'>Text</span><span id='btn_" + element + "_node'>Node</span></div>";
+        html += "<div id='codeHelp_" + this.element + "' class='codeHelp'></div>";
+        Framework.ReloadPreferences();
+        //if (("" + document.location).indexOf("localhost") != -1 || ("" + document.location).indexOf("test_grapheditor") != -1)
+        if (framework.Preferences && framework.Preferences['codeGraphEditor_help'] !== false && tab == null) {
+            html += "<div id='codeGraphEditorHelp'>";
+            html += "The code editor allows to edit the logic of the game, however a full flexible logic requires a complete scripting engine. ";
+            html += "To help you with the task you can either type it if you are already a skilled developer, or you can use the node view. ";
+            html += "At any time you can switch from one view to the other using the tabs under the editor (text / node).";
+            html += "<br><br>";
+            html += "While working with the nodes, simply drag drop the nodes to add, remove or change the orders. Clicking on the header of a node expands it.";
+            html += "<br><br>";
+            html += "<center><a href='/Help/node_script.html' target='engineHelp' class='button'>Help</a> <span class='button' onclick='CodeGraphEditor.HideWelcome()'>Hide</span></center></div>";
+        }
+        $("#" + this.parent).append(html);
+        this.code = $("#" + element).val();
+        this.editor = CodeEditor.Create(element);
+        this.editor.on("change", function () {
+            if (_this.inUpdate)
+                return;
+            // Currently we have the text editor as main one.
+            if ($("#" + _this.parent + " .codeGraphTextContainer").is(":visible"))
+                _this.statements = null;
+            if (_this.OnChange)
+                _this.OnChange();
+        });
+        this.statements = [];
+        try {
+            var parser = new CodeParser(this.code);
+            this.statements = parser.GetAllStatements();
+        }
+        catch (ex) {
+        }
+        $("#search_graph_" + this.element).bind("keyup", function () {
+            _this.RenderSelector();
+        });
+        $("#graph_" + this.element).bind("dragover", function (evt) {
+            evt.preventDefault();
+            evt.dataTransfer.dropEffect = "move";
+        }).bind("drop", function (evt) {
+            evt.preventDefault();
+            var data = JSON.parse(evt.dataTransfer.getData("text"));
+            if (data.type == "existing") {
+                _this.DeleteNode(data.call);
+                _this.FromNodeToCode();
+                _this.RenderNodes();
+            }
+            // Try to add at the bottom
+            else {
+                _this.DropOnEmpty(evt);
+            }
+        });
+        $("#btn_" + element + "_text").bind("click", function () {
+            $("#btn_" + element + "_node").removeClass("codeGraphActiveTab");
+            $("#btn_" + element + "_text").addClass("codeGraphActiveTab");
+            framework.Preferences['codeGraphEditor_tab'] = 'text';
+            Framework.SavePreferences();
+            $("#" + _this.parent + " .codeGraphTextContainer").show();
+            _this.editor.refresh();
+            $("#graph_" + _this.element).hide();
+            $("#selector_" + _this.element).hide();
+            $("#search_graph_" + _this.element).hide();
+            $("#node_help_" + _this.element).hide();
+        });
+        $("#btn_" + element + "_node").bind("click", function () {
+            $("#btn_" + element + "_text").removeClass("codeGraphActiveTab");
+            $("#btn_" + element + "_node").addClass("codeGraphActiveTab");
+            framework.Preferences['codeGraphEditor_tab'] = 'node';
+            Framework.SavePreferences();
+            $("#" + _this.parent + " .codeGraphTextContainer").hide();
+            $("#codeError_" + element).hide();
+            if (!_this.statements) {
+                _this.code = _this.editor.getValue();
+                _this.statements = [];
+                try {
+                    var parser = new CodeParser(_this.code);
+                    _this.statements = parser.GetAllStatements();
+                }
+                catch (ex) {
+                }
+                _this.RenderNodes();
+            }
+            $("#graph_" + _this.element).show();
+            $("#selector_" + _this.element).show();
+            $("#search_graph_" + _this.element).show();
+            $("#node_help_" + _this.element).show();
+        });
+        if ((framework.Preferences['codeGraphEditor_tab'] === 'text' || tab === "text") && (tab !== "node" || !tab)) {
+            $("#graph_" + this.element).hide();
+            $("#selector_" + this.element).hide();
+            $("#search_graph_" + this.element).hide();
+            $("#node_help_" + this.element).hide();
+            $("#btn_" + element + "_text").addClass("codeGraphActiveTab");
+        }
+        else {
+            $("#" + this.parent + " .codeGraphTextContainer").hide();
+            $("#btn_" + element + "_node").addClass("codeGraphActiveTab");
+        }
+        //}
+        this.RenderNodes();
+        this.RenderSelector();
+        if (!hasHelp)
+            $("#selector_" + this.element).css("bottom", "16px");
+    }
+    CodeGraphEditor.prototype.GetNode = function (path) {
+        var p = path.split('.');
+        var result = this.statements;
+        while (p.length > 0) {
+            var currentPath = p.shift();
+            // Must be a number => it's an index of an array
+            if (currentPath.match(/^[0-9]+$/)) {
+                if (result.constructor == BlockStatement)
+                    result = result.Statements[parseInt(currentPath)];
+                else
+                    result = result[parseInt(currentPath)];
+            }
+            else
+                result = result[currentPath];
+        }
+        return result;
+    };
+    CodeGraphEditor.prototype.SetNode = function (path, value) {
+        var p = path.split('.');
+        var node = this.statements;
+        while (p.length > 1) {
+            var currentPath = p.shift();
+            // Must be a number => it's an index of an array
+            if (currentPath.match(/^[0-9]+$/)) {
+                if (node.constructor == BlockStatement)
+                    node = node.Statements[parseInt(currentPath)];
+                else
+                    node = node[parseInt(currentPath)];
+            }
+            else
+                node = node[currentPath];
+        }
+        var className = ("" + node.constructor).match(/function ([^\(]+)\(/)[1];
+        var info = statementEditorInfo[className.replace(/Statement$/, "")];
+        if (typeof value !== "string")
+            node[p[0]] = value;
+        else if (info) {
+            var found = false;
+            for (var i = 0; i < info.params.length; i++) {
+                if (info.params[i].name == p[0]) {
+                    if (info.params[i].type == "VariableValue" && info.params[i].valueType == "number") {
+                        var val = parseFloat(value);
+                        if (!isNaN(val))
+                            node[p[0]] = new VariableValue(val);
+                    }
+                    else if (info.params[i].type == "VariableValue")
+                        node[p[0]] = new VariableValue(value);
+                    else
+                        node[p[0]] = value;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+                node[p[0]] = value;
+        }
+        else
+            node[p[0]] = value;
+    };
+    CodeGraphEditor.prototype.DeleteNode = function (path) {
+        var p = path.split('.');
+        var node = this.statements;
+        while (p.length > 1) {
+            var currentPath = p.shift();
+            // Must be a number => it's an index of an array
+            if (currentPath.match(/^[0-9]+$/)) {
+                if (node.constructor == BlockStatement)
+                    node = node.Statements[parseInt(currentPath)];
+                else
+                    node = node[parseInt(currentPath)];
+            }
+            else
+                node = node[currentPath];
+        }
+        if (p[0].match(/^[0-9]+$/)) {
+            if (node.constructor == BlockStatement)
+                return node.Statements.splice(parseInt(p[0]), 1)[0];
+            else if (path.endsWith(".values." + p[0])) {
+                var val = node[parseInt(p[0])];
+                node[parseInt(p[0])] = null;
+                return val;
+            }
+            else
+                return node.splice(parseInt(p[0]), 1)[0];
+        }
+        else {
+            var result = node[p[0]];
+            node[p[0]] = null;
+            return result;
+        }
+    };
+    CodeGraphEditor.prototype.RenderNodes = function () {
+        var _this = this;
+        var html = "";
+        for (var i = 0; i < this.statements.length; i++) {
+            html += this.statements[i].HTMLBlocks("" + i, this.statements);
+            if (this.statements[i].constructor == FunctionDefinitionStatement)
+                html += "<div class='codeBlockSeparator'></div>";
+        }
+        html += "<span class='emptyBlock' path=''>Empty</span>";
+        $("#graph_" + this.element).html(html);
+        $("#graph_" + this.element + " .emptyBlock").bind("dragover", function (evt) {
+            evt.preventDefault();
+            // Set the dropEffect to move
+            evt.dataTransfer.dropEffect = "move";
+        });
+        // Allow to drop new items on an empty block
+        $("#graph_" + this.element + " .emptyBlock").bind("drop", function (evt) { _this.DropOnEmpty(evt); });
+        // Highlight the block
+        $("#graph_" + this.element + " .codeBlock").addClass("collapsedBlock").bind("mouseover", function (evt) { _this.MouseOver(evt); }).bind("mouseout", function (evt) { _this.MouseOut(evt); });
+        // Expand / contract a block
+        $("#graph_" + this.element + " .blockType, #graph_" + this.element + " .simpleBlockType").prop("draggable", true)
+            .bind("dragstart", function (evt) { _this.Collapse(evt); evt.dataTransfer.setData("text", JSON.stringify({ type: "existing", call: evt.target.parentElement.id.substr(3).replace(/_/g, ".") })); })
+            .bind("drop", function (evt) { _this.DropOnStatement(evt); })
+            .bind("mousedown", function (evt) { _this.Collapse(evt); });
+        $("#graph_" + this.element + " .endBlock").bind("mousedown", function (evt) { _this.Collapse(evt); });
+        // Prevent expand / contract while clicking on a field
+        $("#graph_" + this.element + " input").bind("mousedown", function (evt) { evt.cancelBubble = true; return false; }).bind("keyup", function (evt) { _this.UpdateField(evt); });
+        // Boolean click => reverse it
+        var booleanClick = function (evt) {
+            var id = evt.target.parentElement.id;
+            var path = id.substr(3).replace(/_/g, ".");
+            var node = _this.GetNode(path);
+            node.value = new VariableValue(!node.value.GetBoolean());
+            $("#" + id).first().outerHTML = node.HTMLBlocks(path);
+            $("#" + id).bind("mousedown", booleanClick);
+            $("#" + id + " .simpleBlockType").prop("draggable", true)
+                .bind("dragstart", function (evt) { _this.Collapse(evt); evt.dataTransfer.setData("text", JSON.stringify({ type: "existing", call: evt.target.parentElement.id.substr(3).replace(/_/g, ".") })); })
+                .bind("drop", function (evt) { _this.DropOnStatement(evt); })
+                .bind("mousedown", function (evt) { _this.Collapse(evt); });
+            _this.FromNodeToCode();
+            evt.cancelBubble = true;
+            return false;
+        };
+        $("#graph_" + this.element + " span[block='boolean']").bind("mousedown", booleanClick);
+        $("#graph_" + this.element + " .blockDeleteArrayEntry").bind("mousedown", function (evt) {
+            var path = evt.target.getAttribute("path");
+            var p = path.split('.');
+            var entry = p.pop();
+            var node = _this.GetNode(p.join('.'));
+            node.splice(parseInt(entry), 1);
+            _this.RenderNodes();
+            _this.FromNodeToCode();
+        });
+        $("#graph_" + this.element + " .blockAddArrayEntry").bind("mousedown", function (evt) {
+            var path = evt.target.getAttribute("path");
+            var node = _this.GetNode(path);
+            node.push("");
+            _this.RenderNodes();
+            _this.FromNodeToCode();
+        });
+        for (var i = 0; i < this.expandedBlocks.length; i++)
+            $("#" + this.expandedBlocks[i]).removeClass("collapsedBlock");
+    };
+    CodeGraphEditor.prototype.UpdateField = function (evt) {
+        var val = $(evt.target).val();
+        var path = evt.target.getAttribute("path");
+        this.SetNode(path, val);
+        this.FromNodeToCode();
+        var p = path.split('.');
+        p.pop();
+        var parentNode = this.GetNode(p.join('.'));
+        if (parentNode.constructor == FunctionDefinitionStatement)
+            this.RenderSelector();
+    };
+    CodeGraphEditor.prototype.DropOnStatement = function (evt) {
+        evt.cancelBubble = true;
+        evt.preventDefault();
+        var path = evt.target.parentElement.id.substr(3).replace(/_/g, ".");
+        if (!path)
+            return;
+        var p = path.split('.');
+        var lastPath = p.pop();
+        var parentPath = p.join(".");
+        var node = this.GetNode(parentPath);
+        if (parentPath == "")
+            node = this.statements;
+        // Get the id of the target and add the moved element to the target's DOM
+        var data = JSON.parse(evt.dataTransfer.getData("text"));
+        evt.dataTransfer.clearData();
+        var newNode = null;
+        switch (data.type) {
+            case "base":
+                newNode = new window[data.call]();
+                break;
+            case "api":
+                var params = [];
+                for (var i = 0; i < apiFunctions.length; i++) {
+                    if (apiFunctions[i].name.toLowerCase() == data.call.toLowerCase()) {
+                        for (var j = 0; j < apiFunctions[i].parameters.length; j++)
+                            params.push(null);
+                        break;
+                    }
+                }
+                newNode = new FunctionCallStatement(data.call, params, 0, 0);
+                break;
+            case "existing":
+                newNode = this.DeleteNode(data.call);
+                break;
+        }
+        if (!newNode)
+            return;
+        if (node && node.constructor === BlockStatement)
+            node = node.Statements;
+        if (path.endsWith(".values." + lastPath))
+            node[parseInt(lastPath)] = newNode;
+        else if (node && node.constructor === Array)
+            node.splice(parseInt(lastPath), 0, newNode);
+        else
+            this.SetNode(parentPath, newNode);
+        this.FromNodeToCode();
+        this.RenderNodes();
+    };
+    CodeGraphEditor.prototype.DropOnEmpty = function (evt) {
+        evt.cancelBubble = true;
+        evt.preventDefault();
+        var path = evt.target.getAttribute("path");
+        var node = null;
+        if (path === "")
+            node = this.statements;
+        else
+            node = this.GetNode(path);
+        // Get the id of the target and add the moved element to the target's DOM
+        var data = JSON.parse(evt.dataTransfer.getData("text"));
+        evt.dataTransfer.clearData();
+        var newNode = null;
+        switch (data.type) {
+            case "base":
+                newNode = new window[data.call]();
+                break;
+            case "api":
+                var params = [];
+                for (var i = 0; i < apiFunctions.length; i++) {
+                    if (apiFunctions[i].name.toLowerCase() == data.call.toLowerCase()) {
+                        for (var j = 0; j < apiFunctions[i].parameters.length; j++)
+                            params.push(null);
+                        break;
+                    }
+                }
+                newNode = new FunctionCallStatement(data.call, params, 0, 0);
+                break;
+            case "existing":
+                newNode = this.DeleteNode(data.call);
+                break;
+        }
+        if (node === this.statements) {
+            if (newNode.constructor != CommentStatement && newNode.constructor != FunctionDefinitionStatement) {
+                Framework.ShowMessage("Only comments and functions definitions can be placed on the top level.");
+                return;
+            }
+        }
+        else if (newNode.constructor == FunctionDefinitionStatement) {
+            Framework.ShowMessage("Function definitions can be placed only on the top level.");
+            return;
+        }
+        if (node && node.constructor === BlockStatement) {
+            var className = ("" + newNode.constructor).match(/function ([^\(]+)\(/)[1];
+            if (!topBlockStatements.contains(className)) {
+                Framework.ShowMessage("This block cannot be placed here.");
+                return;
+            }
+        }
+        if (!newNode)
+            return;
+        if (node && node.constructor === BlockStatement)
+            node.Statements.push(newNode);
+        else if (node && node.constructor === Array)
+            node.push(newNode);
+        else
+            this.SetNode(path, newNode);
+        this.FromNodeToCode();
+        this.RenderNodes();
+        if (newNode.constructor == FunctionDefinitionStatement)
+            this.RenderSelector();
+        //console.log("Dragged: " + data);
+        //ev.target.appendChild(document.getElementById(data));
+    };
+    CodeGraphEditor.prototype.RenderSelector = function () {
+        var _this = this;
+        var search = $("#search_graph_" + this.element).val().toLowerCase();
+        var html = "";
+        var isFirst = true;
+        knownStatements.sort();
+        for (var i = 0; i < knownStatements.length; i++) {
+            if (knownStatements[i].replace(/Statement$/, "").toLowerCase().indexOf(search) == -1)
+                continue;
+            if (knownStatements[i] == "FunctionCallStatement" || knownStatements[i] == "BlockStatement" || knownStatements[i] == "EmptyStatement" || knownStatements[i] == "EmptyArrayStatement")
+                continue;
+            if (isFirst) {
+                html += "<div class='codeGroup'><span>Logic:</span>";
+                isFirst = false;
+            }
+            html += "<p type='base' call='" + knownStatements[i] + "'>" + knownStatements[i].replace(/Statement$/, "").title() + "</p>";
+        }
+        if (!isFirst)
+            html += "</div>";
+        var apiGroups = [];
+        for (var item in api)
+            apiGroups.push(item);
+        var isFirst = true;
+        for (var i = 0; i < apiGroups.length; i++) {
+            var functions = [];
+            for (var j = 0; j < apiFunctions.length; j++) {
+                if (apiFunctions[j].name.toLowerCase().indexOf(search) == -1)
+                    continue;
+                if (apiFunctions[j].name.split('.')[0].toLowerCase() == apiGroups[i].toLowerCase())
+                    functions.push(apiFunctions[j].name.split('.')[1]);
+            }
+            functions.sort();
+            if (functions.length == 0)
+                continue;
+            if (isFirst) {
+                html += "<div class='codeGroup'><span>API:</span>";
+                isFirst = false;
+            }
+            html += "<div class='codeGroup'><span>" + apiGroups[i].capitalize() + ":</span>";
+            for (var j = 0; j < functions.length; j++)
+                html += "<p type='api' call='" + apiGroups[i].capitalize() + "." + functions[j] + "'>" + functions[j] + "</p>";
+            html += "</div>";
+        }
+        if (!isFirst)
+            html += "</div>";
+        if (!this.isGenericCode) {
+            isFirst = true;
+            for (var i = 0; i < this.statements.length; i++) {
+                if (this.statements[i].constructor != FunctionDefinitionStatement)
+                    continue;
+                if (this.statements[i].Name.toLowerCase().indexOf(search) == -1)
+                    continue;
+                if (isFirst) {
+                    html += "<div class='codeGroup'><span>Functions:</span>";
+                    isFirst = false;
+                }
+                html += "<p type='api' call='" + this.statements[i].Name + "'>" + this.statements[i].Name + "</p>";
+            }
+            if (!isFirst)
+                html += "</div>";
+        }
+        isFirst = true;
+        if (world && world.Codes)
+            for (var i = 0; i < world.Codes.length; i++) {
+                if (!world.Codes[i].code) {
+                    try {
+                        world.Codes[i].code = CodeParser.ParseWithParameters(world.Codes[i].Source, world.Codes[i].Parameters);
+                    }
+                    catch (ex) {
+                    }
+                }
+                if (!world.Codes[i].code)
+                    continue;
+                for (var item in world.Codes[i].code.FunctionCodes) {
+                    if (item.toLowerCase().indexOf(search) == -1)
+                        continue;
+                    if (isFirst) {
+                        html += "<div class='codeGroup'><span>Generic Functions:</span>";
+                        isFirst = false;
+                    }
+                    html += "<p type='api' call='me." + world.Codes[i].Name + "." + item + "'>" + item + "</p>";
+                }
+            }
+        if (!isFirst)
+            html += "</div>";
+        $("#selector_" + this.element).html(html);
+        $("#selector_" + this.element + " p").prop("draggable", true).bind("dragstart", function (evt) {
+            //console.log(evt.target.innerHTML);
+            //evt.initDragEvent();
+            evt.dataTransfer.setData("text", JSON.stringify({ type: evt.target.getAttribute("type"), call: evt.target.getAttribute("call") }));
+        }).bind("mouseover", function (evt) {
+            var type = evt.target.getAttribute("type");
+            var call = evt.target.getAttribute("call").replace(/Statement$/, "");
+            $("#node_help_" + _this.element).html("");
+            if (type == "base" && statementEditorInfo[call])
+                $("#node_help_" + _this.element).html(statementEditorInfo[call].help);
+            else if (type == "api") {
+                call = ("" + call).toLowerCase();
+                var p = call.split('.');
+                if (p.length == 2) {
+                    for (var i = 0; i < apiFunctions.length; i++) {
+                        if (apiFunctions[i].name.toLowerCase() == call) {
+                            $("#node_help_" + _this.element).html(GetApiSignature(call) + GetApiDescription(call));
+                            break;
+                        }
+                    }
+                }
+                else
+                    $("#node_help_" + _this.element).html("Calls the function '" + call + "' and pass the parameters.");
+            }
+        }).bind("mouseout", function (evt) {
+            $("#node_help_" + _this.element).html("");
+        });
+    };
+    CodeGraphEditor.prototype.Collapse = function (evt) {
+        var obj = evt.target;
+        while (obj.className.indexOf("codeBlock") == -1)
+            obj = obj.parentElement;
+        $(obj).toggleClass("collapsedBlock");
+        var id = obj.id;
+        // Not collapsed
+        if (obj.className.indexOf("collapsedBlock") == -1)
+            this.expandedBlocks.push(id);
+        else {
+            for (var i = 0; i < this.expandedBlocks.length; i++) {
+                if (this.expandedBlocks[i] == id) {
+                    this.expandedBlocks.splice(i, 1);
+                    break;
+                }
+            }
+        }
+    };
+    CodeGraphEditor.prototype.GetCode = function () {
+        return this.editor.getDoc().getValue();
+    };
+    CodeGraphEditor.prototype.SetCode = function (source) {
+        this.inUpdate = true;
+        this.code = source;
+        this.statements = [];
+        try {
+            var parser = new CodeParser(this.code);
+            this.statements = parser.GetAllStatements();
+            this.RenderNodes();
+            this.RenderSelector();
+        }
+        catch (ex) {
+        }
+        this.editor.getDoc().setValue(source);
+        this.editor.refresh();
+        CodeMirror.signal(this.editor, "change");
+        this.inUpdate = false;
+    };
+    CodeGraphEditor.prototype.SetReadonly = function (readonly) {
+        this.editor.readOnly = readonly;
+    };
+    CodeGraphEditor.prototype.FromNodeToCode = function () {
+        try {
+            var code = "";
+            for (var i = 0; i < this.statements.length; i++) {
+                code += this.statements[i].ToCode(0) + "\n";
+            }
+            code = code.trim();
+            this.code = code;
+            this.editor.getDoc().setValue(code);
+            this.editor.refresh();
+            CodeMirror.signal(this.editor, "change");
+        }
+        catch (ex) {
+        }
+    };
+    CodeGraphEditor.prototype.Refresh = function () {
+        this.editor.refresh();
+    };
+    CodeGraphEditor.prototype.MouseOver = function (evt) {
+        $(".overBlock").removeClass("overBlock");
+        var obj = evt.target;
+        while (obj.className.indexOf("codeBlock") == -1)
+            obj = obj.parentElement;
+        $(obj).addClass("overBlock");
+        $("#node_help_" + this.element).html("");
+        var path = obj.id.substr(3).replace(/_/g, ".");
+        if (path) {
+            var node = this.GetNode(path);
+            if (node) {
+                if (node.constructor == FunctionCallStatement) {
+                    var call = node.Name.toLowerCase();
+                    var p = call.split('.');
+                    if (p.length == 2) {
+                        for (var i = 0; i < apiFunctions.length; i++) {
+                            if (apiFunctions[i].name.toLowerCase() == call) {
+                                $("#node_help_" + this.element).html(GetApiSignature(call) + GetApiDescription(call));
+                                break;
+                            }
+                        }
+                    }
+                    else
+                        $("#node_help_" + this.element).html("Calls the function '" + call + "' and pass the parameters.");
+                }
+                else {
+                    var className = ("" + node.constructor).match(/function ([^\(]+)\(/)[1].replace("Statement", "");
+                    if (statementEditorInfo[className])
+                        $("#node_help_" + this.element).html(statementEditorInfo[className].help);
+                }
+            }
+        }
+    };
+    CodeGraphEditor.prototype.MouseOut = function (evt) {
+        $(".overBlock").removeClass("overBlock");
+        $("#node_help_" + this.element).html("");
+    };
+    CodeGraphEditor.HideWelcome = function () {
+        Framework.ReloadPreferences();
+        framework.Preferences['codeGraphEditor_help'] = false;
+        Framework.SavePreferences();
+        $("#codeGraphEditorHelp").hide();
+    };
+    return CodeGraphEditor;
+}());
+var inventoryMenu = new (/** @class */ (function () {
+    function class_4() {
+        this.inventoryDisplayed = false;
+    }
+    return class_4;
+}()));
+var InventoryMenu = /** @class */ (function () {
+    function InventoryMenu() {
+    }
+    InventoryMenu.AdditionalCSS = function () {
+        return "#inventoryIcon\n\
+{\n\
+    position: absolute;\n\
+    left: -" + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
+    top: 80px;\n\
+}\n\
+#inventoryIcon .gamePanelContentNoHeader\n\
+{\n\
+    width: 74px;\n\
+}\n\
+#inventoryObjectDetails\n\
+{\n\
+    position: absolute;\n\
+    left: " + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
+    right: " + parseInt("" + world.art.panelStyle.rightBorder) + "px;\n\
+    bottom: " + parseInt("" + world.art.panelStyle.bottomBorder) + "px;\n\
+    overflow: hidden;\n\
+    height: 150px;\n\
+    padding: 7px;\n\
+    box-sizing: border-box;\n\
+}\n\
+\n\
+#inventoryObjectList\n\
+{\n\
+    position: absolute;\n\
+    left: " + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
+    right: " + parseInt("" + world.art.panelStyle.rightBorder) + "px;\n\
+    top: " + parseInt("" + world.art.panelStyle.topBorder) + "px;\n\
+    bottom: " + (parseInt("" + world.art.panelStyle.bottomBorder) + 150) + "px;\n\
+    overflow-y: scroll;\n\
+}\n\
+\n\
+#inventoryObjectList h1\n\
+{\n\
+    border-bottom: solid 1px " + Main.EnsureColor(world.art.panelStyle.contentColor) + ";\n\
+    margin-bottom: 5px;\n\
+}\n\
+";
+    };
+    InventoryMenu.Init = function (position) {
+        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowInventory === false))) {
+            $("#inventoryIcon").hide();
+            return position;
+        }
+        $("#inventoryIcon").css("top", position + "px");
+        if (game)
+            $("#inventoryIcon .gamePanelContentNoHeader").html("<img src='art/tileset2/inventory_icon.png'>");
+        else
+            $("#inventoryIcon .gamePanelContentNoHeader").html("<img src='/art/tileset2/inventory_icon.png'>");
+        return position + 64 + world.art.panelStyle.topBorder;
+    };
+    InventoryMenu.Toggle = function () {
+        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowInventory === false)))
+            return;
+        $("#profileIcon").removeClass("openPanelIcon");
+        profileMenu.profileDisplayed = false;
+        $("#messageIcon").removeClass("openPanelIcon");
+        messageMenu.messageDisplayed = false;
+        $("#journalIcon").removeClass("openPanelIcon");
+        journalMenu.journalDisplayed = false;
+        if (inventoryMenu.inventoryDisplayed) {
+            $("#gameMenuPanel").hide();
+            $("#inventoryIcon").removeClass("openPanelIcon");
+            inventoryMenu.inventoryDisplayed = false;
+        }
+        else {
+            inventoryMenu.inventoryDisplayed = true;
+            $("#gameMenuPanel").show();
+            $("#inventoryIcon").addClass("openPanelIcon");
+            InventoryMenu.Update();
+        }
+    };
+    InventoryMenu.Update = function () {
+        if (!inventoryMenu.inventoryDisplayed)
+            return;
+        var html = "";
+        var wearSomething = false;
+        for (var slot in world.Player.EquipedObjects) {
+            wearSomething = true;
+            break;
+        }
+        html += "<div id='inventoryObjectList'>";
+        if (wearSomething) {
+            html += "<h1>Wearing</h1>";
+            html += "<table class='inventoryList'>";
+            for (var slot in world.Player.EquipedObjects) {
+                html += "<tr>";
+                var wearedItem = world.Player.EquipedObjects[slot];
+                var details = world.GetInventoryObject(wearedItem.Name);
+                if (!details)
+                    continue;
+                if (details.CanUnwear())
+                    html += "<td><div class='gameButton' onclick='InventoryMenu.Unwear(\"" + slot.htmlEntities() + "\");'>Unwear</div></td>";
+                else
+                    html += "<td>&nbsp;</td>";
+                html += "<td>" + (details.Image ? "<img src='" + details.Image.htmlEntities() + "' width='32' height='32'>" : "") + "</td>";
+                html += "<td>" + world.Player.EquipedObjects[slot].Name.htmlEntities() + "</td>";
+                html += "<td>" + slot.title().htmlEntities() + "</td>";
+                html += "</tr>";
+            }
+            html += "</table>";
+        }
+        html += "<h1>Inventory</h1>";
+        if (!world.Player.Inventory || !world.Player.Inventory.length) {
+            $("#gameMenuPanelContent").html(html);
+            return;
+        }
+        world.Player.Inventory.sort(function (a, b) {
+            if (a.Name > b.Name)
+                return 1;
+            if (a.Name < b.Name)
+                return -1;
+            return 0;
+        });
+        world.Player.StoredCompare = world.Player.JSON();
+        html += "<table class='inventoryList'>";
+        html += "<thead>";
+        html += "<tr><td>&nbsp;</td><td>&nbsp;</td><td>Item</td><td>Quantity</td></tr>";
+        html += "</thead>";
+        html += "<tbody>";
+        for (var i = 0; i < world.Player.Inventory.length; i++) {
+            var details = world.Player.Inventory[i].GetDetails();
+            if (details == null) {
+                world.Player.Inventory.splice(i, 1);
+                i--;
+                world.Player.StoredCompare = world.Player.JSON();
+                continue;
+            }
+            html += "<tr onmouseover='InventoryMenu.ShowDetails(" + i + ");' onmouseout='InventoryMenu.HideDetails();'>";
+            html += "<td>";
+            if (details.CanWear())
+                html += "<div class='gameButton' onclick='InventoryMenu.Wear(" + i + ");'>Equip</div>";
+            if (details.ActionLabel() && details.CanUse())
+                html += "<div class='gameButton' onclick='InventoryMenu.Use(" + i + ");'>" + details.ActionLabel().htmlEntities() + "</div>";
+            if (details.CanDrop())
+                html += "<div class='gameButton' onclick='InventoryMenu.Drop(" + i + ");'>Drop</div>";
+            if (details.CanWear() || (details.ActionLabel() && details.CanUse()))
+                html += "<div class='gameButton' onclick='InventoryMenu.Quickslot(" + i + ");'>Quickslot</div>";
+            html += "</td>";
+            html += "<td>" + (details.Image ? "<img src='" + details.Image.htmlEntities() + "' width='32' height='32'>" : "") + "</td>";
+            html += "<td><div>" + world.Player.Inventory[i].Name.htmlEntities() + "</div></td>";
+            html += "<td>" + ("" + world.Player.Inventory[i].Count).htmlEntities() + "</td>";
+            html += "</tr>";
+        }
+        html += "</tbody></table></div>";
+        html += "<div id='inventoryObjectDetails'></div>";
+        $("#gameMenuPanelContent").html(html);
+    };
+    InventoryMenu.ShowDetails = function (rowId) {
+        var details = world.Player.Inventory[rowId].GetDetails();
+        var html = "";
+        html += (details.Image ? "<img src='" + details.Image.htmlEntities() + "' width='32' height='32' style='vertical-align: middle;'>" : "");
+        html += "<b>" + details.Name.htmlEntities() + ":</b><br>";
+        html += Main.TextTransform(details.Description, true);
+        $("#inventoryObjectDetails").html(html);
+    };
+    InventoryMenu.HideDetails = function () {
+        $("#inventoryObjectDetails").html("");
+    };
+    InventoryMenu.Wear = function (rowId) {
+        var details = world.Player.Inventory[rowId].GetDetails();
+        if (details.CanWear())
+            world.Player.Wear(world.Player.Inventory[rowId].Name);
+    };
+    InventoryMenu.Unwear = function (slotName) {
+        var wearedItem = world.Player.EquipedObjects[slotName];
+        var details = world.GetInventoryObject(wearedItem.Name);
+        if (details.CanUnwear())
+            world.Player.Unwear(slotName);
+    };
+    InventoryMenu.Drop = function (rowId) {
+        var details = world.Player.Inventory[rowId].GetDetails();
+        if (details.CanDrop())
+            world.Player.RemoveItem(world.Player.Inventory[rowId].Name);
+    };
+    InventoryMenu.Use = function (rowId) {
+        var details = world.Player.Inventory[rowId].GetDetails();
+        if (details.CanUse())
+            details.Use();
+    };
+    InventoryMenu.Quickslot = function (rowId) {
+        profileMenu.profileDisplayed = false;
+        var html = "<h1>Quickslot</h1>";
+        for (var i = 0; i < 10; i++) {
+            var q = world.Player.QuickSlot[i];
+            var skill = null;
+            if (!q)
+                q = "-- Empty --";
+            else if (q.substring(0, 2) == "S/") {
+                var skill = world.GetSkill(q.substring(2));
+                q = "Skill " + q.substring(2).title().htmlEntities();
+            }
+            else
+                q = "Item " + q.substring(2).title().htmlEntities();
+            if (skill && skill.CodeVariable("QuickslotEditable") === "false") {
+                html += "Slot " + (i + 1) + " " + q + "<br>";
+            }
+            else
+                html += "<div class='gameButton' onclick='InventoryMenu.SetQuickslot(" + rowId + "," + i + ");'>Slot " + (i + 1) + "</div>" + q + "<br>";
+        }
+        html += "<center><div class='gameButton' onclick='InventoryMenu.Update();'>Cancel</div></center>";
+        $("#gameMenuPanelContent").html(html);
+    };
+    InventoryMenu.SetQuickslot = function (rowId, slotId) {
+        var details = world.Player.Inventory[rowId].GetDetails();
+        var itemName = details.Name;
+        for (var i = 0; i < 10; i++)
+            if (world.Player.QuickSlot[i] == "I/" + itemName)
+                world.Player.QuickSlot[i] = null;
+        world.Player.QuickSlot[slotId] = "I/" + itemName;
+        world.Player.StoredCompare = world.Player.JSON();
+        world.Player.Save();
+        InventoryMenu.Update();
+    };
+    return InventoryMenu;
+}());
+var journalMenu = new (/** @class */ (function () {
+    function class_5() {
+        this.journalDisplayed = false;
+    }
+    return class_5;
+}()));
+var JournalMenu = /** @class */ (function () {
+    function JournalMenu() {
+    }
+    JournalMenu.AdditionalCSS = function () {
+        return "#journalIcon\n\
+{\n\
+    position: absolute;\n\
+    left: -" + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
+    top: 245px;\n\
+}\n\
+#journalIcon .gamePanelContentNoHeader\n\
+{\n\
+    width: 74px;\n\
+}\n\
+";
+    };
+    JournalMenu.Init = function (position) {
+        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowJournal === false))) {
+            $("#journalIcon").hide();
+            return position;
+        }
+        $("#journalIcon").css("top", position + "px");
+        if (game)
+            $("#journalIcon .gamePanelContentNoHeader").html("<img src='art/tileset2/journal_icon.png'>");
+        else
+            $("#journalIcon .gamePanelContentNoHeader").html("<img src='/art/tileset2/journal_icon.png'>");
+        return position + 64 + world.art.panelStyle.topBorder;
+    };
+    JournalMenu.Toggle = function () {
+        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowJournal === false)))
+            return;
+        inventoryMenu.inventoryDisplayed = false;
+        $("#inventoryIcon").removeClass("openPanelIcon");
+        messageMenu.messageDisplayed = false;
+        $("#messageIcon").removeClass("openPanelIcon");
+        profileMenu.profileDisplayed = false;
+        $("#profileIcon").removeClass("openPanelIcon");
+        if (journalMenu.journalDisplayed) {
+            $("#gameMenuPanel").hide();
+            $("#journalIcon").removeClass("openPanelIcon");
+            journalMenu.journalDisplayed = false;
+        }
+        else {
+            journalMenu.journalDisplayed = true;
+            $("#gameMenuPanel").show();
+            $("#journalIcon").addClass("openPanelIcon");
+            JournalMenu.Update();
+        }
+    };
+    JournalMenu.Update = function () {
+        if (!journalMenu.journalDisplayed)
+            return;
+        world.Player.Quests.sort(JournalMenu.SortQuests);
+        world.Player.StoredCompare = world.Player.JSON();
+        world.Player.Save();
+        var html = "<h1>Quest Journal</h1>";
+        if (world.Player.Quests.length > 0) {
+            var showCompleted = false;
+            if (!world.Player.Quests[0].Completed)
+                html += "<h2>Open quests</h2>";
+            for (var i = 0; i < world.Player.Quests.length; i++) {
+                var quest = world.GetQuest(world.Player.Quests[i].Name);
+                if (!quest)
+                    continue;
+                if (!showCompleted && world.Player.Quests[i].Completed) {
+                    showCompleted = true;
+                    html += "<h2>Completed quests</h2>";
+                }
+                html += "<b>" + quest.Name.htmlEntities() + "</b><br>";
+                html += Main.TextTransform(quest.Description, true) + "<br>";
+                for (var j = 0; j < world.Player.Quests[i].JournalEntries.length; j++) {
+                    var entry = JournalMenu.GetJournal(quest, world.Player.Quests[i].JournalEntries[j].EntryId);
+                    if (!entry)
+                        continue;
+                    html += Main.TextTransform(entry) + "<br>";
+                }
+            }
+        }
+        $("#gameMenuPanelContent").html(html);
+    };
+    JournalMenu.GetJournal = function (quest, id) {
+        for (var i = 0; i < quest.JournalEntries.length; i++)
+            if (quest.JournalEntries[i].Id == id)
+                return quest.JournalEntries[i].Entry;
+        return null;
+    };
+    JournalMenu.SortQuests = function (a, b) {
+        if (a.Completed && b.Completed) {
+            if (a.Completed > b.Completed)
+                return -1;
+            if (a.Completed < b.Completed)
+                return 1;
+            return 0;
+        }
+        if (a.Completed && !b.Completed)
+            return 1;
+        if (!a.Completed && b.Completed)
+            return -1;
+        if (a.JournalEntries && a.JournalEntries.length > 0 && b.JournalEntries && b.JournalEntries.length > 0) {
+            if (a.JournalEntries[a.JournalEntries.length - 1] > b.JournalEntries[b.JournalEntries.length - 1])
+                return 1;
+            if (a.JournalEntries[a.JournalEntries.length - 1] < b.JournalEntries[b.JournalEntries.length - 1])
+                return -1;
+            return 0;
+        }
+        if (a.JournalEntries && a.JournalEntries.length > 0 && (!b.JournalEntries || b.JournalEntries.length == 0))
+            return 1;
+        if ((!a.JournalEntries || a.JournalEntries.length == 0) && b.JournalEntries && b.JournalEntries.length > 0)
+            return -1;
+        if (a.Started > b.Started)
+            return 1;
+        if (a.Started < b.Started)
+            return -1;
+        return 0;
+    };
+    return JournalMenu;
+}());
+/// <reference path="../../Common/Libs/MiniQuery.ts"/>
+var Routing = /** @class */ (function () {
+    function Routing(action, callback) {
+        this.Action = action;
+        this.Callback = callback;
+    }
+    return Routing;
+}());
+var GuiPart = /** @class */ (function () {
+    function GuiPart(position, callback) {
+        this.Position = position;
+        this.Callback = callback;
+    }
+    return GuiPart;
+}());
+String.prototype.endsWith = function (toCheck) {
+    return (this.substr(this.length - toCheck.length) == toCheck);
+};
+String.prototype.title = function () {
+    return this.replace(/(\w)([A-Z][a-z])/g, "$1 $2");
+};
+String.prototype.padLeft = function (c, nb) {
+    if (this.length >= nb)
+        return this;
+    return Array(nb - this.length + 1).join(c) + this;
+};
+String.prototype.htmlEntities = function (escapeQuotes) {
+    if (escapeQuotes === void 0) { escapeQuotes = true; }
+    if (!escapeQuotes)
+        return this.replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;");
+    return this.replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;").replace(/'/g, "&#39;").replace(/"/g, "&quot;");
+};
+String.prototype.capitalize = function () {
+    return this.charAt(0).toUpperCase() + this.substr(1);
+};
+/**
+* Transorms the string into a CSS valid ID
+*/
+String.prototype.id = function () {
+    return this.replace(/ /g, "_").replace(/\//g, "_").replace(/#/g, "_").replace(/\./g, "_").replace(/</g, "_")
+        .replace(/:/g, "_").replace(/\+/g, "_").replace(/\*/g, "_").replace(/\-/g, "_").replace(/\\/g, "_")
+        .replace(/\(/g, "_").replace(/\)/g, "_").replace(/\&/g, "_").replace(/,/g, "_").replace(/\=/g, "_").replace(/\'/g, "_");
+};
+Array.prototype.contains = function (toFind) {
+    for (var i = 0; i < this.length; i++)
+        if (this[i] == toFind)
+            return true;
+    return false;
+};
+function FirstItem(dictionary) {
+    for (var item in dictionary)
+        return item;
+    return null;
+}
+function Keys(dictionary) {
+    var keys = [];
+    for (var item in dictionary)
+        keys.push(item);
+    return keys;
+}
+function isString(variable) {
+    return (typeof variable == 'string' || variable instanceof String);
+}
+function IsNull(value) {
+    return (value === null || value === undefined);
+}
+function IfIsNull(value, defaultValue) {
+    return ((value === null || value === undefined) ? defaultValue : value);
+}
+/**
+ * Don't use static properties as it may trigger Typescript bugs. Therefore an instance of an anonymous class
+ * containting the needed values is the current solution.
+ * Sadly with this solution we loose the visibility of the properties.
+ *
+ * https://github.com/Microsoft/TypeScript/issues/5549
+ *
+ */
+var framework = new (/** @class */ (function () {
+    function class_6() {
+        this.DefaultModule = "Play";
+        this.Routing = [];
+        this.HandleUrl = true;
+        this.LastRoute = null;
+        this.CurrentHandler = null;
+        this.Preferences = {};
+        this.eventRouteCall = null;
+        this.cachedTemplates = [];
+        this.CurrentUrl = {};
+        this.GuiParts = [];
+        this.Months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        this.WeekDays = ["M", "T", "W", "T", "F", "S", "S"];
+        this.MonthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        this.keyPressed = [];
+        this.specialKeyHandling = [];
+        this.isPrompt = false;
+        this.RoutePrefix = "/Engine/Module/";
+    }
+    return class_6;
+}()));
+/**
+ * Base framework class
+ *
+ * Page sections must implement:
+ * static Recover(url)
+ * The function will receive an "url" object (dictionary) containing all the URL parameters.
+ *
+ * Any class can implement the following function which will be called during the framework initialization:
+ * static InitFunction(): void
+ * The framework will need a corresponding Templates/XXX.html or
+ * an <script id="XXX" type="text/html"> tag in the index.html where XXX is the name of the typescript class.
+ *
+ */
+var Framework = /** @class */ (function () {
+    function Framework() {
+    }
+    /**
+     * Calculates an MD5 of a given string
+     */
+    Framework.MD5 = function (source) {
+        return window["md5"](source);
+    };
+    /**
+     * Parse the URL and returns an object (dictionary) of the parsed URL.
+     * @param url the string of the url (the # part of the url is the important piece).
+     */
+    Framework.ParseUrl = function (url) {
+        if (url === void 0) { url = null; }
+        if (!url) {
+            url = ("" + document.location);
+            if (url.indexOf("#") == -1)
+                url = "";
+            else
+                url = url.substr(url.indexOf("#") + 1);
+        }
+        else
+            url = url.substr(url.indexOf("#") + 1);
+        var parts = url.split("&");
+        var result = {};
+        parts.forEach(function (row) { return result[row.split("=")[0]] = decodeURIComponent(row.split("=")[1]); });
+        return result;
+    };
+    Framework.ParseQuery = function (url) {
+        if (url === void 0) { url = null; }
+        if (!url) {
+            url = ("" + document.location);
+            if (url.indexOf("?") == -1)
+                url = "";
+            else
+                url = url.substr(url.indexOf("?") + 1);
+        }
+        else
+            url = url.substr(url.indexOf("?") + 1);
+        if (url.indexOf('#') != -1)
+            url = url.substr(0, url.indexOf('#'));
+        var parts = url.split("&");
+        var result = {};
+        parts.forEach(function (row) { return result[row.split("=")[0]] = decodeURIComponent(row.split("=")[1]); });
+        return result;
+    };
+    /**
+    * Re-execute the routing
+    */
+    Framework.Recall = function () {
+        Framework.ExecuteRoute();
+    };
+    /**
+     * Internal function used to re-route the URL to the right class and passing the parsed URL to the callback.
+     */
+    Framework.ExecuteRoute = function (reload) {
+        if (reload === void 0) { reload = false; }
+        if (!framework.HandleUrl)
+            return;
+        var url = Framework.ParseUrl();
+        if (!url["action"])
+            url["action"] = framework.DefaultModule;
+        framework.CurrentUrl = url;
+        var found = false;
+        for (var i = 0; i < framework.Routing.length; i++) {
+            if (framework.Routing[i].Action == url["action"]) {
+                found = true;
+                break;
+            }
+        }
+        if (!found)
+            url["action"] = framework.DefaultModule;
+        Framework.RoutePage(url["action"], reload);
+    };
+    Framework.Rerun = function () {
+        Framework.ExecuteRoute(true);
+    };
+    Framework.RoutePage = function (page, reload) {
+        if (reload === void 0) { reload = false; }
+        for (var i = 0; i < framework.Routing.length; i++) {
+            if (framework.Routing[i].Action == page) {
+                var isReady = true;
+                if (framework.LastRoute != page || reload === true) {
+                    if (framework.LastRoute != null) {
+                        try {
+                            window[framework.LastRoute].Dispose();
+                        }
+                        catch (ex) {
+                            //alert(ex);
+                        }
+                    }
+                    if ($("#" + framework.Routing[i].Action).length) {
+                        $("#contentArea").html($("#" + framework.Routing[i].Action).html());
+                        framework.LastRoute = page;
+                    }
+                    else if (framework.cachedTemplates[framework.Routing[i].Action]) {
+                        $("#contentArea").html(framework.cachedTemplates[framework.Routing[i].Action]);
+                        framework.LastRoute = page;
+                    }
+                    else {
+                        isReady = false;
+                        $.ajax({
+                            type: "GET",
+                            url: framework.RoutePrefix + framework.Routing[i].Action + "/Template.html",
+                            success: function (msg) {
+                                if (msg.toLocaleLowerCase().indexOf("<body>")) {
+                                    var m = msg.match(/\<body\>((.|\n|\r)*)\<\/body\>/i);
+                                    if (m && m[1])
+                                        msg = m[1];
+                                }
+                                framework.cachedTemplates[framework.Routing[i].Action] = msg;
+                                $("#contentArea").html(msg);
+                                framework.LastRoute = page;
+                                framework.CurrentHandler = page;
+                                framework.Routing[i].Callback(framework.CurrentUrl);
+                                document.dispatchEvent(framework.eventRouteCall);
+                            }
+                        });
+                    }
+                }
+                if (isReady) {
+                    framework.CurrentHandler = page;
+                    framework.Routing[i].Callback(framework.CurrentUrl);
+                    document.dispatchEvent(framework.eventRouteCall);
+                }
+                return;
+            }
+        }
+    };
+    /**
+     * Changes the title of the page
+     * @param title component added to the page title
+     */
+    Framework.SetTitle = function (title) {
+        if (!title || title == "")
+            document.title = "Dot World Maker";
+        else
+            document.title = "Dot World Maker - " + title;
+    };
+    Framework.MakeUrl = function (newData) {
+        var s = "";
+        var props = [];
+        for (var i in newData)
+            props.push(i);
+        props.sort();
+        for (var j = 0; j < props.length; j++) {
+            if (!newData[props[j]] || newData[props[j]] == "")
+                continue;
+            if (s != "")
+                s += "&";
+            s += props[j] + "=" + encodeURIComponent(newData[props[j]]);
+        }
+        return s;
+    };
+    /**
+     * Change the URL
+     * @param newData should be a dictionary which will build hash part of the URL
+     * @skipHandler will avoid to call the routing (by default it's true)
+     */
+    Framework.SetLocation = function (newData, skipHandler, replace) {
+        if (skipHandler === void 0) { skipHandler = true; }
+        if (replace === void 0) { replace = false; }
+        // We need to compose it ourself
+        if (isString(newData))
+            newData = JSON.parse(newData);
+        if (!newData['action'])
+            newData['action'] = framework.CurrentHandler;
+        framework.CurrentUrl = newData;
+        newData = Framework.MakeUrl(newData);
+        var oldUrl = "" + document.location;
+        var url = ("" + document.location);
+        if (url.indexOf("#") != -1)
+            url = url.substr(0, url.indexOf("#"));
+        if (skipHandler)
+            framework.HandleUrl = false;
+        url += "#" + newData;
+        if (replace)
+            document.location.replace(url);
+        else
+            document.location.assign(url);
+        if (skipHandler) {
+            setTimeout(function () {
+                framework.HandleUrl = true;
+            }, 100);
+        }
+        else if (oldUrl == url)
+            Framework.ExecuteRoute();
+    };
+    /**
+     * Set a callback in case the routing change
+     */
+    Framework.OnRouteCall = function (callback) {
+        document.addEventListener("RouteCall", callback, false);
+    };
+    /**
+     * Save the preference object to local storage
+     */
+    Framework.SavePreferences = function () {
+        localStorage.setItem("preferences", JSON.stringify(framework.Preferences));
+    };
+    /**
+     * Store the routings
+     */
+    Framework.AutoLinkRoutes = function () {
+        for (var i in window) {
+            try {
+                if (i.substr(0, 3) != "web" && window[i] && window[i].Recover) {
+                    if (!(window[i].IsAccessible && window[i].IsAccessible() == false))
+                        framework.Routing.push(new Routing(i, window[i].Recover));
+                }
+            }
+            catch (ex) {
+            }
+        }
+    };
+    /**
+     * Store the gui parts
+     */
+    Framework.AutoLinkGuiParts = function () {
+        for (var i in window) {
+            try {
+                if (i.substr(0, 3) != "web" && window[i] && window[i].GuiPart) {
+                    var p = window[i].GuiPart();
+                    if (p)
+                        framework.GuiParts.push(p);
+                }
+            }
+            catch (ex) {
+            }
+        }
+        framework.GuiParts.sort(function (a, b) { return a.Position - b.Position; });
+    };
+    Framework.FixObjectDates = function (source) {
+        var dest = JSON.parse(JSON.stringify(source));
+        for (var i in dest) {
+            if (source[i] instanceof Date)
+                dest[i] = Framework.FullDateFormat(source[i]);
+        }
+        return dest;
+    };
+    Framework.NetDate = function (source) {
+        return "/Date(" + source.getTime() + ")/";
+    };
+    Framework.DateFormat = function (source) {
+        if (!source)
+            return "";
+        return source.getFullYear() + "/" + ("" + (source.getMonth() + 1)).padLeft("0", 2) + "/" + ("" + source.getDate()).padLeft("0", 2);
+        //return ("" + source.getDate()).padLeft("0", 2) + "/" + ("" + (source.getMonth() + 1)).padLeft("0", 2) + "/" + source.getFullYear();
+    };
+    Framework.FullDateFormat = function (source) {
+        if (!source)
+            return "";
+        return source.getFullYear() + "/" + ("" + (source.getMonth() + 1)).padLeft("0", 2) + "/" + ("" + source.getDate()).padLeft("0", 2) + " " +
+            ("" + source.getHours()).padLeft("0", 2) + ":" + ("" + source.getMinutes()).padLeft("0", 2) + ":" + ("" + source.getSeconds()).padLeft("0", 2);
+        /*return ("" + source.getDate()).padLeft("0", 2) + "/" + ("" + (source.getMonth() + 1)).padLeft("0", 2) + "/" + source.getFullYear() + " " +
+            ("" + source.getHours()).padLeft("0", 2) + ":" + ("" + source.getMinutes()).padLeft("0", 2) + ":" + ("" + source.getSeconds()).padLeft("0", 2);*/
+    };
+    Framework.ParseDate = function (source) {
+        if (!source || source == "")
+            return null;
+        if (source.charAt(source.length - 1) == "Z")
+            return new Date(source);
+        source = source.replace(/\./g, "/").replace(/\-/g, "/");
+        if (source.charAt(2) == "/") {
+            return new Date(parseInt(source.substr(6, 4)), parseInt(source.substr(3, 2)) - 1, parseInt(source.substr(0, 2)));
+        }
+        else if (source.charAt(4) == "/") {
+            return new Date(parseInt(source.substr(0, 4)), parseInt(source.substr(5, 2)) - 1, parseInt(source.substr(8, 2)));
+        }
+        return new Date(parseInt(source));
+    };
+    /**
+     * Calls all the InitFunction
+     */
+    Framework.CallInits = function () {
+        for (var i in window) {
+            try {
+                if (i.substr(0, 3) != "web" && window[i] && window[i].InitFunction) {
+                    window[i].InitFunction();
+                }
+            }
+            catch (ex) {
+            }
+        }
+    };
+    Framework.HandleError = function (returnedError) {
+        if (returnedError.status == 0)
+            return "";
+        try {
+            var err = JSON.parse(returnedError.responseText);
+            if (err.ExceptionType == "IV4.Backend.IvException") {
+                var msg = err.Message;
+                return msg.substr(msg.indexOf(":") + 1);
+            }
+            else {
+                /*Framework.RoutePage("ErrorHandling");
+                ErrorHandling.SetError(err.Message + "\n" + err.ExceptionType + "\n" + err.StackTrace);*/
+                return "";
+            }
+        }
+        catch (ex) {
+            /*Framework.RoutePage("ErrorHandling");
+            ErrorHandling.SetError(returnedError.responseText);*/
+            return "";
+        }
+    };
+    Framework.IsKeyPressed = function (code) {
+        if (framework.keyPressed[code] === true)
+            return true;
+        return false;
+    };
+    Framework.RegisterKey = function (keyCode, callback) {
+        framework.specialKeyHandling[keyCode] = callback;
+    };
+    Framework.keyDown = function (e) {
+        e = e ? e : event;
+        framework.keyPressed[e.keyCode] = true;
+        //console.log(e.keyCode);
+        if (framework.specialKeyHandling[e.keyCode]) {
+            if (framework.specialKeyHandling[e.keyCode](e.keyCode) === true) {
+                // Firefox
+                try {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                catch (er) {
+                }
+                // IE
+                try {
+                    e.cancelBubble = true;
+                    e.returnValue = false;
+                }
+                catch (er) {
+                }
+                return false;
+            }
+        }
+        else
+            return true;
+    };
+    Framework.keyUp = function (e) {
+        e = e ? e : event;
+        framework.keyPressed[e.keyCode] = false;
+        if (framework.specialKeyHandling[e.keyCode]) {
+            // Firefox
+            try {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+            catch (er) {
+            }
+            // IE
+            try {
+                e.cancelBubble = true;
+                e.returnValue = false;
+            }
+            catch (er) {
+            }
+            return false;
+        }
+        else
+            return true;
+    };
+    Framework.Confirm = function (displayQuestion, yesCallback, noCallback) {
+        if (noCallback === void 0) { noCallback = null; }
+        framework.isPrompt = false;
+        $("#backgroundConfirm").show();
+        $("#confirmDialog").show();
+        $("#confirmOk").hide();
+        $("#confirmYes").show().html("Yes");
+        $("#confirmNo").show().html("No");
+        $("#confirmLabel").html(displayQuestion);
+        //$("#confirmDialog").css("top", "0px");
+        $("#confirmDialog").animate({
+            top: ($(window).height() / 2 - 50) + "px"
+        }, 200);
+        framework.yesCallback = yesCallback;
+        framework.noCallback = noCallback;
+    };
+    Framework.Prompt = function (displayQuestion, defaultValue, yesCallback, noCallback, confirmLabel, cancelLabel) {
+        if (noCallback === void 0) { noCallback = null; }
+        if (confirmLabel === void 0) { confirmLabel = "Confirm"; }
+        if (cancelLabel === void 0) { cancelLabel = "Cancel"; }
+        framework.isPrompt = true;
+        $("#backgroundConfirm").show();
+        $("#confirmDialog").show();
+        $("#confirmOk").hide();
+        $("#confirmYes").show().html(confirmLabel);
+        $("#confirmNo").show().html(cancelLabel);
+        $("#confirmLabel").html(displayQuestion + "<br><input type='text' id='promptField' value='" + (defaultValue ? defaultValue.htmlEntities() : "") + "'>");
+        //$("#confirmDialog").css("top", "0px");
+        $("#confirmDialog").animate({
+            top: ($(window).height() / 2 - 50) + "px"
+        }, 200, function () {
+            $("#promptField").focus();
+        });
+        $("#promptField").focus();
+        framework.yesCallback = yesCallback;
+        framework.noCallback = noCallback;
+    };
+    Framework.Alert = function (displayLabel, okCallback) {
+        if (okCallback === void 0) { okCallback = null; }
+        framework.isPrompt = false;
+        $("#backgroundConfirm").show();
+        $("#confirmDialog").show();
+        $("#confirmOk").show();
+        $("#confirmYes").hide();
+        $("#confirmNo").hide();
+        $("#confirmLabel").html(displayLabel);
+        $("#backgroundConfirm").bind("click", Framework.ConfirmOk);
+        //$("#confirmDialog").css("top", "0px");
+        try {
+            $("#confirmDialog").animate({
+                top: ($(window).height() / 2 - 50) + "px"
+            }, 200);
+        }
+        catch (ex) {
+        }
+        framework.yesCallback = okCallback;
+    };
+    Framework.ShowMessage = function (displayText) {
+        if (framework.MessageTimeout)
+            clearTimeout(framework.MessageTimeout);
+        $("#displayMessage").show().first().className = "displayMessageVisible";
+        $("#displayMessageContent").html(displayText);
+        framework.MessageTimeout = setTimeout(function () {
+            $("#displayMessage").first().className = "displayMessageHidden";
+            framework.MessageTimeout = setTimeout(function () {
+                $("#displayMessage").hide();
+                framework.MessageTimeout = null;
+            }, 500);
+        }, 5000);
+    };
+    Framework.ConfirmOk = function () {
+        $("#backgroundConfirm").unbind("click", Framework.ConfirmOk);
+        $("#backgroundConfirm").hide();
+        $("#confirmDialog").hide();
+        if (framework.yesCallback)
+            framework.yesCallback();
+    };
+    Framework.ConfirmYes = function () {
+        $("#backgroundConfirm").hide();
+        $("#confirmDialog").hide();
+        if (framework.isPrompt && framework.yesCallback)
+            framework.yesCallback($("#promptField").val());
+        else if (framework.yesCallback)
+            framework.yesCallback();
+    };
+    Framework.ConfirmNo = function () {
+        $("#backgroundConfirm").hide();
+        $("#confirmDialog").hide();
+        if (framework.noCallback)
+            framework.noCallback();
+    };
+    Framework.ReloadPreferences = function () {
+        framework.Preferences = {};
+        if (localStorage.getItem("preferences") != null && localStorage.getItem("preferences") != undefined)
+            framework.Preferences = JSON.parse(localStorage.getItem("preferences"));
+    };
+    Framework.SetRoutePrefix = function (prefix) {
+        framework.RoutePrefix = prefix;
+    };
+    /**
+     * Initialization of the framework.
+     */
+    Framework.Init = function (withExecuteRoute) {
+        if (withExecuteRoute === void 0) { withExecuteRoute = true; }
+        $(document).bind("keydown", Framework.keyDown);
+        $(document).bind("keyup", Framework.keyUp);
+        // Used to place the debugger at the start
+        //alert("init");
+        if (localStorage.getItem("preferences") != null && localStorage.getItem("preferences") != undefined)
+            framework.Preferences = JSON.parse(localStorage.getItem("preferences"));
+        framework.eventRouteCall = document.createEvent("Event");
+        framework.eventRouteCall.initEvent("RouteCall", true, true);
+        Framework.CallInits();
+        Framework.AutoLinkRoutes();
+        Framework.AutoLinkGuiParts();
+        if (withExecuteRoute)
+            Framework.ExecuteRoute();
+        window.addEventListener("hashchange", function () {
+            Framework.ExecuteRoute();
+        });
+    };
+    return Framework;
+}());
+/// <reference path="../../../Common/Libs/Framework.ts" />
+var listSelector = new (/** @class */ (function () {
+    function class_7() {
+        this.CurrentSelectors = {};
+    }
+    return class_7;
+}()));
+var ListSelector = /** @class */ (function () {
+    /**
+     * Creates a selection list (sorted) with search box.
+     * @param HTML element id to put the list on (should be a div)
+     * @param data source (an array or an object)
+     * @param displayColumn (optional) the field name to display, valid only for an array source
+     */
+    function ListSelector(element, data, displayColumn) {
+        this.Sort = true;
+        listSelector[element] = this;
+        this.element = element;
+        this.data = data;
+        this.displayColumn = displayColumn;
+        if (displayColumn) {
+            this.sortedDirect = [];
+            for (var i = 0; i < data.length; i++)
+                this.sortedDirect.push(i);
+            this.sortedDirect.sort(function (a, b) {
+                if (data[a][displayColumn] > data[b][displayColumn])
+                    return 1;
+                if (data[a][displayColumn] < data[b][displayColumn])
+                    return -1;
+                return 0;
+            });
+        }
+        $("#" + this.element).addClass("listSelector");
+        this.Render();
+    }
+    ListSelector.prototype.Dispose = function () {
+        $("#" + this.element).html("");
+        delete listSelector[this.element];
+    };
+    ListSelector.prototype.Rebind = function () {
+        var _this = this;
+        $("#list_selector_" + this.element).bind("keyup", function () {
+            $("#display_list_selector_" + _this.element).html(_this.RenderList());
+        });
+    };
+    ListSelector.prototype.Render = function () {
+        var _this = this;
+        var html = "";
+        html += "<input type='text' id='list_selector_" + this.element + "' placeholder='Search...'>";
+        html += "<div id='display_list_selector_" + this.element + "'>";
+        html += this.RenderList();
+        html += "</div>";
+        $("#" + this.element).html(html);
+        $("#list_selector_" + this.element).bind("keyup", function () {
+            $("#display_list_selector_" + _this.element).html(_this.RenderList());
+        });
+    };
+    ListSelector.prototype.UpdateList = function (newData) {
+        if (newData)
+            this.data = newData;
+        else
+            newData = this.data;
+        if (this.displayColumn) {
+            this.sortedDirect = [];
+            for (var i = 0; i < this.data.length; i++)
+                this.sortedDirect.push(i);
+            var displayColumn = this.displayColumn;
+            this.sortedDirect.sort(function (a, b) {
+                if (newData[a][displayColumn] > newData[b][displayColumn])
+                    return 1;
+                if (newData[a][displayColumn] < newData[b][displayColumn])
+                    return -1;
+                return 0;
+            });
+        }
+        $("#display_list_selector_" + this.element).html(this.RenderList());
+    };
+    ListSelector.prototype.RenderList = function () {
+        var html = "";
+        html += "<table>";
+        var searchTxt = $("#list_selector_" + this.element).val();
+        var search = (searchTxt ? searchTxt : "").trim().toLowerCase();
+        if (this.displayColumn) {
+            for (var i = 0; i < this.data.length; i++) {
+                var val = "" + this.data[this.sortedDirect[i]][this.displayColumn];
+                if (search && search != "" && (!val || val.toLowerCase().indexOf(search) == -1))
+                    continue;
+                html += "<tr id='display_list_selector_" + this.element + "_" + this.sortedDirect[i] + "' onclick='ListSelector.Find(\"" + this.element + "\").Select(" + this.sortedDirect[i] + ");'" + (this.selectedRow == this.sortedDirect[i] ? " class='listSelectorSelectedRow'" : "") + "><td>" + val + "</td></tr>";
+            }
+        }
+        else {
+            var names = [];
+            for (var item in this.data)
+                names.push(item);
+            if (this.Sort)
+                names.sort();
+            for (var i = 0; i < names.length; i++) {
+                var val = names[i];
+                if (search && search != "" && (!val || val.toLowerCase().indexOf(search) == -1))
+                    continue;
+                html += "<tr id='display_list_selector_" + this.element + "_" + val.id() + "' onclick='ListSelector.Find(\"" + this.element + "\").Select(\"" + val + "\");'" + (this.selectedRow == val ? " class='listSelectorSelectedRow'" : "") + "><td>" + val + "</td></tr>";
+            }
+        }
+        html += "</table>";
+        return html;
+    };
+    ListSelector.Find = function (name) {
+        return listSelector[name];
+    };
+    ListSelector.prototype.Select = function (row) {
+        this.selectedRow = row;
+        $("#display_list_selector_" + this.element + " tr").removeClass("listSelectorSelectedRow");
+        if (this.displayColumn)
+            $("#display_list_selector_" + this.element + "_" + row).addClass("listSelectorSelectedRow");
+        //$("#display_list_selector_" + this.element + " tr:nth-child(" + (row + 1) + ")").addClass("listSelectorSelectedRow");
+        else if (row !== null)
+            $("#display_list_selector_" + this.element + "_" + row.id()).addClass("listSelectorSelectedRow");
+        if (this.OnSelect)
+            this.OnSelect(row);
+    };
+    return ListSelector;
+}());
+/// <reference path="../../../Common/Libs/MiniQuery.ts"/>
+/// <reference path="../../../Common/Libs/Framework.ts"/>
+var MenuItem = /** @class */ (function () {
+    function MenuItem(label, link) {
+        this.Label = label;
+        this.Link = link;
+    }
+    return MenuItem;
+}());
+var menubarStatic = new (/** @class */ (function () {
+    function class_8() {
+        this.previousItem = null;
+        this.KnownItems = [];
+        this.hoverHideTimer = null;
+    }
+    return class_8;
+}()));
+var Menubar = /** @class */ (function () {
+    function Menubar() {
+    }
+    Menubar.InitFunction = function () {
+        var menu = document.getElementById("menubar");
+        if (!menu)
+            return;
+        /*var pos = 5;
+        for (var i = 0; i < menu.children.length; i++)
+        {
+            var item: HTMLElement = <HTMLElement>menu.children[i];
+            item.style.left = pos + "px";
+            pos += $(item).width();
+        }*/
+        $("#menubar a").bind("dragstart", function () { return false; }).bind("drop", function () { return false; });
+        $("#hideMenu").mouseover(Menubar.HoverHideMenus).mouseout(Menubar.StopHoverHideMenus);
+        $("#searchPanel").mouseover(Menubar.HoverHideMenus);
+        for (var i = 0; i < menu.children.length; i++) {
+            var item = menu.children[i];
+            if (item.children.length > 0) {
+                item.onmouseover = function () {
+                    var currentSubmenu = item.children[0];
+                    return function () {
+                        if (menubarStatic.previousItem == currentSubmenu.textContent)
+                            return;
+                        Menubar.HideMenus();
+                        menubarStatic.previousItem = currentSubmenu.textContent;
+                        $("#hideMenu").show();
+                        $(currentSubmenu).show();
+                    };
+                }();
+                Menubar.HookSubmenu(item.children[0]);
+            }
+            else
+                item.onmouseover = Menubar.HideMenus;
+        }
+        Menubar.ExtractItems();
+    };
+    Menubar.ExtractItems = function (menuItem) {
+        if (menuItem === void 0) { menuItem = null; }
+        if (!menuItem) {
+            menubarStatic.KnownItems = [];
+            menuItem = document.getElementById("menubar");
+        }
+        for (var i = 0; i < menuItem.children.length; i++) {
+            var item = menuItem.children[i];
+            if (item.children.length > 0) {
+                //if($(item).is(":visible"))
+                if (item.style.display !== "none")
+                    Menubar.ExtractItems(item.children[0]);
+            }
+            else if (item.style.display !== "none") {
+                var n = new MenuItem((item.attributes["label"] ? item.attributes["label"].textContent : item.textContent), (item.attributes["href"] ? item.attributes["href"].textContent : ""));
+                if (item.onclick && (!n.Link || n.Link == "" || n.Link == "#"))
+                    n.Link = item.onclick;
+                menubarStatic.KnownItems.push(n);
+            }
+            if (item.tagName.toLowerCase() == "a") {
+                $(item).bind("click", function () {
+                    $("#hideMenu").hide();
+                    Menubar.HideMenus();
+                });
+            }
+        }
+    };
+    Menubar.HookSubmenu = function (menuItem) {
+        for (var i = 0; i < menuItem.children.length; i++) {
+            var item = menuItem.children[i];
+            if (item.children.length > 0) {
+                item.onmouseover = function () {
+                    var child = item.children[0];
+                    $(child).addClass("childMenuBar");
+                    return function (e) {
+                        $("#menubar .childMenuBar").hide();
+                        $(child).show();
+                        e.stopPropagation();
+                    };
+                }();
+            }
+            else
+                item.onmouseover = function () {
+                    $("#menubar .childMenuBar").hide();
+                };
+        }
+    };
+    Menubar.HideMenus = function () {
+        menubarStatic.previousItem = null;
+        menubarStatic.hoverHideTimer = null;
+        $("#hideMenu").hide();
+        $("#menubar > div > div").hide();
+        $("#menubar .childMenuBar").hide();
+    };
+    Menubar.HoverHideMenus = function () {
+        if (menubarStatic.hoverHideTimer)
+            clearTimeout(menubarStatic.hoverHideTimer);
+        menubarStatic.hoverHideTimer = setTimeout(Menubar.HideMenus, 500);
+    };
+    Menubar.StopHoverHideMenus = function () {
+        if (menubarStatic.hoverHideTimer)
+            clearTimeout(menubarStatic.hoverHideTimer);
+        menubarStatic.hoverHideTimer = null;
+    };
+    /**
+     * Allows to disable a menu entry
+     * @param menuPath searched path in the form Main>Child>SubChild
+     */
+    Menubar.DisableMenu = function (menuPath, menuSection, currentPath) {
+        if (menuSection === void 0) { menuSection = null; }
+        if (currentPath === void 0) { currentPath = ""; }
+        if (!menuSection)
+            menuSection = document.getElementById("menubar");
+        for (var i = 0; i < menuSection.children.length; i++) {
+            var t = menuSection.children[i].textContent.trim();
+            var p = currentPath + t.split('\n')[0];
+            if (p == menuPath) {
+                $(menuSection.children[i]).hide();
+                Menubar.ExtractItems();
+                return true;
+            }
+            else if (menuSection.children[i].children.length > 0) {
+                var r = Menubar.DisableMenu(menuPath, menuSection.children[i].children[0], p + ">");
+                if (r == true)
+                    return true;
+            }
+        }
+        return false;
+    };
+    /**
+     * Allows to enable a menu entry
+     * @param menuPath searched path in the form Main>Child>SubChild
+     */
+    Menubar.EnableMenu = function (menuPath, menuSection, currentPath) {
+        if (menuSection === void 0) { menuSection = null; }
+        if (currentPath === void 0) { currentPath = ""; }
+        if (!menuSection)
+            menuSection = document.getElementById("menubar");
+        for (var i = 0; i < menuSection.children.length; i++) {
+            var t = menuSection.children[i].textContent.trim();
+            var p = currentPath + t.split('\n')[0];
+            if (p == menuPath) {
+                $(menuSection.children[i]).show();
+                Menubar.ExtractItems();
+                return true;
+            }
+            else if (menuSection.children[i].children.length > 0) {
+                var r = Menubar.EnableMenu(menuPath, menuSection.children[i].children[0], p + ">");
+                if (r == true)
+                    return true;
+            }
+        }
+        return false;
+    };
+    return Menubar;
+}());
+var messageMenu = new (/** @class */ (function () {
+    function class_9() {
+        this.messageDisplayed = false;
+        this.firstInit = true;
+        this.selectedMessage = null;
+        this.nonRead = 0;
+        this.attachments = null;
+    }
+    return class_9;
+}()));
+var MessageMenu = /** @class */ (function () {
+    function MessageMenu() {
+    }
+    MessageMenu.AdditionalCSS = function () {
+        return "#messageIcon\n\
+{\n\
+    position: absolute;\n\
+    left: -" + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
+    top: 330px;\n\
+}\n\
+#messageIcon .gamePanelContentNoHeader\n\
+{\n\
+    width: 74px;\n\
+}\n\
+";
+    };
+    MessageMenu.Init = function (position) {
+        if (!framework.Preferences['token'] || (world && world.ShowMessage === false) || framework.Preferences['token'] == "demo" || game) {
+            $("#messageIcon").hide();
+            return position;
+        }
+        $("#messageIcon").css("top", position + "px");
+        $("#messageIcon .gamePanelContentNoHeader").html("<img src='/art/tileset2/message_icon.png'><div>10</div>");
+        $("#messageIcon div.gamePanelContentNoHeader > div").html("0").hide();
+        if (messageMenu.firstInit && chat.socket) {
+            messageMenu.firstInit = false;
+            chat.socket.on('new_message', function () {
+                for (var i = 0; i < world.Codes.length; i++) {
+                    if (world.Codes[i].Enabled === false)
+                        continue;
+                    if (!world.Codes[i].code && world.Codes[i].Source)
+                        world.Codes[i].code = CodeParser.ParseWithParameters(world.Codes[i].Source, world.Codes[i].Parameters);
+                    if (world.Codes[i].code.HasFunction("OnPrivateMessage"))
+                        world.Codes[i].code.ExecuteFunction("OnPrivateMessage", []);
+                }
+                MessageMenu.CheckCounter();
+                MessageMenu.UpdateReceived();
+            });
+        }
+        MessageMenu.CheckCounter();
+        return position + 64 + world.art.panelStyle.topBorder;
+    };
+    MessageMenu.CheckCounter = function () {
+        $.ajax({
+            type: 'POST',
+            url: '/backend/CheckNewGameMessage',
+            data: {
+                game: world.Id,
+                token: framework.Preferences['token'],
+            },
+            success: function (msg) {
+                var data = TryParse(msg);
+                if (data) {
+                    messageMenu.nonRead = data;
+                    $("#messageIcon div.gamePanelContentNoHeader > div").html(data).show();
+                }
+                else {
+                    $("#messageIcon div.gamePanelContentNoHeader > div").html("0").hide();
+                }
+            },
+            error: function (msg) {
+            }
+        });
+    };
+    MessageMenu.Toggle = function () {
+        if (!framework.Preferences['token'] || (world && world.ShowMessage === false) || framework.Preferences['token'] == "demo")
+            return;
+        $("#inventoryIcon").removeClass("openPanelIcon");
+        inventoryMenu.inventoryDisplayed = false;
+        $("#profileIcon").removeClass("openPanelIcon");
+        profileMenu.profileDisplayed = false;
+        $("#journalIcon").removeClass("openPanelIcon");
+        journalMenu.journalDisplayed = false;
+        if (messageMenu.messageDisplayed) {
+            $("#gameMenuPanel").hide();
+            $("#messageIcon").removeClass("openPanelIcon");
+            messageMenu.messageDisplayed = false;
+        }
+        else {
+            messageMenu.messageDisplayed = true;
+            $("#gameMenuPanel").show();
+            $("#messageIcon").addClass("openPanelIcon");
+            MessageMenu.Update();
+        }
+    };
+    MessageMenu.Update = function () {
+        var html = "";
+        html += "<table class='panelContentTableWithHeader'>";
+        html += "<thead><tr><td>Date</td><td>Sender</td><td>Subject</td></tr></thead>";
+        html += "</table>";
+        html += "<div id='messageList'>";
+        html += "</div>";
+        html += "<div id='messageDetails'></div>";
+        $("#gameMenuPanelContent").html(html);
+        MessageMenu.UpdateReceived();
+        MessageMenu.ShowCompose();
+    };
+    MessageMenu.UpdateReceived = function () {
+        if (!messageMenu.messageDisplayed)
+            return;
+        $.ajax({
+            type: 'POST',
+            url: '/backend/GetGameMessageList',
+            data: {
+                game: world.Id,
+                token: framework.Preferences['token'],
+            },
+            success: function (msg) {
+                var data = TryParse(msg);
+                var html = "";
+                if (data) {
+                    html += "<table>";
+                    for (var i = 0; i < data.length; i++) {
+                        html += "<tr onclick='MessageMenu.Read(" + data[i].id + ");' class='" + (data[i].newMessage ? "newMessage" : "") + (messageMenu.selectedMessage == data[i].id ? " panelContentSelected" : "") + "'>";
+                        html += "<td>" + Main.FormatDateTime(data[i].sentDate) + "</td><td>" + data[i].from + "</td><td>" + data[i].subject + "</td>";
+                        html += "</tr>";
+                    }
+                    html += "</table>";
+                }
+                $("#messageList").html(html);
+            },
+            error: function (msg) {
+            }
+        });
+    };
+    MessageMenu.Read = function (id) {
+        messageMenu.selectedMessage = id;
+        $.ajax({
+            type: 'POST',
+            url: '/backend/GetGameMessage',
+            data: {
+                game: world.Id,
+                token: framework.Preferences['token'],
+                id: id
+            },
+            success: function (msg) {
+                var data = TryParse(msg);
+                var html = "";
+                if (data) {
+                    if (data.isNew === true) {
+                        MessageMenu.CheckCounter();
+                        MessageMenu.UpdateReceived();
+                        if (data.attachments) {
+                            var attachments = TryParse(data.attachments);
+                            if (attachments && attachments.length > 0)
+                                for (var i = 0; i < attachments.length; i++) {
+                                    world.Player.AddItem(attachments[i].name, attachments[i].quantity);
+                                }
+                        }
+                    }
+                    html += "<table>";
+                    html += "<tr><td>From:</td><td>" + ("" + data.from).htmlEntities() + "</td></tr>";
+                    html += "<tr><td>To:</td><td>" + ("" + data.to).htmlEntities() + "</td></tr>";
+                    html += "<tr><td>Date:</td><td>" + Main.FormatDateTime(data.sentDate) + "</td></tr>";
+                    html += "<tr><td>Subject:</td><td>" + ("" + data.subject).htmlEntities() + "</td></tr>";
+                    html += "<tr><td>Message:</td><td>" + Main.TextTransform("" + data.message) + "</td></tr>";
+                    var attachments = TryParse(data.attachments);
+                    if (attachments) {
+                        if (attachments && attachments.length > 0)
+                            html += "<tr><td>Attachments:</td><td>";
+                        for (var i = 0; i < attachments.length; i++) {
+                            html += "" + attachments[i].quantity + "x " + attachments[i].name + "<br>";
+                        }
+                        html += "</td></tr>";
+                    }
+                    html += "</table>";
+                    html += "<center>";
+                    html += "<div class='gameButton' onclick='MessageMenu.ShowCompose()'>New</div>";
+                    html += "<div class='gameButton' onclick='MessageMenu.Reply(" + id + ")'>Reply</div>";
+                    html += "<div class='gameButton' onclick='MessageMenu.Delete(" + id + ")'>Delete</div>";
+                    html + "</center>";
+                }
+                $("#messageDetails").html(html);
+            },
+            error: function (msg) {
+                var data = TryParse(msg);
+                $("#messageDetails").html("Error: " + (data && data.error ? data.error : msg));
+            }
+        });
+    };
+    MessageMenu.Reply = function (id) {
+        $.ajax({
+            type: 'POST',
+            url: '/backend/GetGameMessage',
+            data: {
+                game: world.Id,
+                token: framework.Preferences['token'],
+                id: id
+            },
+            success: function (msg) {
+                var data = TryParse(msg);
+                var html = "";
+                if (data) {
+                    messageMenu.selectedMessage = null;
+                    MessageMenu.CheckCounter();
+                    MessageMenu.UpdateReceived();
+                    html += "<table>";
+                    var dest = data.to.replace(/,/g, ";").replace(/ /g, "").split(';');
+                    for (var i = 0; i < dest.length; i++)
+                        if (dest[i].toLowerCase() == world.Player.Username.toLowerCase())
+                            dest[i] = data.from;
+                    dest = dest.join(", ");
+                    html += "<tr><td>To:</td><td><input type='text' id='message_to' value='" + dest.htmlEntities() + "' onfocus='play.inField=true;' onblur='play.inField=false;'></td></tr>";
+                    html += "<tr><td>Subject:</td><td><input type='text' id='message_subject' value='" + ("Re: " + data.subject.replace(/^re: /i, "")).htmlEntities() + "' onfocus='play.inField=true;' onblur='play.inField=false;'></td></tr>";
+                    html += "<tr><td>Message:</td><td>&nbsp;</td></tr>";
+                    html += "<tr><td colspan='2'><textarea id='message_text' rows='10' onfocus='play.inField=true;' onblur='play.inField=false;'>\n\n\n" + data.message.replace(/<\//gi, "").replace(/^/gm, "> ") + "</textarea></td></tr>";
+                    html += "<tr><td>Attach:</td><td colspan='2'><select onchange='MessageMenu.Attach()' id='new_attach'><option>-- Select an item to attach --</option>";
+                    for (var i = 0; i < world.Player.Inventory.length; i++) {
+                        var canShow = true;
+                        if (messageMenu.attachments)
+                            for (var j = 0; j < messageMenu.attachments.length; j++) {
+                                if (messageMenu.attachments[j].name == world.Player.Inventory[i].Name) {
+                                    canShow = false;
+                                    break;
+                                }
+                            }
+                        if (!canShow)
+                            continue;
+                        html += "<option value='" + encodeURIComponent(world.Player.Inventory[i].Name) + "'>" + world.Player.Inventory[i].Name + " (" + world.Player.Inventory[i].Count + ")</option>";
+                    }
+                    html += "</select></td></tr>";
+                    html += "</table>";
+                    html += "<center>";
+                    html += "<div class='gameButton' onclick='MessageMenu.ShowCompose()'>New</div>";
+                    html += "<div class='gameButton' onclick='MessageMenu.Send()'>Send</div>";
+                    html += "<div class='gameButton' onclick='MessageMenu.Read(" + id + ")'>Cancel</div>";
+                    html + "</center>";
+                    setTimeout(function () {
+                        $("#message_text").focus();
+                    }, 100);
+                }
+                $("#messageDetails").html(html);
+            },
+            error: function (msg) {
+                var data = TryParse(msg);
+                $("#messageDetails").html("Error: " + (data && data.error ? data.error : msg));
+            }
+        });
+    };
+    MessageMenu.Delete = function (id) {
+        $.ajax({
+            type: 'POST',
+            url: '/backend/DeleteGameMessage',
+            data: {
+                game: world.Id,
+                token: framework.Preferences['token'],
+                id: id
+            },
+            success: function (msg) {
+                messageMenu.selectedMessage = null;
+                MessageMenu.CheckCounter();
+                MessageMenu.UpdateReceived();
+                MessageMenu.ShowCompose();
+            },
+            error: function (msg) {
+                var data = TryParse(msg);
+                $("#messageDetails").html("Error: " + (data && data.error ? data.error : msg));
+            }
+        });
+    };
+    MessageMenu.ShowCompose = function () {
+        messageMenu.selectedMessage = null;
+        MessageMenu.UpdateReceived();
+        var html = "<div id='messageResult'></div><table>";
+        html += "<tr><td>To:</td><td colspan='2'><input type='text' id='message_to' onfocus='play.inField=true;' onblur='play.inField=false;'></td></tr>";
+        html += "<tr><td>Subject:</td><td colspan='2'><input type='text' id='message_subject' onfocus='play.inField=true;' onblur='play.inField=false;'></td></tr>";
+        html += "<tr><td>Message:</td><td colspan='2'>&nbsp;</td></tr>";
+        html += "<tr><td colspan='3'><textarea id='message_text' rows='10' onfocus='play.inField=true;' onblur='play.inField=false;'></textarea></td></tr>";
+        if (messageMenu.attachments && messageMenu.attachments.length > 0) {
+            html += "<tr><td>Attachments:</td><td>&nbsp;</td><td>&nbsp;</td></tr>";
+            for (var i = 0; i < messageMenu.attachments.length; i++) {
+                html += "<tr><td>&nbsp;</td><td>";
+                html += "<div class='removeAttachement' onclick='MessageMenu.RemoveAttachment(" + i + ");'>X</div>";
+                html += messageMenu.attachments[i].name + " (" + world.Player.GetInventoryQuantity(messageMenu.attachments[i].name) + ")</td>";
+                html += "<td><input type='text' id='attach_" + i + "' value='" + messageMenu.attachments[i].quantity + "' onfocus='play.inField=true;' onblur='play.inField=false;' onkeyup='MessageMenu.ChangeAttach(" + i + ")'></tr>";
+            }
+            html += "</td></tr>";
+        }
+        html += "<tr><td>Attach:</td><td colspan='2'><select onchange='MessageMenu.Attach()' id='new_attach'><option>-- Select an item to attach --</option>";
+        for (var i = 0; i < world.Player.Inventory.length; i++) {
+            var canShow = true;
+            if (messageMenu.attachments)
+                for (var j = 0; j < messageMenu.attachments.length; j++) {
+                    if (messageMenu.attachments[j].name == world.Player.Inventory[i].Name) {
+                        canShow = false;
+                        break;
+                    }
+                }
+            if (!canShow)
+                continue;
+            html += "<option value='" + encodeURIComponent(world.Player.Inventory[i].Name) + "'>" + world.Player.Inventory[i].Name + " (" + world.Player.Inventory[i].Count + ")</option>";
+        }
+        html += "</select></td></tr>";
+        html += "</table>";
+        html += "<center><div class='gameButton' onclick='MessageMenu.Send()'>Send</div></center>";
+        $("#messageDetails").html(html);
+        setTimeout(function () {
+            $("#message_to").focus();
+        }, 100);
+    };
+    MessageMenu.RemoveAttachment = function (rowId) {
+        var to = $("#message_to").val();
+        var subject = $("#message_subject").val();
+        var message = $("#message_text").val();
+        messageMenu.attachments.splice(rowId, 1);
+        MessageMenu.ShowCompose();
+        $("#message_to").val(to);
+        $("#message_subject").val(subject);
+        $("#message_text").val(message);
+    };
+    MessageMenu.Attach = function () {
+        var to = $("#message_to").val();
+        var subject = $("#message_subject").val();
+        var message = $("#message_text").val();
+        if (!messageMenu.attachments)
+            messageMenu.attachments = [];
+        messageMenu.attachments.push({
+            name: decodeURIComponent($("#new_attach").val()),
+            quantity: 1
+        });
+        MessageMenu.ShowCompose();
+        $("#message_to").val(to);
+        $("#message_subject").val(subject);
+        $("#message_text").val(message);
+    };
+    MessageMenu.ChangeAttach = function (rowId) {
+        $("#attach_" + rowId).css("background-color", "");
+        var val = 0;
+        try {
+            val = parseInt($("#attach_" + rowId).val());
+        }
+        catch (ex) {
+            $("#attach_" + rowId).css('backgroundColor', '#FFE0E0');
+        }
+        if (val <= 0 || world.Player.GetInventoryQuantity(messageMenu.attachments[rowId].name) < val) {
+            $("#attach_" + rowId).css('backgroundColor', '#FFE0E0');
+            val = 0;
+        }
+        messageMenu.attachments[rowId].quantity = val;
+    };
+    MessageMenu.Send = function () {
+        if (messageMenu.attachments) {
+            for (var i = 0; i < messageMenu.attachments.length; i++) {
+                if (world.Player.GetInventoryQuantity(messageMenu.attachments[i].name) < messageMenu.attachments[i].quantity) {
+                    $("#messageResult").html("Error: you don't have " + messageMenu.attachments[i].quantity + " " + messageMenu.attachments[i].name);
+                    return;
+                }
+            }
+        }
+        $.ajax({
+            type: 'POST',
+            url: '/backend/AddGameMessage',
+            data: {
+                game: world.Id,
+                token: framework.Preferences['token'],
+                to: $("#message_to").val(),
+                subject: $("#message_subject").val() && $("#message_subject").val().trim() != "" ? $("#message_subject").val() : "(no subject)",
+                message: $("#message_text").val(),
+                attachments: JSON.stringify(messageMenu.attachments ? messageMenu.attachments : null)
+            },
+            success: function (msg) {
+                if (messageMenu.attachments && messageMenu.attachments.length > 0) {
+                    $("#messageDetails table tr:nth-child(5)").remove();
+                    for (var i = 0; i < messageMenu.attachments.length; i++) {
+                        world.Player.RemoveItem(messageMenu.attachments[i].name, messageMenu.attachments[i].quantity);
+                        $("#messageDetails table tr:nth-child(5)").remove();
+                    }
+                }
+                messageMenu.attachments = null;
+                $("#messageResult").html("Message sent successfully");
+                $("#message_to").val("");
+                $("#message_subject").val("");
+                $("#message_text").val("");
+            },
+            error: function (msg) {
+                var data = TryParse(msg);
+                $("#messageResult").html("Error: " + (data && data.error ? data.error : msg));
+            }
+        });
+    };
+    MessageMenu.SendMessage = function (destination, subject, message) {
+        if (!framework.Preferences['token'] || (world && world.ShowMessage === false) || framework.Preferences['token'] == "demo" || game) {
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url: '/backend/AddGameMessage',
+            data: {
+                game: world.Id,
+                token: framework.Preferences['token'],
+                to: destination,
+                subject: subject,
+                message: message
+            },
+            success: function (msg) {
+            },
+            error: function (msg) {
+            }
+        });
+    };
+    return MessageMenu;
+}());
+var profileMenu = new (/** @class */ (function () {
+    function class_10() {
+        this.profileDisplayed = false;
+    }
+    return class_10;
+}()));
+var ProfileMenu = /** @class */ (function () {
+    function ProfileMenu() {
+    }
+    ProfileMenu.AdditionalCSS = function () {
+        return "#profileIcon\n\
+{\n\
+    position: absolute;\n\
+    left: -" + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
+    top: 165px;\n\
+}\n\
+#profileIcon .gamePanelContentNoHeader\n\
+{\n\
+    width: 74px;\n\
+}\n\
+";
+    };
+    ProfileMenu.Init = function (position) {
+        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowStats === false))) {
+            $("#profileIcon").hide();
+            return position;
+        }
+        $("#profileIcon").css("top", position + "px");
+        if (game)
+            $("#profileIcon .gamePanelContentNoHeader").html("<img src='art/tileset2/profile_icon.png'><div>+</div>");
+        else
+            $("#profileIcon .gamePanelContentNoHeader").html("<img src='/art/tileset2/profile_icon.png'><div>+</div>");
+        if (!ProfileMenu.HasToUpgrade())
+            $("#profileIcon div.gamePanelContentNoHeader > div").hide();
+        return position + 64 + world.art.panelStyle.topBorder;
+    };
+    ProfileMenu.Toggle = function () {
+        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowStats === false)))
+            return;
+        inventoryMenu.inventoryDisplayed = false;
+        $("#inventoryIcon").removeClass("openPanelIcon");
+        messageMenu.messageDisplayed = false;
+        $("#messageIcon").removeClass("openPanelIcon");
+        $("#journalIcon").removeClass("openPanelIcon");
+        journalMenu.journalDisplayed = false;
+        if (profileMenu.profileDisplayed) {
+            $("#gameMenuPanel").hide();
+            $("#profileIcon").removeClass("openPanelIcon");
+            profileMenu.profileDisplayed = false;
+        }
+        else {
+            profileMenu.profileDisplayed = true;
+            $("#gameMenuPanel").show();
+            $("#profileIcon").addClass("openPanelIcon");
+            ProfileMenu.Update();
+        }
+    };
+    ProfileMenu.HasToUpgrade = function () {
+        for (var i = 0; i < world.Player.Stats.length; i++) {
+            if (world.Player.Stats[i].BaseStat.CodeVariable('PlayerVisible') === "false")
+                continue;
+            var res = world.Player.Stats[i].BaseStat.InvokeFunction("CanUpgrade", []);
+            if (res && res.GetBoolean() == true)
+                return true;
+        }
+        return false;
+    };
+    ProfileMenu.Update = function () {
+        if (ProfileMenu.HasToUpgrade())
+            $("#profileIcon div.gamePanelContentNoHeader > div").show();
+        else
+            $("#profileIcon div.gamePanelContentNoHeader > div").hide();
+        if (!profileMenu.profileDisplayed)
+            return;
+        var html = "";
+        html = "<h1>Profile<h1>";
+        html += "<h2>Stats</h2>";
+        html += "<table class='profileList'>";
+        html += "<thead><tr><td>Name:</td><td>Value:</td><td>Max:</td><td>&nbsp;</td></tr></thead>";
+        html += "<tbody>";
+        for (var i = 0; i < world.Player.Stats.length; i++) {
+            if (world.Player.Stats[i].BaseStat.CodeVariable('PlayerVisible') === "false")
+                continue;
+            html += "<tr>";
+            html += "<td>" + (world.Player.Stats[i].BaseStat.CodeVariable('DisplayName') ? world.Player.Stats[i].BaseStat.CodeVariable('DisplayName') : world.Player.Stats[i].Name).htmlEntities() + "</td>";
+            html += "<td>" + world.Player.Stats[i].Value + "</td>";
+            html += "<td>" + (world.Player.GetStatMaxValue(world.Player.Stats[i].Name) ? world.Player.GetStatMaxValue(world.Player.Stats[i].Name) : "&nbsp;") + "</td>";
+            var res = world.Player.Stats[i].BaseStat.InvokeFunction("CanUpgrade", []);
+            if (res && res.GetBoolean() == true)
+                html += "<td><div class='gameButton' onclick='ProfileMenu.UpgradeStat(\"" + world.Player.Stats[i].Name + "\")')>+</div></td>";
+            else
+                html += "<td>&nbsp;</td>";
+            html += "</tr>";
+        }
+        html += "</tbody>";
+        html += "</table>";
+        html += "<h2>Skills</h2>";
+        html += "<table class='profileList'>";
+        html += "<thead><tr><td>Name:</td><td>Level:</td><td>&nbsp;</td></tr></thead>";
+        html += "<tbody>";
+        for (var i = 0; i < world.Player.Skills.length; i++) {
+            html += "<tr>";
+            html += "<td>" + (world.Player.Skills[i].BaseSkill.CodeVariable('DisplayName') ? world.Player.Skills[i].BaseSkill.CodeVariable('DisplayName') : world.Player.Skills[i].Name).htmlEntities() + "</td><td>" + (world.Player.Skills[i].Level ? ("" + world.Player.Skills[i].Level).htmlEntities() : "&nbsp;") + "</td>";
+            html += "<td>";
+            if (world.Player.Skills[i].BaseSkill.CodeVariable("Quickslot") == "true" && world.Player.Skills[i].BaseSkill.CodeVariable("QuickslotEditable") !== "false")
+                html += "<div class='gameButton' onclick='ProfileMenu.Quickslot(\"" + world.Player.Skills[i].Name.htmlEntities() + "\");'>Quickslot</div>";
+            else
+                html += "&nbsp;";
+            html += "</td>";
+            html += "</tr>";
+        }
+        html += "</tbody>";
+        html += "</table>";
+        html += "<br><br>";
+        html += "<center><div class='gameButton' onclick=\"document.location='#action=Logout';\">Logout</div> <div class='gameButton' onclick='ProfileMenu.ResetPlayer();'>Reset your player</div></center>";
+        $("#gameMenuPanelContent").html(html);
+    };
+    ProfileMenu.DoResetPlayer = function () {
+        if (Main.CheckNW()) {
+            var saves = {};
+            if (framework.Preferences['gameSaves'])
+                saves = JSON.parse(framework.Preferences['gameSaves']);
+            delete saves["S" + world.Id];
+            framework.Preferences['gameSaves'] = JSON.stringify(saves);
+            Framework.SavePreferences();
+            world.Init();
+            Main.GenerateGameStyle();
+            world.ResetAreas();
+            world.ResetGenerator();
+            Framework.Rerun();
+            return;
+        }
+        if (!framework.Preferences['token'] || framework.Preferences['token'] == "demo") {
+            document.location.reload();
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url: '/backend/ResetPlayer',
+            data: {
+                game: world.Id,
+                token: framework.Preferences['token']
+            },
+            success: function (msg) {
+                document.location.reload();
+            },
+            error: function (msg, textStatus) {
+                if (msg.d && msg.d.error)
+                    Framework.ShowMessage(msg.d.error);
+                else
+                    Framework.ShowMessage(msg);
+            }
+        });
+    };
+    ProfileMenu.ResetPlayer = function () {
+        Framework.Confirm("Are you sure you want to reset your player? You lose all the stats, items, and quests and start as a fresh new player.", ProfileMenu.DoResetPlayer);
+    };
+    ProfileMenu.UpgradeStat = function (statName) {
+        var res = world.Player.FindStat(statName).BaseStat.InvokeFunction("CanUpgrade", []);
+        if (!res || res.GetBoolean() !== true)
+            return;
+        world.Player.SetStat(statName, world.Player.GetStat(statName) + 1);
+        //world.Player.FindStat(statName).Value++;
+        ProfileMenu.Update();
+    };
+    ProfileMenu.Quickslot = function (skillName) {
+        profileMenu.profileDisplayed = false;
+        var html = "<h1>Quickslot</h1>";
+        for (var i = 0; i < 10; i++) {
+            var q = world.Player.QuickSlot[i];
+            var skill = null;
+            if (!q)
+                q = "-- Empty --";
+            else if (q.substring(0, 2) == "S/") {
+                var skill = world.GetSkill(q.substring(2));
+                q = "Skill " + q.substring(2).title().htmlEntities();
+            }
+            else
+                q = "Item " + q.substring(2).title().htmlEntities();
+            if (skill && skill.CodeVariable("QuickslotEditable") === "false") {
+                html += "Slot " + (i + 1) + " " + q + "<br>";
+            }
+            else
+                html += "<div class='gameButton' onclick='ProfileMenu.SetQuickslot(\"" + skillName.htmlEntities() + "\"," + i + ");'>Slot " + (i + 1) + "</div>" + q + "<br>";
+        }
+        html += "<center><div class='gameButton' onclick='ProfileMenu.Show();'>Cancel</div></center>";
+        $("#gameMenuPanelContent").html(html);
+    };
+    ProfileMenu.Show = function () {
+        profileMenu.profileDisplayed = true;
+        ProfileMenu.Update();
+    };
+    ProfileMenu.SetQuickslot = function (skillName, slotId) {
+        for (var i = 0; i < 10; i++)
+            if (world.Player.QuickSlot[i] == "S/" + skillName)
+                world.Player.QuickSlot[i] = null;
+        world.Player.QuickSlot[slotId] = "S/" + skillName;
+        world.Player.StoredCompare = world.Player.JSON();
+        world.Player.Save();
+        ProfileMenu.Show();
+    };
+    return ProfileMenu;
+}());
+var searchPanel = new (/** @class */ (function () {
+    function class_11() {
+        this.links = [];
+    }
+    return class_11;
+}()));
+var SearchPanel = /** @class */ (function () {
+    function SearchPanel() {
+    }
+    SearchPanel.InitFunction = function () {
+        if (!$("#searchPanel").first())
+            return;
+        if (Main.CheckNW()) {
+            $("#searchPanel").css("top", "0px");
+        }
+        $("#game_Search").bind("click", SearchPanel.ShowHide);
+        $("#generalSearch").bind("keyup", SearchPanel.KeyUp);
+        // Control Q => quick search
+        $(document).bind('keydown', function (e) {
+            if (e.ctrlKey && (e.which == 81)) {
+                e.preventDefault();
+                SearchPanel.ShowHide();
+                return false;
+            }
+        });
+    };
+    SearchPanel.ShowHide = function () {
+        if ($("#searchPanel").is(":visible")) {
+            $("#searchPanel").hide();
+        }
+        else {
+            $("#searchPanel").show();
+            $("#generalSearch").focus();
+            SearchPanel.RenderResult();
+        }
+    };
+    SearchPanel.KeyUp = function (evt) {
+        switch (evt.keyCode) {
+            case 27:
+                $("#generalSearch").blur();
+                $("#searchPanel").hide();
+                break;
+            case 13:
+                if (searchPanel.links && searchPanel.links.length > 0)
+                    document.location.assign(searchPanel.links[0]);
+                break;
+        }
+        SearchPanel.RenderResult();
+    };
+    SearchPanel.Update = function () {
+        SearchPanel.RenderResult();
+    };
+    SearchPanel.RenderResult = function () {
+        if (!$("#searchPanel").is(":visible"))
+            return;
+        var toSearch = $("#generalSearch").val().toLowerCase();
+        searchPanel.links = [];
+        var html = "";
+        var itemsToSearch = [
+            { object: world.art.characters, title: "Characters", action: "ArtCharacterEditor" },
+            { object: world.art.houses, title: "Houses", action: "HouseEditor" },
+            { object: world.art.house_parts, title: "House parts", action: "HousePart" },
+            { object: world.art.objects, title: "Map Objects", action: "ArtObjectEditor" },
+            { object: world.art.sounds, title: "Sounds &amp; Musics", action: "ArtSoundEditor" },
+            { object: world.Codes, title: "Generic Code", action: "GenericCodeEditor" },
+            { object: world.InventorySlots, title: "Inventory Slots", action: "InventorySlotEditor" },
+            { object: world.Monsters, title: "Monsters", action: "MonsterEditor" },
+            { object: world.NPCs, title: "NPCs", action: "NPCEditor" },
+            { object: world.InventoryObjects, title: "Objects", action: "ObjectEditor" },
+            { object: world.InventoryObjectTypes, title: "Object Types", action: "ObjectTypeEditor" },
+            { object: world.ParticleEffects, title: "Particles Effects", action: "ParticleEditor" },
+            { object: world.Quests, title: "Quests", action: "QuestEditor" },
+            { object: world.Skills, title: "Skills", action: "SkillEditor" },
+            { object: world.Stats, title: "Stats", action: "StatEditor" },
+            { object: world.TemporaryEffects, title: "Temporary Effects", action: "TemporaryEffectEditor" },
+            { object: world.Zones, title: "Zones", action: "ZoneEditor" },
+            { object: world.ChatBots, title: "Chat Bots", action: "ChatBotEditor" },
+        ];
+        itemsToSearch.sort(function (a, b) {
+            if (a.title > b.title)
+                return 1;
+            if (a.title < b.title)
+                return -1;
+            return 0;
+        });
+        for (var j = 0; j < itemsToSearch.length; j++) {
+            var items = [];
+            if (itemsToSearch[j].object.length) {
+                for (var i = 0; i < itemsToSearch[j].object.length; i++) {
+                    if (itemsToSearch[j].object[i].Name.toLowerCase().indexOf(toSearch) == -1)
+                        continue;
+                    items.push(itemsToSearch[j].object[i].Name);
+                }
+            }
+            else {
+                for (var item in itemsToSearch[j].object) {
+                    if (item == "contains")
+                        continue;
+                    if (item.toLowerCase().indexOf(toSearch) == -1)
+                        continue;
+                    items.push(item);
+                }
+            }
+            if (items.length > 0) {
+                html += "<span>" + itemsToSearch[j].title + ":</span>";
+                html += "<div>";
+                items.sort();
+                for (var i = 0; i < items.length; i++) {
+                    var link = "#action=" + itemsToSearch[j].action + "&id=" + encodeURIComponent(items[i]);
+                    searchPanel.links.push(link);
+                    html += "<a href='" + link + "'>" + items[i] + "</a>";
+                }
+                html += "</div>";
+            }
+        }
+        $("#generalSearchResult").html(html);
+    };
+    return SearchPanel;
+}());
+var PublicViewPlayer = /** @class */ (function () {
+    function PublicViewPlayer() {
+    }
+    PublicViewPlayer.Show = function (name) {
+        $.ajax({
+            type: 'POST',
+            url: '/backend/PublicViewPlayer',
+            data: {
+                game: world.Id,
+                name: name
+            },
+            success: function (msg) {
+                var data = TryParse(msg);
+                if (!data)
+                    return;
+                $("#npcDialog").show();
+                $("#npcDialog .gamePanelHeader").html("View: " + name.htmlEntities());
+                var html = "";
+                html += "<table>";
+                html += "<tr><td>Name:</td><td>" + ("" + data.name).htmlEntities() + "</td></tr>";
+                html += "<tr><td>X:</td><td>" + ("" + data.x).htmlEntities() + "</td></tr>";
+                html += "<tr><td>Y:</td><td>" + ("" + data.x).htmlEntities() + "</td></tr>";
+                html += "<tr><td>Zone:</td><td>" + ("" + data.zone).htmlEntities() + "</td></tr>";
+                html += "</table>";
+                html += "<h3>Equiped with</h3>";
+                var items = [];
+                for (var item in data.equipedObjects)
+                    items.push(data.equipedObjects[item]);
+                items.sort();
+                for (var i = 0; i < items.length; i++)
+                    html += ("" + items[i].Name).htmlEntities() + "<br>";
+                html += "<h3>Stats</h3>";
+                html += "<table>";
+                data.stats.sort(function (a, b) {
+                    if (a.Name > b.Name)
+                        return 1;
+                    if (a.Name < b.Name)
+                        return -1;
+                    return 0;
+                });
+                for (var i = 0; i < data.stats.length; i++) {
+                    var stat = world.GetStat(data.stats[i].Name);
+                    if (!stat)
+                        continue;
+                    if (stat.CodeVariable("PlayerVisible") === "false")
+                        continue;
+                    html += "<tr><td>" + ("" + (stat.CodeVariable("DisplayName") ? stat.CodeVariable("DisplayName") : stat.Name)).htmlEntities() + "</td><td>" + ("" + data.stats[i].Value).htmlEntities() + "</td></tr>";
+                }
+                html += "<h3>Skills</h3>";
+                data.skills.sort(function (a, b) {
+                    if (a.Name > b.Name)
+                        return 1;
+                    if (a.Name < b.Name)
+                        return -1;
+                    return 0;
+                });
+                for (var i = 0; i < data.skills.length; i++) {
+                    var skill = world.GetSkill(data.skills[i].Name);
+                    if (!skill)
+                        continue;
+                    html += ("" + (skill.CodeVariable("DisplayName") ? skill.CodeVariable("DisplayName") : skill.Name)).htmlEntities() + "<br>";
+                }
+                $("#dialogSentence").html(html);
+                play.onDialogPaint = [];
+                $("#dialogAnswers").html("<div onclick='PublicViewPlayer.Close();' class='gameButton'>Close</div>");
+            },
+            error: function (msg, textStatus) {
+            }
+        });
+    };
+    PublicViewPlayer.Close = function () {
+        $("#npcDialog").hide();
+    };
+    return PublicViewPlayer;
+}());
+var skillBar = new (/** @class */ (function () {
+    function class_12() {
+        this.SkillIcons = {};
+        this.lastCheckInventory = 0;
+    }
+    return class_12;
+}()));
+var SkillBar = /** @class */ (function () {
+    function SkillBar() {
+    }
+    SkillBar.Render = function () {
+        if (!framework.Preferences['token'] && !game && !Main.CheckNW())
+            return;
+        var canvas = document.getElementById("gameCanvas");
+        var height = canvas.height;
+        var width = canvas.width;
+        var ctx = canvas.getContext("2d");
+        if (!skillBar.SlotBar) {
+            skillBar.SlotBar = new Image();
+            skillBar.SlotBar.src = world.art.quickslotStyle.file;
+        }
+        if (!skillBar.StatBar) {
+            skillBar.StatBar = new Image();
+            skillBar.StatBar.src = world.art.statBarStyle.file;
+        }
+        if (!skillBar.SlotBar || !skillBar.SlotBar.width)
+            return;
+        ctx.save();
+        if (world.art.statBarStyle.barsToDisplay === null || world.art.statBarStyle.barsToDisplay === undefined)
+            world.art.statBarStyle.barsToDisplay = 1;
+        if ((world.art.statBarStyle.barsToDisplay == 1 || world.art.statBarStyle.barsToDisplay == 2) && skillBar.StatBar && skillBar.StatBar.width) {
+            var v = world.Player.GetStat('Life');
+            var maxV = world.Player.GetStatMaxValue('Life');
+            v = Math.min(Math.max(v, 0), maxV);
+            var h = Math.round((skillBar.StatBar.height - (world.art.statBarStyle.topBorder + world.art.statBarStyle.bottomBorder)) * (maxV - v) / maxV);
+            //h = Math.min(Math.max(h, 0), 100);
+            ctx.drawImage(skillBar.StatBar, 0, 0, skillBar.StatBar.width / 3, skillBar.StatBar.height, 10, height - (skillBar.StatBar.height + 10), skillBar.StatBar.width / 3, skillBar.StatBar.height);
+            try {
+                ctx.drawImage(skillBar.StatBar, skillBar.StatBar.width / 3, world.art.statBarStyle.topBorder + h, skillBar.StatBar.width / 3, skillBar.StatBar.height - (world.art.statBarStyle.topBorder + world.art.statBarStyle.bottomBorder + h), 10, height - ((skillBar.StatBar.height - (world.art.statBarStyle.topBorder + h)) + 10), skillBar.StatBar.width / 3, skillBar.StatBar.height - (world.art.statBarStyle.topBorder + world.art.statBarStyle.bottomBorder + h));
+            }
+            catch (ex) {
+            }
+        }
+        if ((world.art.statBarStyle.barsToDisplay == 2) && skillBar.StatBar && skillBar.StatBar.width) {
+            var v = world.Player.GetStat('Energy');
+            var maxV = world.Player.GetStatMaxValue('Energy');
+            v = Math.min(Math.max(v, 0), maxV);
+            var h = Math.round((skillBar.StatBar.height - (world.art.statBarStyle.topBorder + world.art.statBarStyle.bottomBorder)) * (maxV - v) / maxV);
+            //h = Math.min(Math.max(h, 0), 100);
+            ctx.drawImage(skillBar.StatBar, 0, 0, skillBar.StatBar.width / 3, skillBar.StatBar.height, 10 + skillBar.StatBar.width / 3, height - (skillBar.StatBar.height + 10), skillBar.StatBar.width / 3, skillBar.StatBar.height);
+            try {
+                ctx.drawImage(skillBar.StatBar, skillBar.StatBar.width * 2 / 3, world.art.statBarStyle.topBorder + h, skillBar.StatBar.width / 3, skillBar.StatBar.height - (world.art.statBarStyle.topBorder + world.art.statBarStyle.bottomBorder + h), 10 + skillBar.StatBar.width / 3, height - ((skillBar.StatBar.height - (world.art.statBarStyle.topBorder + h)) + 10), skillBar.StatBar.width / 3, skillBar.StatBar.height - (world.art.statBarStyle.topBorder + world.art.statBarStyle.bottomBorder + h));
+            }
+            catch (ex) {
+            }
+        }
+        if (world.art.quickslotStyle.quickslotVisible === false) {
+            ctx.restore();
+            return;
+        }
+        var pos = Math.round(width / 2 - skillBar.SlotBar.width / 2);
+        ctx.drawImage(skillBar.SlotBar, pos, height - skillBar.SlotBar.height);
+        pos += world.art.quickslotStyle.leftBorder;
+        for (var i = 0; i < world.Player.QuickSlot.length; i++) {
+            var q = world.Player.QuickSlot[i];
+            if (q == null) {
+                pos += 32 + world.art.quickslotStyle.itemSpacing;
+                continue;
+            }
+            var name = q.substring(2);
+            // Skill quickslot
+            if (q.substring(0, 2) == "S/") {
+                if (!skillBar.SkillIcons[q] && world.GetSkill(name)) {
+                    var skillInfo = world.GetSkill(name);
+                    skillBar.SkillIcons[q] = new Image();
+                    skillBar.SkillIcons[q].src = (skillInfo.CodeVariable("icon") ? skillInfo.CodeVariable("icon") : "/art/tileset2/fist_icon.png");
+                }
+                if (!skillBar.SkillIcons[q])
+                    continue;
+                ctx.drawImage(skillBar.SkillIcons[q], pos, height - skillBar.SlotBar.height + world.art.quickslotStyle.topBorder);
+                var timer = world.Player.GetTimer(name);
+                if (timer && !timer.IsOver()) {
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.globalAlpha = 0.8;
+                    var h = Math.round(Math.max(timer.Length - timer.Ellapsed(), 0) * 32 / timer.Length);
+                    ctx.fillRect(pos, height - skillBar.SlotBar.height + world.art.quickslotStyle.topBorder + (32 - h), 32, h);
+                }
+                if (world.Player.CurrentSkill.toLowerCase() == name.toLowerCase()) {
+                    ctx.strokeStyle = world.art.quickslotStyle.selectedSkillColor;
+                    ctx.globalAlpha = 1;
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.strokeRect(pos, height - skillBar.SlotBar.height + world.art.quickslotStyle.topBorder, 32, 32);
+                    ctx.stroke();
+                }
+            }
+            else if (q.substring(0, 2) == "I/") {
+                var details = world.GetInventoryObject(name);
+                if (skillBar.lastCheckInventory <= 0) {
+                    if (world.Player.GetInventoryQuantity(name) <= 0) {
+                        world.Player.QuickSlot[i] = null;
+                        world.Player.StoredCompare = world.Player.JSON();
+                        world.Player.Save();
+                        continue;
+                    }
+                }
+                if (!skillBar.SkillIcons[q] && details) {
+                    skillBar.SkillIcons[q] = new Image();
+                    skillBar.SkillIcons[q].src = (details.Image ? details.Image : "/art/tileset2/inventory_object.png");
+                }
+                if (!skillBar.SkillIcons[q])
+                    continue;
+                ctx.drawImage(skillBar.SkillIcons[q], pos, height - skillBar.SlotBar.height + world.art.quickslotStyle.topBorder);
+            }
+            pos += 32 + world.art.quickslotStyle.itemSpacing;
+        }
+        ctx.restore();
+        skillBar.lastCheckInventory--;
+        if (skillBar.lastCheckInventory < 0)
+            skillBar.lastCheckInventory = 30;
+    };
+    SkillBar.SelectQuickslot = function (slot) {
+        if (slot == 0)
+            slot = 9;
+        else
+            slot--;
+        if (world.Player.QuickSlot[slot] && world.Player.QuickSlot[slot].substring(0, 2) == "S/") {
+            var oldSkill = world.Player.CurrentSkill;
+            var selectedSkill = world.Player.QuickSlot[slot].substring(2);
+            world.Player.CurrentSkill = selectedSkill;
+            var skill = world.GetSkill(selectedSkill);
+            var res = skill.InvokeFunction("Activate", []);
+            // Prevent selection
+            if (res !== null && res.GetBoolean() === false) {
+                world.Player.CurrentSkill = oldSkill;
+            }
+            world.Player.StoredCompare = world.Player.JSON();
+            world.Player.Save();
+        }
+        else if (world.Player.QuickSlot[slot] && world.Player.QuickSlot[slot].substring(0, 2) == "I/") {
+            var name = world.Player.QuickSlot[slot].substring(2);
+            var details = world.GetInventoryObject(name);
+            if (!details)
+                return;
+            if (world.Player.GetInventoryQuantity(name) > 0) {
+                if (details.CanWear())
+                    world.Player.Wear(name);
+                else if (details.ActionLabel() && details.CanUse())
+                    details.Use();
+            }
+        }
+    };
+    SkillBar.HandleClick = function (x, y) {
+        if (world.art.quickslotStyle.quickslotVisible === false)
+            return false;
+        if (!skillBar.StatBar)
+            return;
+        var canvas = document.getElementById("gameCanvas");
+        y -= $("#gameCanvas").position().top;
+        var width = canvas.width;
+        var height = canvas.height;
+        var barX = Math.round(width / 2 - skillBar.SlotBar.width / 2);
+        var barY = height - skillBar.SlotBar.height;
+        if (x >= barX && x <= barX + skillBar.SlotBar.width && y >= barY && y <= barY + skillBar.SlotBar.height) {
+            var s = Math.floor((x - (barX + world.art.quickslotStyle.leftBorder)) / (32 + world.art.quickslotStyle.itemSpacing));
+            if (s >= 0 && s <= 9) {
+                s = (s + 1) % 10;
+                SkillBar.SelectQuickslot(s);
+            }
+            return true;
+        }
+        return false;
+    };
+    return SkillBar;
+}());
+var dialogAction = new (/** @class */ (function () {
+    function class_13() {
+        this.code = {};
+        this.currentEditor = "NPCEditor";
+    }
+    return class_13;
+}()));
+function DialogActionClass(target) {
+    var tName = "" + target;
+    var className = tName.match(/function ([^\(]+)\(/)[1];
+    var actionClass = new target();
+    if (actionClass instanceof ActionClass)
+        dialogAction.code[className] = actionClass;
+    else
+        throw "Class \"" + className + "\" doesn't extends ActionClass.";
+}
+var ActionClass = /** @class */ (function () {
+    function ActionClass() {
+    }
+    ActionClass.prototype.OptionList = function (id, position, values, currentValue, updateFunction) {
+        var html = "";
+        html += "<span class='dialogParam'><select id='" + (updateFunction ? updateFunction : "action") + "_" + id + "_" + position + "' onchange='" + dialogAction.currentEditor + "." + (updateFunction ? updateFunction : "ChangeAction") + "(" + id + "," + position + ")'>";
+        var found = false;
+        for (var i = 0; i < values.length; i++) {
+            if (values[i].Id != undefined) {
+                html += "<option" + (values[i].Id == currentValue ? " selected" : "") + " value='" + ("" + values[i].Id).htmlEntities() + "'>" + values[i].Value + "</option>";
+                if (values[i].Id == currentValue)
+                    found = true;
+            }
+            else {
+                html += "<option" + (values[i] == currentValue ? " selected" : "") + " value='" + ("" + values[i]).htmlEntities() + "'>" + values[i] + "</option>";
+                if (values[i] == currentValue)
+                    found = true;
+            }
+        }
+        if (!found)
+            html += "<option selected>" + (currentValue === undefined ? "" : currentValue) + "</option>";
+        html += "</select></span>";
+        return html;
+    };
+    ActionClass.prototype.Input = function (id, position, currentValue, updateFunction) {
+        return "<span class='dialogParam'><input id='" + (updateFunction ? updateFunction : "action") + "_" + id + "_" + position + "' type='text' value='" + (currentValue ? currentValue : "").htmlEntities() + "' onkeyup='" + dialogAction.currentEditor + "." + (updateFunction ? updateFunction : "ChangeAction") + "(" + id + "," + position + ")' onfocus='play.inField=true;' onblur='play.inField=false;'></span>";
+    };
+    ActionClass.prototype.Label = function (label) {
+        return "<span class='dialogParamLabel'>" + label + "</span>";
+    };
+    return ActionClass;
+}());
+var DialogAction = /** @class */ (function () {
+    function DialogAction() {
+        this.Values = [];
+    }
+    return DialogAction;
+}());
+/// <reference path="../Dialogs/DialogAction.ts" />
+var lastMapMessageTimeout = null;
+var AddActorParticleEffect = /** @class */ (function (_super) {
+    __extends(AddActorParticleEffect, _super);
+    function AddActorParticleEffect() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    AddActorParticleEffect.prototype.Display = function (id, values, updateFunction) {
+        var html = "";
+        html += this.Label("Particle Effect");
+        var effects = world.ParticleEffects.map(function (c) { return c.Name; }).sort();
+        if (!values[0] && effects.length > 0)
+            values[0] = effects[0];
+        html += this.OptionList(id, 0, effects, values[0], updateFunction);
+        html += this.Label("Last (in sec.)");
+        if (!values[1])
+            values[1] = "5";
+        html += this.Input(id, 1, values[1], updateFunction);
+        return html;
+    };
+    AddActorParticleEffect.prototype.Execute = function (values, env) {
+        if (!values[0])
+            throw "The action 'Add Actor Particle Effect' requires a particle name.";
+        if (!values[1] || isNaN(parseInt(values[1])))
+            throw "The action 'Add Actor Particle Effect' requires number of second the particle effect will last.";
+        world.Player.ParticleEffect = world.GetParticleSystem(values[0]);
+        if (world.Player.ParticleEffect) {
+            var now = new Date();
+            var ends = new Date(now.getTime() + parseInt(values[1]) * 1000);
+            /*console.log("now: " + now.toString());
+            console.log("ends: " + ends.toString());*/
+            world.Player.ParticleEffectDuration = ends;
+        }
+        return null;
+    };
+    AddActorParticleEffect = __decorate([
+        DialogActionClass
+    ], AddActorParticleEffect);
+    return AddActorParticleEffect;
+}(ActionClass));
+/// <reference path="../Dialogs/DialogAction.ts" />
+var AddJournalEntry = /** @class */ (function (_super) {
+    __extends(AddJournalEntry, _super);
+    function AddJournalEntry() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    AddJournalEntry.prototype.Display = function (id, values, updateFunction) {
+        var html = "";
+        html += this.Label("Quest");
+        html += this.OptionList(id, 0, world.Quests.map(function (c) { return c.Name; }).sort(), values[0], updateFunction);
+        html += this.Label("Journal Entry");
+        html += this.Input(id, 1, values[1], updateFunction);
+        return html;
+    };
+    AddJournalEntry.prototype.Execute = function (values, env) {
+        if (!this.Execute.caller) {
+            play.devTools = true;
+            world.Player.InformServer();
+            return;
+        }
+        if (!values[0])
+            throw "The action 'Add Journal Entry' requires a quest name.";
+        if (!values[1] || isNaN(parseInt(values[1])))
+            throw "The action 'Add Journal Entry' requires the id of the journal entry (as number).";
+        world.Player.AddQuestJournalEntry(values[0], parseInt(values[1]));
+    };
+    AddJournalEntry = __decorate([
+        DialogActionClass
+    ], AddJournalEntry);
+    return AddJournalEntry;
+}(ActionClass));
+/// <reference path="../Dialogs/DialogAction.ts" />
+var CompleteQuest = /** @class */ (function (_super) {
+    __extends(CompleteQuest, _super);
+    function CompleteQuest() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    CompleteQuest.prototype.Display = function (id, values, updateFunction) {
+        var html = "";
+        html += this.Label("Quest");
+        html += this.OptionList(id, 0, world.Quests.map(function (c) { return c.Name; }).sort(), values[0], updateFunction);
+        return html;
+    };
+    CompleteQuest.prototype.Execute = function (values, env) {
+        if (!this.Execute.caller) {
+            play.devTools = true;
+            world.Player.InformServer();
+            return;
+        }
+        if (!values[0])
+            throw "The action 'Complete Quest' requires a quest name.";
+        world.Player.CompleteQuest(values[0]);
+    };
+    CompleteQuest = __decorate([
+        DialogActionClass
+    ], CompleteQuest);
+    return CompleteQuest;
+}(ActionClass));
+/// <reference path="../Dialogs/DialogAction.ts" />
+var DecreaseStat = /** @class */ (function (_super) {
+    __extends(DecreaseStat, _super);
+    function DecreaseStat() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    DecreaseStat.prototype.Display = function (id, values, updateFunction) {
+        var html = "";
+        html += this.Label("Stat");
+        html += this.OptionList(id, 0, world.Stats.map(function (c) { return c.Name; }).sort(), values[0], updateFunction);
+        html += this.Label("Quantity");
+        html += this.Input(id, 1, values[1] = (values[1] || values[1] == "" ? values[1] : "1"), updateFunction);
+        return html;
+    };
+    DecreaseStat.prototype.Execute = function (values, env) {
+        if (!this.Execute.caller) {
+            play.devTools = true;
+            world.Player.InformServer();
+            return;
+        }
+        if (!values[0])
+            throw "The action 'Decrease Stat' requires a stat name.";
+        if (!values[1])
+            throw "The action 'Decrease Stat' requires a quantity expressed either as number or a valid expression.";
+        if (!env)
+            env = new CodeEnvironement();
+        var val = 0;
+        try {
+            val = CodeParser.ExecuteStatement(values[1]).GetNumber();
+            //val = CodeParser.ParseStatement(values[1]).Execute(env).GetNumber();
+        }
+        catch (ex) {
+            throw "The expression used in 'Decrease Stat' for the quantity is invalid.";
+        }
+        world.Player.SetStat(values[0], world.Player.GetStat(values[0]) - val);
+    };
+    DecreaseStat = __decorate([
+        DialogActionClass
+    ], DecreaseStat);
+    return DecreaseStat;
+}(ActionClass));
+/// <reference path="../Dialogs/DialogAction.ts" />
+var ExecuteCodeFunction = /** @class */ (function (_super) {
+    __extends(ExecuteCodeFunction, _super);
+    function ExecuteCodeFunction() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    ExecuteCodeFunction_1 = ExecuteCodeFunction;
+    ExecuteCodeFunction.prototype.Display = function (id, values, updateFunction) {
+        var html = "";
+        html += this.Label("Function");
+        html += this.Input(id, 0, values[0], updateFunction);
+        return html;
+    };
+    ExecuteCodeFunction.prototype.Execute = function (values, env) {
+        if (!env)
+            env = new CodeEnvironement();
+        ExecuteCodeFunction_1.ExecuteFunction(values);
+    };
+    ExecuteCodeFunction.ExecuteFunction = function (values) {
+        try {
+            var func = values[0];
+            if (func.indexOf("(") == -1)
+                func += "();";
+            if (func.charAt(func.length - 1) != ";")
+                func += ";";
+            var parse = CodeParser.Parse("function to_exec() { " + func + " }");
+            parse.ExecuteFunction("to_exec", []);
+        }
+        catch (ex) {
+            throw "The expression used in 'Execute Code Function' is invalid.";
+        }
+    };
+    var ExecuteCodeFunction_1;
+    ExecuteCodeFunction = ExecuteCodeFunction_1 = __decorate([
+        DialogActionClass
+    ], ExecuteCodeFunction);
+    return ExecuteCodeFunction;
+}(ActionClass));
+/// <reference path="../Dialogs/DialogAction.ts" />
+var GiveCurrentItem = /** @class */ (function (_super) {
+    __extends(GiveCurrentItem, _super);
+    function GiveCurrentItem() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    GiveCurrentItem.prototype.Display = function (id, values, updateFunction) {
+        var html = "";
+        html += this.Label("Quantity");
+        html += this.Input(id, 0, values[0] = (values[0] || values[0] == "" ? values[0] : "1"), updateFunction);
+        return html;
+    };
+    GiveCurrentItem.prototype.Execute = function (values, env) {
+        if (!this.Execute.caller) {
+            play.devTools = true;
+            world.Player.InformServer();
+            return;
+        }
+        if (!values[0])
+            throw "The action 'Give Current Item' requires a quantity.";
+        if (!env || !env.HasVariable('currentItem'))
+            return;
+        var val = 0;
+        try {
+            val = CodeParser.ExecuteStatement(values[0], env.variables).GetNumber();
+            //val = CodeParser.ParseStatement(values[0]).Execute(env).GetNumber();
+        }
+        catch (ex) {
+            throw "The expression used in 'Give Current Item' for the quantity is invalid.";
+        }
+        world.Player.AddItem(env.GetVariable('currentItem').GetString(), val);
+    };
+    GiveCurrentItem = __decorate([
+        DialogActionClass
+    ], GiveCurrentItem);
+    return GiveCurrentItem;
+}(ActionClass));
+/// <reference path="../Dialogs/DialogAction.ts" />
+var GiveItem = /** @class */ (function (_super) {
+    __extends(GiveItem, _super);
+    function GiveItem() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    GiveItem.prototype.Display = function (id, values, updateFunction) {
+        var html = "";
+        html += this.Label("Item");
+        html += this.OptionList(id, 0, world.InventoryObjects.map(function (c) { return c.Name; }).sort(), values[0], updateFunction);
+        html += this.Label("Quantity");
+        html += this.Input(id, 1, values[1] = (values[1] || values[1] == "" ? values[1] : "1"), updateFunction);
+        return html;
+    };
+    GiveItem.prototype.Execute = function (values, env) {
+        if (!this.Execute.caller) {
+            play.devTools = true;
+            world.Player.InformServer();
+            return;
+        }
+        if (!values[0])
+            throw "The action 'Give Item' requires a name.";
+        if (!env)
+            env = new CodeEnvironement();
+        var val = 0;
+        try {
+            val = CodeParser.ExecuteStatement(values[1], env.variables).GetNumber();
+        }
+        catch (ex) {
+            throw "The expression used in 'Give Item' for the quantity is invalid.";
+        }
+        world.Player.AddItem(values[0], val);
+    };
+    GiveItem = __decorate([
+        DialogActionClass
+    ], GiveItem);
+    return GiveItem;
+}(ActionClass));
+/// <reference path="../Dialogs/DialogAction.ts" />
+var GiveSkill = /** @class */ (function (_super) {
+    __extends(GiveSkill, _super);
+    function GiveSkill() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    GiveSkill.prototype.Display = function (id, values, updateFunction) {
+        if (!values[0])
+            values[0] = world.Skills.map(function (c) { return c.Name; }).sort()[0];
+        var html = "";
+        html += this.Label("Skill");
+        html += this.OptionList(id, 0, world.Skills.map(function (c) { return c.Name; }).sort(), values[0], updateFunction);
+        return html;
+    };
+    GiveSkill.prototype.Execute = function (values, env) {
+        if (!this.Execute.caller) {
+            play.devTools = true;
+            world.Player.InformServer();
+            return;
+        }
+        if (!values[0])
+            throw "The action 'Give Skill' requires a name.";
+        world.Player.GiveSkill(values[0]);
+    };
+    GiveSkill = __decorate([
+        DialogActionClass
+    ], GiveSkill);
+    return GiveSkill;
+}(ActionClass));
+var HideMinimap = /** @class */ (function (_super) {
+    __extends(HideMinimap, _super);
+    function HideMinimap() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    HideMinimap.prototype.Display = function (id, values, updateFunction) {
+        var html = "";
+        return html;
+    };
+    HideMinimap.prototype.Execute = function (values, env) {
+        play.showMinimap = false;
+    };
+    HideMinimap = __decorate([
+        DialogActionClass
+    ], HideMinimap);
+    return HideMinimap;
+}(ActionClass));
+/// <reference path="../Dialogs/DialogAction.ts" />
+var IncreaseStat = /** @class */ (function (_super) {
+    __extends(IncreaseStat, _super);
+    function IncreaseStat() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    IncreaseStat.prototype.Display = function (id, values, updateFunction) {
+        var html = "";
+        html += this.Label("Stat");
+        html += this.OptionList(id, 0, world.Stats.map(function (c) { return c.Name; }).sort(), values[0], updateFunction);
+        html += this.Label("Quantity");
+        html += this.Input(id, 1, values[1] = (values[1] || values[1] == "" ? values[1] : "1"), updateFunction);
+        return html;
+    };
+    IncreaseStat.prototype.Execute = function (values, env) {
+        if (!this.Execute.caller) {
+            play.devTools = true;
+            world.Player.InformServer();
+            return;
+        }
+        if (!values[0])
+            throw "The action 'Increase Stat' requires a name.";
+        if (!env)
+            env = new CodeEnvironement();
+        var val = 0;
+        try {
+            val = CodeParser.ExecuteStatement(values[1], env.variables).GetNumber();
+        }
+        catch (ex) {
+            throw "The expression used in 'Increase Stat' for the quantity is invalid.";
+        }
+        world.Player.SetStat(values[0], world.Player.GetStat(values[0]) + val);
+    };
+    IncreaseStat = __decorate([
+        DialogActionClass
+    ], IncreaseStat);
+    return IncreaseStat;
+}(ActionClass));
+/// <reference path="../Dialogs/DialogAction.ts" />
+var PlayerFloatingMessage = /** @class */ (function (_super) {
+    __extends(PlayerFloatingMessage, _super);
+    function PlayerFloatingMessage() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    PlayerFloatingMessage.prototype.Display = function (id, values, updateFunction) {
+        var html = "";
+        html += this.Label("Text");
+        html += this.Input(id, 0, values[0], updateFunction);
+        html += this.Label("Color");
+        html += this.Input(id, 1, values[1] ? values[1] : "#FFFFFF", updateFunction);
+        return html;
+    };
+    PlayerFloatingMessage.prototype.Execute = function (values, env) {
+        if (!this.Execute.caller) {
+            play.devTools = true;
+            world.Player.InformServer();
+            return;
+        }
+        if (!env)
+            env = new CodeEnvironement();
+        if (!values[0])
+            throw "The action 'Player Floating Message' requires a text.";
+        var val;
+        try {
+            val = CodeParser.ExecuteStatement(values[0], env.variables).GetString();
+        }
+        catch (ex) {
+            val = values[0];
+        }
+        var ax = world.Player.AX;
+        var ay = world.Player.AY;
+        var mx = world.Player.X;
+        var my = world.Player.Y;
+        var area = world.GetArea(ax, ay, world.Player.Zone);
+        if (area) {
+            area.actors.push(MapMessage.Create(val, values[1] ? values[1] : "#FFFFFF", area, mx, my));
+        }
+    };
+    PlayerFloatingMessage = __decorate([
+        DialogActionClass
+    ], PlayerFloatingMessage);
+    return PlayerFloatingMessage;
+}(ActionClass));
+/// <reference path="../Dialogs/DialogAction.ts" />
+var PlaySound = /** @class */ (function (_super) {
+    __extends(PlaySound, _super);
+    function PlaySound() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    PlaySound.prototype.Display = function (id, values, updateFunction) {
+        var html = "";
+        html += this.Label("Sound");
+        var sounds = [];
+        for (var item in world.art.sounds)
+            sounds.push(item);
+        sounds.sort();
+        html += this.OptionList(id, 0, sounds, values[0], updateFunction);
+        html += this.Label("Volume");
+        html += this.Input(id, 1, values[1] = (values[1] || values[1] == "" ? values[1] : "0.6"), updateFunction);
+        return html;
+    };
+    PlaySound.prototype.Execute = function (values, env) {
+        if (!env)
+            env = new CodeEnvironement();
+        if (!values[0])
+            throw "The action 'Play Sound' requires a sound name.";
+        var val = 0;
+        try {
+            val = CodeParser.ExecuteStatement(values[1], env.variables).GetNumber();
+        }
+        catch (ex) {
+            throw "The expression used in 'Play Sound' for the volume is invalid.";
+        }
+        Sounds.Play(values[0], val);
+    };
+    PlaySound = __decorate([
+        DialogActionClass
+    ], PlaySound);
+    return PlaySound;
+}(ActionClass));
+/// <reference path="../Dialogs/DialogAction.ts" />
+var RemoveAllTemporaryEffects = /** @class */ (function (_super) {
+    __extends(RemoveAllTemporaryEffects, _super);
+    function RemoveAllTemporaryEffects() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    RemoveAllTemporaryEffects.prototype.Display = function (id, values, updateFunction) {
+        return "";
+    };
+    RemoveAllTemporaryEffects.prototype.Execute = function (values, env) {
+        if (!this.Execute.caller) {
+            play.devTools = true;
+            world.Player.InformServer();
+            return;
+        }
+        world.Player.ClearTemporaryEffects();
+    };
+    RemoveAllTemporaryEffects = __decorate([
+        DialogActionClass
+    ], RemoveAllTemporaryEffects);
+    return RemoveAllTemporaryEffects;
+}(ActionClass));
+/// <reference path="../Dialogs/DialogAction.ts" />
+var RemoveCurrentItem = /** @class */ (function (_super) {
+    __extends(RemoveCurrentItem, _super);
+    function RemoveCurrentItem() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    RemoveCurrentItem.prototype.Display = function (id, values, updateFunction) {
+        var html = "";
+        html += this.Label("Quantity");
+        html += this.Input(id, 0, values[0] = (values[0] || values[0] == "" ? values[0] : "1"), updateFunction);
+        return html;
+    };
+    RemoveCurrentItem.prototype.Execute = function (values, env) {
+        if (!this.Execute.caller) {
+            play.devTools = true;
+            world.Player.InformServer();
+            return;
+        }
+        if (!env || !env.HasVariable('currentItem'))
+            return;
+        var val = 0;
+        try {
+            val = CodeParser.ExecuteStatement(values[0], env.variables).GetNumber();
+        }
+        catch (ex) {
+            throw "The expression used in 'Remove Current Item' for the quantity is invalid.";
+        }
+        world.Player.RemoveItem(env.GetVariable('currentItem').GetString(), val);
+    };
+    RemoveCurrentItem = __decorate([
+        DialogActionClass
+    ], RemoveCurrentItem);
+    return RemoveCurrentItem;
+}(ActionClass));
+/// <reference path="../Dialogs/DialogAction.ts" />
+var RemoveItem = /** @class */ (function (_super) {
+    __extends(RemoveItem, _super);
+    function RemoveItem() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    RemoveItem.prototype.Display = function (id, values, updateFunction) {
+        var html = "";
+        html += this.Label("Item");
+        html += this.OptionList(id, 0, world.InventoryObjects.map(function (c) { return c.Name; }).sort(), values[0], updateFunction);
+        html += this.Label("Quantity");
+        html += this.Input(id, 1, values[1] = (values[1] || values[1] == "" ? values[1] : "1"), updateFunction);
+        return html;
+    };
+    RemoveItem.prototype.Execute = function (values, env) {
+        if (!this.Execute.caller) {
+            play.devTools = true;
+            world.Player.InformServer();
+            return;
+        }
+        if (!env)
+            env = new CodeEnvironement();
+        var val = 0;
+        try {
+            val = CodeParser.ExecuteStatement(values[1], env.variables).GetNumber();
+        }
+        catch (ex) {
+            throw "The expression used in 'Remove Item' for the quantity is invalid.";
+        }
+        world.Player.RemoveItem(values[0], val);
+    };
+    RemoveItem = __decorate([
+        DialogActionClass
+    ], RemoveItem);
+    return RemoveItem;
+}(ActionClass));
+/// <reference path="../Dialogs/DialogAction.ts" />
+var RemoveTemporaryEffect = /** @class */ (function (_super) {
+    __extends(RemoveTemporaryEffect, _super);
+    function RemoveTemporaryEffect() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    RemoveTemporaryEffect.prototype.Display = function (id, values, updateFunction) {
+        if (!values[0])
+            values[0] = world.TemporaryEffects.map(function (c) { return c.Name; }).sort()[0];
+        var html = "";
+        html += this.Label("Effect");
+        html += this.OptionList(id, 0, world.TemporaryEffects.map(function (c) { return c.Name; }).sort(), values[0], updateFunction);
+        return html;
+    };
+    RemoveTemporaryEffect.prototype.Execute = function (values, env) {
+        if (!this.Execute.caller) {
+            play.devTools = true;
+            world.Player.InformServer();
+            return;
+        }
+        if (!values[0])
+            throw "The action 'Remove Temporary Effect' requires an effect name.";
+        world.Player.RemoveTemporaryEffect(values[0]);
+    };
+    RemoveTemporaryEffect = __decorate([
+        DialogActionClass
+    ], RemoveTemporaryEffect);
+    return RemoveTemporaryEffect;
+}(ActionClass));
+/// <reference path="../Dialogs/DialogAction.ts" />
+var Respawn = /** @class */ (function (_super) {
+    __extends(Respawn, _super);
+    function Respawn() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    Respawn.prototype.Display = function (id, values, updateFunction) {
+        return "";
+    };
+    Respawn.prototype.Execute = function (values, env) {
+        if (!this.Execute.caller) {
+            play.devTools = true;
+            world.Player.InformServer();
+            return;
+        }
+        if (world.Player.RespawnPoint)
+            Teleport.Teleport(world.Player.RespawnPoint.X, world.Player.RespawnPoint.Y, world.Player.RespawnPoint.Zone);
+        else
+            Teleport.Teleport(world.SpawnPoint.X, world.SpawnPoint.Y, world.SpawnPoint.Zone);
+    };
+    Respawn = __decorate([
+        DialogActionClass
+    ], Respawn);
+    return Respawn;
+}(ActionClass));
+/// <reference path="../Dialogs/DialogAction.ts" />
+var RestorePlayerLook = /** @class */ (function (_super) {
+    __extends(RestorePlayerLook, _super);
+    function RestorePlayerLook() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    RestorePlayerLook.prototype.Display = function (id, values, updateFunction) {
+        return "";
+    };
+    RestorePlayerLook.prototype.Execute = function (values, env) {
+        if (!this.Execute.caller) {
+            play.devTools = true;
+            world.Player.InformServer();
+            return;
+        }
+        world.Player.Name = world.Player.GetQuestVariable("__PlayerLook");
+        world.Player.StoredCompare = world.Player.JSON();
+        world.Player.Save();
+    };
+    RestorePlayerLook = __decorate([
+        DialogActionClass
+    ], RestorePlayerLook);
+    return RestorePlayerLook;
+}(ActionClass));
+/// <reference path="../Dialogs/DialogAction.ts" />
+var SetLook = /** @class */ (function (_super) {
+    __extends(SetLook, _super);
+    function SetLook() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    SetLook.prototype.Display = function (id, values, updateFunction) {
+        var html = "";
+        html += this.Label("Look");
+        var names = [];
+        for (var item in world.art.characters)
+            names.push(item);
+        names.sort();
+        html += this.OptionList(id, 0, names, values[0], updateFunction);
+        return html;
+    };
+    SetLook.prototype.Execute = function (values, env) {
+        if (!this.Execute.caller) {
+            play.devTools = true;
+            world.Player.InformServer();
+            return;
+        }
+        if (!values[0])
+            throw "The action 'Set Look' requires a look name.";
+        world.Player.Name = values[0];
+        world.Player.StoredCompare = world.Player.JSON();
+        world.Player.Save();
+    };
+    SetLook = __decorate([
+        DialogActionClass
+    ], SetLook);
+    return SetLook;
+}(ActionClass));
+/// <reference path="../Dialogs/DialogAction.ts" />
+var SetQuestVariable = /** @class */ (function (_super) {
+    __extends(SetQuestVariable, _super);
+    function SetQuestVariable() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    SetQuestVariable.prototype.Display = function (id, values, updateFunction) {
+        var html = "";
+        html += this.Label("Quest Variable");
+        html += this.Input(id, 0, values[0], updateFunction);
+        html += this.Label("Value");
+        html += this.Input(id, 1, values[1], updateFunction);
+        return html;
+    };
+    SetQuestVariable.prototype.Execute = function (values, env) {
+        if (!this.Execute.caller) {
+            play.devTools = true;
+            world.Player.InformServer();
+            return;
+        }
+        if (!values[0])
+            throw "The action 'Set Quest Variable' requires a quest variable name.";
+        if (!env)
+            env = new CodeEnvironement();
+        var val = 0;
+        try {
+            val = CodeParser.ExecuteStatement(values[1], env.variables).GetNumber();
+        }
+        catch (ex) {
+            throw "The expression used in 'Remove Current Item' for the quantity is invalid.";
+        }
+        world.Player.SetQuestVariable(values[0], val);
+    };
+    SetQuestVariable = __decorate([
+        DialogActionClass
+    ], SetQuestVariable);
+    return SetQuestVariable;
+}(ActionClass));
+/// <reference path="../Dialogs/DialogAction.ts" />
+var SetRespawnPoint = /** @class */ (function (_super) {
+    __extends(SetRespawnPoint, _super);
+    function SetRespawnPoint() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    SetRespawnPoint.prototype.Display = function (id, values, updateFunction) {
+        var html = "";
+        html += this.Label("Position X");
+        html += this.Input(id, 0, values[0] = (values[0] || values[0] == "" ? values[0] : "0"), updateFunction);
+        html += this.Label("Position Y");
+        html += this.Input(id, 1, values[1] = (values[1] || values[1] == "" ? values[1] : "0"), updateFunction);
+        html += this.Label("Zone");
+        html += this.OptionList(id, 2, world.Zones.map(function (c) { return (c.Name); }).sort(), values[2], updateFunction);
+        return html;
+    };
+    SetRespawnPoint.prototype.Execute = function (values, env) {
+        if (!this.Execute.caller) {
+            play.devTools = true;
+            world.Player.InformServer();
+            return;
+        }
+        if (!values[2])
+            throw "The action 'Set Respawn Point' requires a zone name.";
+        if (!env)
+            env = new CodeEnvironement();
+        var x = 0;
+        var y = 0;
+        try {
+            x = CodeParser.ExecuteStatement(values[0], env.variables).GetNumber();
+        }
+        catch (ex) {
+            throw "The expression used in 'Set Respawn Point' for the x position is invalid.";
+        }
+        try {
+            y = CodeParser.ExecuteStatement(values[1], env.variables).GetNumber();
+        }
+        catch (ex) {
+            throw "The expression used in 'Set Respawn Point' for the y position is invalid.";
+        }
+        world.Player.RespawnPoint = { X: x, Y: y, Zone: values[2] };
+        world.Player.StoredCompare = world.Player.JSON();
+        world.Player.Save();
+    };
+    SetRespawnPoint = __decorate([
+        DialogActionClass
+    ], SetRespawnPoint);
+    return SetRespawnPoint;
+}(ActionClass));
+/// <reference path="../Dialogs/DialogAction.ts" />
+var SetStat = /** @class */ (function (_super) {
+    __extends(SetStat, _super);
+    function SetStat() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    SetStat.prototype.Display = function (id, values, updateFunction) {
+        var html = "";
+        html += this.Label("Stat");
+        html += this.OptionList(id, 0, world.Stats.map(function (c) { return c.Name; }).sort(), values[0], updateFunction);
+        html += this.Label("Value");
+        html += this.Input(id, 1, values[1] = (values[1] || values[1] == "" ? values[1] : "1"), updateFunction);
+        return html;
+    };
+    SetStat.prototype.Execute = function (values, env) {
+        if (!this.Execute.caller) {
+            play.devTools = true;
+            world.Player.InformServer();
+            return;
+        }
+        if (!values[0])
+            throw "The action 'Set Stat' requires a stat name.";
+        if (!env)
+            env = new CodeEnvironement();
+        var val = 0;
+        try {
+            val = CodeParser.ExecuteStatement(values[1], env.variables).GetNumber();
+        }
+        catch (ex) {
+            throw "The expression used in 'Set Stat' for the value is invalid.";
+        }
+        world.Player.SetStat(values[0], val);
+    };
+    SetStat = __decorate([
+        DialogActionClass
+    ], SetStat);
+    return SetStat;
+}(ActionClass));
+/// <reference path="../Dialogs/DialogAction.ts" />
+var lastMapMessageTimeout = null;
+var ShowMapMessage = /** @class */ (function (_super) {
+    __extends(ShowMapMessage, _super);
+    function ShowMapMessage() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    ShowMapMessage.prototype.Display = function (id, values, updateFunction) {
+        var html = "";
+        html += this.Label("Message");
+        html += this.Input(id, 0, values[0], updateFunction);
+        return html;
+    };
+    ShowMapMessage.prototype.Execute = function (values, env) {
+        if (!this.Execute.caller) {
+            play.devTools = true;
+            world.Player.InformServer();
+            return;
+        }
+        if (!values[0])
+            throw "The action 'ShowMapMessage' requires a message.";
+        if (lastMapMessageTimeout)
+            clearTimeout(lastMapMessageTimeout);
+        $("#mapMessage").show();
+        $("#mapMessage .gamePanelContentNoHeader").html("<center>" + values[0].htmlEntities() + "</center>");
+        lastMapMessageTimeout = setTimeout(function () {
+            lastMapMessageTimeout = null;
+            $("#mapMessage").hide();
+        }, 3000);
+    };
+    ShowMapMessage = __decorate([
+        DialogActionClass
+    ], ShowMapMessage);
+    return ShowMapMessage;
+}(ActionClass));
+var ShowMinimap = /** @class */ (function (_super) {
+    __extends(ShowMinimap, _super);
+    function ShowMinimap() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    ShowMinimap.prototype.Display = function (id, values, updateFunction) {
+        var html = "";
+        return html;
+    };
+    ShowMinimap.prototype.Execute = function (values, env) {
+        play.showMinimap = true;
+    };
+    ShowMinimap = __decorate([
+        DialogActionClass
+    ], ShowMinimap);
+    return ShowMinimap;
+}(ActionClass));
+/// <reference path="../Dialogs/DialogAction.ts" />
+var ShowShop = /** @class */ (function (_super) {
+    __extends(ShowShop, _super);
+    function ShowShop() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    ShowShop.prototype.Display = function (id, values, updateFunction) {
+        var html = "";
+        return html;
+    };
+    ShowShop.prototype.Execute = function (values, env) {
+        if (!this.Execute.caller) {
+            play.devTools = true;
+            world.Player.InformServer();
+            return;
+        }
+        npc.canJump = false;
+        NPCActor.ShowShop();
+    };
+    ShowShop = __decorate([
+        DialogActionClass
+    ], ShowShop);
+    return ShowShop;
+}(ActionClass));
+/// <reference path="../Dialogs/DialogAction.ts" />
+var StartDialog = /** @class */ (function (_super) {
+    __extends(StartDialog, _super);
+    function StartDialog() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    StartDialog.prototype.Display = function (id, values, updateFunction) {
+        var html = "";
+        html += this.Label("NPC");
+        html += this.OptionList(id, 0, world.NPCs.map(function (c) { return c.Name; }).sort(), values[0], updateFunction);
+        return html;
+    };
+    StartDialog.prototype.Execute = function (values, env) {
+        if (!this.Execute.caller) {
+            play.devTools = true;
+            world.Player.InformServer();
+            return;
+        }
+        if (!values[0])
+            throw "The action 'Start Dialog' requires a NPC name.";
+        var npcName = values[0];
+        npc.Dialogs = world.GetNPC(npcName).Dialogs;
+        npc.currentNPC = world.GetNPC(npcName);
+        world.Player.InDialog = true;
+        $("#npcDialog").show();
+        $("#npcDialog .gamePanelHeader").html(npc.currentNPC.Name);
+        NPCActor.ShowDialog(0);
+    };
+    StartDialog = __decorate([
+        DialogActionClass
+    ], StartDialog);
+    return StartDialog;
+}(ActionClass));
+/// <reference path="../Dialogs/DialogAction.ts" />
+var StartQuest = /** @class */ (function (_super) {
+    __extends(StartQuest, _super);
+    function StartQuest() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    StartQuest.prototype.Display = function (id, values, updateFunction) {
+        var html = "";
+        html += this.Label("Quest");
+        html += this.OptionList(id, 0, world.Quests.map(function (c) { return c.Name; }).sort(), values[0], updateFunction);
+        return html;
+    };
+    StartQuest.prototype.Execute = function (values, env) {
+        if (!this.Execute.caller) {
+            play.devTools = true;
+            world.Player.InformServer();
+            return;
+        }
+        if (!values[0])
+            throw "The action 'Start Quest' requires a quest name.";
+        world.Player.StartQuest(values[0]);
+    };
+    StartQuest = __decorate([
+        DialogActionClass
+    ], StartQuest);
+    return StartQuest;
+}(ActionClass));
+/// <reference path="../Dialogs/DialogAction.ts" />
+var StartTemporaryEffect = /** @class */ (function (_super) {
+    __extends(StartTemporaryEffect, _super);
+    function StartTemporaryEffect() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    StartTemporaryEffect.prototype.Display = function (id, values, updateFunction) {
+        if (!values[0])
+            values[0] = world.TemporaryEffects.map(function (c) { return c.Name; }).sort()[0];
+        var html = "";
+        html += this.Label("Effect");
+        html += this.OptionList(id, 0, world.TemporaryEffects.map(function (c) { return c.Name; }).sort(), values[0], updateFunction);
+        return html;
+    };
+    StartTemporaryEffect.prototype.Execute = function (values, env) {
+        if (!this.Execute.caller) {
+            play.devTools = true;
+            world.Player.InformServer();
+            return;
+        }
+        if (!values[0])
+            throw "The action 'Start Temporary Effect' requires an effect name.";
+        world.Player.StartTemporaryEffect(values[0]);
+    };
+    StartTemporaryEffect = __decorate([
+        DialogActionClass
+    ], StartTemporaryEffect);
+    return StartTemporaryEffect;
+}(ActionClass));
+/// <reference path="../Dialogs/DialogAction.ts" />
+var StopAllMusic = /** @class */ (function (_super) {
+    __extends(StopAllMusic, _super);
+    function StopAllMusic() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    StopAllMusic.prototype.Display = function (id, values, updateFunction) {
+        return "";
+    };
+    StopAllMusic.prototype.Execute = function (values, env) {
+        Sounds.ClearSound();
+    };
+    StopAllMusic = __decorate([
+        DialogActionClass
+    ], StopAllMusic);
+    return StopAllMusic;
+}(ActionClass));
+/// <reference path="../Dialogs/DialogAction.ts" />
+var StorePlayerLook = /** @class */ (function (_super) {
+    __extends(StorePlayerLook, _super);
+    function StorePlayerLook() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    StorePlayerLook.prototype.Display = function (id, values, updateFunction) {
+        return "";
+    };
+    StorePlayerLook.prototype.Execute = function (values, env) {
+        if (!this.Execute.caller) {
+            play.devTools = true;
+            world.Player.InformServer();
+            return;
+        }
+        world.Player.SetQuestVariable("__PlayerLook", world.Player.Name);
+    };
+    StorePlayerLook = __decorate([
+        DialogActionClass
+    ], StorePlayerLook);
+    return StorePlayerLook;
+}(ActionClass));
+/// <reference path="../Dialogs/DialogAction.ts" />
+var Teleport = /** @class */ (function (_super) {
+    __extends(Teleport, _super);
+    function Teleport() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    Teleport_1 = Teleport;
+    Teleport.prototype.Display = function (id, values, updateFunction) {
+        var html = "";
+        html += this.Label("Position X");
+        html += this.Input(id, 0, values[0] = (values[0] || values[0] == "" ? values[0] : "0"), updateFunction);
+        html += this.Label("Position Y");
+        html += this.Input(id, 1, values[1] = (values[1] || values[1] == "" ? values[1] : "0"), updateFunction);
+        html += this.Label("Zone");
+        html += this.OptionList(id, 2, world.Zones.map(function (c) { return (c.Name); }).sort(), values[2], updateFunction);
+        return html;
+    };
+    Teleport.prototype.Execute = function (values, env) {
+        if (!this.Execute.caller) {
+            play.devTools = true;
+            world.Player.InformServer();
+            return;
+        }
+        if (!values[2])
+            throw "The action 'Teleport' requires a zone name.";
+        if (!env)
+            env = new CodeEnvironement();
+        var x = 0;
+        var y = 0;
+        try {
+            x = CodeParser.ExecuteStatement(values[0], env.variables).GetNumber();
+        }
+        catch (ex) {
+            throw "The expression used in 'Teleport' for the x position is invalid.";
+        }
+        try {
+            y = CodeParser.ExecuteStatement(values[1], env.variables).GetNumber();
+        }
+        catch (ex) {
+            throw "The expression used in 'Teleport' for the y position is invalid.";
+        }
+        Teleport_1.Teleport(x, y, values[2]);
+    };
+    Teleport.Teleport = function (x, y, zone) {
+        if (!Teleport_1.Teleport.caller) {
+            play.devTools = true;
+            world.Player.InformServer();
+            return;
+        }
+        if (world.Player.CurrentArea)
+            for (var i = 0; i < world.Player.CurrentArea.actors.length; i++) {
+                if (world.Player.CurrentArea.actors[i] == world.Player) {
+                    world.Player.CurrentArea.actors.splice(i, 1);
+                    world.Player.CurrentArea.CleanObjectCache();
+                    break;
+                }
+            }
+        var ax = Math.floor(x / (world.areaWidth * world.art.background.width));
+        var ay = Math.floor(y / (world.areaHeight * world.art.background.height));
+        var mx = Math.abs(x) % (world.areaWidth * world.art.background.width);
+        var my = Math.abs(y) % (world.areaHeight * world.art.background.height);
+        if (ax < 0)
+            //mx = (world.areaWidth - 1) * world.art.background.width - mx;
+            mx = (world.areaWidth) * world.art.background.width - mx;
+        if (ay < 0)
+            //my = (world.areaHeight - 1) * world.art.background.height - my;
+            my = (world.areaHeight) * world.art.background.height - my;
+        world.VisibleCenter(ax, ay, zone);
+        world.Player.AX = ax;
+        world.Player.AY = ay;
+        world.Player.Zone = zone;
+        world.Player.X = mx;
+        world.Player.Y = my;
+        play.afterTeleport = true;
+        world.Player.CurrentArea = world.GetArea(world.Player.AX, world.Player.AY, world.Player.Zone);
+        if (world.Player.CurrentArea) {
+            world.Player.CurrentArea.actors.push(world.Player);
+            world.Player.CurrentArea.CleanObjectCache();
+        }
+        play.path = null;
+        world.Player.Save();
+    };
+    var Teleport_1;
+    Teleport = Teleport_1 = __decorate([
+        DialogActionClass
+    ], Teleport);
+    return Teleport;
+}(ActionClass));
+var ChatBot = /** @class */ (function () {
     function ChatBot() {
         this.Name = "";
         this.Channel = "*";
@@ -2405,7 +7044,7 @@ var ChatBot = (function () {
     };
     return ChatBot;
 }());
-var ChatBotSentence = (function () {
+var ChatBotSentence = /** @class */ (function () {
     function ChatBotSentence() {
         this.Conditions = [];
         this.Trigger = "[hello,@bot@],[hi,@bot@],[hey,@bot@]";
@@ -2513,1097 +7152,7 @@ var ChatBotSentence = (function () {
     };
     return ChatBotSentence;
 }());
-var dialogAction = new ((function () {
-    function class_2() {
-        this.code = {};
-        this.currentEditor = "NPCEditor";
-    }
-    return class_2;
-}()));
-function DialogActionClass(target) {
-    var tName = "" + target;
-    var className = tName.match(/function ([^\(]+)\(/)[1];
-    var actionClass = new target();
-    if (actionClass instanceof ActionClass)
-        dialogAction.code[className] = actionClass;
-    else
-        throw "Class \"" + className + "\" doesn't extends ActionClass.";
-}
-var ActionClass = (function () {
-    function ActionClass() {
-    }
-    ActionClass.prototype.OptionList = function (id, position, values, currentValue, updateFunction) {
-        var html = "";
-        html += "<span class='dialogParam'><select id='" + (updateFunction ? updateFunction : "action") + "_" + id + "_" + position + "' onchange='" + dialogAction.currentEditor + "." + (updateFunction ? updateFunction : "ChangeAction") + "(" + id + "," + position + ")'>";
-        var found = false;
-        for (var i = 0; i < values.length; i++) {
-            if (values[i].Id != undefined) {
-                html += "<option" + (values[i].Id == currentValue ? " selected" : "") + " value='" + ("" + values[i].Id).htmlEntities() + "'>" + values[i].Value + "</option>";
-                if (values[i].Id == currentValue)
-                    found = true;
-            }
-            else {
-                html += "<option" + (values[i] == currentValue ? " selected" : "") + " value='" + ("" + values[i]).htmlEntities() + "'>" + values[i] + "</option>";
-                if (values[i] == currentValue)
-                    found = true;
-            }
-        }
-        if (!found)
-            html += "<option selected>" + (currentValue === undefined ? "" : currentValue) + "</option>";
-        html += "</select></span>";
-        return html;
-    };
-    ActionClass.prototype.Input = function (id, position, currentValue, updateFunction) {
-        return "<span class='dialogParam'><input id='" + (updateFunction ? updateFunction : "action") + "_" + id + "_" + position + "' type='text' value='" + (currentValue ? currentValue : "").htmlEntities() + "' onkeyup='" + dialogAction.currentEditor + "." + (updateFunction ? updateFunction : "ChangeAction") + "(" + id + "," + position + ")' onfocus='play.inField=true;' onblur='play.inField=false;'></span>";
-    };
-    ActionClass.prototype.Label = function (label) {
-        return "<span class='dialogParamLabel'>" + label + "</span>";
-    };
-    return ActionClass;
-}());
-var DialogAction = (function () {
-    function DialogAction() {
-        this.Values = [];
-    }
-    return DialogAction;
-}());
-/// <reference path="../Dialogs/DialogAction.ts" />
-var lastMapMessageTimeout = null;
-var AddActorParticleEffect = (function (_super) {
-    __extends(AddActorParticleEffect, _super);
-    function AddActorParticleEffect() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    AddActorParticleEffect.prototype.Display = function (id, values, updateFunction) {
-        var html = "";
-        html += this.Label("Particle Effect");
-        var effects = world.ParticleEffects.map(function (c) { return c.Name; }).sort();
-        if (!values[0] && effects.length > 0)
-            values[0] = effects[0];
-        html += this.OptionList(id, 0, effects, values[0], updateFunction);
-        html += this.Label("Last (in sec.)");
-        if (!values[1])
-            values[1] = "5";
-        html += this.Input(id, 1, values[1], updateFunction);
-        return html;
-    };
-    AddActorParticleEffect.prototype.Execute = function (values, env) {
-        if (!values[0])
-            throw "The action 'Add Actor Particle Effect' requires a particle name.";
-        if (!values[1] || isNaN(parseInt(values[1])))
-            throw "The action 'Add Actor Particle Effect' requires number of second the particle effect will last.";
-        world.Player.ParticleEffect = world.GetParticleSystem(values[0]);
-        if (world.Player.ParticleEffect) {
-            var now = new Date();
-            var ends = new Date(now.getTime() + parseInt(values[1]) * 1000);
-            /*console.log("now: " + now.toString());
-            console.log("ends: " + ends.toString());*/
-            world.Player.ParticleEffectDuration = ends;
-        }
-        return null;
-    };
-    return AddActorParticleEffect;
-}(ActionClass));
-AddActorParticleEffect = __decorate([
-    DialogActionClass
-], AddActorParticleEffect);
-/// <reference path="../Dialogs/DialogAction.ts" />
-var AddJournalEntry = (function (_super) {
-    __extends(AddJournalEntry, _super);
-    function AddJournalEntry() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    AddJournalEntry.prototype.Display = function (id, values, updateFunction) {
-        var html = "";
-        html += this.Label("Quest");
-        html += this.OptionList(id, 0, world.Quests.map(function (c) { return c.Name; }).sort(), values[0], updateFunction);
-        html += this.Label("Journal Entry");
-        html += this.Input(id, 1, values[1], updateFunction);
-        return html;
-    };
-    AddJournalEntry.prototype.Execute = function (values, env) {
-        if (!this.Execute.caller) {
-            play.devTools = true;
-            world.Player.InformServer();
-            return;
-        }
-        if (!values[0])
-            throw "The action 'Add Journal Entry' requires a quest name.";
-        if (!values[1] || isNaN(parseInt(values[1])))
-            throw "The action 'Add Journal Entry' requires the id of the journal entry (as number).";
-        world.Player.AddQuestJournalEntry(values[0], parseInt(values[1]));
-    };
-    return AddJournalEntry;
-}(ActionClass));
-AddJournalEntry = __decorate([
-    DialogActionClass
-], AddJournalEntry);
-/// <reference path="../Dialogs/DialogAction.ts" />
-var CompleteQuest = (function (_super) {
-    __extends(CompleteQuest, _super);
-    function CompleteQuest() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    CompleteQuest.prototype.Display = function (id, values, updateFunction) {
-        var html = "";
-        html += this.Label("Quest");
-        html += this.OptionList(id, 0, world.Quests.map(function (c) { return c.Name; }).sort(), values[0], updateFunction);
-        return html;
-    };
-    CompleteQuest.prototype.Execute = function (values, env) {
-        if (!this.Execute.caller) {
-            play.devTools = true;
-            world.Player.InformServer();
-            return;
-        }
-        if (!values[0])
-            throw "The action 'Complete Quest' requires a quest name.";
-        world.Player.CompleteQuest(values[0]);
-    };
-    return CompleteQuest;
-}(ActionClass));
-CompleteQuest = __decorate([
-    DialogActionClass
-], CompleteQuest);
-/// <reference path="../Dialogs/DialogAction.ts" />
-var DecreaseStat = (function (_super) {
-    __extends(DecreaseStat, _super);
-    function DecreaseStat() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    DecreaseStat.prototype.Display = function (id, values, updateFunction) {
-        var html = "";
-        html += this.Label("Stat");
-        html += this.OptionList(id, 0, world.Stats.map(function (c) { return c.Name; }).sort(), values[0], updateFunction);
-        html += this.Label("Quantity");
-        html += this.Input(id, 1, values[1] = (values[1] || values[1] == "" ? values[1] : "1"), updateFunction);
-        return html;
-    };
-    DecreaseStat.prototype.Execute = function (values, env) {
-        if (!this.Execute.caller) {
-            play.devTools = true;
-            world.Player.InformServer();
-            return;
-        }
-        if (!values[0])
-            throw "The action 'Decrease Stat' requires a stat name.";
-        if (!values[1])
-            throw "The action 'Decrease Stat' requires a quantity expressed either as number or a valid expression.";
-        if (!env)
-            env = new CodeEnvironement();
-        var val = 0;
-        try {
-            val = CodeParser.ExecuteStatement(values[1]).GetNumber();
-            //val = CodeParser.ParseStatement(values[1]).Execute(env).GetNumber();
-        }
-        catch (ex) {
-            throw "The expression used in 'Decrease Stat' for the quantity is invalid.";
-        }
-        world.Player.SetStat(values[0], world.Player.GetStat(values[0]) - val);
-    };
-    return DecreaseStat;
-}(ActionClass));
-DecreaseStat = __decorate([
-    DialogActionClass
-], DecreaseStat);
-/// <reference path="../Dialogs/DialogAction.ts" />
-var ExecuteCodeFunction = ExecuteCodeFunction_1 = (function (_super) {
-    __extends(ExecuteCodeFunction, _super);
-    function ExecuteCodeFunction() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    ExecuteCodeFunction.prototype.Display = function (id, values, updateFunction) {
-        var html = "";
-        html += this.Label("Function");
-        html += this.Input(id, 0, values[0], updateFunction);
-        return html;
-    };
-    ExecuteCodeFunction.prototype.Execute = function (values, env) {
-        if (!env)
-            env = new CodeEnvironement();
-        ExecuteCodeFunction_1.ExecuteFunction(values);
-    };
-    ExecuteCodeFunction.ExecuteFunction = function (values) {
-        try {
-            var func = values[0];
-            if (func.indexOf("(") == -1)
-                func += "();";
-            if (func.charAt(func.length - 1) != ";")
-                func += ";";
-            var parse = CodeParser.Parse("function to_exec() { " + func + " }");
-            parse.ExecuteFunction("to_exec", []);
-        }
-        catch (ex) {
-            throw "The expression used in 'Execute Code Function' is invalid.";
-        }
-    };
-    return ExecuteCodeFunction;
-}(ActionClass));
-ExecuteCodeFunction = ExecuteCodeFunction_1 = __decorate([
-    DialogActionClass
-], ExecuteCodeFunction);
-var ExecuteCodeFunction_1;
-/// <reference path="../Dialogs/DialogAction.ts" />
-var GiveCurrentItem = (function (_super) {
-    __extends(GiveCurrentItem, _super);
-    function GiveCurrentItem() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    GiveCurrentItem.prototype.Display = function (id, values, updateFunction) {
-        var html = "";
-        html += this.Label("Quantity");
-        html += this.Input(id, 0, values[0] = (values[0] || values[0] == "" ? values[0] : "1"), updateFunction);
-        return html;
-    };
-    GiveCurrentItem.prototype.Execute = function (values, env) {
-        if (!this.Execute.caller) {
-            play.devTools = true;
-            world.Player.InformServer();
-            return;
-        }
-        if (!values[0])
-            throw "The action 'Give Current Item' requires a quantity.";
-        if (!env || !env.HasVariable('currentItem'))
-            return;
-        var val = 0;
-        try {
-            val = CodeParser.ExecuteStatement(values[0], env.variables).GetNumber();
-            //val = CodeParser.ParseStatement(values[0]).Execute(env).GetNumber();
-        }
-        catch (ex) {
-            throw "The expression used in 'Give Current Item' for the quantity is invalid.";
-        }
-        world.Player.AddItem(env.GetVariable('currentItem').GetString(), val);
-    };
-    return GiveCurrentItem;
-}(ActionClass));
-GiveCurrentItem = __decorate([
-    DialogActionClass
-], GiveCurrentItem);
-/// <reference path="../Dialogs/DialogAction.ts" />
-var GiveItem = (function (_super) {
-    __extends(GiveItem, _super);
-    function GiveItem() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    GiveItem.prototype.Display = function (id, values, updateFunction) {
-        var html = "";
-        html += this.Label("Item");
-        html += this.OptionList(id, 0, world.InventoryObjects.map(function (c) { return c.Name; }).sort(), values[0], updateFunction);
-        html += this.Label("Quantity");
-        html += this.Input(id, 1, values[1] = (values[1] || values[1] == "" ? values[1] : "1"), updateFunction);
-        return html;
-    };
-    GiveItem.prototype.Execute = function (values, env) {
-        if (!this.Execute.caller) {
-            play.devTools = true;
-            world.Player.InformServer();
-            return;
-        }
-        if (!values[0])
-            throw "The action 'Give Item' requires a name.";
-        if (!env)
-            env = new CodeEnvironement();
-        var val = 0;
-        try {
-            val = CodeParser.ExecuteStatement(values[1], env.variables).GetNumber();
-        }
-        catch (ex) {
-            throw "The expression used in 'Give Item' for the quantity is invalid.";
-        }
-        world.Player.AddItem(values[0], val);
-    };
-    return GiveItem;
-}(ActionClass));
-GiveItem = __decorate([
-    DialogActionClass
-], GiveItem);
-/// <reference path="../Dialogs/DialogAction.ts" />
-var GiveSkill = (function (_super) {
-    __extends(GiveSkill, _super);
-    function GiveSkill() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    GiveSkill.prototype.Display = function (id, values, updateFunction) {
-        if (!values[0])
-            values[0] = world.Skills.map(function (c) { return c.Name; }).sort()[0];
-        var html = "";
-        html += this.Label("Skill");
-        html += this.OptionList(id, 0, world.Skills.map(function (c) { return c.Name; }).sort(), values[0], updateFunction);
-        return html;
-    };
-    GiveSkill.prototype.Execute = function (values, env) {
-        if (!this.Execute.caller) {
-            play.devTools = true;
-            world.Player.InformServer();
-            return;
-        }
-        if (!values[0])
-            throw "The action 'Give Skill' requires a name.";
-        world.Player.GiveSkill(values[0]);
-    };
-    return GiveSkill;
-}(ActionClass));
-GiveSkill = __decorate([
-    DialogActionClass
-], GiveSkill);
-var HideMinimap = (function (_super) {
-    __extends(HideMinimap, _super);
-    function HideMinimap() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    HideMinimap.prototype.Display = function (id, values, updateFunction) {
-        var html = "";
-        return html;
-    };
-    HideMinimap.prototype.Execute = function (values, env) {
-        play.showMinimap = false;
-    };
-    return HideMinimap;
-}(ActionClass));
-HideMinimap = __decorate([
-    DialogActionClass
-], HideMinimap);
-/// <reference path="../Dialogs/DialogAction.ts" />
-var IncreaseStat = (function (_super) {
-    __extends(IncreaseStat, _super);
-    function IncreaseStat() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    IncreaseStat.prototype.Display = function (id, values, updateFunction) {
-        var html = "";
-        html += this.Label("Stat");
-        html += this.OptionList(id, 0, world.Stats.map(function (c) { return c.Name; }).sort(), values[0], updateFunction);
-        html += this.Label("Quantity");
-        html += this.Input(id, 1, values[1] = (values[1] || values[1] == "" ? values[1] : "1"), updateFunction);
-        return html;
-    };
-    IncreaseStat.prototype.Execute = function (values, env) {
-        if (!this.Execute.caller) {
-            play.devTools = true;
-            world.Player.InformServer();
-            return;
-        }
-        if (!values[0])
-            throw "The action 'Increase Stat' requires a name.";
-        if (!env)
-            env = new CodeEnvironement();
-        var val = 0;
-        try {
-            val = CodeParser.ExecuteStatement(values[1], env.variables).GetNumber();
-        }
-        catch (ex) {
-            throw "The expression used in 'Increase Stat' for the quantity is invalid.";
-        }
-        world.Player.SetStat(values[0], world.Player.GetStat(values[0]) + val);
-    };
-    return IncreaseStat;
-}(ActionClass));
-IncreaseStat = __decorate([
-    DialogActionClass
-], IncreaseStat);
-/// <reference path="../Dialogs/DialogAction.ts" />
-var PlayerFloatingMessage = (function (_super) {
-    __extends(PlayerFloatingMessage, _super);
-    function PlayerFloatingMessage() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    PlayerFloatingMessage.prototype.Display = function (id, values, updateFunction) {
-        var html = "";
-        html += this.Label("Text");
-        html += this.Input(id, 0, values[0], updateFunction);
-        html += this.Label("Color");
-        html += this.Input(id, 1, values[1] ? values[1] : "#FFFFFF", updateFunction);
-        return html;
-    };
-    PlayerFloatingMessage.prototype.Execute = function (values, env) {
-        if (!this.Execute.caller) {
-            play.devTools = true;
-            world.Player.InformServer();
-            return;
-        }
-        if (!env)
-            env = new CodeEnvironement();
-        if (!values[0])
-            throw "The action 'Player Floating Message' requires a text.";
-        var val;
-        try {
-            val = CodeParser.ExecuteStatement(values[0], env.variables).GetString();
-        }
-        catch (ex) {
-            val = values[0];
-        }
-        var ax = world.Player.AX;
-        var ay = world.Player.AY;
-        var mx = world.Player.X;
-        var my = world.Player.Y;
-        var area = world.GetArea(ax, ay, world.Player.Zone);
-        if (area) {
-            area.actors.push(MapMessage.Create(val, values[1] ? values[1] : "#FFFFFF", area, mx, my));
-        }
-    };
-    return PlayerFloatingMessage;
-}(ActionClass));
-PlayerFloatingMessage = __decorate([
-    DialogActionClass
-], PlayerFloatingMessage);
-/// <reference path="../Dialogs/DialogAction.ts" />
-var PlaySound = (function (_super) {
-    __extends(PlaySound, _super);
-    function PlaySound() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    PlaySound.prototype.Display = function (id, values, updateFunction) {
-        var html = "";
-        html += this.Label("Sound");
-        var sounds = [];
-        for (var item in world.art.sounds)
-            sounds.push(item);
-        sounds.sort();
-        html += this.OptionList(id, 0, sounds, values[0], updateFunction);
-        html += this.Label("Volume");
-        html += this.Input(id, 1, values[1] = (values[1] || values[1] == "" ? values[1] : "0.6"), updateFunction);
-        return html;
-    };
-    PlaySound.prototype.Execute = function (values, env) {
-        if (!env)
-            env = new CodeEnvironement();
-        if (!values[0])
-            throw "The action 'Play Sound' requires a sound name.";
-        var val = 0;
-        try {
-            val = CodeParser.ExecuteStatement(values[1], env.variables).GetNumber();
-        }
-        catch (ex) {
-            throw "The expression used in 'Play Sound' for the volume is invalid.";
-        }
-        Sounds.Play(values[0], val);
-    };
-    return PlaySound;
-}(ActionClass));
-PlaySound = __decorate([
-    DialogActionClass
-], PlaySound);
-/// <reference path="../Dialogs/DialogAction.ts" />
-var RemoveAllTemporaryEffects = (function (_super) {
-    __extends(RemoveAllTemporaryEffects, _super);
-    function RemoveAllTemporaryEffects() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    RemoveAllTemporaryEffects.prototype.Display = function (id, values, updateFunction) {
-        return "";
-    };
-    RemoveAllTemporaryEffects.prototype.Execute = function (values, env) {
-        if (!this.Execute.caller) {
-            play.devTools = true;
-            world.Player.InformServer();
-            return;
-        }
-        world.Player.ClearTemporaryEffects();
-    };
-    return RemoveAllTemporaryEffects;
-}(ActionClass));
-RemoveAllTemporaryEffects = __decorate([
-    DialogActionClass
-], RemoveAllTemporaryEffects);
-/// <reference path="../Dialogs/DialogAction.ts" />
-var RemoveCurrentItem = (function (_super) {
-    __extends(RemoveCurrentItem, _super);
-    function RemoveCurrentItem() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    RemoveCurrentItem.prototype.Display = function (id, values, updateFunction) {
-        var html = "";
-        html += this.Label("Quantity");
-        html += this.Input(id, 0, values[0] = (values[0] || values[0] == "" ? values[0] : "1"), updateFunction);
-        return html;
-    };
-    RemoveCurrentItem.prototype.Execute = function (values, env) {
-        if (!this.Execute.caller) {
-            play.devTools = true;
-            world.Player.InformServer();
-            return;
-        }
-        if (!env || !env.HasVariable('currentItem'))
-            return;
-        var val = 0;
-        try {
-            val = CodeParser.ExecuteStatement(values[0], env.variables).GetNumber();
-        }
-        catch (ex) {
-            throw "The expression used in 'Remove Current Item' for the quantity is invalid.";
-        }
-        world.Player.RemoveItem(env.GetVariable('currentItem').GetString(), val);
-    };
-    return RemoveCurrentItem;
-}(ActionClass));
-RemoveCurrentItem = __decorate([
-    DialogActionClass
-], RemoveCurrentItem);
-/// <reference path="../Dialogs/DialogAction.ts" />
-var RemoveItem = (function (_super) {
-    __extends(RemoveItem, _super);
-    function RemoveItem() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    RemoveItem.prototype.Display = function (id, values, updateFunction) {
-        var html = "";
-        html += this.Label("Item");
-        html += this.OptionList(id, 0, world.InventoryObjects.map(function (c) { return c.Name; }).sort(), values[0], updateFunction);
-        html += this.Label("Quantity");
-        html += this.Input(id, 1, values[1] = (values[1] || values[1] == "" ? values[1] : "1"), updateFunction);
-        return html;
-    };
-    RemoveItem.prototype.Execute = function (values, env) {
-        if (!this.Execute.caller) {
-            play.devTools = true;
-            world.Player.InformServer();
-            return;
-        }
-        if (!env)
-            env = new CodeEnvironement();
-        var val = 0;
-        try {
-            val = CodeParser.ExecuteStatement(values[1], env.variables).GetNumber();
-        }
-        catch (ex) {
-            throw "The expression used in 'Remove Item' for the quantity is invalid.";
-        }
-        world.Player.RemoveItem(values[0], val);
-    };
-    return RemoveItem;
-}(ActionClass));
-RemoveItem = __decorate([
-    DialogActionClass
-], RemoveItem);
-/// <reference path="../Dialogs/DialogAction.ts" />
-var RemoveTemporaryEffect = (function (_super) {
-    __extends(RemoveTemporaryEffect, _super);
-    function RemoveTemporaryEffect() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    RemoveTemporaryEffect.prototype.Display = function (id, values, updateFunction) {
-        if (!values[0])
-            values[0] = world.TemporaryEffects.map(function (c) { return c.Name; }).sort()[0];
-        var html = "";
-        html += this.Label("Effect");
-        html += this.OptionList(id, 0, world.TemporaryEffects.map(function (c) { return c.Name; }).sort(), values[0], updateFunction);
-        return html;
-    };
-    RemoveTemporaryEffect.prototype.Execute = function (values, env) {
-        if (!this.Execute.caller) {
-            play.devTools = true;
-            world.Player.InformServer();
-            return;
-        }
-        if (!values[0])
-            throw "The action 'Remove Temporary Effect' requires an effect name.";
-        world.Player.RemoveTemporaryEffect(values[0]);
-    };
-    return RemoveTemporaryEffect;
-}(ActionClass));
-RemoveTemporaryEffect = __decorate([
-    DialogActionClass
-], RemoveTemporaryEffect);
-/// <reference path="../Dialogs/DialogAction.ts" />
-var Respawn = (function (_super) {
-    __extends(Respawn, _super);
-    function Respawn() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    Respawn.prototype.Display = function (id, values, updateFunction) {
-        return "";
-    };
-    Respawn.prototype.Execute = function (values, env) {
-        if (!this.Execute.caller) {
-            play.devTools = true;
-            world.Player.InformServer();
-            return;
-        }
-        if (world.Player.RespawnPoint)
-            Teleport.Teleport(world.Player.RespawnPoint.X, world.Player.RespawnPoint.Y, world.Player.RespawnPoint.Zone);
-        else
-            Teleport.Teleport(world.SpawnPoint.X, world.SpawnPoint.Y, world.SpawnPoint.Zone);
-    };
-    return Respawn;
-}(ActionClass));
-Respawn = __decorate([
-    DialogActionClass
-], Respawn);
-/// <reference path="../Dialogs/DialogAction.ts" />
-var RestorePlayerLook = (function (_super) {
-    __extends(RestorePlayerLook, _super);
-    function RestorePlayerLook() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    RestorePlayerLook.prototype.Display = function (id, values, updateFunction) {
-        return "";
-    };
-    RestorePlayerLook.prototype.Execute = function (values, env) {
-        if (!this.Execute.caller) {
-            play.devTools = true;
-            world.Player.InformServer();
-            return;
-        }
-        world.Player.Name = world.Player.GetQuestVariable("__PlayerLook");
-        world.Player.StoredCompare = world.Player.JSON();
-        world.Player.Save();
-    };
-    return RestorePlayerLook;
-}(ActionClass));
-RestorePlayerLook = __decorate([
-    DialogActionClass
-], RestorePlayerLook);
-/// <reference path="../Dialogs/DialogAction.ts" />
-var SetLook = (function (_super) {
-    __extends(SetLook, _super);
-    function SetLook() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    SetLook.prototype.Display = function (id, values, updateFunction) {
-        var html = "";
-        html += this.Label("Look");
-        var names = [];
-        for (var item in world.art.characters)
-            names.push(item);
-        names.sort();
-        html += this.OptionList(id, 0, names, values[0], updateFunction);
-        return html;
-    };
-    SetLook.prototype.Execute = function (values, env) {
-        if (!this.Execute.caller) {
-            play.devTools = true;
-            world.Player.InformServer();
-            return;
-        }
-        if (!values[0])
-            throw "The action 'Set Look' requires a look name.";
-        world.Player.Name = values[0];
-        world.Player.StoredCompare = world.Player.JSON();
-        world.Player.Save();
-    };
-    return SetLook;
-}(ActionClass));
-SetLook = __decorate([
-    DialogActionClass
-], SetLook);
-/// <reference path="../Dialogs/DialogAction.ts" />
-var SetQuestVariable = (function (_super) {
-    __extends(SetQuestVariable, _super);
-    function SetQuestVariable() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    SetQuestVariable.prototype.Display = function (id, values, updateFunction) {
-        var html = "";
-        html += this.Label("Quest Variable");
-        html += this.Input(id, 0, values[0], updateFunction);
-        html += this.Label("Value");
-        html += this.Input(id, 1, values[1], updateFunction);
-        return html;
-    };
-    SetQuestVariable.prototype.Execute = function (values, env) {
-        if (!this.Execute.caller) {
-            play.devTools = true;
-            world.Player.InformServer();
-            return;
-        }
-        if (!values[0])
-            throw "The action 'Set Quest Variable' requires a quest variable name.";
-        if (!env)
-            env = new CodeEnvironement();
-        var val = 0;
-        try {
-            val = CodeParser.ExecuteStatement(values[1], env.variables).GetNumber();
-        }
-        catch (ex) {
-            throw "The expression used in 'Remove Current Item' for the quantity is invalid.";
-        }
-        world.Player.SetQuestVariable(values[0], val);
-    };
-    return SetQuestVariable;
-}(ActionClass));
-SetQuestVariable = __decorate([
-    DialogActionClass
-], SetQuestVariable);
-/// <reference path="../Dialogs/DialogAction.ts" />
-var SetRespawnPoint = (function (_super) {
-    __extends(SetRespawnPoint, _super);
-    function SetRespawnPoint() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    SetRespawnPoint.prototype.Display = function (id, values, updateFunction) {
-        var html = "";
-        html += this.Label("Position X");
-        html += this.Input(id, 0, values[0] = (values[0] || values[0] == "" ? values[0] : "0"), updateFunction);
-        html += this.Label("Position Y");
-        html += this.Input(id, 1, values[1] = (values[1] || values[1] == "" ? values[1] : "0"), updateFunction);
-        html += this.Label("Zone");
-        html += this.OptionList(id, 2, world.Zones.map(function (c) { return (c.Name); }).sort(), values[2], updateFunction);
-        return html;
-    };
-    SetRespawnPoint.prototype.Execute = function (values, env) {
-        if (!this.Execute.caller) {
-            play.devTools = true;
-            world.Player.InformServer();
-            return;
-        }
-        if (!values[2])
-            throw "The action 'Set Respawn Point' requires a zone name.";
-        if (!env)
-            env = new CodeEnvironement();
-        var x = 0;
-        var y = 0;
-        try {
-            x = CodeParser.ExecuteStatement(values[0], env.variables).GetNumber();
-        }
-        catch (ex) {
-            throw "The expression used in 'Set Respawn Point' for the x position is invalid.";
-        }
-        try {
-            y = CodeParser.ExecuteStatement(values[1], env.variables).GetNumber();
-        }
-        catch (ex) {
-            throw "The expression used in 'Set Respawn Point' for the y position is invalid.";
-        }
-        world.Player.RespawnPoint = { X: x, Y: y, Zone: values[2] };
-        world.Player.StoredCompare = world.Player.JSON();
-        world.Player.Save();
-    };
-    return SetRespawnPoint;
-}(ActionClass));
-SetRespawnPoint = __decorate([
-    DialogActionClass
-], SetRespawnPoint);
-/// <reference path="../Dialogs/DialogAction.ts" />
-var SetStat = (function (_super) {
-    __extends(SetStat, _super);
-    function SetStat() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    SetStat.prototype.Display = function (id, values, updateFunction) {
-        var html = "";
-        html += this.Label("Stat");
-        html += this.OptionList(id, 0, world.Stats.map(function (c) { return c.Name; }).sort(), values[0], updateFunction);
-        html += this.Label("Value");
-        html += this.Input(id, 1, values[1] = (values[1] || values[1] == "" ? values[1] : "1"), updateFunction);
-        return html;
-    };
-    SetStat.prototype.Execute = function (values, env) {
-        if (!this.Execute.caller) {
-            play.devTools = true;
-            world.Player.InformServer();
-            return;
-        }
-        if (!values[0])
-            throw "The action 'Set Stat' requires a stat name.";
-        if (!env)
-            env = new CodeEnvironement();
-        var val = 0;
-        try {
-            val = CodeParser.ExecuteStatement(values[1], env.variables).GetNumber();
-        }
-        catch (ex) {
-            throw "The expression used in 'Set Stat' for the value is invalid.";
-        }
-        world.Player.SetStat(values[0], val);
-    };
-    return SetStat;
-}(ActionClass));
-SetStat = __decorate([
-    DialogActionClass
-], SetStat);
-/// <reference path="../Dialogs/DialogAction.ts" />
-var lastMapMessageTimeout = null;
-var ShowMapMessage = (function (_super) {
-    __extends(ShowMapMessage, _super);
-    function ShowMapMessage() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    ShowMapMessage.prototype.Display = function (id, values, updateFunction) {
-        var html = "";
-        html += this.Label("Message");
-        html += this.Input(id, 0, values[0], updateFunction);
-        return html;
-    };
-    ShowMapMessage.prototype.Execute = function (values, env) {
-        if (!this.Execute.caller) {
-            play.devTools = true;
-            world.Player.InformServer();
-            return;
-        }
-        if (!values[0])
-            throw "The action 'ShowMapMessage' requires a message.";
-        if (lastMapMessageTimeout)
-            clearTimeout(lastMapMessageTimeout);
-        $("#mapMessage").show();
-        $("#mapMessage .gamePanelContentNoHeader").html("<center>" + values[0].htmlEntities() + "</center>");
-        lastMapMessageTimeout = setTimeout(function () {
-            lastMapMessageTimeout = null;
-            $("#mapMessage").hide();
-        }, 3000);
-    };
-    return ShowMapMessage;
-}(ActionClass));
-ShowMapMessage = __decorate([
-    DialogActionClass
-], ShowMapMessage);
-var ShowMinimap = (function (_super) {
-    __extends(ShowMinimap, _super);
-    function ShowMinimap() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    ShowMinimap.prototype.Display = function (id, values, updateFunction) {
-        var html = "";
-        return html;
-    };
-    ShowMinimap.prototype.Execute = function (values, env) {
-        play.showMinimap = true;
-    };
-    return ShowMinimap;
-}(ActionClass));
-ShowMinimap = __decorate([
-    DialogActionClass
-], ShowMinimap);
-/// <reference path="../Dialogs/DialogAction.ts" />
-var ShowShop = (function (_super) {
-    __extends(ShowShop, _super);
-    function ShowShop() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    ShowShop.prototype.Display = function (id, values, updateFunction) {
-        var html = "";
-        return html;
-    };
-    ShowShop.prototype.Execute = function (values, env) {
-        if (!this.Execute.caller) {
-            play.devTools = true;
-            world.Player.InformServer();
-            return;
-        }
-        npc.canJump = false;
-        NPCActor.ShowShop();
-    };
-    return ShowShop;
-}(ActionClass));
-ShowShop = __decorate([
-    DialogActionClass
-], ShowShop);
-/// <reference path="../Dialogs/DialogAction.ts" />
-var StartDialog = (function (_super) {
-    __extends(StartDialog, _super);
-    function StartDialog() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    StartDialog.prototype.Display = function (id, values, updateFunction) {
-        var html = "";
-        html += this.Label("NPC");
-        html += this.OptionList(id, 0, world.NPCs.map(function (c) { return c.Name; }).sort(), values[0], updateFunction);
-        return html;
-    };
-    StartDialog.prototype.Execute = function (values, env) {
-        if (!this.Execute.caller) {
-            play.devTools = true;
-            world.Player.InformServer();
-            return;
-        }
-        if (!values[0])
-            throw "The action 'Start Dialog' requires a NPC name.";
-        var npcName = values[0];
-        npc.Dialogs = world.GetNPC(npcName).Dialogs;
-        npc.currentNPC = world.GetNPC(npcName);
-        world.Player.InDialog = true;
-        $("#npcDialog").show();
-        $("#npcDialog .gamePanelHeader").html(npc.currentNPC.Name);
-        NPCActor.ShowDialog(0);
-    };
-    return StartDialog;
-}(ActionClass));
-StartDialog = __decorate([
-    DialogActionClass
-], StartDialog);
-/// <reference path="../Dialogs/DialogAction.ts" />
-var StartQuest = (function (_super) {
-    __extends(StartQuest, _super);
-    function StartQuest() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    StartQuest.prototype.Display = function (id, values, updateFunction) {
-        var html = "";
-        html += this.Label("Quest");
-        html += this.OptionList(id, 0, world.Quests.map(function (c) { return c.Name; }).sort(), values[0], updateFunction);
-        return html;
-    };
-    StartQuest.prototype.Execute = function (values, env) {
-        if (!this.Execute.caller) {
-            play.devTools = true;
-            world.Player.InformServer();
-            return;
-        }
-        if (!values[0])
-            throw "The action 'Start Quest' requires a quest name.";
-        world.Player.StartQuest(values[0]);
-    };
-    return StartQuest;
-}(ActionClass));
-StartQuest = __decorate([
-    DialogActionClass
-], StartQuest);
-/// <reference path="../Dialogs/DialogAction.ts" />
-var StartTemporaryEffect = (function (_super) {
-    __extends(StartTemporaryEffect, _super);
-    function StartTemporaryEffect() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    StartTemporaryEffect.prototype.Display = function (id, values, updateFunction) {
-        if (!values[0])
-            values[0] = world.TemporaryEffects.map(function (c) { return c.Name; }).sort()[0];
-        var html = "";
-        html += this.Label("Effect");
-        html += this.OptionList(id, 0, world.TemporaryEffects.map(function (c) { return c.Name; }).sort(), values[0], updateFunction);
-        return html;
-    };
-    StartTemporaryEffect.prototype.Execute = function (values, env) {
-        if (!this.Execute.caller) {
-            play.devTools = true;
-            world.Player.InformServer();
-            return;
-        }
-        if (!values[0])
-            throw "The action 'Start Temporary Effect' requires an effect name.";
-        world.Player.StartTemporaryEffect(values[0]);
-    };
-    return StartTemporaryEffect;
-}(ActionClass));
-StartTemporaryEffect = __decorate([
-    DialogActionClass
-], StartTemporaryEffect);
-/// <reference path="../Dialogs/DialogAction.ts" />
-var StopAllMusic = (function (_super) {
-    __extends(StopAllMusic, _super);
-    function StopAllMusic() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    StopAllMusic.prototype.Display = function (id, values, updateFunction) {
-        return "";
-    };
-    StopAllMusic.prototype.Execute = function (values, env) {
-        Sounds.ClearSound();
-    };
-    return StopAllMusic;
-}(ActionClass));
-StopAllMusic = __decorate([
-    DialogActionClass
-], StopAllMusic);
-/// <reference path="../Dialogs/DialogAction.ts" />
-var StorePlayerLook = (function (_super) {
-    __extends(StorePlayerLook, _super);
-    function StorePlayerLook() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    StorePlayerLook.prototype.Display = function (id, values, updateFunction) {
-        return "";
-    };
-    StorePlayerLook.prototype.Execute = function (values, env) {
-        if (!this.Execute.caller) {
-            play.devTools = true;
-            world.Player.InformServer();
-            return;
-        }
-        world.Player.SetQuestVariable("__PlayerLook", world.Player.Name);
-    };
-    return StorePlayerLook;
-}(ActionClass));
-StorePlayerLook = __decorate([
-    DialogActionClass
-], StorePlayerLook);
-/// <reference path="../Dialogs/DialogAction.ts" />
-var Teleport = Teleport_1 = (function (_super) {
-    __extends(Teleport, _super);
-    function Teleport() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    Teleport.prototype.Display = function (id, values, updateFunction) {
-        var html = "";
-        html += this.Label("Position X");
-        html += this.Input(id, 0, values[0] = (values[0] || values[0] == "" ? values[0] : "0"), updateFunction);
-        html += this.Label("Position Y");
-        html += this.Input(id, 1, values[1] = (values[1] || values[1] == "" ? values[1] : "0"), updateFunction);
-        html += this.Label("Zone");
-        html += this.OptionList(id, 2, world.Zones.map(function (c) { return (c.Name); }).sort(), values[2], updateFunction);
-        return html;
-    };
-    Teleport.prototype.Execute = function (values, env) {
-        if (!this.Execute.caller) {
-            play.devTools = true;
-            world.Player.InformServer();
-            return;
-        }
-        if (!values[2])
-            throw "The action 'Teleport' requires a zone name.";
-        if (!env)
-            env = new CodeEnvironement();
-        var x = 0;
-        var y = 0;
-        try {
-            x = CodeParser.ExecuteStatement(values[0], env.variables).GetNumber();
-        }
-        catch (ex) {
-            throw "The expression used in 'Teleport' for the x position is invalid.";
-        }
-        try {
-            y = CodeParser.ExecuteStatement(values[1], env.variables).GetNumber();
-        }
-        catch (ex) {
-            throw "The expression used in 'Teleport' for the y position is invalid.";
-        }
-        Teleport_1.Teleport(x, y, values[2]);
-    };
-    Teleport.Teleport = function (x, y, zone) {
-        if (!Teleport_1.Teleport.caller) {
-            play.devTools = true;
-            world.Player.InformServer();
-            return;
-        }
-        if (world.Player.CurrentArea)
-            for (var i = 0; i < world.Player.CurrentArea.actors.length; i++) {
-                if (world.Player.CurrentArea.actors[i] == world.Player) {
-                    world.Player.CurrentArea.actors.splice(i, 1);
-                    world.Player.CurrentArea.CleanObjectCache();
-                    break;
-                }
-            }
-        var ax = Math.floor(x / (world.areaWidth * world.art.background.width));
-        var ay = Math.floor(y / (world.areaHeight * world.art.background.height));
-        var mx = Math.abs(x) % (world.areaWidth * world.art.background.width);
-        var my = Math.abs(y) % (world.areaHeight * world.art.background.height);
-        if (ax < 0)
-            //mx = (world.areaWidth - 1) * world.art.background.width - mx;
-            mx = (world.areaWidth) * world.art.background.width - mx;
-        if (ay < 0)
-            //my = (world.areaHeight - 1) * world.art.background.height - my;
-            my = (world.areaHeight) * world.art.background.height - my;
-        world.VisibleCenter(ax, ay, zone);
-        world.Player.AX = ax;
-        world.Player.AY = ay;
-        world.Player.Zone = zone;
-        world.Player.X = mx;
-        world.Player.Y = my;
-        play.afterTeleport = true;
-        world.Player.CurrentArea = world.GetArea(world.Player.AX, world.Player.AY, world.Player.Zone);
-        if (world.Player.CurrentArea) {
-            world.Player.CurrentArea.actors.push(world.Player);
-            world.Player.CurrentArea.CleanObjectCache();
-        }
-        play.path = null;
-        world.Player.Save();
-    };
-    return Teleport;
-}(ActionClass));
-Teleport = Teleport_1 = __decorate([
-    DialogActionClass
-], Teleport);
-var Teleport_1;
-var KnownCode = (function () {
+var KnownCode = /** @class */ (function () {
     function KnownCode() {
         this.Parameters = {};
         this.Includes = [];
@@ -3625,11 +7174,11 @@ var KnownCode = (function () {
     };
     return KnownCode;
 }());
-var dialogCondition = new ((function () {
-    function class_3() {
+var dialogCondition = new (/** @class */ (function () {
+    function class_14() {
         this.code = {};
     }
-    return class_3;
+    return class_14;
 }()));
 function DialogConditionClass(target) {
     var tName = "" + target;
@@ -3640,7 +7189,7 @@ function DialogConditionClass(target) {
     else
         throw "Class \"" + className + "\" doesn't extends ConditionClass.";
 }
-var ConditionClass = (function () {
+var ConditionClass = /** @class */ (function () {
     function ConditionClass() {
     }
     ConditionClass.prototype.OptionList = function (id, position, values, currentValue, updateFunction) {
@@ -3672,14 +7221,14 @@ var ConditionClass = (function () {
     };
     return ConditionClass;
 }());
-var DialogCondition = (function () {
+var DialogCondition = /** @class */ (function () {
     function DialogCondition() {
         this.Values = [];
     }
     return DialogCondition;
 }());
 /// <reference path="../Dialogs/DialogCondition.ts" />
-var CheckFalse = (function (_super) {
+var CheckFalse = /** @class */ (function (_super) {
     __extends(CheckFalse, _super);
     function CheckFalse() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -3691,13 +7240,13 @@ var CheckFalse = (function (_super) {
     CheckFalse.prototype.Check = function (values, env) {
         return false;
     };
+    CheckFalse = __decorate([
+        DialogConditionClass
+    ], CheckFalse);
     return CheckFalse;
 }(ConditionClass));
-CheckFalse = __decorate([
-    DialogConditionClass
-], CheckFalse);
 /// <reference path="../Dialogs/DialogCondition.ts" />
-var CheckHasSkill = (function (_super) {
+var CheckHasSkill = /** @class */ (function (_super) {
     __extends(CheckHasSkill, _super);
     function CheckHasSkill() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -3718,13 +7267,13 @@ var CheckHasSkill = (function (_super) {
                 return true;
         return false;
     };
+    CheckHasSkill = __decorate([
+        DialogConditionClass
+    ], CheckHasSkill);
     return CheckHasSkill;
 }(ConditionClass));
-CheckHasSkill = __decorate([
-    DialogConditionClass
-], CheckHasSkill);
 /// <reference path="../Dialogs/DialogCondition.ts" />
-var CheckInventory = (function (_super) {
+var CheckInventory = /** @class */ (function (_super) {
     __extends(CheckInventory, _super);
     function CheckInventory() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -3770,13 +7319,13 @@ var CheckInventory = (function (_super) {
         }
         return true;
     };
+    CheckInventory = __decorate([
+        DialogConditionClass
+    ], CheckInventory);
     return CheckInventory;
 }(ConditionClass));
-CheckInventory = __decorate([
-    DialogConditionClass
-], CheckInventory);
 /// <reference path="../Dialogs/DialogCondition.ts" />
-var CheckJournalEntryNotReceived = (function (_super) {
+var CheckJournalEntryNotReceived = /** @class */ (function (_super) {
     __extends(CheckJournalEntryNotReceived, _super);
     function CheckJournalEntryNotReceived() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -3796,13 +7345,13 @@ var CheckJournalEntryNotReceived = (function (_super) {
             throw "The condition 'Check Journal Entry Not Received' requires the id of the journal entry (as number).";
         return !world.Player.HaveQuestJournalEntry(values[0], parseInt(values[1]));
     };
+    CheckJournalEntryNotReceived = __decorate([
+        DialogConditionClass
+    ], CheckJournalEntryNotReceived);
     return CheckJournalEntryNotReceived;
 }(ConditionClass));
-CheckJournalEntryNotReceived = __decorate([
-    DialogConditionClass
-], CheckJournalEntryNotReceived);
 /// <reference path="../Dialogs/DialogCondition.ts" />
-var CheckJournalEntryReceived = (function (_super) {
+var CheckJournalEntryReceived = /** @class */ (function (_super) {
     __extends(CheckJournalEntryReceived, _super);
     function CheckJournalEntryReceived() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -3822,13 +7371,13 @@ var CheckJournalEntryReceived = (function (_super) {
             throw "The condition 'Check Journal Entry Received' requires the id of the journal entry (as number).";
         return world.Player.HaveQuestJournalEntry(values[0], parseInt(values[1]));
     };
+    CheckJournalEntryReceived = __decorate([
+        DialogConditionClass
+    ], CheckJournalEntryReceived);
     return CheckJournalEntryReceived;
 }(ConditionClass));
-CheckJournalEntryReceived = __decorate([
-    DialogConditionClass
-], CheckJournalEntryReceived);
 /// <reference path="../Dialogs/DialogCondition.ts" />
-var CheckLookIs = (function (_super) {
+var CheckLookIs = /** @class */ (function (_super) {
     __extends(CheckLookIs, _super);
     function CheckLookIs() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -3848,13 +7397,13 @@ var CheckLookIs = (function (_super) {
             throw "The condition 'Check Look Is' requires an look name.";
         return world.Player.Name == values[0];
     };
+    CheckLookIs = __decorate([
+        DialogConditionClass
+    ], CheckLookIs);
     return CheckLookIs;
 }(ConditionClass));
-CheckLookIs = __decorate([
-    DialogConditionClass
-], CheckLookIs);
 /// <reference path="../Dialogs/DialogCondition.ts" />
-var CheckLookIsNot = (function (_super) {
+var CheckLookIsNot = /** @class */ (function (_super) {
     __extends(CheckLookIsNot, _super);
     function CheckLookIsNot() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -3874,13 +7423,13 @@ var CheckLookIsNot = (function (_super) {
             throw "The condition 'Check Look Is Not' requires an look name.";
         return world.Player.Name != values[0];
     };
+    CheckLookIsNot = __decorate([
+        DialogConditionClass
+    ], CheckLookIsNot);
     return CheckLookIsNot;
 }(ConditionClass));
-CheckLookIsNot = __decorate([
-    DialogConditionClass
-], CheckLookIsNot);
 /// <reference path="../Dialogs/DialogCondition.ts" />
-var CheckMinimapIsHidden = (function (_super) {
+var CheckMinimapIsHidden = /** @class */ (function (_super) {
     __extends(CheckMinimapIsHidden, _super);
     function CheckMinimapIsHidden() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -3892,13 +7441,13 @@ var CheckMinimapIsHidden = (function (_super) {
     CheckMinimapIsHidden.prototype.Check = function (values, env) {
         return !play.showMinimap;
     };
+    CheckMinimapIsHidden = __decorate([
+        DialogConditionClass
+    ], CheckMinimapIsHidden);
     return CheckMinimapIsHidden;
 }(ConditionClass));
-CheckMinimapIsHidden = __decorate([
-    DialogConditionClass
-], CheckMinimapIsHidden);
 /// <reference path="../Dialogs/DialogCondition.ts" />
-var CheckMinimapIsVisible = (function (_super) {
+var CheckMinimapIsVisible = /** @class */ (function (_super) {
     __extends(CheckMinimapIsVisible, _super);
     function CheckMinimapIsVisible() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -3910,13 +7459,13 @@ var CheckMinimapIsVisible = (function (_super) {
     CheckMinimapIsVisible.prototype.Check = function (values, env) {
         return play.showMinimap;
     };
+    CheckMinimapIsVisible = __decorate([
+        DialogConditionClass
+    ], CheckMinimapIsVisible);
     return CheckMinimapIsVisible;
 }(ConditionClass));
-CheckMinimapIsVisible = __decorate([
-    DialogConditionClass
-], CheckMinimapIsVisible);
 /// <reference path="../Dialogs/DialogCondition.ts" />
-var CheckNotHasSkill = (function (_super) {
+var CheckNotHasSkill = /** @class */ (function (_super) {
     __extends(CheckNotHasSkill, _super);
     function CheckNotHasSkill() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -3937,13 +7486,13 @@ var CheckNotHasSkill = (function (_super) {
                 return false;
         return true;
     };
+    CheckNotHasSkill = __decorate([
+        DialogConditionClass
+    ], CheckNotHasSkill);
     return CheckNotHasSkill;
 }(ConditionClass));
-CheckNotHasSkill = __decorate([
-    DialogConditionClass
-], CheckNotHasSkill);
 /// <reference path="../Dialogs/DialogCondition.ts" />
-var CheckQuestCompleted = (function (_super) {
+var CheckQuestCompleted = /** @class */ (function (_super) {
     __extends(CheckQuestCompleted, _super);
     function CheckQuestCompleted() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -3959,13 +7508,13 @@ var CheckQuestCompleted = (function (_super) {
             throw "The condition 'Check Quest Completed' requires a quest name.";
         return world.Player.IsQuestCompleted(values[0]);
     };
+    CheckQuestCompleted = __decorate([
+        DialogConditionClass
+    ], CheckQuestCompleted);
     return CheckQuestCompleted;
 }(ConditionClass));
-CheckQuestCompleted = __decorate([
-    DialogConditionClass
-], CheckQuestCompleted);
 /// <reference path="../Dialogs/DialogCondition.ts" />
-var CheckQuestNotCompleted = (function (_super) {
+var CheckQuestNotCompleted = /** @class */ (function (_super) {
     __extends(CheckQuestNotCompleted, _super);
     function CheckQuestNotCompleted() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -3981,13 +7530,13 @@ var CheckQuestNotCompleted = (function (_super) {
             throw "The condition 'Check Quest Not Completed' requires a quest name.";
         return !world.Player.IsQuestCompleted(values[0]);
     };
+    CheckQuestNotCompleted = __decorate([
+        DialogConditionClass
+    ], CheckQuestNotCompleted);
     return CheckQuestNotCompleted;
 }(ConditionClass));
-CheckQuestNotCompleted = __decorate([
-    DialogConditionClass
-], CheckQuestNotCompleted);
 /// <reference path="../Dialogs/DialogCondition.ts" />
-var CheckQuestNotStarted = (function (_super) {
+var CheckQuestNotStarted = /** @class */ (function (_super) {
     __extends(CheckQuestNotStarted, _super);
     function CheckQuestNotStarted() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -4003,13 +7552,13 @@ var CheckQuestNotStarted = (function (_super) {
             throw "The condition 'Check Quest Not Started' requires a quest name.";
         return !world.Player.IsQuestStarted(values[0]);
     };
+    CheckQuestNotStarted = __decorate([
+        DialogConditionClass
+    ], CheckQuestNotStarted);
     return CheckQuestNotStarted;
 }(ConditionClass));
-CheckQuestNotStarted = __decorate([
-    DialogConditionClass
-], CheckQuestNotStarted);
 /// <reference path="../Dialogs/DialogCondition.ts" />
-var CheckQuestStarted = (function (_super) {
+var CheckQuestStarted = /** @class */ (function (_super) {
     __extends(CheckQuestStarted, _super);
     function CheckQuestStarted() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -4025,13 +7574,13 @@ var CheckQuestStarted = (function (_super) {
             throw "The condition 'Check Quest Started' requires a quest name.";
         return world.Player.IsQuestStarted(values[0]);
     };
+    CheckQuestStarted = __decorate([
+        DialogConditionClass
+    ], CheckQuestStarted);
     return CheckQuestStarted;
 }(ConditionClass));
-CheckQuestStarted = __decorate([
-    DialogConditionClass
-], CheckQuestStarted);
 /// <reference path="../Dialogs/DialogCondition.ts" />
-var CheckQuestVariable = (function (_super) {
+var CheckQuestVariable = /** @class */ (function (_super) {
     __extends(CheckQuestVariable, _super);
     function CheckQuestVariable() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -4077,13 +7626,13 @@ var CheckQuestVariable = (function (_super) {
         }
         return true;
     };
+    CheckQuestVariable = __decorate([
+        DialogConditionClass
+    ], CheckQuestVariable);
     return CheckQuestVariable;
 }(ConditionClass));
-CheckQuestVariable = __decorate([
-    DialogConditionClass
-], CheckQuestVariable);
 /// <reference path="../Dialogs/DialogCondition.ts" />
-var CheckUserStat = (function (_super) {
+var CheckUserStat = /** @class */ (function (_super) {
     __extends(CheckUserStat, _super);
     function CheckUserStat() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -4130,12 +7679,12 @@ var CheckUserStat = (function (_super) {
         }
         return true;
     };
+    CheckUserStat = __decorate([
+        DialogConditionClass
+    ], CheckUserStat);
     return CheckUserStat;
 }(ConditionClass));
-CheckUserStat = __decorate([
-    DialogConditionClass
-], CheckUserStat);
-var Dialog = (function () {
+var Dialog = /** @class */ (function () {
     function Dialog() {
         this.Answers = [];
     }
@@ -4149,13 +7698,13 @@ function MapEffectClass(target) {
     knownEffects.push(className.substr(0, className.length - 6));
     knownEffects.sort();
 }
-var MapEffect = (function () {
+var MapEffect = /** @class */ (function () {
     function MapEffect() {
     }
     return MapEffect;
 }());
 /// <reference path="MapEffect.ts" />
-var FogEffect = (function (_super) {
+var FogEffect = /** @class */ (function (_super) {
     __extends(FogEffect, _super);
     function FogEffect() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -4176,26 +7725,26 @@ var FogEffect = (function (_super) {
         ctx.drawImage(this.gofImage, Math.floor(width / 2) - 256, Math.floor(height / 2) - 256);
         ctx.globalAlpha = 1;
     };
+    FogEffect = __decorate([
+        MapEffectClass
+    ], FogEffect);
     return FogEffect;
 }(MapEffect));
-FogEffect = __decorate([
-    MapEffectClass
-], FogEffect);
 /// <reference path="MapEffect.ts" />
-var NoneEffect = (function (_super) {
+var NoneEffect = /** @class */ (function (_super) {
     __extends(NoneEffect, _super);
     function NoneEffect() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     NoneEffect.prototype.Render = function (ctx, width, height) {
     };
+    NoneEffect = __decorate([
+        MapEffectClass
+    ], NoneEffect);
     return NoneEffect;
 }(MapEffect));
-NoneEffect = __decorate([
-    MapEffectClass
-], NoneEffect);
 /// <reference path="MapEffect.ts" />
-var SightEffect = (function (_super) {
+var SightEffect = /** @class */ (function (_super) {
     __extends(SightEffect, _super);
     function SightEffect() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -4214,12 +7763,12 @@ var SightEffect = (function (_super) {
         ctx.fillRect(0, Math.floor(height / 2) + 256, width, height);
         ctx.drawImage(this.sightImage, Math.floor(width / 2) - 256, Math.floor(height / 2) - 256);
     };
+    SightEffect = __decorate([
+        MapEffectClass
+    ], SightEffect);
     return SightEffect;
 }(MapEffect));
-SightEffect = __decorate([
-    MapEffectClass
-], SightEffect);
-var InventoryObject = (function () {
+var InventoryObject = /** @class */ (function () {
     function InventoryObject(name, count, usage) {
         if (count === void 0) { count = 1; }
         if (usage === void 0) { usage = null; }
@@ -4238,7 +7787,7 @@ var InventoryObject = (function () {
     };
     return InventoryObject;
 }());
-var InventorySlot = (function () {
+var InventorySlot = /** @class */ (function () {
     function InventorySlot(name) {
         this.Name = name;
     }
@@ -4257,7 +7806,7 @@ var InventorySlot = (function () {
     };
     return InventorySlot;
 }());
-var KnownObject = (function () {
+var KnownObject = /** @class */ (function () {
     function KnownObject(name, objectType, slots, weight, price, description, maxStack, action, actionCode, parameters) {
         this.UsageConditions = [];
         this.UnwearConditions = [];
@@ -4427,21 +7976,21 @@ var KnownObject = (function () {
     };
     return KnownObject;
 }());
-var ObjectDefinedParameter = (function () {
+var ObjectDefinedParameter = /** @class */ (function () {
     function ObjectDefinedParameter(name, defaultValue) {
         this.Name = name;
         this.DefaultValue = defaultValue;
     }
     return ObjectDefinedParameter;
 }());
-var ObjectParameter = (function () {
+var ObjectParameter = /** @class */ (function () {
     function ObjectParameter(name, value) {
         this.Name = name;
         this.Value = value;
     }
     return ObjectParameter;
 }());
-var ObjectType = (function () {
+var ObjectType = /** @class */ (function () {
     function ObjectType(name, group, action, actionCode, parameters) {
         this.UsageConditions = [];
         this.WearConditions = [];
@@ -4471,12 +8020,12 @@ var ObjectType = (function () {
     };
     return ObjectType;
 }());
-var mapBag = new ((function () {
-    function class_4() {
+var mapBag = new (/** @class */ (function () {
+    function class_15() {
     }
-    return class_4;
+    return class_15;
 }()));
-var MapBag = (function () {
+var MapBag = /** @class */ (function () {
     function MapBag() {
     }
     MapBag.ShowBag = function (obj) {
@@ -4560,7 +8109,7 @@ var MapBag = (function () {
     return MapBag;
 }());
 ///<reference path="../../Libs/NumberCompression.ts" />
-var WorldArea = (function () {
+var WorldArea = /** @class */ (function () {
     function WorldArea() {
         this.objects = [];
         this.actors = [];
@@ -5211,7 +8760,7 @@ var WorldArea = (function () {
     return WorldArea;
 }());
 ///<reference path="../World/WorldArea.ts" />
-var TemporaryWorldObject = (function () {
+var TemporaryWorldObject = /** @class */ (function () {
     function TemporaryWorldObject(name, x, y, currentArea) {
         this.MouseCallback = null;
         this.Name = name;
@@ -5249,7 +8798,7 @@ var TemporaryWorldObject = (function () {
 }());
 /// <reference path="../World/WorldArea.ts" />
 /// <reference path="TemporaryWorldObject.ts" />
-var TemporaryParticleEffect = (function (_super) {
+var TemporaryParticleEffect = /** @class */ (function (_super) {
     __extends(TemporaryParticleEffect, _super);
     function TemporaryParticleEffect(name, x, y, currentArea, end) {
         var _this = _super.call(this, name, x, y, currentArea) || this;
@@ -5268,7 +8817,7 @@ var TemporaryParticleEffect = (function (_super) {
     return TemporaryParticleEffect;
 }(TemporaryWorldObject));
 ///<reference path="../World/WorldArea.ts" />
-var WorldObject = (function () {
+var WorldObject = /** @class */ (function () {
     function WorldObject(name, x, y) {
         this.currentFrame = 0;
         this.Name = name;
@@ -5287,6 +8836,7 @@ var WorldObject = (function () {
             if (this.currentFrame >= artInfo.nbAnimationFrames * s)
                 this.currentFrame = 0;
         }
+        // Single frame
         else
             ctx.drawImage(img, artInfo.x, artInfo.y, artInfo.width, artInfo.height, x - (artInfo.groundX ? artInfo.groundX : 0), y - (artInfo.groundY ? artInfo.groundY : 0), artInfo.width, artInfo.height);
         if (artInfo.particleEffect) {
@@ -5388,12 +8938,12 @@ var WorldObject = (function () {
     return WorldObject;
 }());
 /// <reference path="WorldObject.ts" />
-var worldChest = new ((function () {
-    function class_5() {
+var worldChest = new (/** @class */ (function () {
+    function class_16() {
     }
-    return class_5;
+    return class_16;
 }()));
-var WorldChest = (function () {
+var WorldChest = /** @class */ (function () {
     function WorldChest(name, x, y, ax, ay) {
         this.DisplayName = "Chest";
         this.Stats = [];
@@ -5631,7 +9181,7 @@ var WorldChest = (function () {
     return WorldChest;
 }());
 ///<reference path="../World/WorldArea.ts" />
-var WorldHouse = (function () {
+var WorldHouse = /** @class */ (function () {
     function WorldHouse(name, x, y) {
         this.Name = name;
         this.X = x;
@@ -5686,7 +9236,7 @@ var WorldHouse = (function () {
     };
     return WorldHouse;
 }());
-var ActorTimer = (function () {
+var ActorTimer = /** @class */ (function () {
     function ActorTimer(name, length) {
         this.StartTime = new Date();
         this.Length = length;
@@ -5705,7 +9255,7 @@ var ActorTimer = (function () {
     };
     return ActorTimer;
 }());
-var PathSolver = (function () {
+var PathSolver = /** @class */ (function () {
     function PathSolver(startX, startY, goalX, goalY, maxDistance, canWalkOn) {
         this.visitedStep = [];
         this.todoStep = [];
@@ -5815,11 +9365,11 @@ var PathSolver = (function () {
 }());
 /// <reference path="../World/WorldArea.ts" />
 ///<reference path="PathSolver.ts" />
-var movingActor = new ((function () {
-    function class_6() {
+var movingActor = new (/** @class */ (function () {
+    function class_17() {
         this.lastId = 1;
     }
-    return class_6;
+    return class_17;
 }()));
 var ACTION_ANIMATION;
 (function (ACTION_ANIMATION) {
@@ -5833,7 +9383,7 @@ var sideAttack = [{ x: 0, y: 0 },
     { x: 16, y: 7 },
     { x: 18, y: 4 },
     { x: 20, y: 0 }];
-var MovingActor = (function () {
+var MovingActor = /** @class */ (function () {
     function MovingActor(world) {
         this.X = 0;
         this.Y = 0;
@@ -6321,7 +9871,7 @@ function GetApiDescription(apiName) {
     else
         return apiFunction.description;
 }
-var CodeEnvironement = (function () {
+var CodeEnvironement = /** @class */ (function () {
     function CodeEnvironement() {
         this.variables = {};
         this.CodeVariables = {};
@@ -6567,11 +10117,11 @@ var CodeEnvironement = (function () {
     };
     return CodeEnvironement;
 }());
-var codeParser = new ((function () {
-    function class_7() {
+var codeParser = new (/** @class */ (function () {
+    function class_18() {
         this.codeTokenizer = {};
     }
-    return class_7;
+    return class_18;
 }()));
 function Token(target) {
     var tName = "" + target;
@@ -6582,7 +10132,7 @@ function Token(target) {
     else
         throw "Class \"" + className + "\" doesn't extends CodeToken.";
 }
-var CodeParser = (function () {
+var CodeParser = /** @class */ (function () {
     function CodeParser(source) {
         this.position = 0;
         this.line = 1;
@@ -6775,7 +10325,7 @@ function TopBlockStatementClass(target) {
     var className = tName.match(/function ([^\(]+)\(/)[1];
     topBlockStatements.push(className);
 }
-var CodeStatement = (function () {
+var CodeStatement = /** @class */ (function () {
     function CodeStatement() {
     }
     // Static Members
@@ -7082,6 +10632,7 @@ var CodeStatement = (function () {
                     res.index = index;
                     return res;
                 }
+                // A variable
                 else {
                     switch (name.Value) {
                         case "true":
@@ -7223,7 +10774,7 @@ var CodeStatement = (function () {
     };
     return CodeStatement;
 }());
-var CodeToken = (function () {
+var CodeToken = /** @class */ (function () {
     function CodeToken() {
     }
     return CodeToken;
@@ -7236,7 +10787,7 @@ var ValueType;
     ValueType[ValueType["Null"] = 3] = "Null";
     ValueType[ValueType["Array"] = 4] = "Array";
 })(ValueType || (ValueType = {}));
-var VariableValue = (function () {
+var VariableValue = /** @class */ (function () {
     function VariableValue(source) {
         if (source === null) {
             this.Value = null;
@@ -7262,6 +10813,7 @@ var VariableValue = (function () {
             this.Value = source.Value;
             this.Type = source.Type;
         }
+        // Convert from a CodeVariable
         else if (source.name && source.value && source.type) {
             switch (source.type) {
                 case "number":
@@ -7315,7 +10867,7 @@ var defaultParticleSystems = [{
         "Name": "blood", "InitialParticles": 0, "MaxParticles": 1000, "MaxAge": 100, "MaxSpeed": 10, "Emitter": { "SpawnRate": 4, "Velocity": 1, "Direction": -90, "JitterDirection": 5, "JitterVelocity": 0.5, "JitterX": 3, "JitterY": 3, "StopEmittingAfter": 100, "__type": "ParticleEmitterPoint" }, "Effectors": [{ "Gravity": 0.02, "GravityDirection": 90, "__type": "ParticleGravity" }, { "StartColor": "#FF0000", "EndColor": "", "__type": "ParticleColor" }, { "ParticleStartSize": 1, "ParticleStartAgeSizeChange": 0, "ParticleEndSize": 3, "__type": "ParticleSize" }, { "ParticleStartOpacity": 1, "ParticleStartAgeOpacityChange": 10, "ParticleEndOpacity": 0, "__type": "ParticleOpacity" }]
     },
     { "Name": "torch", "InitialParticles": 0, "MaxParticles": 1000, "MaxAge": 100, "MaxSpeed": 10, "Emitter": { "OffsetX": 0, "OffsetY": 0, "SpawnRate": 0.5, "Velocity": 1, "Direction": -90, "JitterDirection": 10, "JitterVelocity": 0.1, "JitterX": 5, "JitterY": 5, "StopEmittingAfter": null, "__type": "ParticleEmitterPoint" }, "Effectors": [{ "Strength": 0.005, "FrequencyAlphaX": 20, "FrequencyAlphaY": 20, "FrequencyBetaX": 10, "FrequencyBetaY": 10, "AgeFactor": 0.5, "__type": "ParticleWave" }, { "Gravity": 0.002, "GravityDirection": 180, "__type": "ParticleGravity" }, { "StartColor": "#FFFF00", "EndColor": "#FF0000", "__type": "ParticleColor" }, { "ParticleStartSize": 2, "ParticleStartAgeSizeChange": 50, "ParticleEndSize": 6, "__type": "ParticleSize" }, { "ParticleStartOpacity": 1, "ParticleStartAgeOpacityChange": 50, "ParticleEndOpacity": 0, "__type": "ParticleOpacity" }] }];
-var Particle = (function () {
+var Particle = /** @class */ (function () {
     function Particle(system) {
         this.Color = "#000000";
         this.Opacity = 1;
@@ -7411,7 +10963,7 @@ var particleSystemParameters = ["Name",
     "MaxAge",
     "MaxSpeed",
 ];
-var ParticleSystem = (function () {
+var ParticleSystem = /** @class */ (function () {
     function ParticleSystem() {
         this.Name = "particles_1";
         this.ParticleType = 1;
@@ -7510,7 +11062,7 @@ var ParticleSystem = (function () {
     return ParticleSystem;
 }());
 /// <reference path="ParticleSystem.ts" />
-var ParticleAttractor = (function () {
+var ParticleAttractor = /** @class */ (function () {
     function ParticleAttractor() {
         this.X = 0;
         this.Y = 0;
@@ -7539,25 +11091,25 @@ var ParticleAttractor = (function () {
         ctx.lineTo(this.X + 0.5, this.Y + 10);
         ctx.stroke();
     };
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleAttractor.prototype, "X", void 0);
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleAttractor.prototype, "Y", void 0);
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleAttractor.prototype, "Strength", void 0);
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleAttractor.prototype, "EffectDistance", void 0);
+    ParticleAttractor = __decorate([
+        ParticleEffectorClass
+    ], ParticleAttractor);
     return ParticleAttractor;
 }());
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleAttractor.prototype, "X", void 0);
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleAttractor.prototype, "Y", void 0);
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleAttractor.prototype, "Strength", void 0);
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleAttractor.prototype, "EffectDistance", void 0);
-ParticleAttractor = __decorate([
-    ParticleEffectorClass
-], ParticleAttractor);
 var blobs = {};
-var ParticleBlob = (function () {
+var ParticleBlob = /** @class */ (function () {
     function ParticleBlob() {
     }
     ParticleBlob.GetColorComponents = function (color) {
@@ -7614,7 +11166,7 @@ var ParticleBlob = (function () {
     return ParticleBlob;
 }());
 /// <reference path="ParticleSystem.ts" />
-var ParticleBounce = (function () {
+var ParticleBounce = /** @class */ (function () {
     function ParticleBounce() {
         this.BouncePlane = 30;
         this.BounceEnergy = 0.8;
@@ -7637,19 +11189,19 @@ var ParticleBounce = (function () {
         ctx.fillStyle = "#FF0000";
         ctx.fillRect(-10000, this.BouncePlane + 0.5, 20000, 20000);
     };
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleBounce.prototype, "BouncePlane", void 0);
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleBounce.prototype, "BounceEnergy", void 0);
+    ParticleBounce = __decorate([
+        ParticleEffectorClass
+    ], ParticleBounce);
     return ParticleBounce;
 }());
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleBounce.prototype, "BouncePlane", void 0);
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleBounce.prototype, "BounceEnergy", void 0);
-ParticleBounce = __decorate([
-    ParticleEffectorClass
-], ParticleBounce);
 /// <reference path="ParticleSystem.ts" />
-var ParticleColor = (function () {
+var ParticleColor = /** @class */ (function () {
     function ParticleColor() {
         this.StartColor = "#FF0000";
         this.EndColor = "#00FF00";
@@ -7679,16 +11231,16 @@ var ParticleColor = (function () {
     };
     ParticleColor.prototype.Draw = function (ctx) {
     };
+    __decorate([
+        ParticleEffectorPropertyNullable
+    ], ParticleColor.prototype, "EndColor", void 0);
+    ParticleColor = __decorate([
+        ParticleEffectorClass
+    ], ParticleColor);
     return ParticleColor;
 }());
-__decorate([
-    ParticleEffectorPropertyNullable
-], ParticleColor.prototype, "EndColor", void 0);
-ParticleColor = __decorate([
-    ParticleEffectorClass
-], ParticleColor);
 var disks = {};
-var ParticleDisk = (function () {
+var ParticleDisk = /** @class */ (function () {
     function ParticleDisk() {
     }
     ParticleDisk.GetDisk = function (color) {
@@ -7713,7 +11265,7 @@ var ParticleDisk = (function () {
     return ParticleDisk;
 }());
 /// <reference path="ParticleSystem.ts" />
-var ParticleEmitter = (function () {
+var ParticleEmitter = /** @class */ (function () {
     function ParticleEmitter() {
         this.OffsetX = 0;
         this.OffsetY = 0;
@@ -7728,13 +11280,13 @@ var ParticleEmitter = (function () {
     }
     ParticleEmitter.prototype.SystemStep = function () {
     };
+    __decorate([
+        ParticleEffectorPropertyNullable
+    ], ParticleEmitter.prototype, "StopEmittingAfter", void 0);
     return ParticleEmitter;
 }());
-__decorate([
-    ParticleEffectorPropertyNullable
-], ParticleEmitter.prototype, "StopEmittingAfter", void 0);
 /// <reference path="ParticleSystem.ts" />
-var ParticleEmitterCircle = (function (_super) {
+var ParticleEmitterCircle = /** @class */ (function (_super) {
     __extends(ParticleEmitterCircle, _super);
     function ParticleEmitterCircle() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -7771,16 +11323,16 @@ var ParticleEmitterCircle = (function (_super) {
         //ctx.arc(this.OffsetX, this.OffsetY, this.Radius, 0, Math.PI * 2);
         ctx.stroke();
     };
+    __decorate([
+        ParticleEffectorPropertyNullable
+    ], ParticleEmitterCircle.prototype, "Height", void 0);
+    ParticleEmitterCircle = __decorate([
+        ParticleEmitterClass
+    ], ParticleEmitterCircle);
     return ParticleEmitterCircle;
 }(ParticleEmitter));
-__decorate([
-    ParticleEffectorPropertyNullable
-], ParticleEmitterCircle.prototype, "Height", void 0);
-ParticleEmitterCircle = __decorate([
-    ParticleEmitterClass
-], ParticleEmitterCircle);
 /// <reference path="ParticleSystem.ts" />
-var ParticleEmitterPoint = (function (_super) {
+var ParticleEmitterPoint = /** @class */ (function (_super) {
     __extends(ParticleEmitterPoint, _super);
     function ParticleEmitterPoint() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -7808,13 +11360,13 @@ var ParticleEmitterPoint = (function (_super) {
         ctx.lineTo(this.OffsetX + 20, this.OffsetY + 0.5);
         ctx.stroke();
     };
+    ParticleEmitterPoint = __decorate([
+        ParticleEmitterClass
+    ], ParticleEmitterPoint);
     return ParticleEmitterPoint;
 }(ParticleEmitter));
-ParticleEmitterPoint = __decorate([
-    ParticleEmitterClass
-], ParticleEmitterPoint);
 /// <reference path="ParticleSystem.ts" />
-var ParticleEmitterRotating = (function (_super) {
+var ParticleEmitterRotating = /** @class */ (function (_super) {
     __extends(ParticleEmitterRotating, _super);
     function ParticleEmitterRotating() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -7855,16 +11407,16 @@ var ParticleEmitterRotating = (function (_super) {
         //ctx.arc(this.OffsetX, this.OffsetY, this.Radius, 0, Math.PI * 2);
         ctx.stroke();
     };
+    __decorate([
+        ParticleEffectorPropertyNullable
+    ], ParticleEmitterRotating.prototype, "Height", void 0);
+    ParticleEmitterRotating = __decorate([
+        ParticleEmitterClass
+    ], ParticleEmitterRotating);
     return ParticleEmitterRotating;
 }(ParticleEmitter));
-__decorate([
-    ParticleEffectorPropertyNullable
-], ParticleEmitterRotating.prototype, "Height", void 0);
-ParticleEmitterRotating = __decorate([
-    ParticleEmitterClass
-], ParticleEmitterRotating);
 /// <reference path="ParticleSystem.ts" />
-var ParticleFriction = (function () {
+var ParticleFriction = /** @class */ (function () {
     function ParticleFriction() {
         this.EnergyConservation = 1;
     }
@@ -7874,16 +11426,16 @@ var ParticleFriction = (function () {
     };
     ParticleFriction.prototype.Draw = function (ctx) {
     };
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleFriction.prototype, "EnergyConservation", void 0);
+    ParticleFriction = __decorate([
+        ParticleEffectorClass
+    ], ParticleFriction);
     return ParticleFriction;
 }());
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleFriction.prototype, "EnergyConservation", void 0);
-ParticleFriction = __decorate([
-    ParticleEffectorClass
-], ParticleFriction);
 /// <reference path="ParticleSystem.ts" />
-var ParticleGravity = (function () {
+var ParticleGravity = /** @class */ (function () {
     function ParticleGravity() {
         this.Gravity = 0.01;
         this.GravityDirection = 90;
@@ -7897,19 +11449,19 @@ var ParticleGravity = (function () {
     };
     ParticleGravity.prototype.Draw = function (ctx) {
     };
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleGravity.prototype, "Gravity", void 0);
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleGravity.prototype, "GravityDirection", void 0);
+    ParticleGravity = __decorate([
+        ParticleEffectorClass
+    ], ParticleGravity);
     return ParticleGravity;
 }());
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleGravity.prototype, "Gravity", void 0);
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleGravity.prototype, "GravityDirection", void 0);
-ParticleGravity = __decorate([
-    ParticleEffectorClass
-], ParticleGravity);
 /// <reference path="ParticleSystem.ts" />
-var ParticleOpacity = (function () {
+var ParticleOpacity = /** @class */ (function () {
     function ParticleOpacity() {
         this.ParticleStartOpacity = 1;
         this.ParticleStartAgeOpacityChange = 500;
@@ -7932,24 +11484,24 @@ var ParticleOpacity = (function () {
     };
     ParticleOpacity.prototype.Draw = function (ctx) {
     };
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleOpacity.prototype, "ParticleStartOpacity", void 0);
+    __decorate([
+        ParticleEffectorPropertyNumber,
+        ParticleEffectorPropertyNullable
+    ], ParticleOpacity.prototype, "ParticleStartAgeOpacityChange", void 0);
+    __decorate([
+        ParticleEffectorPropertyNumber,
+        ParticleEffectorPropertyNullable
+    ], ParticleOpacity.prototype, "ParticleEndOpacity", void 0);
+    ParticleOpacity = __decorate([
+        ParticleEffectorClass
+    ], ParticleOpacity);
     return ParticleOpacity;
 }());
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleOpacity.prototype, "ParticleStartOpacity", void 0);
-__decorate([
-    ParticleEffectorPropertyNumber,
-    ParticleEffectorPropertyNullable
-], ParticleOpacity.prototype, "ParticleStartAgeOpacityChange", void 0);
-__decorate([
-    ParticleEffectorPropertyNumber,
-    ParticleEffectorPropertyNullable
-], ParticleOpacity.prototype, "ParticleEndOpacity", void 0);
-ParticleOpacity = __decorate([
-    ParticleEffectorClass
-], ParticleOpacity);
 /// <reference path="ParticleSystem.ts" />
-var ParticleRepulsor = (function () {
+var ParticleRepulsor = /** @class */ (function () {
     function ParticleRepulsor() {
         this.X = 0;
         this.Y = 0;
@@ -7978,25 +11530,25 @@ var ParticleRepulsor = (function () {
         ctx.lineTo(this.X + 0.5, this.Y + 10);
         ctx.stroke();
     };
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleRepulsor.prototype, "X", void 0);
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleRepulsor.prototype, "Y", void 0);
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleRepulsor.prototype, "Strength", void 0);
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleRepulsor.prototype, "EffectDistance", void 0);
+    ParticleRepulsor = __decorate([
+        ParticleEffectorClass
+    ], ParticleRepulsor);
     return ParticleRepulsor;
 }());
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleRepulsor.prototype, "X", void 0);
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleRepulsor.prototype, "Y", void 0);
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleRepulsor.prototype, "Strength", void 0);
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleRepulsor.prototype, "EffectDistance", void 0);
-ParticleRepulsor = __decorate([
-    ParticleEffectorClass
-], ParticleRepulsor);
 /// <reference path="ParticleSystem.ts" />
-var ParticleSize = (function () {
+var ParticleSize = /** @class */ (function () {
     function ParticleSize() {
         this.ParticleStartSize = 2;
         this.ParticleStartAgeSizeChange = 500;
@@ -8019,24 +11571,24 @@ var ParticleSize = (function () {
     };
     ParticleSize.prototype.Draw = function (ctx) {
     };
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleSize.prototype, "ParticleStartSize", void 0);
+    __decorate([
+        ParticleEffectorPropertyNumber,
+        ParticleEffectorPropertyNullable
+    ], ParticleSize.prototype, "ParticleStartAgeSizeChange", void 0);
+    __decorate([
+        ParticleEffectorPropertyNumber,
+        ParticleEffectorPropertyNullable
+    ], ParticleSize.prototype, "ParticleEndSize", void 0);
+    ParticleSize = __decorate([
+        ParticleEffectorClass
+    ], ParticleSize);
     return ParticleSize;
 }());
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleSize.prototype, "ParticleStartSize", void 0);
-__decorate([
-    ParticleEffectorPropertyNumber,
-    ParticleEffectorPropertyNullable
-], ParticleSize.prototype, "ParticleStartAgeSizeChange", void 0);
-__decorate([
-    ParticleEffectorPropertyNumber,
-    ParticleEffectorPropertyNullable
-], ParticleSize.prototype, "ParticleEndSize", void 0);
-ParticleSize = __decorate([
-    ParticleEffectorClass
-], ParticleSize);
 var sparcles = {};
-var ParticleSparkle = (function () {
+var ParticleSparkle = /** @class */ (function () {
     function ParticleSparkle() {
     }
     ParticleSparkle.GetSparkle = function (color) {
@@ -8077,7 +11629,7 @@ var ParticleSparkle = (function () {
     return ParticleSparkle;
 }());
 /// <reference path="ParticleSystem.ts" />
-var ParticleWave = (function () {
+var ParticleWave = /** @class */ (function () {
     function ParticleWave() {
         this.Strength = 0.005;
         this.FrequencyAlphaX = 20;
@@ -8100,46 +11652,46 @@ var ParticleWave = (function () {
     };
     ParticleWave.prototype.Draw = function (ctx) {
     };
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleWave.prototype, "Strength", void 0);
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleWave.prototype, "FrequencyAlphaX", void 0);
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleWave.prototype, "FrequencyAlphaY", void 0);
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleWave.prototype, "FrequencyBetaX", void 0);
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleWave.prototype, "FrequencyBetaY", void 0);
+    __decorate([
+        ParticleEffectorPropertyNumber
+    ], ParticleWave.prototype, "AgeFactor", void 0);
+    ParticleWave = __decorate([
+        ParticleEffectorClass
+    ], ParticleWave);
     return ParticleWave;
 }());
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleWave.prototype, "Strength", void 0);
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleWave.prototype, "FrequencyAlphaX", void 0);
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleWave.prototype, "FrequencyAlphaY", void 0);
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleWave.prototype, "FrequencyBetaX", void 0);
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleWave.prototype, "FrequencyBetaY", void 0);
-__decorate([
-    ParticleEffectorPropertyNumber
-], ParticleWave.prototype, "AgeFactor", void 0);
-ParticleWave = __decorate([
-    ParticleEffectorClass
-], ParticleWave);
-var JournalEntry = (function () {
+var JournalEntry = /** @class */ (function () {
     function JournalEntry() {
     }
     return JournalEntry;
 }());
-var KnownQuest = (function () {
+var KnownQuest = /** @class */ (function () {
     function KnownQuest() {
     }
     return KnownQuest;
 }());
-var Quest = (function () {
+var Quest = /** @class */ (function () {
     function Quest() {
         this.JournalEntries = [];
     }
     return Quest;
 }());
-var ReceivedJournalEntry = (function () {
+var ReceivedJournalEntry = /** @class */ (function () {
     function ReceivedJournalEntry() {
     }
     return ReceivedJournalEntry;
@@ -8223,7 +11775,7 @@ function Activate()\n\
     return false;\n\
 }\n\
 "];
-var DefaultSkills = (function () {
+var DefaultSkills = /** @class */ (function () {
     function DefaultSkills() {
     }
     DefaultSkills.Generate = function (game) {
@@ -8245,7 +11797,7 @@ var DefaultSkills = (function () {
     };
     return DefaultSkills;
 }());
-var KnownSkill = (function () {
+var KnownSkill = /** @class */ (function () {
     function KnownSkill() {
         this.AutoReceive = false;
     }
@@ -8341,13 +11893,13 @@ var KnownSkill = (function () {
     };
     return KnownSkill;
 }());
-var Skill = (function () {
+var Skill = /** @class */ (function () {
     function Skill() {
     }
     return Skill;
 }());
 var sounds = {};
-var Sounds = (function () {
+var Sounds = /** @class */ (function () {
     function Sounds() {
     }
     Sounds.Init = function (clearAtStart) {
@@ -8643,7 +12195,7 @@ function CanUpgrade()\n\
 {\n\
     return (Player.GetStat('Level')*3+5)-(Player.GetStat('Strength')+Player.GetStat('Dexterity')+Player.GetStat('Intelligence')) > 0;\n\
 }"];
-var DefaultStats = (function () {
+var DefaultStats = /** @class */ (function () {
     function DefaultStats() {
     }
     DefaultStats.Generate = function (game) {
@@ -8662,7 +12214,7 @@ var DefaultStats = (function () {
     };
     return DefaultStats;
 }());
-var KnownStat = (function () {
+var KnownStat = /** @class */ (function () {
     function KnownStat() {
         this.MonsterStat = false;
     }
@@ -8752,17 +12304,17 @@ var KnownStat = (function () {
     };
     return KnownStat;
 }());
-var Stat = (function () {
+var Stat = /** @class */ (function () {
     function Stat() {
     }
     return Stat;
 }());
-var RunningEffect = (function () {
+var RunningEffect = /** @class */ (function () {
     function RunningEffect() {
     }
     return RunningEffect;
 }());
-var TemporaryEffect = (function () {
+var TemporaryEffect = /** @class */ (function () {
     function TemporaryEffect() {
         this.MultipleInstance = true;
         this.Timer = 30;
@@ -8773,12 +12325,12 @@ var TemporaryEffect = (function () {
     }
     return TemporaryEffect;
 }());
-var areaFragment = new ((function () {
-    function class_8() {
+var areaFragment = new (/** @class */ (function () {
+    function class_19() {
     }
-    return class_8;
+    return class_19;
 }()));
-var AreaFragment = (function () {
+var AreaFragment = /** @class */ (function () {
     function AreaFragment() {
         this.backgroundTiles = [];
         this.objects = [];
@@ -8846,7 +12398,7 @@ var AreaFragment = (function () {
     };
     return AreaFragment;
 }());
-var MapAction = (function () {
+var MapAction = /** @class */ (function () {
     function MapAction() {
         this.Actions = [];
         this.Conditions = [];
@@ -8986,25 +12538,25 @@ var MapAction = (function () {
     };
     return MapAction;
 }());
-var MapFragment = (function () {
+var MapFragment = /** @class */ (function () {
     function MapFragment() {
         this.Conditions = [];
         this.Modifications = [];
     }
     return MapFragment;
 }());
-var MapModification = (function () {
+var MapModification = /** @class */ (function () {
     function MapModification() {
     }
     return MapModification;
 }());
-var mapUtilities = new ((function () {
-    function class_9() {
+var mapUtilities = new (/** @class */ (function () {
+    function class_20() {
         this.openModifications = [];
     }
-    return class_9;
+    return class_20;
 }()));
-var MapUtilities = (function () {
+var MapUtilities = /** @class */ (function () {
     function MapUtilities() {
     }
     MapUtilities.Modify = function (what, oldName, newName) {
@@ -9097,7 +12649,7 @@ var EditorEdition;
     EditorEdition[EditorEdition["Demo"] = 0] = "Demo";
     EditorEdition[EditorEdition["Standard"] = 1] = "Standard";
 })(EditorEdition || (EditorEdition = {}));
-var World = (function () {
+var World = /** @class */ (function () {
     function World() {
         this.areaWidth = 100;
         this.areaHeight = 100;
@@ -9858,11 +13410,11 @@ var World = (function () {
 }());
 ///<reference path="World.ts" />
 ///<reference path="WorldArea.ts" />
-var WorldRender = (function () {
+var WorldRender = /** @class */ (function () {
     function WorldRender(world, canvasElement, zoomLevel) {
+        var _this = this;
         if (canvasElement === void 0) { canvasElement = "gameCanvas"; }
         if (zoomLevel === void 0) { zoomLevel = 1; }
-        var _this = this;
         this.objectSprites = {};
         this.objectImages = {};
         this.houseImages = {};
@@ -10296,7 +13848,7 @@ var WorldRender = (function () {
     };
     return WorldRender;
 }());
-var WorldZone = (function () {
+var WorldZone = /** @class */ (function () {
     function WorldZone() {
         this.GeneratorParameters = null;
         this.Objects = [];
@@ -10313,7 +13865,7 @@ function WorldGeneratorClass(target) {
     knownGenerators.push(className.substr(0, className.length - 9));
     knownGenerators.sort();
 }
-var WorldGenerator = (function () {
+var WorldGenerator = /** @class */ (function () {
     function WorldGenerator(world, seed, zoneInfo) {
         this.zoneInfo = zoneInfo;
         this.seed = seed;
@@ -10480,11 +14032,12 @@ var WorldGenerator = (function () {
     return WorldGenerator;
 }());
 /// <reference path="WorldGenerator.ts" />
-var CaveGenerator = CaveGenerator_1 = (function (_super) {
+var CaveGenerator = /** @class */ (function (_super) {
     __extends(CaveGenerator, _super);
     function CaveGenerator(world, seed, zoneInfo) {
         return _super.call(this, world, seed, zoneInfo) || this;
     }
+    CaveGenerator_1 = CaveGenerator;
     CaveGenerator.prototype.Generate = function (x, y, zone) {
         var worldArea = new WorldArea();
         worldArea.X = x;
@@ -10772,14 +14325,14 @@ var CaveGenerator = CaveGenerator_1 = (function (_super) {
         if (caveData.walkTile == oldName)
             caveData.walkTile = newName;
     };
+    var CaveGenerator_1;
+    CaveGenerator = CaveGenerator_1 = __decorate([
+        WorldGeneratorClass
+    ], CaveGenerator);
     return CaveGenerator;
 }(WorldGenerator));
-CaveGenerator = CaveGenerator_1 = __decorate([
-    WorldGeneratorClass
-], CaveGenerator);
-var CaveGenerator_1;
 /// <reference path="WorldGenerator.ts" />
-var ConstantGenerator = (function (_super) {
+var ConstantGenerator = /** @class */ (function (_super) {
     __extends(ConstantGenerator, _super);
     function ConstantGenerator(world, seed, zoneInfo) {
         return _super.call(this, world, seed, zoneInfo) || this;
@@ -10821,17 +14374,18 @@ var ConstantGenerator = (function (_super) {
     };
     ConstantGenerator.prototype.RenameTileType = function (oldName, newName) {
     };
+    ConstantGenerator = __decorate([
+        WorldGeneratorClass
+    ], ConstantGenerator);
     return ConstantGenerator;
 }(WorldGenerator));
-ConstantGenerator = __decorate([
-    WorldGeneratorClass
-], ConstantGenerator);
 /// <reference path="WorldGenerator.ts" />
-var MazeGenerator = MazeGenerator_1 = (function (_super) {
+var MazeGenerator = /** @class */ (function (_super) {
     __extends(MazeGenerator, _super);
     function MazeGenerator(world, seed, zoneInfo) {
         return _super.call(this, world, seed, zoneInfo) || this;
     }
+    MazeGenerator_1 = MazeGenerator;
     MazeGenerator.prototype.Generate = function (x, y, zone) {
         var worldArea = new WorldArea();
         worldArea.X = x;
@@ -11118,24 +14672,25 @@ var MazeGenerator = MazeGenerator_1 = (function (_super) {
         if (mazeData.walkTile == oldName)
             mazeData.walkTile = newName;
     };
+    var MazeGenerator_1;
+    MazeGenerator = MazeGenerator_1 = __decorate([
+        WorldGeneratorClass
+    ], MazeGenerator);
     return MazeGenerator;
 }(WorldGenerator));
-MazeGenerator = MazeGenerator_1 = __decorate([
-    WorldGeneratorClass
-], MazeGenerator);
-var MazeGenerator_1;
 /// <reference path="WorldGenerator.ts" />
-var perlinGenerator = new ((function () {
-    function class_10() {
+var perlinGenerator = new (/** @class */ (function () {
+    function class_21() {
         this.perlin = null;
     }
-    return class_10;
+    return class_21;
 }()));
-var PerlinGenerator = PerlinGenerator_1 = (function (_super) {
+var PerlinGenerator = /** @class */ (function (_super) {
     __extends(PerlinGenerator, _super);
     function PerlinGenerator(world, seed, zoneInfo) {
         return _super.call(this, world, seed, zoneInfo) || this;
     }
+    PerlinGenerator_1 = PerlinGenerator;
     PerlinGenerator.prototype.Generate = function (x, y, zone) {
         var worldArea = new WorldArea();
         worldArea.X = x;
@@ -11289,3555 +14844,13 @@ var PerlinGenerator = PerlinGenerator_1 = (function (_super) {
             if (perlinData.levels[i].type == oldName)
                 perlinData.levels[i].type = newName;
     };
+    var PerlinGenerator_1;
+    PerlinGenerator = PerlinGenerator_1 = __decorate([
+        WorldGeneratorClass
+    ], PerlinGenerator);
     return PerlinGenerator;
 }(WorldGenerator));
-PerlinGenerator = PerlinGenerator_1 = __decorate([
-    WorldGeneratorClass
-], PerlinGenerator);
-var PerlinGenerator_1;
-var chat = new ((function () {
-    function class_11() {
-        this.intervalCounter = 0;
-        this.chatNewMessage = false;
-        this.wasHidden = false;
-        this.onMapChat = false;
-        this.channels = {};
-        this.smilies_txt = [[":-)", ":)"], [":-P", ":P", ":-p", ":p"], [":O", ":o", ":-o", ":-O"], [":-(", ":("], [":-/"], [";-)",
-                ";)"], [":D", ":-D"], ["8)", "8-)"], ["B)", "B-)"], ["XD", "xD", "X-D"], ["T.T"], ["^^'", "^.^'"], ["^^", "^.^"], ["O.O", "o.o"],
-            ["8|", "8-|"], ["\M/"], ["&gt;.&lt;"], ["XP", "X-P"], ["oO", "o.O", "o0", "o.0"], ["-.-"], ["(:&lt;"], ["'W'"], [":S", ":-S"],
-            ["*.*"], [":X"], ["X.X", "x.x"], ["$.$"], ["o@@o"], ["9.9"], ["O:&lt;"], ["B|"], ["B("], ["B0"], ["@.@"], ["^**^"], ["9.6"],
-            ["/.O"], ["d.b"], ["&gt;.&gt;"], ["=^_^="]];
-    }
-    return class_11;
-}()));
-var Chat = (function () {
-    function Chat() {
-    }
-    Chat.AdditionalCSS = function () {
-        var r = parseInt(Main.EnsureColor(world.art.panelStyle.buttonBackground).substr(1, 2), 16);
-        var g = parseInt(Main.EnsureColor(world.art.panelStyle.buttonBackground).substr(3, 2), 16);
-        var b = parseInt(Main.EnsureColor(world.art.panelStyle.buttonBackground).substr(5, 2), 16);
-        return "#chatEntry\n\
-{\n\
-    width: calc(100% - " + (95 + world.art.panelStyle.leftBorder) + "px);\n\
-    top: " + (("" + document.location).indexOf("maker.html") != -1 ? "35px" : "5px") + ";\n\
-}\n\
-#chatEntryLine {\n\
-    background-color: rgba(" + r + "," + g + "," + b + ",0.6);\n\
-    color: " + Main.EnsureColor(world.art.panelStyle.contentColor) + ";\n\
-    border: solid 1px " + Main.EnsureColor(world.art.panelStyle.buttonBorder) + ";\n\
-}\n\
-#chatContainer {\n\
-    width: calc(100% - 95px);\n\
-    top: " + (("" + document.location).indexOf("maker.html") != -1 ? "65px" : "35px") + ";\n\
-}\n\
-@media (min-width: 1000px)\n\
-{\n\
-    #chatContainer {\n\
-        left: calc(50% + " + (parseInt("" + world.art.quickslotStyle.width) / 2 + 5) + "px);\n\
-        top: auto;\n\
-        bottom: 40px;\n\
-        width: auto;\n\
-    }\n\
-    #chatEntry\n\
-    {\n\
-        left: calc(50% + " + (parseInt("" + world.art.quickslotStyle.width) / 2 + 5) + "px);\n\
-        width: auto;\n\
-        top: auto;\n\
-        bottom: 5px;\n\
-    }\n\
-}\n\
-#chatChannels div {\n\
-    border: solid 1px " + Main.EnsureColor(world.art.panelStyle.buttonBorder) + ";\n\
-}\n\
-.selectedChannel {\n\
-    background-color: " + Main.EnsureColor(world.art.panelStyle.buttonBorder) + ";\n\
-}";
-    };
-    Chat.Init = function () {
-        if (!framework.Preferences['token'] || world.Edition == EditorEdition.Demo || framework.Preferences['token'] == "demo" || window['io'] == undefined || window['io'] == null || world.ChatEnabled === false) {
-            $("#chatEntry").hide();
-            return;
-        }
-        if (world.Player.ChatBannedTill && typeof world.Player.ChatBannedTill == "string")
-            world.Player.ChatBannedTill = new Date(world.Player.ChatBannedTill);
-        if (world.Player.ChatMutedTill && typeof world.Player.ChatMutedTill == "string")
-            world.Player.ChatMutedTill = new Date(world.Player.ChatMutedTill);
-        if (world.Player.ChatBannedTill && world.Player.ChatBannedTill.getTime() < (new Date()).getTime())
-            world.Player.ChatBannedTill = null;
-        if (world.Player.ChatMutedTill && world.Player.ChatMutedTill.getTime() < (new Date()).getTime())
-            world.Player.ChatMutedTill = null;
-        if (world.Player.ChatBannedTill && world.Player.ChatBannedTill.getTime() > (new Date()).getTime()) {
-            $("#chatContainer").hide();
-            $("#chatEntry").hide();
-            return;
-        }
-        chat.socket = window['io']();
-        chat.socket.on('connect', Chat.Connect);
-        chat.socket.on('chat', Chat.Receive);
-        chat.socket.on('join', Chat.Join);
-        chat.socket.on('leave', Chat.Leave);
-        chat.socket.on('channelUserList', Chat.ChannelUserList);
-        chat.socket.on('chatBot', Chat.BotLine);
-        chat.socket.on('mute', function (till) {
-            world.Player.ChatMutedTill = new Date(till);
-            world.Player.StoredCompare = world.Player.JSON();
-            Framework.ShowMessage("You have been chat muted till " + world.Player.ChatMutedTill);
-        });
-        chat.socket.on('ban', function (till) {
-            world.Player.ChatBannedTill = new Date(till);
-            world.Player.StoredCompare = world.Player.JSON();
-            Framework.ShowMessage("You have been chat banned till " + world.Player.ChatBannedTill);
-            $("#chatContainer").hide();
-            $("#chatEntry").hide();
-        });
-        $("#chatTitle").bind("click", Chat.ShowHide);
-        $("#chatCollapsed").bind("click", Chat.ShowHide);
-        if (!chat.chatInterval)
-            chat.chatInterval = setInterval(Chat.ChatInterval, 500);
-    };
-    Chat.ChatInterval = function () {
-        if (world.Player.ChatBannedTill && world.Player.ChatBannedTill.getTime() > (new Date()).getTime()) {
-            $("#chatContainer").hide();
-            $("#chatEntry").hide();
-            return;
-        }
-        // We entered in a zone
-        if (play.renderer && !chat.channels[world.Player.Zone.replace(/\./g, "_")]) {
-            chat.socket.emit('join', world.Id, framework.Preferences['token'], world.Player.Zone.replace(/\./g, "_"));
-            var items = [];
-            for (var item in chat.channels)
-                items.push(item);
-            chat.channels[world.Player.Zone.replace(/\./g, "_")] = { newMessage: false, messages: [], users: [] };
-            for (var i = 0; i < items.length; i++) {
-                var item = items[i];
-                if (item == "#global" || item == world.Player.Zone.replace(/\./g, "_"))
-                    continue;
-                chat.socket.emit('leave', world.Id, framework.Preferences['token'], item.replace(/\./g, "_"));
-                delete chat.channels[item];
-            }
-            Chat.UpdateChannels();
-            if (chat.currentChannel != "#global" || items.length == 1)
-                Chat.SelectChannel(world.Player.Zone.replace(/\./g, "_"));
-        }
-        // We left the play page
-        if (!play.renderer) {
-            var updated = false;
-            var items = [];
-            for (var item in chat.channels)
-                items.push(item);
-            for (var i = 0; i < items.length; i++) {
-                var item = items[i];
-                if (item == "#global")
-                    continue;
-                updated = true;
-                delete chat.channels[item];
-                chat.socket.emit('leave', world.Id, framework.Preferences['token'], item);
-            }
-            if (updated)
-                Chat.UpdateChannels();
-            Chat.SelectChannel("#global");
-        }
-        if (play.renderer && chat.onMapChat === false) {
-            chat.onMapChat = true;
-            $("#chatEntry").show();
-            $("#chatLine").hide();
-            $("#chatScroll").addClass("fullChatScroll");
-            $("#chatUserList").addClass("fullChatScroll");
-        }
-        else if (!play.renderer && chat.onMapChat === true) {
-            chat.onMapChat = false;
-            $("#chatEntry").hide();
-            $("#chatLine").show();
-            $("#chatScroll").removeClass("fullChatScroll");
-            $("#chatUserList").removeClass("fullChatScroll");
-        }
-        if ($("#chatCollapsed").is(":visible") && chat.chatNewMessage) {
-            if (chat.intervalCounter % 2)
-                $("#chatCollapsed .gamePanelContentNoHeader > div").html("- New message -");
-            else
-                $("#chatCollapsed .gamePanelContentNoHeader > div").html("Click to chat");
-        }
-        for (var item in chat.channels) {
-            if (chat.channels[item].newMessage) {
-                Chat.UpdateChannels();
-                break;
-            }
-        }
-        chat.intervalCounter = 1 - chat.intervalCounter;
-    };
-    Chat.Connect = function () {
-        if (!framework.Preferences['token'] || world.Edition == EditorEdition.Demo || framework.Preferences['token'] == "demo" || window['io'] == undefined || window['io'] == null)
-            return;
-        chat.socket.emit('join', world.Id, framework.Preferences['token'], "#global");
-        chat.channels["#global"] = { newMessage: false, messages: [], users: [] };
-        Chat.UpdateChannels();
-        Chat.SelectChannel("#global");
-        if (framework.Preferences["ChatVisible"] === false) {
-            $("#chatContainer").hide();
-            $("#chatCollapsed").show();
-        }
-        else {
-            $("#chatContainer").show();
-            $("#chatCollapsed").hide();
-        }
-        if (world.Player.ChatBannedTill && world.Player.ChatBannedTill.getTime() > (new Date()).getTime()) {
-            $("#chatContainer").hide();
-            $("#chatEntry").hide();
-            return;
-        }
-    };
-    Chat.Key = function (evt, field) {
-        switch (evt.keyCode) {
-            case 13:
-                Chat.SendLine($("#" + field).val());
-                $("#" + field).val("");
-                break;
-            case 27:
-                $("#" + field).blur();
-                if (chat.wasHidden == true)
-                    Chat.ShowHide();
-                break;
-            default:
-                break;
-        }
-    };
-    Chat.SelectChannel = function (channel) {
-        if (!chat.channels[channel])
-            return;
-        chat.currentChannel = channel;
-        chat.channels[channel].newMessage = false;
-        Chat.RedrawUserList();
-        Chat.RedrawChannelHistory();
-        /*$("#chatChannels div").removeClass("selectedChannel");
-        $("#" + channel.id()).addClass("selectedChannel");*/
-        Chat.UpdateChannels();
-    };
-    Chat.UpdateChannels = function () {
-        var html = "<span>Channels:</span>";
-        for (var item in chat.channels)
-            html += "<div onclick=\"Chat.SelectChannel('" + item.replace(/'/g, "\\'") + "');\" id=\"" + item.id() + "\" class='" + (item == chat.currentChannel ? " selectedChannel" : "") + (chat.channels[item].newMessage && chat.intervalCounter % 2 ? " channelNewMessage" : "") + "'>" + item + "</div>";
-        $("#chatChannels").html(html);
-    };
-    Chat.UpdateAllChannelsUserList = function () {
-        for (var i in chat.channels) {
-            Chat.UpdateChannelUserList(i);
-        }
-    };
-    Chat.UpdateChannelUserList = function (channel) {
-        chat.socket.emit('getChannelUserList', world.Id, channel);
-    };
-    Chat.ChannelUserList = function (channel, users) {
-        if (!chat.channels[channel])
-            return;
-        for (var i = 0; i < world.ChatBots.length; i++) {
-            // Skip the invisible bots
-            if (world.ChatBots[i].Name[0] == "~")
-                continue;
-            if (world.ChatBots[i].Channel == "*" || world.ChatBots[i].Channel == "" || world.ChatBots[i].Channel.toLowerCase() == channel.toLowerCase())
-                users.push(world.ChatBots[i].Name);
-        }
-        chat.channels[channel].users = users;
-        if (chat.currentChannel == channel)
-            Chat.RedrawUserList();
-    };
-    Chat.Join = function (user, channel) {
-        Chat.AddChatLine("", channel, "<b class='chatSystemMessage'>" + user + " joined " + channel + "</b>");
-        Chat.UpdateChannelUserList(channel);
-    };
-    Chat.Leave = function (user, channel) {
-        Chat.AddChatLine("", channel, "<b class='chatSystemMessage'>" + user + " left " + channel + "</b>");
-        Chat.UpdateChannelUserList(channel);
-    };
-    Chat.BotLine = function (botname, fromUser, channel, line) {
-        if (botname[0] == "~")
-            Chat.AddChatLine(null, channel, line.htmlEntities(false).replace(/\n/g, "<br />"));
-        else
-            Chat.AddChatLine(botname, channel, line.htmlEntities(false).replace(/\n/g, "<br />"));
-    };
-    Chat.SendBotLine = function (botname, channel, line) {
-        if (framework.Preferences['token'] == "demo") {
-            Chat.AddChatLine(null, chat.currentChannel, "The chat is disabled in the demo.");
-            return;
-        }
-        if (!chat || !chat.socket)
-            return;
-        if (!world.Player.ChatMutedTill || world.Player.ChatMutedTill.getTime() < (new Date()).getTime())
-            chat.socket.emit('bot', botname, channel, line);
-    };
-    Chat.SendLine = function (line, channel) {
-        if (channel === void 0) { channel = null; }
-        if (world.Player.ChatMutedTill && world.Player.ChatMutedTill.getTime() >= (new Date()).getTime()) {
-            Chat.AddChatLine(null, chat.currentChannel, "<b>!! you are chat muted till " + world.Player.ChatMutedTill + " !!</b>");
-            return;
-        }
-        if (world.Player.ChatBannedTill && world.Player.ChatBannedTill.getTime() >= (new Date()).getTime()) {
-            Chat.AddChatLine(null, chat.currentChannel, "<b>!! you are chat banned till " + world.Player.ChatBannedTill + " !!</b>");
-            return;
-        }
-        if (!chat || !chat.socket)
-            return;
-        if (framework.Preferences['token'] == "demo") {
-            Chat.AddChatLine(null, chat.currentChannel, "The chat is disabled in the demo.");
-            return;
-        }
-        var line = line.trim();
-        if (!line || line == "")
-            return;
-        var botToRun = 0;
-        var botHandled = false;
-        var normalHandling = function () {
-            if (botHandled == true || botToRun > 0)
-                return;
-            if (line.toLowerCase().indexOf("/e ") == 0 || line.toLowerCase().indexOf("/emote ") == 0) {
-                var emote = "--";
-                try {
-                    emote = line.split(' ')[1].toLowerCase();
-                }
-                catch (ex) {
-                }
-                if (EmotesArt[emote] !== undefined) {
-                    world.Player.EmoteTimer = 0;
-                    world.Player.CurrentEmote = EmotesArt[emote];
-                }
-                else
-                    Chat.AddChatLine(null, channel ? channel : chat.currentChannel, "Unknown emote.");
-            }
-            else if (line.toLowerCase().indexOf("/") == 0 && line.toLowerCase().indexOf("/me ") != 0) {
-                Chat.AddChatLine(null, channel ? channel : chat.currentChannel, "Unknown command.");
-            }
-            else
-                chat.socket.emit('send', channel ? channel : chat.currentChannel, line);
-        };
-        var toExecute = [];
-        for (var i = 0; i < world.ChatBots.length; i++) {
-            if (!(world.ChatBots[i].Channel == "*" || world.ChatBots[i].Channel == "" || world.ChatBots[i].Channel.toLowerCase() == channel.toLowerCase()))
-                continue;
-            botToRun++;
-        }
-        if (world.ChatBots.length > 0)
-            for (var i = 0; i < world.ChatBots.length; i++) {
-                if (!(world.ChatBots[i].Channel == "*" || world.ChatBots[i].Channel == "" || world.ChatBots[i].Channel.toLowerCase() == channel.toLowerCase()))
-                    continue;
-                var a = function () {
-                    var bot = world.ChatBots[i];
-                    bot.HandleChat(line, function (res) {
-                        botToRun--;
-                        if (res) {
-                            //Chat.AddChatLine(username, chat.currentChannel, line);
-                            //Chat.AddChatLine(world.ChatBots[i].Name, chat.currentChannel, res);
-                            if (res[0] == "/")
-                                chat.socket.emit('bot', bot.Name, channel ? channel : chat.currentChannel, "/" + res);
-                            else if (res[0] == "!")
-                                Chat.AddChatLine(bot.Name[0] == "~" ? null : bot.Name, channel ? channel : chat.currentChannel, res.substr(1).htmlEntities(false).replace(/\n/g, "<br />"));
-                            else {
-                                chat.socket.emit('send', channel ? channel : chat.currentChannel, line);
-                                chat.socket.emit('bot', bot.Name, channel ? channel : chat.currentChannel, res);
-                            }
-                            botHandled = true;
-                        }
-                        else
-                            normalHandling();
-                    });
-                }();
-            }
-        else
-            normalHandling();
-    };
-    Chat.Receive = function (sender, channel, message) {
-        if (!chat.channels[channel])
-            return;
-        if ($("#chatCollapsed").is(":visible"))
-            chat.chatNewMessage = true;
-        if (chat.currentChannel != channel)
-            chat.channels[channel].newMessage = true;
-        Chat.AddChatLine(sender, channel, message);
-    };
-    Chat.UrlChanger = function (str) {
-        return str.replace(/(^|\s|\>)(http[s]{0,1}:\/\/[a-zA-Z0-9\/\-\+:\.\?=_\&\#\;\%\,~]{1,30})([a-zA-Z0-9\/\-\+:\.\?=_\&\#\;\%\,~]*)/g, "$1[<A HREF='$2$3' TARGET='_BLANK'>$2 ...</A>]");
-    };
-    Chat.Smilies = function (str) {
-        if (!chat.smiliesDb) {
-            chat.smiliesDb = [];
-            for (var i = 0; i < chat.smilies_txt.length; i++) {
-                for (var j = 0; j < chat.smilies_txt[i].length; j++) {
-                    var e = chat.smilies_txt[i][j].replace(/([\.\+\|\\\$\^\(\)\:\?\*\/])/g, '\\$1');
-                    chat.smiliesDb.push({ regexp: new RegExp("(^|\\s|\\>)" + e + "(\\s|\\<|$)", "g"), html: "$1<div style='background-image: url(\"/art/tileset2/smilies.png\"); display: inline-block; width: 20px; height: 16px; background-position: -" + (i * 20) + "px 0px;'></div>$2" });
-                }
-            }
-        }
-        for (var i = 0; i < chat.smiliesDb.length; i++)
-            str = str.replace(chat.smiliesDb[i].regexp, chat.smiliesDb[i].html);
-        return str;
-    };
-    Chat.AddChatLine = function (sender, channel, message) {
-        if (!chat.channels[channel])
-            return;
-        //chat.channels[channel] = [];
-        chat.channels[channel].messages.push({ sender: sender, message: message });
-        while (chat.channels[channel].messages.length > 100)
-            chat.channels[channel].messages.shift();
-        if (channel == chat.currentChannel)
-            Chat.AddChatScrollLine(sender, message);
-    };
-    Chat.AddChatScrollLine = function (sender, message) {
-        if (!message || message.length == 0)
-            return;
-        if (message.toLowerCase().indexOf("/me ") == 0) {
-            message = "<b>-- " + ("" + sender).htmlEntities(false) + " " + message.substr(3).trim().htmlEntities(false) + " --</b>";
-            sender = null;
-        }
-        else if (message.indexOf("//") == 0 && sender != null) {
-            return;
-        }
-        else if (message.indexOf("//") == 0) {
-            message = "<b>** " + message.substr(2).trim() + " **</b>";
-            sender = null;
-        }
-        if (sender != null && sender != "")
-            message = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        if (world.ChatSmilies)
-            message = Chat.Smilies(message);
-        if (world.ChatLink)
-            message = Chat.UrlChanger(message);
-        var chatScroll = $("#chatScroll").first();
-        while (chatScroll.children.length > 100)
-            chatScroll.removeChild(chatScroll.children[0]);
-        $("#chatScroll").html($("#chatScroll").html() + "<div><div" + (sender ? " onclick='PublicViewPlayer.Show(\"" + sender + "\");'" : "") + ">" + (!sender || sender == "" ? "&nbsp;" : sender.htmlEntities(false)) + "</div><div>" + message + "</div></div>");
-        $("#chatScroll").scrollTop($("#chatScroll").scrollTop() + 60000);
-    };
-    Chat.RedrawUserList = function () {
-        var html = "";
-        var users = chat.channels[chat.currentChannel].users;
-        if (users) {
-            users.sort();
-            for (var i = 0; i < users.length; i++) {
-                html += "<div>" + users[i] + "</div>";
-            }
-        }
-        $("#chatUserList").html(html);
-    };
-    Chat.RedrawChannelHistory = function () {
-        $("#chatScroll").html("");
-        for (var i = 0; i < chat.channels[chat.currentChannel].messages.length; i++)
-            Chat.AddChatScrollLine(chat.channels[chat.currentChannel].messages[i].sender, chat.channels[chat.currentChannel].messages[i].message);
-    };
-    Chat.Focus = function () {
-        if ($("#chatCollapsed").is(":visible")) {
-            chat.wasHidden = true;
-            Chat.ShowHide();
-        }
-        else
-            chat.wasHidden = false;
-        if (chat.onMapChat)
-            $("#chatEntryLine").focus();
-        else
-            $("#chatLine").focus();
-    };
-    Chat.ShowHide = function () {
-        if ($("#chatCollapsed").is(":visible")) {
-            $("#chatContainer").show();
-            $("#chatCollapsed").hide();
-            chat.chatNewMessage = false;
-            $("#chatCollapsed .gamePanelContentNoHeader > div").html("Click to chat");
-        }
-        else {
-            $("#chatContainer").hide();
-            $("#chatCollapsed").show();
-        }
-        framework.Preferences["ChatVisible"] = !$("#chatCollapsed").is(":visible");
-        Framework.SavePreferences();
-    };
-    return Chat;
-}());
-var codeEditor = new ((function () {
-    function class_12() {
-        this.hideHelpTimer = null;
-        this.currentEditor = null;
-        this.currentSelection = null;
-        this.currentList = null;
-        this.currentSelectedCompletion = null;
-        this.currentTextToTheEnd = null;
-    }
-    return class_12;
-}()));
-var CodeEditor = (function () {
-    function CodeEditor() {
-    }
-    CodeEditor.Create = function (element) {
-        var editor = CodeMirror.fromTextArea($("#" + element).first(), {
-            lineNumbers: true,
-            matchBrackets: true,
-            continueComments: "Enter",
-            showCursorWhenSelecting: true,
-            tabSize: 4,
-            indentUnit: 4
-        });
-        codeEditor.currentEditor = editor;
-        editor.on("blur", function () {
-            if (codeEditor.hideHelpTimer) {
-                clearTimeout(codeEditor.hideHelpTimer);
-                codeEditor.hideHelpTimer = null;
-            }
-            codeEditor.hideHelpTimer = setTimeout(function () { CodeEditor.HideHelp(element); }, 500);
-        });
-        editor.setOption("extraKeys", {
-            "Enter": function () {
-                if (codeEditor.currentList && codeEditor.currentSelectedCompletion !== null) {
-                    CodeEditor.Add(codeEditor.currentList[codeEditor.currentSelectedCompletion]);
-                    event.preventDefault();
-                    event.stopPropagation();
-                    return false;
-                }
-                return CodeMirror.Pass;
-            },
-            "Tab": function () {
-                if (codeEditor.currentList && codeEditor.currentSelectedCompletion !== null) {
-                    CodeEditor.Add(codeEditor.currentList[codeEditor.currentSelectedCompletion]);
-                    event.preventDefault();
-                    event.stopPropagation();
-                    return false;
-                }
-                return CodeMirror.Pass;
-            },
-            "Up": function () {
-                if (codeEditor.currentList && codeEditor.currentSelectedCompletion !== null && codeEditor.currentList[0].indexOf(".") != -1) {
-                    codeEditor.currentSelectedCompletion--;
-                    if (codeEditor.currentSelectedCompletion < 0)
-                        codeEditor.currentSelectedCompletion = codeEditor.currentList.length - 1;
-                    CodeEditor.UpdateList(element);
-                    $("#codeHelp_" + element + " .selectedInsertion").first().scrollIntoView();
-                    return false;
-                }
-                return CodeMirror.Pass;
-            },
-            "Down": function () {
-                if (codeEditor.currentList && codeEditor.currentSelectedCompletion !== null && codeEditor.currentList[0].indexOf(".") != -1) {
-                    codeEditor.currentSelectedCompletion++;
-                    if (codeEditor.currentSelectedCompletion >= codeEditor.currentList.length)
-                        codeEditor.currentSelectedCompletion = 0;
-                    CodeEditor.UpdateList(element);
-                    $("#codeHelp_" + element + " .selectedInsertion").first().scrollIntoView();
-                    return false;
-                }
-                return CodeMirror.Pass;
-            },
-            "Esc": function () {
-                if (codeEditor.hideHelpTimer) {
-                    if (codeEditor.hideHelpTimer) {
-                        clearTimeout(codeEditor.hideHelpTimer);
-                        codeEditor.hideHelpTimer = null;
-                    }
-                    CodeEditor.HideHelp(element);
-                    return false;
-                }
-                return CodeMirror.Pass;
-            },
-            "Ctrl-Q": "toggleComment"
-        });
-        editor.on("cursorActivity", function () {
-            codeEditor.currentList = null;
-            codeEditor.currentSelectedCompletion = null;
-            if (codeEditor.hideHelpTimer) {
-                clearTimeout(codeEditor.hideHelpTimer);
-                codeEditor.hideHelpTimer = null;
-            }
-            var line = editor.getCursor().line;
-            var char = editor.getCursor().ch;
-            var code = editor.getValue();
-            var lines = code.split('\n');
-            if (lines[line]) {
-                var allowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._";
-                var overText = "";
-                var toTheEnd = 0;
-                char--;
-                for (var i = char; i >= 0; i--) {
-                    //var c = lines[line].charAt(i);
-                    var c = CodeEditor.GetCharAt(line, i);
-                    if (allowedChars.indexOf(c) == -1)
-                        break;
-                    overText = c + overText;
-                }
-                if (overText.length > 0)
-                    for (var i = char + 1; i < lines[line].length; i++) {
-                        var c = CodeEditor.GetCharAt(line, i);
-                        if (allowedChars.indexOf(c) == -1)
-                            break;
-                        overText += c;
-                        toTheEnd++;
-                    }
-                codeEditor.currentTextToTheEnd = toTheEnd;
-                codeEditor.currentSelection = overText;
-                var foundApi = GetApiDescription(overText);
-                if (foundApi) {
-                    var domLine = $(".CodeMirror-line").eq(line + 1);
-                    var coords = codeEditor.currentEditor.cursorCoords(true, "page");
-                    var y = coords.top;
-                    var x = coords.left - 150;
-                    $("#codeHelp_" + element).show();
-                    if (y + 200 > window.innerHeight - 35)
-                        $("#codeHelp_" + element).css("top", "" + (y - 110) + "px");
-                    else
-                        $("#codeHelp_" + element).css("top", "" + (y + 20) + "px");
-                    if (x < 0)
-                        x = 0;
-                    if (x > window.innerHeight - 310)
-                        x = window.innerHeight - 310;
-                    $("#codeHelp_" + element).css("left", "" + x + "px");
-                    $("#codeHelp_" + element).html(GetApiSignature(overText) + foundApi);
-                    codeEditor.hideHelpTimer = setTimeout(function () { CodeEditor.HideHelp(element); }, 5000);
-                }
-                else {
-                    // We still have to choose an API
-                    var list = [];
-                    if (overText != "") {
-                        if (overText.indexOf(".") == -1) {
-                            var last = null;
-                            for (var i = 0; i < apiFunctions.length; i++) {
-                                var f = apiFunctions[i].name.split('.')[0];
-                                if (last == f)
-                                    continue;
-                                if (f.toLowerCase().indexOf(overText.toLowerCase()) == 0)
-                                    list.push(f);
-                                last = f;
-                            }
-                        }
-                        else {
-                            for (var i = 0; i < apiFunctions.length; i++)
-                                if (apiFunctions[i].name.toLowerCase().indexOf(overText.toLowerCase()) == 0)
-                                    list.push(apiFunctions[i].name);
-                        }
-                        list.sort();
-                    }
-                    if (list && list.length > 0) {
-                        codeEditor.currentList = list;
-                        codeEditor.currentSelectedCompletion = 0;
-                        CodeEditor.UpdateList(element);
-                        var domLine = $(".CodeMirror-line").eq(line + 1);
-                        var coords = codeEditor.currentEditor.cursorCoords(true, "page");
-                        var y = coords.top;
-                        var x = coords.left - 150;
-                        $("#codeHelp_" + element).show();
-                        if (y + 200 > window.innerHeight - 35)
-                            $("#codeHelp_" + element).css("top", "" + (y - 110) + "px");
-                        else
-                            $("#codeHelp_" + element).css("top", "" + (y + 20) + "px");
-                        if (x < 0)
-                            x = 0;
-                        if (x > window.innerHeight - 310)
-                            x = window.innerHeight - 310;
-                        $("#codeHelp_" + element).css("left", "" + x + "px");
-                    }
-                    else
-                        CodeEditor.HideHelp(element);
-                }
-            }
-            else
-                CodeEditor.HideHelp(element);
-        });
-        editor.on('change', function () {
-            $("#codeError_" + element).hide();
-            var nblines = editor.getDoc().lineCount();
-            for (var i = 0; i < nblines; i++)
-                editor.removeLineClass(i, 'background', "line-error");
-            var code = editor.getValue();
-            try {
-                CodeParser.Parse(code.replace(/\@[a-z0-9_]+\@/gi, "1"));
-            }
-            catch (ex) {
-                var m = ("" + ex).match(/ ([0-9]+):([0-9]+)/);
-                if (m != null)
-                    editor.addLineClass(parseInt(m[1]) - 1, 'background', "line-error");
-                setTimeout(function () { $("#codeError_" + element).show().html(ex); }, 10);
-            }
-        });
-        return editor;
-    };
-    CodeEditor.GetCharAt = function (line, col) {
-        return codeEditor.currentEditor.getRange({ line: line, ch: col }, { line: line, ch: col + 1 });
-    };
-    CodeEditor.UpdateList = function (element) {
-        if (codeEditor.hideHelpTimer) {
-            clearTimeout(codeEditor.hideHelpTimer);
-            codeEditor.hideHelpTimer = null;
-        }
-        var html = "";
-        for (var i = 0; i < codeEditor.currentList.length; i++) {
-            html += "<div onclick='CodeEditor.Add(\"" + codeEditor.currentList[i] + "\");'" + (codeEditor.currentSelectedCompletion == i ? " class='selectedInsertion'" : "") + ">" + codeEditor.currentList[i] + "</div>";
-        }
-        $("#codeHelp_" + element).html(html);
-        codeEditor.hideHelpTimer = setTimeout(function () { CodeEditor.HideHelp(element); }, 5000);
-    };
-    CodeEditor.Add = function (text) {
-        if (codeEditor.hideHelpTimer) {
-            clearTimeout(codeEditor.hideHelpTimer);
-            codeEditor.hideHelpTimer = null;
-        }
-        if (text.indexOf('.') == -1)
-            text += '.';
-        else {
-            var api = GetApiSignature(text).replace(/<.{0,1}span[^>]*>/gi, "").replace(";", "");
-            text += api.substr(text.length);
-        }
-        var pos = codeEditor.currentEditor.getCursor();
-        codeEditor.currentEditor.replaceRange(text.substr(codeEditor.currentSelection.length), { line: pos.line, ch: pos.ch + (codeEditor.currentTextToTheEnd > 0 ? codeEditor.currentTextToTheEnd + 1 : 0) });
-    };
-    CodeEditor.HideHelp = function (element) {
-        $("#codeHelp_" + element).hide();
-        codeEditor.hideHelpTimer = null;
-        codeEditor.currentList = null;
-        codeEditor.currentSelectedCompletion = null;
-    };
-    return CodeEditor;
-}());
-var CodeGraphEditor = (function () {
-    function CodeGraphEditor(element, isGenericCode, tab) {
-        if (isGenericCode === void 0) { isGenericCode = false; }
-        if (tab === void 0) { tab = null; }
-        var _this = this;
-        this.expandedBlocks = [];
-        this.OnChange = null;
-        this.inUpdate = false;
-        this.isGenericCode = false;
-        var hasHelp = false;
-        this.element = element;
-        this.isGenericCode = isGenericCode;
-        this.parent = $("#" + element).first().parentElement.id;
-        var elemHtml = $("#" + element).first().outerHTML;
-        $("#" + element).first().outerHTML = "<div id='codeError_" + element + "' class='elementCodeWarning' style='position: absolute; left: 0px; right: 0px; top: 0px; width: auto;'>Error!</div><div class='codeGraphTextContainer'>" + elemHtml + "</div>";
-        var html = "<div id='graph_" + this.element + "' class='codeGraphArea' path=''></div>";
-        html += "<input type='text' id='search_graph_" + this.element + "' placeholder='Search...' class='codeGraphSearchNodes'>";
-        html += "<div id='selector_" + this.element + "' class='codeGraphSelector'></div>";
-        if ($($("#" + element).first().parentElement).height() > 400) {
-            html += "<div id='node_help_" + this.element + "' class='codeGraphNodeHelp'></div>";
-            hasHelp = true;
-        }
-        //if (("" + document.location).indexOf("localhost") != -1 || ("" + document.location).indexOf("test_grapheditor") != -1)
-        html += "<div class='codeGraphTabs'><span id='btn_" + element + "_text'>Text</span><span id='btn_" + element + "_node'>Node</span></div>";
-        html += "<div id='codeHelp_" + this.element + "' class='codeHelp'></div>";
-        Framework.ReloadPreferences();
-        //if (("" + document.location).indexOf("localhost") != -1 || ("" + document.location).indexOf("test_grapheditor") != -1)
-        if (framework.Preferences && framework.Preferences['codeGraphEditor_help'] !== false && tab == null) {
-            html += "<div id='codeGraphEditorHelp'>";
-            html += "The code editor allows to edit the logic of the game, however a full flexible logic requires a complete scripting engine. ";
-            html += "To help you with the task you can either type it if you are already a skilled developer, or you can use the node view. ";
-            html += "At any time you can switch from one view to the other using the tabs under the editor (text / node).";
-            html += "<br><br>";
-            html += "While working with the nodes, simply drag drop the nodes to add, remove or change the orders. Clicking on the header of a node expands it.";
-            html += "<br><br>";
-            html += "<center><a href='/Help/node_script.html' target='engineHelp' class='button'>Help</a> <span class='button' onclick='CodeGraphEditor.HideWelcome()'>Hide</span></center></div>";
-        }
-        $("#" + this.parent).append(html);
-        this.code = $("#" + element).val();
-        this.editor = CodeEditor.Create(element);
-        this.editor.on("change", function () {
-            if (_this.inUpdate)
-                return;
-            // Currently we have the text editor as main one.
-            if ($("#" + _this.parent + " .codeGraphTextContainer").is(":visible"))
-                _this.statements = null;
-            if (_this.OnChange)
-                _this.OnChange();
-        });
-        this.statements = [];
-        try {
-            var parser = new CodeParser(this.code);
-            this.statements = parser.GetAllStatements();
-        }
-        catch (ex) {
-        }
-        $("#search_graph_" + this.element).bind("keyup", function () {
-            _this.RenderSelector();
-        });
-        $("#graph_" + this.element).bind("dragover", function (evt) {
-            evt.preventDefault();
-            evt.dataTransfer.dropEffect = "move";
-        }).bind("drop", function (evt) {
-            evt.preventDefault();
-            var data = JSON.parse(evt.dataTransfer.getData("text"));
-            if (data.type == "existing") {
-                _this.DeleteNode(data.call);
-                _this.FromNodeToCode();
-                _this.RenderNodes();
-            }
-            else {
-                _this.DropOnEmpty(evt);
-            }
-        });
-        $("#btn_" + element + "_text").bind("click", function () {
-            $("#btn_" + element + "_node").removeClass("codeGraphActiveTab");
-            $("#btn_" + element + "_text").addClass("codeGraphActiveTab");
-            framework.Preferences['codeGraphEditor_tab'] = 'text';
-            Framework.SavePreferences();
-            $("#" + _this.parent + " .codeGraphTextContainer").show();
-            _this.editor.refresh();
-            $("#graph_" + _this.element).hide();
-            $("#selector_" + _this.element).hide();
-            $("#search_graph_" + _this.element).hide();
-            $("#node_help_" + _this.element).hide();
-        });
-        $("#btn_" + element + "_node").bind("click", function () {
-            $("#btn_" + element + "_text").removeClass("codeGraphActiveTab");
-            $("#btn_" + element + "_node").addClass("codeGraphActiveTab");
-            framework.Preferences['codeGraphEditor_tab'] = 'node';
-            Framework.SavePreferences();
-            $("#" + _this.parent + " .codeGraphTextContainer").hide();
-            $("#codeError_" + element).hide();
-            if (!_this.statements) {
-                _this.code = _this.editor.getValue();
-                _this.statements = [];
-                try {
-                    var parser = new CodeParser(_this.code);
-                    _this.statements = parser.GetAllStatements();
-                }
-                catch (ex) {
-                }
-                _this.RenderNodes();
-            }
-            $("#graph_" + _this.element).show();
-            $("#selector_" + _this.element).show();
-            $("#search_graph_" + _this.element).show();
-            $("#node_help_" + _this.element).show();
-        });
-        if ((framework.Preferences['codeGraphEditor_tab'] === 'text' || tab === "text") && (tab !== "node" || !tab)) {
-            $("#graph_" + this.element).hide();
-            $("#selector_" + this.element).hide();
-            $("#search_graph_" + this.element).hide();
-            $("#node_help_" + this.element).hide();
-            $("#btn_" + element + "_text").addClass("codeGraphActiveTab");
-        }
-        else {
-            $("#" + this.parent + " .codeGraphTextContainer").hide();
-            $("#btn_" + element + "_node").addClass("codeGraphActiveTab");
-        }
-        //}
-        this.RenderNodes();
-        this.RenderSelector();
-        if (!hasHelp)
-            $("#selector_" + this.element).css("bottom", "16px");
-    }
-    CodeGraphEditor.prototype.GetNode = function (path) {
-        var p = path.split('.');
-        var result = this.statements;
-        while (p.length > 0) {
-            var currentPath = p.shift();
-            // Must be a number => it's an index of an array
-            if (currentPath.match(/^[0-9]+$/)) {
-                if (result.constructor == BlockStatement)
-                    result = result.Statements[parseInt(currentPath)];
-                else
-                    result = result[parseInt(currentPath)];
-            }
-            else
-                result = result[currentPath];
-        }
-        return result;
-    };
-    CodeGraphEditor.prototype.SetNode = function (path, value) {
-        var p = path.split('.');
-        var node = this.statements;
-        while (p.length > 1) {
-            var currentPath = p.shift();
-            // Must be a number => it's an index of an array
-            if (currentPath.match(/^[0-9]+$/)) {
-                if (node.constructor == BlockStatement)
-                    node = node.Statements[parseInt(currentPath)];
-                else
-                    node = node[parseInt(currentPath)];
-            }
-            else
-                node = node[currentPath];
-        }
-        var className = ("" + node.constructor).match(/function ([^\(]+)\(/)[1];
-        var info = statementEditorInfo[className.replace(/Statement$/, "")];
-        if (typeof value !== "string")
-            node[p[0]] = value;
-        else if (info) {
-            var found = false;
-            for (var i = 0; i < info.params.length; i++) {
-                if (info.params[i].name == p[0]) {
-                    if (info.params[i].type == "VariableValue" && info.params[i].valueType == "number") {
-                        var val = parseFloat(value);
-                        if (!isNaN(val))
-                            node[p[0]] = new VariableValue(val);
-                    }
-                    else if (info.params[i].type == "VariableValue")
-                        node[p[0]] = new VariableValue(value);
-                    else
-                        node[p[0]] = value;
-                    found = true;
-                    break;
-                }
-            }
-            if (!found)
-                node[p[0]] = value;
-        }
-        else
-            node[p[0]] = value;
-    };
-    CodeGraphEditor.prototype.DeleteNode = function (path) {
-        var p = path.split('.');
-        var node = this.statements;
-        while (p.length > 1) {
-            var currentPath = p.shift();
-            // Must be a number => it's an index of an array
-            if (currentPath.match(/^[0-9]+$/)) {
-                if (node.constructor == BlockStatement)
-                    node = node.Statements[parseInt(currentPath)];
-                else
-                    node = node[parseInt(currentPath)];
-            }
-            else
-                node = node[currentPath];
-        }
-        if (p[0].match(/^[0-9]+$/)) {
-            if (node.constructor == BlockStatement)
-                return node.Statements.splice(parseInt(p[0]), 1)[0];
-            else if (path.endsWith(".values." + p[0])) {
-                var val = node[parseInt(p[0])];
-                node[parseInt(p[0])] = null;
-                return val;
-            }
-            else
-                return node.splice(parseInt(p[0]), 1)[0];
-        }
-        else {
-            var result = node[p[0]];
-            node[p[0]] = null;
-            return result;
-        }
-    };
-    CodeGraphEditor.prototype.RenderNodes = function () {
-        var _this = this;
-        var html = "";
-        for (var i = 0; i < this.statements.length; i++) {
-            html += this.statements[i].HTMLBlocks("" + i, this.statements);
-            if (this.statements[i].constructor == FunctionDefinitionStatement)
-                html += "<div class='codeBlockSeparator'></div>";
-        }
-        html += "<span class='emptyBlock' path=''>Empty</span>";
-        $("#graph_" + this.element).html(html);
-        $("#graph_" + this.element + " .emptyBlock").bind("dragover", function (evt) {
-            evt.preventDefault();
-            // Set the dropEffect to move
-            evt.dataTransfer.dropEffect = "move";
-        });
-        // Allow to drop new items on an empty block
-        $("#graph_" + this.element + " .emptyBlock").bind("drop", function (evt) { _this.DropOnEmpty(evt); });
-        // Highlight the block
-        $("#graph_" + this.element + " .codeBlock").addClass("collapsedBlock").bind("mouseover", function (evt) { _this.MouseOver(evt); }).bind("mouseout", function (evt) { _this.MouseOut(evt); });
-        // Expand / contract a block
-        $("#graph_" + this.element + " .blockType, #graph_" + this.element + " .simpleBlockType").prop("draggable", true)
-            .bind("dragstart", function (evt) { _this.Collapse(evt); evt.dataTransfer.setData("text", JSON.stringify({ type: "existing", call: evt.target.parentElement.id.substr(3).replace(/_/g, ".") })); })
-            .bind("drop", function (evt) { _this.DropOnStatement(evt); })
-            .bind("mousedown", function (evt) { _this.Collapse(evt); });
-        $("#graph_" + this.element + " .endBlock").bind("mousedown", function (evt) { _this.Collapse(evt); });
-        // Prevent expand / contract while clicking on a field
-        $("#graph_" + this.element + " input").bind("mousedown", function (evt) { evt.cancelBubble = true; return false; }).bind("keyup", function (evt) { _this.UpdateField(evt); });
-        // Boolean click => reverse it
-        var booleanClick = function (evt) {
-            var id = evt.target.parentElement.id;
-            var path = id.substr(3).replace(/_/g, ".");
-            var node = _this.GetNode(path);
-            node.value = new VariableValue(!node.value.GetBoolean());
-            $("#" + id).first().outerHTML = node.HTMLBlocks(path);
-            $("#" + id).bind("mousedown", booleanClick);
-            $("#" + id + " .simpleBlockType").prop("draggable", true)
-                .bind("dragstart", function (evt) { _this.Collapse(evt); evt.dataTransfer.setData("text", JSON.stringify({ type: "existing", call: evt.target.parentElement.id.substr(3).replace(/_/g, ".") })); })
-                .bind("drop", function (evt) { _this.DropOnStatement(evt); })
-                .bind("mousedown", function (evt) { _this.Collapse(evt); });
-            _this.FromNodeToCode();
-            evt.cancelBubble = true;
-            return false;
-        };
-        $("#graph_" + this.element + " span[block='boolean']").bind("mousedown", booleanClick);
-        $("#graph_" + this.element + " .blockDeleteArrayEntry").bind("mousedown", function (evt) {
-            var path = evt.target.getAttribute("path");
-            var p = path.split('.');
-            var entry = p.pop();
-            var node = _this.GetNode(p.join('.'));
-            node.splice(parseInt(entry), 1);
-            _this.RenderNodes();
-            _this.FromNodeToCode();
-        });
-        $("#graph_" + this.element + " .blockAddArrayEntry").bind("mousedown", function (evt) {
-            var path = evt.target.getAttribute("path");
-            var node = _this.GetNode(path);
-            node.push("");
-            _this.RenderNodes();
-            _this.FromNodeToCode();
-        });
-        for (var i = 0; i < this.expandedBlocks.length; i++)
-            $("#" + this.expandedBlocks[i]).removeClass("collapsedBlock");
-    };
-    CodeGraphEditor.prototype.UpdateField = function (evt) {
-        var val = $(evt.target).val();
-        var path = evt.target.getAttribute("path");
-        this.SetNode(path, val);
-        this.FromNodeToCode();
-        var p = path.split('.');
-        p.pop();
-        var parentNode = this.GetNode(p.join('.'));
-        if (parentNode.constructor == FunctionDefinitionStatement)
-            this.RenderSelector();
-    };
-    CodeGraphEditor.prototype.DropOnStatement = function (evt) {
-        evt.cancelBubble = true;
-        evt.preventDefault();
-        var path = evt.target.parentElement.id.substr(3).replace(/_/g, ".");
-        if (!path)
-            return;
-        var p = path.split('.');
-        var lastPath = p.pop();
-        var parentPath = p.join(".");
-        var node = this.GetNode(parentPath);
-        if (parentPath == "")
-            node = this.statements;
-        // Get the id of the target and add the moved element to the target's DOM
-        var data = JSON.parse(evt.dataTransfer.getData("text"));
-        evt.dataTransfer.clearData();
-        var newNode = null;
-        switch (data.type) {
-            case "base":
-                newNode = new window[data.call]();
-                break;
-            case "api":
-                var params = [];
-                for (var i = 0; i < apiFunctions.length; i++) {
-                    if (apiFunctions[i].name.toLowerCase() == data.call.toLowerCase()) {
-                        for (var j = 0; j < apiFunctions[i].parameters.length; j++)
-                            params.push(null);
-                        break;
-                    }
-                }
-                newNode = new FunctionCallStatement(data.call, params, 0, 0);
-                break;
-            case "existing":
-                newNode = this.DeleteNode(data.call);
-                break;
-        }
-        if (!newNode)
-            return;
-        if (node && node.constructor === BlockStatement)
-            node = node.Statements;
-        if (path.endsWith(".values." + lastPath))
-            node[parseInt(lastPath)] = newNode;
-        else if (node && node.constructor === Array)
-            node.splice(parseInt(lastPath), 0, newNode);
-        else
-            this.SetNode(parentPath, newNode);
-        this.FromNodeToCode();
-        this.RenderNodes();
-    };
-    CodeGraphEditor.prototype.DropOnEmpty = function (evt) {
-        evt.cancelBubble = true;
-        evt.preventDefault();
-        var path = evt.target.getAttribute("path");
-        var node = null;
-        if (path === "")
-            node = this.statements;
-        else
-            node = this.GetNode(path);
-        // Get the id of the target and add the moved element to the target's DOM
-        var data = JSON.parse(evt.dataTransfer.getData("text"));
-        evt.dataTransfer.clearData();
-        var newNode = null;
-        switch (data.type) {
-            case "base":
-                newNode = new window[data.call]();
-                break;
-            case "api":
-                var params = [];
-                for (var i = 0; i < apiFunctions.length; i++) {
-                    if (apiFunctions[i].name.toLowerCase() == data.call.toLowerCase()) {
-                        for (var j = 0; j < apiFunctions[i].parameters.length; j++)
-                            params.push(null);
-                        break;
-                    }
-                }
-                newNode = new FunctionCallStatement(data.call, params, 0, 0);
-                break;
-            case "existing":
-                newNode = this.DeleteNode(data.call);
-                break;
-        }
-        if (node === this.statements) {
-            if (newNode.constructor != CommentStatement && newNode.constructor != FunctionDefinitionStatement) {
-                Framework.ShowMessage("Only comments and functions definitions can be placed on the top level.");
-                return;
-            }
-        }
-        else if (newNode.constructor == FunctionDefinitionStatement) {
-            Framework.ShowMessage("Function definitions can be placed only on the top level.");
-            return;
-        }
-        if (node && node.constructor === BlockStatement) {
-            var className = ("" + newNode.constructor).match(/function ([^\(]+)\(/)[1];
-            if (!topBlockStatements.contains(className)) {
-                Framework.ShowMessage("This block cannot be placed here.");
-                return;
-            }
-        }
-        if (!newNode)
-            return;
-        if (node && node.constructor === BlockStatement)
-            node.Statements.push(newNode);
-        else if (node && node.constructor === Array)
-            node.push(newNode);
-        else
-            this.SetNode(path, newNode);
-        this.FromNodeToCode();
-        this.RenderNodes();
-        if (newNode.constructor == FunctionDefinitionStatement)
-            this.RenderSelector();
-        //console.log("Dragged: " + data);
-        //ev.target.appendChild(document.getElementById(data));
-    };
-    CodeGraphEditor.prototype.RenderSelector = function () {
-        var _this = this;
-        var search = $("#search_graph_" + this.element).val().toLowerCase();
-        var html = "";
-        var isFirst = true;
-        knownStatements.sort();
-        for (var i = 0; i < knownStatements.length; i++) {
-            if (knownStatements[i].replace(/Statement$/, "").toLowerCase().indexOf(search) == -1)
-                continue;
-            if (knownStatements[i] == "FunctionCallStatement" || knownStatements[i] == "BlockStatement" || knownStatements[i] == "EmptyStatement" || knownStatements[i] == "EmptyArrayStatement")
-                continue;
-            if (isFirst) {
-                html += "<div class='codeGroup'><span>Logic:</span>";
-                isFirst = false;
-            }
-            html += "<p type='base' call='" + knownStatements[i] + "'>" + knownStatements[i].replace(/Statement$/, "").title() + "</p>";
-        }
-        if (!isFirst)
-            html += "</div>";
-        var apiGroups = [];
-        for (var item in api)
-            apiGroups.push(item);
-        var isFirst = true;
-        for (var i = 0; i < apiGroups.length; i++) {
-            var functions = [];
-            for (var j = 0; j < apiFunctions.length; j++) {
-                if (apiFunctions[j].name.toLowerCase().indexOf(search) == -1)
-                    continue;
-                if (apiFunctions[j].name.split('.')[0].toLowerCase() == apiGroups[i].toLowerCase())
-                    functions.push(apiFunctions[j].name.split('.')[1]);
-            }
-            functions.sort();
-            if (functions.length == 0)
-                continue;
-            if (isFirst) {
-                html += "<div class='codeGroup'><span>API:</span>";
-                isFirst = false;
-            }
-            html += "<div class='codeGroup'><span>" + apiGroups[i].capitalize() + ":</span>";
-            for (var j = 0; j < functions.length; j++)
-                html += "<p type='api' call='" + apiGroups[i].capitalize() + "." + functions[j] + "'>" + functions[j] + "</p>";
-            html += "</div>";
-        }
-        if (!isFirst)
-            html += "</div>";
-        if (!this.isGenericCode) {
-            isFirst = true;
-            for (var i = 0; i < this.statements.length; i++) {
-                if (this.statements[i].constructor != FunctionDefinitionStatement)
-                    continue;
-                if (this.statements[i].Name.toLowerCase().indexOf(search) == -1)
-                    continue;
-                if (isFirst) {
-                    html += "<div class='codeGroup'><span>Functions:</span>";
-                    isFirst = false;
-                }
-                html += "<p type='api' call='" + this.statements[i].Name + "'>" + this.statements[i].Name + "</p>";
-            }
-            if (!isFirst)
-                html += "</div>";
-        }
-        isFirst = true;
-        if (world && world.Codes)
-            for (var i = 0; i < world.Codes.length; i++) {
-                if (!world.Codes[i].code) {
-                    try {
-                        world.Codes[i].code = CodeParser.ParseWithParameters(world.Codes[i].Source, world.Codes[i].Parameters);
-                    }
-                    catch (ex) {
-                    }
-                }
-                if (!world.Codes[i].code)
-                    continue;
-                for (var item in world.Codes[i].code.FunctionCodes) {
-                    if (item.toLowerCase().indexOf(search) == -1)
-                        continue;
-                    if (isFirst) {
-                        html += "<div class='codeGroup'><span>Generic Functions:</span>";
-                        isFirst = false;
-                    }
-                    html += "<p type='api' call='me." + world.Codes[i].Name + "." + item + "'>" + item + "</p>";
-                }
-            }
-        if (!isFirst)
-            html += "</div>";
-        $("#selector_" + this.element).html(html);
-        $("#selector_" + this.element + " p").prop("draggable", true).bind("dragstart", function (evt) {
-            //console.log(evt.target.innerHTML);
-            //evt.initDragEvent();
-            evt.dataTransfer.setData("text", JSON.stringify({ type: evt.target.getAttribute("type"), call: evt.target.getAttribute("call") }));
-        }).bind("mouseover", function (evt) {
-            var type = evt.target.getAttribute("type");
-            var call = evt.target.getAttribute("call").replace(/Statement$/, "");
-            $("#node_help_" + _this.element).html("");
-            if (type == "base" && statementEditorInfo[call])
-                $("#node_help_" + _this.element).html(statementEditorInfo[call].help);
-            else if (type == "api") {
-                call = ("" + call).toLowerCase();
-                var p = call.split('.');
-                if (p.length == 2) {
-                    for (var i = 0; i < apiFunctions.length; i++) {
-                        if (apiFunctions[i].name.toLowerCase() == call) {
-                            $("#node_help_" + _this.element).html(GetApiSignature(call) + GetApiDescription(call));
-                            break;
-                        }
-                    }
-                }
-                else
-                    $("#node_help_" + _this.element).html("Calls the function '" + call + "' and pass the parameters.");
-            }
-        }).bind("mouseout", function (evt) {
-            $("#node_help_" + _this.element).html("");
-        });
-    };
-    CodeGraphEditor.prototype.Collapse = function (evt) {
-        var obj = evt.target;
-        while (obj.className.indexOf("codeBlock") == -1)
-            obj = obj.parentElement;
-        $(obj).toggleClass("collapsedBlock");
-        var id = obj.id;
-        // Not collapsed
-        if (obj.className.indexOf("collapsedBlock") == -1)
-            this.expandedBlocks.push(id);
-        else {
-            for (var i = 0; i < this.expandedBlocks.length; i++) {
-                if (this.expandedBlocks[i] == id) {
-                    this.expandedBlocks.splice(i, 1);
-                    break;
-                }
-            }
-        }
-    };
-    CodeGraphEditor.prototype.GetCode = function () {
-        return this.editor.getDoc().getValue();
-    };
-    CodeGraphEditor.prototype.SetCode = function (source) {
-        this.inUpdate = true;
-        this.code = source;
-        this.statements = [];
-        try {
-            var parser = new CodeParser(this.code);
-            this.statements = parser.GetAllStatements();
-            this.RenderNodes();
-            this.RenderSelector();
-        }
-        catch (ex) {
-        }
-        this.editor.getDoc().setValue(source);
-        this.editor.refresh();
-        CodeMirror.signal(this.editor, "change");
-        this.inUpdate = false;
-    };
-    CodeGraphEditor.prototype.SetReadonly = function (readonly) {
-        this.editor.readOnly = readonly;
-    };
-    CodeGraphEditor.prototype.FromNodeToCode = function () {
-        try {
-            var code = "";
-            for (var i = 0; i < this.statements.length; i++) {
-                code += this.statements[i].ToCode(0) + "\n";
-            }
-            code = code.trim();
-            this.code = code;
-            this.editor.getDoc().setValue(code);
-            this.editor.refresh();
-            CodeMirror.signal(this.editor, "change");
-        }
-        catch (ex) {
-        }
-    };
-    CodeGraphEditor.prototype.Refresh = function () {
-        this.editor.refresh();
-    };
-    CodeGraphEditor.prototype.MouseOver = function (evt) {
-        $(".overBlock").removeClass("overBlock");
-        var obj = evt.target;
-        while (obj.className.indexOf("codeBlock") == -1)
-            obj = obj.parentElement;
-        $(obj).addClass("overBlock");
-        $("#node_help_" + this.element).html("");
-        var path = obj.id.substr(3).replace(/_/g, ".");
-        if (path) {
-            var node = this.GetNode(path);
-            if (node) {
-                if (node.constructor == FunctionCallStatement) {
-                    var call = node.Name.toLowerCase();
-                    var p = call.split('.');
-                    if (p.length == 2) {
-                        for (var i = 0; i < apiFunctions.length; i++) {
-                            if (apiFunctions[i].name.toLowerCase() == call) {
-                                $("#node_help_" + this.element).html(GetApiSignature(call) + GetApiDescription(call));
-                                break;
-                            }
-                        }
-                    }
-                    else
-                        $("#node_help_" + this.element).html("Calls the function '" + call + "' and pass the parameters.");
-                }
-                else {
-                    var className = ("" + node.constructor).match(/function ([^\(]+)\(/)[1].replace("Statement", "");
-                    if (statementEditorInfo[className])
-                        $("#node_help_" + this.element).html(statementEditorInfo[className].help);
-                }
-            }
-        }
-    };
-    CodeGraphEditor.prototype.MouseOut = function (evt) {
-        $(".overBlock").removeClass("overBlock");
-        $("#node_help_" + this.element).html("");
-    };
-    CodeGraphEditor.HideWelcome = function () {
-        Framework.ReloadPreferences();
-        framework.Preferences['codeGraphEditor_help'] = false;
-        Framework.SavePreferences();
-        $("#codeGraphEditorHelp").hide();
-    };
-    return CodeGraphEditor;
-}());
-var inventoryMenu = new ((function () {
-    function class_13() {
-        this.inventoryDisplayed = false;
-    }
-    return class_13;
-}()));
-var InventoryMenu = (function () {
-    function InventoryMenu() {
-    }
-    InventoryMenu.AdditionalCSS = function () {
-        return "#inventoryIcon\n\
-{\n\
-    position: absolute;\n\
-    left: -" + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
-    top: 80px;\n\
-}\n\
-#inventoryIcon .gamePanelContentNoHeader\n\
-{\n\
-    width: 74px;\n\
-}\n\
-#inventoryObjectDetails\n\
-{\n\
-    position: absolute;\n\
-    left: " + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
-    right: " + parseInt("" + world.art.panelStyle.rightBorder) + "px;\n\
-    bottom: " + parseInt("" + world.art.panelStyle.bottomBorder) + "px;\n\
-    overflow: hidden;\n\
-    height: 150px;\n\
-    padding: 7px;\n\
-    box-sizing: border-box;\n\
-}\n\
-\n\
-#inventoryObjectList\n\
-{\n\
-    position: absolute;\n\
-    left: " + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
-    right: " + parseInt("" + world.art.panelStyle.rightBorder) + "px;\n\
-    top: " + parseInt("" + world.art.panelStyle.topBorder) + "px;\n\
-    bottom: " + (parseInt("" + world.art.panelStyle.bottomBorder) + 150) + "px;\n\
-    overflow-y: scroll;\n\
-}\n\
-\n\
-#inventoryObjectList h1\n\
-{\n\
-    border-bottom: solid 1px " + Main.EnsureColor(world.art.panelStyle.contentColor) + ";\n\
-    margin-bottom: 5px;\n\
-}\n\
-";
-    };
-    InventoryMenu.Init = function (position) {
-        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowInventory === false))) {
-            $("#inventoryIcon").hide();
-            return position;
-        }
-        $("#inventoryIcon").css("top", position + "px");
-        if (game)
-            $("#inventoryIcon .gamePanelContentNoHeader").html("<img src='art/tileset2/inventory_icon.png'>");
-        else
-            $("#inventoryIcon .gamePanelContentNoHeader").html("<img src='/art/tileset2/inventory_icon.png'>");
-        return position + 64 + world.art.panelStyle.topBorder;
-    };
-    InventoryMenu.Toggle = function () {
-        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowInventory === false)))
-            return;
-        $("#profileIcon").removeClass("openPanelIcon");
-        profileMenu.profileDisplayed = false;
-        $("#messageIcon").removeClass("openPanelIcon");
-        messageMenu.messageDisplayed = false;
-        $("#journalIcon").removeClass("openPanelIcon");
-        journalMenu.journalDisplayed = false;
-        if (inventoryMenu.inventoryDisplayed) {
-            $("#gameMenuPanel").hide();
-            $("#inventoryIcon").removeClass("openPanelIcon");
-            inventoryMenu.inventoryDisplayed = false;
-        }
-        else {
-            inventoryMenu.inventoryDisplayed = true;
-            $("#gameMenuPanel").show();
-            $("#inventoryIcon").addClass("openPanelIcon");
-            InventoryMenu.Update();
-        }
-    };
-    InventoryMenu.Update = function () {
-        if (!inventoryMenu.inventoryDisplayed)
-            return;
-        var html = "";
-        var wearSomething = false;
-        for (var slot in world.Player.EquipedObjects) {
-            wearSomething = true;
-            break;
-        }
-        html += "<div id='inventoryObjectList'>";
-        if (wearSomething) {
-            html += "<h1>Wearing</h1>";
-            html += "<table class='inventoryList'>";
-            for (var slot in world.Player.EquipedObjects) {
-                html += "<tr>";
-                var wearedItem = world.Player.EquipedObjects[slot];
-                var details = world.GetInventoryObject(wearedItem.Name);
-                if (!details)
-                    continue;
-                if (details.CanUnwear())
-                    html += "<td><div class='gameButton' onclick='InventoryMenu.Unwear(\"" + slot.htmlEntities() + "\");'>Unwear</div></td>";
-                else
-                    html += "<td>&nbsp;</td>";
-                html += "<td>" + (details.Image ? "<img src='" + details.Image.htmlEntities() + "' width='32' height='32'>" : "") + "</td>";
-                html += "<td>" + world.Player.EquipedObjects[slot].Name.htmlEntities() + "</td>";
-                html += "<td>" + slot.title().htmlEntities() + "</td>";
-                html += "</tr>";
-            }
-            html += "</table>";
-        }
-        html += "<h1>Inventory</h1>";
-        if (!world.Player.Inventory || !world.Player.Inventory.length) {
-            $("#gameMenuPanelContent").html(html);
-            return;
-        }
-        world.Player.Inventory.sort(function (a, b) {
-            if (a.Name > b.Name)
-                return 1;
-            if (a.Name < b.Name)
-                return -1;
-            return 0;
-        });
-        world.Player.StoredCompare = world.Player.JSON();
-        html += "<table class='inventoryList'>";
-        html += "<thead>";
-        html += "<tr><td>&nbsp;</td><td>&nbsp;</td><td>Item</td><td>Quantity</td></tr>";
-        html += "</thead>";
-        html += "<tbody>";
-        for (var i = 0; i < world.Player.Inventory.length; i++) {
-            var details = world.Player.Inventory[i].GetDetails();
-            if (details == null) {
-                world.Player.Inventory.splice(i, 1);
-                i--;
-                world.Player.StoredCompare = world.Player.JSON();
-                continue;
-            }
-            html += "<tr onmouseover='InventoryMenu.ShowDetails(" + i + ");' onmouseout='InventoryMenu.HideDetails();'>";
-            html += "<td>";
-            if (details.CanWear())
-                html += "<div class='gameButton' onclick='InventoryMenu.Wear(" + i + ");'>Equip</div>";
-            if (details.ActionLabel() && details.CanUse())
-                html += "<div class='gameButton' onclick='InventoryMenu.Use(" + i + ");'>" + details.ActionLabel().htmlEntities() + "</div>";
-            if (details.CanDrop())
-                html += "<div class='gameButton' onclick='InventoryMenu.Drop(" + i + ");'>Drop</div>";
-            if (details.CanWear() || (details.ActionLabel() && details.CanUse()))
-                html += "<div class='gameButton' onclick='InventoryMenu.Quickslot(" + i + ");'>Quickslot</div>";
-            html += "</td>";
-            html += "<td>" + (details.Image ? "<img src='" + details.Image.htmlEntities() + "' width='32' height='32'>" : "") + "</td>";
-            html += "<td><div>" + world.Player.Inventory[i].Name.htmlEntities() + "</div></td>";
-            html += "<td>" + ("" + world.Player.Inventory[i].Count).htmlEntities() + "</td>";
-            html += "</tr>";
-        }
-        html += "</tbody></table></div>";
-        html += "<div id='inventoryObjectDetails'></div>";
-        $("#gameMenuPanelContent").html(html);
-    };
-    InventoryMenu.ShowDetails = function (rowId) {
-        var details = world.Player.Inventory[rowId].GetDetails();
-        var html = "";
-        html += (details.Image ? "<img src='" + details.Image.htmlEntities() + "' width='32' height='32' style='vertical-align: middle;'>" : "");
-        html += "<b>" + details.Name.htmlEntities() + ":</b><br>";
-        html += Main.TextTransform(details.Description, true);
-        $("#inventoryObjectDetails").html(html);
-    };
-    InventoryMenu.HideDetails = function () {
-        $("#inventoryObjectDetails").html("");
-    };
-    InventoryMenu.Wear = function (rowId) {
-        var details = world.Player.Inventory[rowId].GetDetails();
-        if (details.CanWear())
-            world.Player.Wear(world.Player.Inventory[rowId].Name);
-    };
-    InventoryMenu.Unwear = function (slotName) {
-        var wearedItem = world.Player.EquipedObjects[slotName];
-        var details = world.GetInventoryObject(wearedItem.Name);
-        if (details.CanUnwear())
-            world.Player.Unwear(slotName);
-    };
-    InventoryMenu.Drop = function (rowId) {
-        var details = world.Player.Inventory[rowId].GetDetails();
-        if (details.CanDrop())
-            world.Player.RemoveItem(world.Player.Inventory[rowId].Name);
-    };
-    InventoryMenu.Use = function (rowId) {
-        var details = world.Player.Inventory[rowId].GetDetails();
-        if (details.CanUse())
-            details.Use();
-    };
-    InventoryMenu.Quickslot = function (rowId) {
-        profileMenu.profileDisplayed = false;
-        var html = "<h1>Quickslot</h1>";
-        for (var i = 0; i < 10; i++) {
-            var q = world.Player.QuickSlot[i];
-            var skill = null;
-            if (!q)
-                q = "-- Empty --";
-            else if (q.substring(0, 2) == "S/") {
-                var skill = world.GetSkill(q.substring(2));
-                q = "Skill " + q.substring(2).title().htmlEntities();
-            }
-            else
-                q = "Item " + q.substring(2).title().htmlEntities();
-            if (skill && skill.CodeVariable("QuickslotEditable") === "false") {
-                html += "Slot " + (i + 1) + " " + q + "<br>";
-            }
-            else
-                html += "<div class='gameButton' onclick='InventoryMenu.SetQuickslot(" + rowId + "," + i + ");'>Slot " + (i + 1) + "</div>" + q + "<br>";
-        }
-        html += "<center><div class='gameButton' onclick='InventoryMenu.Update();'>Cancel</div></center>";
-        $("#gameMenuPanelContent").html(html);
-    };
-    InventoryMenu.SetQuickslot = function (rowId, slotId) {
-        var details = world.Player.Inventory[rowId].GetDetails();
-        var itemName = details.Name;
-        for (var i = 0; i < 10; i++)
-            if (world.Player.QuickSlot[i] == "I/" + itemName)
-                world.Player.QuickSlot[i] = null;
-        world.Player.QuickSlot[slotId] = "I/" + itemName;
-        world.Player.StoredCompare = world.Player.JSON();
-        world.Player.Save();
-        InventoryMenu.Update();
-    };
-    return InventoryMenu;
-}());
-var journalMenu = new ((function () {
-    function class_14() {
-        this.journalDisplayed = false;
-    }
-    return class_14;
-}()));
-var JournalMenu = (function () {
-    function JournalMenu() {
-    }
-    JournalMenu.AdditionalCSS = function () {
-        return "#journalIcon\n\
-{\n\
-    position: absolute;\n\
-    left: -" + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
-    top: 245px;\n\
-}\n\
-#journalIcon .gamePanelContentNoHeader\n\
-{\n\
-    width: 74px;\n\
-}\n\
-";
-    };
-    JournalMenu.Init = function (position) {
-        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowJournal === false))) {
-            $("#journalIcon").hide();
-            return position;
-        }
-        $("#journalIcon").css("top", position + "px");
-        if (game)
-            $("#journalIcon .gamePanelContentNoHeader").html("<img src='art/tileset2/journal_icon.png'>");
-        else
-            $("#journalIcon .gamePanelContentNoHeader").html("<img src='/art/tileset2/journal_icon.png'>");
-        return position + 64 + world.art.panelStyle.topBorder;
-    };
-    JournalMenu.Toggle = function () {
-        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowJournal === false)))
-            return;
-        inventoryMenu.inventoryDisplayed = false;
-        $("#inventoryIcon").removeClass("openPanelIcon");
-        messageMenu.messageDisplayed = false;
-        $("#messageIcon").removeClass("openPanelIcon");
-        profileMenu.profileDisplayed = false;
-        $("#profileIcon").removeClass("openPanelIcon");
-        if (journalMenu.journalDisplayed) {
-            $("#gameMenuPanel").hide();
-            $("#journalIcon").removeClass("openPanelIcon");
-            journalMenu.journalDisplayed = false;
-        }
-        else {
-            journalMenu.journalDisplayed = true;
-            $("#gameMenuPanel").show();
-            $("#journalIcon").addClass("openPanelIcon");
-            JournalMenu.Update();
-        }
-    };
-    JournalMenu.Update = function () {
-        if (!journalMenu.journalDisplayed)
-            return;
-        world.Player.Quests.sort(JournalMenu.SortQuests);
-        world.Player.StoredCompare = world.Player.JSON();
-        world.Player.Save();
-        var html = "<h1>Quest Journal</h1>";
-        if (world.Player.Quests.length > 0) {
-            var showCompleted = false;
-            if (!world.Player.Quests[0].Completed)
-                html += "<h2>Open quests</h2>";
-            for (var i = 0; i < world.Player.Quests.length; i++) {
-                var quest = world.GetQuest(world.Player.Quests[i].Name);
-                if (!quest)
-                    continue;
-                if (!showCompleted && world.Player.Quests[i].Completed) {
-                    showCompleted = true;
-                    html += "<h2>Completed quests</h2>";
-                }
-                html += "<b>" + quest.Name.htmlEntities() + "</b><br>";
-                html += Main.TextTransform(quest.Description, true) + "<br>";
-                for (var j = 0; j < world.Player.Quests[i].JournalEntries.length; j++) {
-                    var entry = JournalMenu.GetJournal(quest, world.Player.Quests[i].JournalEntries[j].EntryId);
-                    if (!entry)
-                        continue;
-                    html += Main.TextTransform(entry) + "<br>";
-                }
-            }
-        }
-        $("#gameMenuPanelContent").html(html);
-    };
-    JournalMenu.GetJournal = function (quest, id) {
-        for (var i = 0; i < quest.JournalEntries.length; i++)
-            if (quest.JournalEntries[i].Id == id)
-                return quest.JournalEntries[i].Entry;
-        return null;
-    };
-    JournalMenu.SortQuests = function (a, b) {
-        if (a.Completed && b.Completed) {
-            if (a.Completed > b.Completed)
-                return -1;
-            if (a.Completed < b.Completed)
-                return 1;
-            return 0;
-        }
-        if (a.Completed && !b.Completed)
-            return 1;
-        if (!a.Completed && b.Completed)
-            return -1;
-        if (a.JournalEntries && a.JournalEntries.length > 0 && b.JournalEntries && b.JournalEntries.length > 0) {
-            if (a.JournalEntries[a.JournalEntries.length - 1] > b.JournalEntries[b.JournalEntries.length - 1])
-                return 1;
-            if (a.JournalEntries[a.JournalEntries.length - 1] < b.JournalEntries[b.JournalEntries.length - 1])
-                return -1;
-            return 0;
-        }
-        if (a.JournalEntries && a.JournalEntries.length > 0 && (!b.JournalEntries || b.JournalEntries.length == 0))
-            return 1;
-        if ((!a.JournalEntries || a.JournalEntries.length == 0) && b.JournalEntries && b.JournalEntries.length > 0)
-            return -1;
-        if (a.Started > b.Started)
-            return 1;
-        if (a.Started < b.Started)
-            return -1;
-        return 0;
-    };
-    return JournalMenu;
-}());
-/// <reference path="../../Common/Libs/MiniQuery.ts"/>
-var Routing = (function () {
-    function Routing(action, callback) {
-        this.Action = action;
-        this.Callback = callback;
-    }
-    return Routing;
-}());
-var GuiPart = (function () {
-    function GuiPart(position, callback) {
-        this.Position = position;
-        this.Callback = callback;
-    }
-    return GuiPart;
-}());
-String.prototype.endsWith = function (toCheck) {
-    return (this.substr(this.length - toCheck.length) == toCheck);
-};
-String.prototype.title = function () {
-    return this.replace(/(\w)([A-Z][a-z])/g, "$1 $2");
-};
-String.prototype.padLeft = function (c, nb) {
-    if (this.length >= nb)
-        return this;
-    return Array(nb - this.length + 1).join(c) + this;
-};
-String.prototype.htmlEntities = function (escapeQuotes) {
-    if (escapeQuotes === void 0) { escapeQuotes = true; }
-    if (!escapeQuotes)
-        return this.replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;");
-    return this.replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;").replace(/'/g, "&#39;").replace(/"/g, "&quot;");
-};
-String.prototype.capitalize = function () {
-    return this.charAt(0).toUpperCase() + this.substr(1);
-};
-/**
-* Transorms the string into a CSS valid ID
-*/
-String.prototype.id = function () {
-    return this.replace(/ /g, "_").replace(/\//g, "_").replace(/#/g, "_").replace(/\./g, "_").replace(/</g, "_")
-        .replace(/:/g, "_").replace(/\+/g, "_").replace(/\*/g, "_").replace(/\-/g, "_").replace(/\\/g, "_")
-        .replace(/\(/g, "_").replace(/\)/g, "_").replace(/\&/g, "_").replace(/,/g, "_").replace(/\=/g, "_").replace(/\'/g, "_");
-};
-Array.prototype.contains = function (toFind) {
-    for (var i = 0; i < this.length; i++)
-        if (this[i] == toFind)
-            return true;
-    return false;
-};
-function FirstItem(dictionary) {
-    for (var item in dictionary)
-        return item;
-    return null;
-}
-function Keys(dictionary) {
-    var keys = [];
-    for (var item in dictionary)
-        keys.push(item);
-    return keys;
-}
-function isString(variable) {
-    return (typeof variable == 'string' || variable instanceof String);
-}
-function IsNull(value) {
-    return (value === null || value === undefined);
-}
-function IfIsNull(value, defaultValue) {
-    return ((value === null || value === undefined) ? defaultValue : value);
-}
-/**
- * Don't use static properties as it may trigger Typescript bugs. Therefore an instance of an anonymous class
- * containting the needed values is the current solution.
- * Sadly with this solution we loose the visibility of the properties.
- *
- * https://github.com/Microsoft/TypeScript/issues/5549
- *
- */
-var framework = new ((function () {
-    function class_15() {
-        this.DefaultModule = "Play";
-        this.Routing = [];
-        this.HandleUrl = true;
-        this.LastRoute = null;
-        this.CurrentHandler = null;
-        this.Preferences = {};
-        this.eventRouteCall = null;
-        this.cachedTemplates = [];
-        this.CurrentUrl = {};
-        this.GuiParts = [];
-        this.Months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        this.WeekDays = ["M", "T", "W", "T", "F", "S", "S"];
-        this.MonthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-        this.keyPressed = [];
-        this.specialKeyHandling = [];
-        this.isPrompt = false;
-        this.RoutePrefix = "/Engine/Module/";
-    }
-    return class_15;
-}()));
-/**
- * Base framework class
- *
- * Page sections must implement:
- * static Recover(url)
- * The function will receive an "url" object (dictionary) containing all the URL parameters.
- *
- * Any class can implement the following function which will be called during the framework initialization:
- * static InitFunction(): void
- * The framework will need a corresponding Templates/XXX.html or
- * an <script id="XXX" type="text/html"> tag in the index.html where XXX is the name of the typescript class.
- *
- */
-var Framework = (function () {
-    function Framework() {
-    }
-    /**
-     * Calculates an MD5 of a given string
-     */
-    Framework.MD5 = function (source) {
-        return window["md5"](source);
-    };
-    /**
-     * Parse the URL and returns an object (dictionary) of the parsed URL.
-     * @param url the string of the url (the # part of the url is the important piece).
-     */
-    Framework.ParseUrl = function (url) {
-        if (url === void 0) { url = null; }
-        if (!url) {
-            url = ("" + document.location);
-            if (url.indexOf("#") == -1)
-                url = "";
-            else
-                url = url.substr(url.indexOf("#") + 1);
-        }
-        else
-            url = url.substr(url.indexOf("#") + 1);
-        var parts = url.split("&");
-        var result = {};
-        parts.forEach(function (row) { return result[row.split("=")[0]] = decodeURIComponent(row.split("=")[1]); });
-        return result;
-    };
-    Framework.ParseQuery = function (url) {
-        if (url === void 0) { url = null; }
-        if (!url) {
-            url = ("" + document.location);
-            if (url.indexOf("?") == -1)
-                url = "";
-            else
-                url = url.substr(url.indexOf("?") + 1);
-        }
-        else
-            url = url.substr(url.indexOf("?") + 1);
-        if (url.indexOf('#') != -1)
-            url = url.substr(0, url.indexOf('#'));
-        var parts = url.split("&");
-        var result = {};
-        parts.forEach(function (row) { return result[row.split("=")[0]] = decodeURIComponent(row.split("=")[1]); });
-        return result;
-    };
-    /**
-    * Re-execute the routing
-    */
-    Framework.Recall = function () {
-        Framework.ExecuteRoute();
-    };
-    /**
-     * Internal function used to re-route the URL to the right class and passing the parsed URL to the callback.
-     */
-    Framework.ExecuteRoute = function (reload) {
-        if (reload === void 0) { reload = false; }
-        if (!framework.HandleUrl)
-            return;
-        var url = Framework.ParseUrl();
-        if (!url["action"])
-            url["action"] = framework.DefaultModule;
-        framework.CurrentUrl = url;
-        var found = false;
-        for (var i = 0; i < framework.Routing.length; i++) {
-            if (framework.Routing[i].Action == url["action"]) {
-                found = true;
-                break;
-            }
-        }
-        if (!found)
-            url["action"] = framework.DefaultModule;
-        Framework.RoutePage(url["action"], reload);
-    };
-    Framework.Rerun = function () {
-        Framework.ExecuteRoute(true);
-    };
-    Framework.RoutePage = function (page, reload) {
-        if (reload === void 0) { reload = false; }
-        for (var i = 0; i < framework.Routing.length; i++) {
-            if (framework.Routing[i].Action == page) {
-                var isReady = true;
-                if (framework.LastRoute != page || reload === true) {
-                    if (framework.LastRoute != null) {
-                        try {
-                            window[framework.LastRoute].Dispose();
-                        }
-                        catch (ex) {
-                            //alert(ex);
-                        }
-                    }
-                    if ($("#" + framework.Routing[i].Action).length) {
-                        $("#contentArea").html($("#" + framework.Routing[i].Action).html());
-                        framework.LastRoute = page;
-                    }
-                    else if (framework.cachedTemplates[framework.Routing[i].Action]) {
-                        $("#contentArea").html(framework.cachedTemplates[framework.Routing[i].Action]);
-                        framework.LastRoute = page;
-                    }
-                    else {
-                        isReady = false;
-                        $.ajax({
-                            type: "GET",
-                            url: framework.RoutePrefix + framework.Routing[i].Action + "/Template.html",
-                            success: function (msg) {
-                                if (msg.toLocaleLowerCase().indexOf("<body>")) {
-                                    var m = msg.match(/\<body\>((.|\n|\r)*)\<\/body\>/i);
-                                    if (m && m[1])
-                                        msg = m[1];
-                                }
-                                framework.cachedTemplates[framework.Routing[i].Action] = msg;
-                                $("#contentArea").html(msg);
-                                framework.LastRoute = page;
-                                framework.CurrentHandler = page;
-                                framework.Routing[i].Callback(framework.CurrentUrl);
-                                document.dispatchEvent(framework.eventRouteCall);
-                            }
-                        });
-                    }
-                }
-                if (isReady) {
-                    framework.CurrentHandler = page;
-                    framework.Routing[i].Callback(framework.CurrentUrl);
-                    document.dispatchEvent(framework.eventRouteCall);
-                }
-                return;
-            }
-        }
-    };
-    /**
-     * Changes the title of the page
-     * @param title component added to the page title
-     */
-    Framework.SetTitle = function (title) {
-        if (!title || title == "")
-            document.title = "Dot World Maker";
-        else
-            document.title = "Dot World Maker - " + title;
-    };
-    Framework.MakeUrl = function (newData) {
-        var s = "";
-        var props = [];
-        for (var i in newData)
-            props.push(i);
-        props.sort();
-        for (var j = 0; j < props.length; j++) {
-            if (!newData[props[j]] || newData[props[j]] == "")
-                continue;
-            if (s != "")
-                s += "&";
-            s += props[j] + "=" + encodeURIComponent(newData[props[j]]);
-        }
-        return s;
-    };
-    /**
-     * Change the URL
-     * @param newData should be a dictionary which will build hash part of the URL
-     * @skipHandler will avoid to call the routing (by default it's true)
-     */
-    Framework.SetLocation = function (newData, skipHandler, replace) {
-        if (skipHandler === void 0) { skipHandler = true; }
-        if (replace === void 0) { replace = false; }
-        // We need to compose it ourself
-        if (isString(newData))
-            newData = JSON.parse(newData);
-        if (!newData['action'])
-            newData['action'] = framework.CurrentHandler;
-        framework.CurrentUrl = newData;
-        newData = Framework.MakeUrl(newData);
-        var oldUrl = "" + document.location;
-        var url = ("" + document.location);
-        if (url.indexOf("#") != -1)
-            url = url.substr(0, url.indexOf("#"));
-        if (skipHandler)
-            framework.HandleUrl = false;
-        url += "#" + newData;
-        if (replace)
-            document.location.replace(url);
-        else
-            document.location.assign(url);
-        if (skipHandler) {
-            setTimeout(function () {
-                framework.HandleUrl = true;
-            }, 100);
-        }
-        else if (oldUrl == url)
-            Framework.ExecuteRoute();
-    };
-    /**
-     * Set a callback in case the routing change
-     */
-    Framework.OnRouteCall = function (callback) {
-        document.addEventListener("RouteCall", callback, false);
-    };
-    /**
-     * Save the preference object to local storage
-     */
-    Framework.SavePreferences = function () {
-        localStorage.setItem("preferences", JSON.stringify(framework.Preferences));
-    };
-    /**
-     * Store the routings
-     */
-    Framework.AutoLinkRoutes = function () {
-        for (var i in window) {
-            try {
-                if (i.substr(0, 3) != "web" && window[i] && window[i].Recover) {
-                    if (!(window[i].IsAccessible && window[i].IsAccessible() == false))
-                        framework.Routing.push(new Routing(i, window[i].Recover));
-                }
-            }
-            catch (ex) {
-            }
-        }
-    };
-    /**
-     * Store the gui parts
-     */
-    Framework.AutoLinkGuiParts = function () {
-        for (var i in window) {
-            try {
-                if (i.substr(0, 3) != "web" && window[i] && window[i].GuiPart) {
-                    var p = window[i].GuiPart();
-                    if (p)
-                        framework.GuiParts.push(p);
-                }
-            }
-            catch (ex) {
-            }
-        }
-        framework.GuiParts.sort(function (a, b) { return a.Position - b.Position; });
-    };
-    Framework.FixObjectDates = function (source) {
-        var dest = JSON.parse(JSON.stringify(source));
-        for (var i in dest) {
-            if (source[i] instanceof Date)
-                dest[i] = Framework.FullDateFormat(source[i]);
-        }
-        return dest;
-    };
-    Framework.NetDate = function (source) {
-        return "/Date(" + source.getTime() + ")/";
-    };
-    Framework.DateFormat = function (source) {
-        if (!source)
-            return "";
-        return source.getFullYear() + "/" + ("" + (source.getMonth() + 1)).padLeft("0", 2) + "/" + ("" + source.getDate()).padLeft("0", 2);
-        //return ("" + source.getDate()).padLeft("0", 2) + "/" + ("" + (source.getMonth() + 1)).padLeft("0", 2) + "/" + source.getFullYear();
-    };
-    Framework.FullDateFormat = function (source) {
-        if (!source)
-            return "";
-        return source.getFullYear() + "/" + ("" + (source.getMonth() + 1)).padLeft("0", 2) + "/" + ("" + source.getDate()).padLeft("0", 2) + " " +
-            ("" + source.getHours()).padLeft("0", 2) + ":" + ("" + source.getMinutes()).padLeft("0", 2) + ":" + ("" + source.getSeconds()).padLeft("0", 2);
-        /*return ("" + source.getDate()).padLeft("0", 2) + "/" + ("" + (source.getMonth() + 1)).padLeft("0", 2) + "/" + source.getFullYear() + " " +
-            ("" + source.getHours()).padLeft("0", 2) + ":" + ("" + source.getMinutes()).padLeft("0", 2) + ":" + ("" + source.getSeconds()).padLeft("0", 2);*/
-    };
-    Framework.ParseDate = function (source) {
-        if (!source || source == "")
-            return null;
-        if (source.charAt(source.length - 1) == "Z")
-            return new Date(source);
-        source = source.replace(/\./g, "/").replace(/\-/g, "/");
-        if (source.charAt(2) == "/") {
-            return new Date(parseInt(source.substr(6, 4)), parseInt(source.substr(3, 2)) - 1, parseInt(source.substr(0, 2)));
-        }
-        else if (source.charAt(4) == "/") {
-            return new Date(parseInt(source.substr(0, 4)), parseInt(source.substr(5, 2)) - 1, parseInt(source.substr(8, 2)));
-        }
-        return new Date(parseInt(source));
-    };
-    /**
-     * Calls all the InitFunction
-     */
-    Framework.CallInits = function () {
-        for (var i in window) {
-            try {
-                if (i.substr(0, 3) != "web" && window[i] && window[i].InitFunction) {
-                    window[i].InitFunction();
-                }
-            }
-            catch (ex) {
-            }
-        }
-    };
-    Framework.HandleError = function (returnedError) {
-        if (returnedError.status == 0)
-            return "";
-        try {
-            var err = JSON.parse(returnedError.responseText);
-            if (err.ExceptionType == "IV4.Backend.IvException") {
-                var msg = err.Message;
-                return msg.substr(msg.indexOf(":") + 1);
-            }
-            else {
-                /*Framework.RoutePage("ErrorHandling");
-                ErrorHandling.SetError(err.Message + "\n" + err.ExceptionType + "\n" + err.StackTrace);*/
-                return "";
-            }
-        }
-        catch (ex) {
-            /*Framework.RoutePage("ErrorHandling");
-            ErrorHandling.SetError(returnedError.responseText);*/
-            return "";
-        }
-    };
-    Framework.IsKeyPressed = function (code) {
-        if (framework.keyPressed[code] === true)
-            return true;
-        return false;
-    };
-    Framework.RegisterKey = function (keyCode, callback) {
-        framework.specialKeyHandling[keyCode] = callback;
-    };
-    Framework.keyDown = function (e) {
-        e = e ? e : event;
-        framework.keyPressed[e.keyCode] = true;
-        //console.log(e.keyCode);
-        if (framework.specialKeyHandling[e.keyCode]) {
-            if (framework.specialKeyHandling[e.keyCode](e.keyCode) === true) {
-                // Firefox
-                try {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    return false;
-                }
-                catch (er) {
-                }
-                // IE
-                try {
-                    e.cancelBubble = true;
-                    e.returnValue = false;
-                }
-                catch (er) {
-                }
-                return false;
-            }
-        }
-        else
-            return true;
-    };
-    Framework.keyUp = function (e) {
-        e = e ? e : event;
-        framework.keyPressed[e.keyCode] = false;
-        if (framework.specialKeyHandling[e.keyCode]) {
-            // Firefox
-            try {
-                e.preventDefault();
-                e.stopPropagation();
-                return false;
-            }
-            catch (er) {
-            }
-            // IE
-            try {
-                e.cancelBubble = true;
-                e.returnValue = false;
-            }
-            catch (er) {
-            }
-            return false;
-        }
-        else
-            return true;
-    };
-    Framework.Confirm = function (displayQuestion, yesCallback, noCallback) {
-        if (noCallback === void 0) { noCallback = null; }
-        framework.isPrompt = false;
-        $("#backgroundConfirm").show();
-        $("#confirmDialog").show();
-        $("#confirmOk").hide();
-        $("#confirmYes").show().html("Yes");
-        $("#confirmNo").show().html("No");
-        $("#confirmLabel").html(displayQuestion);
-        //$("#confirmDialog").css("top", "0px");
-        $("#confirmDialog").animate({
-            top: ($(window).height() / 2 - 50) + "px"
-        }, 200);
-        framework.yesCallback = yesCallback;
-        framework.noCallback = noCallback;
-    };
-    Framework.Prompt = function (displayQuestion, defaultValue, yesCallback, noCallback, confirmLabel, cancelLabel) {
-        if (noCallback === void 0) { noCallback = null; }
-        if (confirmLabel === void 0) { confirmLabel = "Confirm"; }
-        if (cancelLabel === void 0) { cancelLabel = "Cancel"; }
-        framework.isPrompt = true;
-        $("#backgroundConfirm").show();
-        $("#confirmDialog").show();
-        $("#confirmOk").hide();
-        $("#confirmYes").show().html(confirmLabel);
-        $("#confirmNo").show().html(cancelLabel);
-        $("#confirmLabel").html(displayQuestion + "<br><input type='text' id='promptField' value='" + (defaultValue ? defaultValue.htmlEntities() : "") + "'>");
-        //$("#confirmDialog").css("top", "0px");
-        $("#confirmDialog").animate({
-            top: ($(window).height() / 2 - 50) + "px"
-        }, 200, function () {
-            $("#promptField").focus();
-        });
-        $("#promptField").focus();
-        framework.yesCallback = yesCallback;
-        framework.noCallback = noCallback;
-    };
-    Framework.Alert = function (displayLabel, okCallback) {
-        if (okCallback === void 0) { okCallback = null; }
-        framework.isPrompt = false;
-        $("#backgroundConfirm").show();
-        $("#confirmDialog").show();
-        $("#confirmOk").show();
-        $("#confirmYes").hide();
-        $("#confirmNo").hide();
-        $("#confirmLabel").html(displayLabel);
-        $("#backgroundConfirm").bind("click", Framework.ConfirmOk);
-        //$("#confirmDialog").css("top", "0px");
-        try {
-            $("#confirmDialog").animate({
-                top: ($(window).height() / 2 - 50) + "px"
-            }, 200);
-        }
-        catch (ex) {
-        }
-        framework.yesCallback = okCallback;
-    };
-    Framework.ShowMessage = function (displayText) {
-        if (framework.MessageTimeout)
-            clearTimeout(framework.MessageTimeout);
-        $("#displayMessage").show().first().className = "displayMessageVisible";
-        $("#displayMessageContent").html(displayText);
-        framework.MessageTimeout = setTimeout(function () {
-            $("#displayMessage").first().className = "displayMessageHidden";
-            framework.MessageTimeout = setTimeout(function () {
-                $("#displayMessage").hide();
-                framework.MessageTimeout = null;
-            }, 500);
-        }, 5000);
-    };
-    Framework.ConfirmOk = function () {
-        $("#backgroundConfirm").unbind("click", Framework.ConfirmOk);
-        $("#backgroundConfirm").hide();
-        $("#confirmDialog").hide();
-        if (framework.yesCallback)
-            framework.yesCallback();
-    };
-    Framework.ConfirmYes = function () {
-        $("#backgroundConfirm").hide();
-        $("#confirmDialog").hide();
-        if (framework.isPrompt && framework.yesCallback)
-            framework.yesCallback($("#promptField").val());
-        else if (framework.yesCallback)
-            framework.yesCallback();
-    };
-    Framework.ConfirmNo = function () {
-        $("#backgroundConfirm").hide();
-        $("#confirmDialog").hide();
-        if (framework.noCallback)
-            framework.noCallback();
-    };
-    Framework.ReloadPreferences = function () {
-        framework.Preferences = {};
-        if (localStorage.getItem("preferences") != null && localStorage.getItem("preferences") != undefined)
-            framework.Preferences = JSON.parse(localStorage.getItem("preferences"));
-    };
-    Framework.SetRoutePrefix = function (prefix) {
-        framework.RoutePrefix = prefix;
-    };
-    /**
-     * Initialization of the framework.
-     */
-    Framework.Init = function (withExecuteRoute) {
-        if (withExecuteRoute === void 0) { withExecuteRoute = true; }
-        $(document).bind("keydown", Framework.keyDown);
-        $(document).bind("keyup", Framework.keyUp);
-        // Used to place the debugger at the start
-        //alert("init");
-        if (localStorage.getItem("preferences") != null && localStorage.getItem("preferences") != undefined)
-            framework.Preferences = JSON.parse(localStorage.getItem("preferences"));
-        framework.eventRouteCall = document.createEvent("Event");
-        framework.eventRouteCall.initEvent("RouteCall", true, true);
-        Framework.CallInits();
-        Framework.AutoLinkRoutes();
-        Framework.AutoLinkGuiParts();
-        if (withExecuteRoute)
-            Framework.ExecuteRoute();
-        window.addEventListener("hashchange", function () {
-            Framework.ExecuteRoute();
-        });
-    };
-    return Framework;
-}());
-/// <reference path="../../../Common/Libs/Framework.ts" />
-var listSelector = new ((function () {
-    function class_16() {
-        this.CurrentSelectors = {};
-    }
-    return class_16;
-}()));
-var ListSelector = (function () {
-    /**
-     * Creates a selection list (sorted) with search box.
-     * @param HTML element id to put the list on (should be a div)
-     * @param data source (an array or an object)
-     * @param displayColumn (optional) the field name to display, valid only for an array source
-     */
-    function ListSelector(element, data, displayColumn) {
-        this.Sort = true;
-        listSelector[element] = this;
-        this.element = element;
-        this.data = data;
-        this.displayColumn = displayColumn;
-        if (displayColumn) {
-            this.sortedDirect = [];
-            for (var i = 0; i < data.length; i++)
-                this.sortedDirect.push(i);
-            this.sortedDirect.sort(function (a, b) {
-                if (data[a][displayColumn] > data[b][displayColumn])
-                    return 1;
-                if (data[a][displayColumn] < data[b][displayColumn])
-                    return -1;
-                return 0;
-            });
-        }
-        $("#" + this.element).addClass("listSelector");
-        this.Render();
-    }
-    ListSelector.prototype.Dispose = function () {
-        $("#" + this.element).html("");
-        delete listSelector[this.element];
-    };
-    ListSelector.prototype.Rebind = function () {
-        var _this = this;
-        $("#list_selector_" + this.element).bind("keyup", function () {
-            $("#display_list_selector_" + _this.element).html(_this.RenderList());
-        });
-    };
-    ListSelector.prototype.Render = function () {
-        var _this = this;
-        var html = "";
-        html += "<input type='text' id='list_selector_" + this.element + "' placeholder='Search...'>";
-        html += "<div id='display_list_selector_" + this.element + "'>";
-        html += this.RenderList();
-        html += "</div>";
-        $("#" + this.element).html(html);
-        $("#list_selector_" + this.element).bind("keyup", function () {
-            $("#display_list_selector_" + _this.element).html(_this.RenderList());
-        });
-    };
-    ListSelector.prototype.UpdateList = function (newData) {
-        if (newData)
-            this.data = newData;
-        else
-            newData = this.data;
-        if (this.displayColumn) {
-            this.sortedDirect = [];
-            for (var i = 0; i < this.data.length; i++)
-                this.sortedDirect.push(i);
-            var displayColumn = this.displayColumn;
-            this.sortedDirect.sort(function (a, b) {
-                if (newData[a][displayColumn] > newData[b][displayColumn])
-                    return 1;
-                if (newData[a][displayColumn] < newData[b][displayColumn])
-                    return -1;
-                return 0;
-            });
-        }
-        $("#display_list_selector_" + this.element).html(this.RenderList());
-    };
-    ListSelector.prototype.RenderList = function () {
-        var html = "";
-        html += "<table>";
-        var searchTxt = $("#list_selector_" + this.element).val();
-        var search = (searchTxt ? searchTxt : "").trim().toLowerCase();
-        if (this.displayColumn) {
-            for (var i = 0; i < this.data.length; i++) {
-                var val = "" + this.data[this.sortedDirect[i]][this.displayColumn];
-                if (search && search != "" && (!val || val.toLowerCase().indexOf(search) == -1))
-                    continue;
-                html += "<tr id='display_list_selector_" + this.element + "_" + this.sortedDirect[i] + "' onclick='ListSelector.Find(\"" + this.element + "\").Select(" + this.sortedDirect[i] + ");'" + (this.selectedRow == this.sortedDirect[i] ? " class='listSelectorSelectedRow'" : "") + "><td>" + val + "</td></tr>";
-            }
-        }
-        else {
-            var names = [];
-            for (var item in this.data)
-                names.push(item);
-            if (this.Sort)
-                names.sort();
-            for (var i = 0; i < names.length; i++) {
-                var val = names[i];
-                if (search && search != "" && (!val || val.toLowerCase().indexOf(search) == -1))
-                    continue;
-                html += "<tr id='display_list_selector_" + this.element + "_" + val.id() + "' onclick='ListSelector.Find(\"" + this.element + "\").Select(\"" + val + "\");'" + (this.selectedRow == val ? " class='listSelectorSelectedRow'" : "") + "><td>" + val + "</td></tr>";
-            }
-        }
-        html += "</table>";
-        return html;
-    };
-    ListSelector.Find = function (name) {
-        return listSelector[name];
-    };
-    ListSelector.prototype.Select = function (row) {
-        this.selectedRow = row;
-        $("#display_list_selector_" + this.element + " tr").removeClass("listSelectorSelectedRow");
-        if (this.displayColumn)
-            $("#display_list_selector_" + this.element + "_" + row).addClass("listSelectorSelectedRow");
-        else if (row !== null)
-            $("#display_list_selector_" + this.element + "_" + row.id()).addClass("listSelectorSelectedRow");
-        if (this.OnSelect)
-            this.OnSelect(row);
-    };
-    return ListSelector;
-}());
-var messageMenu = new ((function () {
-    function class_17() {
-        this.messageDisplayed = false;
-        this.firstInit = true;
-        this.selectedMessage = null;
-        this.nonRead = 0;
-        this.attachments = null;
-    }
-    return class_17;
-}()));
-var MessageMenu = (function () {
-    function MessageMenu() {
-    }
-    MessageMenu.AdditionalCSS = function () {
-        return "#messageIcon\n\
-{\n\
-    position: absolute;\n\
-    left: -" + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
-    top: 330px;\n\
-}\n\
-#messageIcon .gamePanelContentNoHeader\n\
-{\n\
-    width: 74px;\n\
-}\n\
-";
-    };
-    MessageMenu.Init = function (position) {
-        if (!framework.Preferences['token'] || (world && world.ShowMessage === false) || framework.Preferences['token'] == "demo" || game) {
-            $("#messageIcon").hide();
-            return position;
-        }
-        $("#messageIcon").css("top", position + "px");
-        $("#messageIcon .gamePanelContentNoHeader").html("<img src='/art/tileset2/message_icon.png'><div>10</div>");
-        $("#messageIcon div.gamePanelContentNoHeader > div").html("0").hide();
-        if (messageMenu.firstInit && chat.socket) {
-            messageMenu.firstInit = false;
-            chat.socket.on('new_message', function () {
-                for (var i = 0; i < world.Codes.length; i++) {
-                    if (world.Codes[i].Enabled === false)
-                        continue;
-                    if (!world.Codes[i].code && world.Codes[i].Source)
-                        world.Codes[i].code = CodeParser.ParseWithParameters(world.Codes[i].Source, world.Codes[i].Parameters);
-                    if (world.Codes[i].code.HasFunction("OnPrivateMessage"))
-                        world.Codes[i].code.ExecuteFunction("OnPrivateMessage", []);
-                }
-                MessageMenu.CheckCounter();
-                MessageMenu.UpdateReceived();
-            });
-        }
-        MessageMenu.CheckCounter();
-        return position + 64 + world.art.panelStyle.topBorder;
-    };
-    MessageMenu.CheckCounter = function () {
-        $.ajax({
-            type: 'POST',
-            url: '/backend/CheckNewGameMessage',
-            data: {
-                game: world.Id,
-                token: framework.Preferences['token'],
-            },
-            success: function (msg) {
-                var data = TryParse(msg);
-                if (data) {
-                    messageMenu.nonRead = data;
-                    $("#messageIcon div.gamePanelContentNoHeader > div").html(data).show();
-                }
-                else {
-                    $("#messageIcon div.gamePanelContentNoHeader > div").html("0").hide();
-                }
-            },
-            error: function (msg) {
-            }
-        });
-    };
-    MessageMenu.Toggle = function () {
-        if (!framework.Preferences['token'] || (world && world.ShowMessage === false) || framework.Preferences['token'] == "demo")
-            return;
-        $("#inventoryIcon").removeClass("openPanelIcon");
-        inventoryMenu.inventoryDisplayed = false;
-        $("#profileIcon").removeClass("openPanelIcon");
-        profileMenu.profileDisplayed = false;
-        $("#journalIcon").removeClass("openPanelIcon");
-        journalMenu.journalDisplayed = false;
-        if (messageMenu.messageDisplayed) {
-            $("#gameMenuPanel").hide();
-            $("#messageIcon").removeClass("openPanelIcon");
-            messageMenu.messageDisplayed = false;
-        }
-        else {
-            messageMenu.messageDisplayed = true;
-            $("#gameMenuPanel").show();
-            $("#messageIcon").addClass("openPanelIcon");
-            MessageMenu.Update();
-        }
-    };
-    MessageMenu.Update = function () {
-        var html = "";
-        html += "<table class='panelContentTableWithHeader'>";
-        html += "<thead><tr><td>Date</td><td>Sender</td><td>Subject</td></tr></thead>";
-        html += "</table>";
-        html += "<div id='messageList'>";
-        html += "</div>";
-        html += "<div id='messageDetails'></div>";
-        $("#gameMenuPanelContent").html(html);
-        MessageMenu.UpdateReceived();
-        MessageMenu.ShowCompose();
-    };
-    MessageMenu.UpdateReceived = function () {
-        if (!messageMenu.messageDisplayed)
-            return;
-        $.ajax({
-            type: 'POST',
-            url: '/backend/GetGameMessageList',
-            data: {
-                game: world.Id,
-                token: framework.Preferences['token'],
-            },
-            success: function (msg) {
-                var data = TryParse(msg);
-                var html = "";
-                if (data) {
-                    html += "<table>";
-                    for (var i = 0; i < data.length; i++) {
-                        html += "<tr onclick='MessageMenu.Read(" + data[i].id + ");' class='" + (data[i].newMessage ? "newMessage" : "") + (messageMenu.selectedMessage == data[i].id ? " panelContentSelected" : "") + "'>";
-                        html += "<td>" + Main.FormatDateTime(data[i].sentDate) + "</td><td>" + data[i].from + "</td><td>" + data[i].subject + "</td>";
-                        html += "</tr>";
-                    }
-                    html += "</table>";
-                }
-                $("#messageList").html(html);
-            },
-            error: function (msg) {
-            }
-        });
-    };
-    MessageMenu.Read = function (id) {
-        messageMenu.selectedMessage = id;
-        $.ajax({
-            type: 'POST',
-            url: '/backend/GetGameMessage',
-            data: {
-                game: world.Id,
-                token: framework.Preferences['token'],
-                id: id
-            },
-            success: function (msg) {
-                var data = TryParse(msg);
-                var html = "";
-                if (data) {
-                    if (data.isNew === true) {
-                        MessageMenu.CheckCounter();
-                        MessageMenu.UpdateReceived();
-                        if (data.attachments) {
-                            var attachments = TryParse(data.attachments);
-                            if (attachments && attachments.length > 0)
-                                for (var i = 0; i < attachments.length; i++) {
-                                    world.Player.AddItem(attachments[i].name, attachments[i].quantity);
-                                }
-                        }
-                    }
-                    html += "<table>";
-                    html += "<tr><td>From:</td><td>" + ("" + data.from).htmlEntities() + "</td></tr>";
-                    html += "<tr><td>To:</td><td>" + ("" + data.to).htmlEntities() + "</td></tr>";
-                    html += "<tr><td>Date:</td><td>" + Main.FormatDateTime(data.sentDate) + "</td></tr>";
-                    html += "<tr><td>Subject:</td><td>" + ("" + data.subject).htmlEntities() + "</td></tr>";
-                    html += "<tr><td>Message:</td><td>" + Main.TextTransform("" + data.message) + "</td></tr>";
-                    var attachments = TryParse(data.attachments);
-                    if (attachments) {
-                        if (attachments && attachments.length > 0)
-                            html += "<tr><td>Attachments:</td><td>";
-                        for (var i = 0; i < attachments.length; i++) {
-                            html += "" + attachments[i].quantity + "x " + attachments[i].name + "<br>";
-                        }
-                        html += "</td></tr>";
-                    }
-                    html += "</table>";
-                    html += "<center>";
-                    html += "<div class='gameButton' onclick='MessageMenu.ShowCompose()'>New</div>";
-                    html += "<div class='gameButton' onclick='MessageMenu.Reply(" + id + ")'>Reply</div>";
-                    html += "<div class='gameButton' onclick='MessageMenu.Delete(" + id + ")'>Delete</div>";
-                    html + "</center>";
-                }
-                $("#messageDetails").html(html);
-            },
-            error: function (msg) {
-                var data = TryParse(msg);
-                $("#messageDetails").html("Error: " + (data && data.error ? data.error : msg));
-            }
-        });
-    };
-    MessageMenu.Reply = function (id) {
-        $.ajax({
-            type: 'POST',
-            url: '/backend/GetGameMessage',
-            data: {
-                game: world.Id,
-                token: framework.Preferences['token'],
-                id: id
-            },
-            success: function (msg) {
-                var data = TryParse(msg);
-                var html = "";
-                if (data) {
-                    messageMenu.selectedMessage = null;
-                    MessageMenu.CheckCounter();
-                    MessageMenu.UpdateReceived();
-                    html += "<table>";
-                    var dest = data.to.replace(/,/g, ";").replace(/ /g, "").split(';');
-                    for (var i = 0; i < dest.length; i++)
-                        if (dest[i].toLowerCase() == world.Player.Username.toLowerCase())
-                            dest[i] = data.from;
-                    dest = dest.join(", ");
-                    html += "<tr><td>To:</td><td><input type='text' id='message_to' value='" + dest.htmlEntities() + "' onfocus='play.inField=true;' onblur='play.inField=false;'></td></tr>";
-                    html += "<tr><td>Subject:</td><td><input type='text' id='message_subject' value='" + ("Re: " + data.subject.replace(/^re: /i, "")).htmlEntities() + "' onfocus='play.inField=true;' onblur='play.inField=false;'></td></tr>";
-                    html += "<tr><td>Message:</td><td>&nbsp;</td></tr>";
-                    html += "<tr><td colspan='2'><textarea id='message_text' rows='10' onfocus='play.inField=true;' onblur='play.inField=false;'>\n\n\n" + data.message.replace(/<\//gi, "").replace(/^/gm, "> ") + "</textarea></td></tr>";
-                    html += "<tr><td>Attach:</td><td colspan='2'><select onchange='MessageMenu.Attach()' id='new_attach'><option>-- Select an item to attach --</option>";
-                    for (var i = 0; i < world.Player.Inventory.length; i++) {
-                        var canShow = true;
-                        if (messageMenu.attachments)
-                            for (var j = 0; j < messageMenu.attachments.length; j++) {
-                                if (messageMenu.attachments[j].name == world.Player.Inventory[i].Name) {
-                                    canShow = false;
-                                    break;
-                                }
-                            }
-                        if (!canShow)
-                            continue;
-                        html += "<option value='" + encodeURIComponent(world.Player.Inventory[i].Name) + "'>" + world.Player.Inventory[i].Name + " (" + world.Player.Inventory[i].Count + ")</option>";
-                    }
-                    html += "</select></td></tr>";
-                    html += "</table>";
-                    html += "<center>";
-                    html += "<div class='gameButton' onclick='MessageMenu.ShowCompose()'>New</div>";
-                    html += "<div class='gameButton' onclick='MessageMenu.Send()'>Send</div>";
-                    html += "<div class='gameButton' onclick='MessageMenu.Read(" + id + ")'>Cancel</div>";
-                    html + "</center>";
-                    setTimeout(function () {
-                        $("#message_text").focus();
-                    }, 100);
-                }
-                $("#messageDetails").html(html);
-            },
-            error: function (msg) {
-                var data = TryParse(msg);
-                $("#messageDetails").html("Error: " + (data && data.error ? data.error : msg));
-            }
-        });
-    };
-    MessageMenu.Delete = function (id) {
-        $.ajax({
-            type: 'POST',
-            url: '/backend/DeleteGameMessage',
-            data: {
-                game: world.Id,
-                token: framework.Preferences['token'],
-                id: id
-            },
-            success: function (msg) {
-                messageMenu.selectedMessage = null;
-                MessageMenu.CheckCounter();
-                MessageMenu.UpdateReceived();
-                MessageMenu.ShowCompose();
-            },
-            error: function (msg) {
-                var data = TryParse(msg);
-                $("#messageDetails").html("Error: " + (data && data.error ? data.error : msg));
-            }
-        });
-    };
-    MessageMenu.ShowCompose = function () {
-        messageMenu.selectedMessage = null;
-        MessageMenu.UpdateReceived();
-        var html = "<div id='messageResult'></div><table>";
-        html += "<tr><td>To:</td><td colspan='2'><input type='text' id='message_to' onfocus='play.inField=true;' onblur='play.inField=false;'></td></tr>";
-        html += "<tr><td>Subject:</td><td colspan='2'><input type='text' id='message_subject' onfocus='play.inField=true;' onblur='play.inField=false;'></td></tr>";
-        html += "<tr><td>Message:</td><td colspan='2'>&nbsp;</td></tr>";
-        html += "<tr><td colspan='3'><textarea id='message_text' rows='10' onfocus='play.inField=true;' onblur='play.inField=false;'></textarea></td></tr>";
-        if (messageMenu.attachments && messageMenu.attachments.length > 0) {
-            html += "<tr><td>Attachments:</td><td>&nbsp;</td><td>&nbsp;</td></tr>";
-            for (var i = 0; i < messageMenu.attachments.length; i++) {
-                html += "<tr><td>&nbsp;</td><td>";
-                html += "<div class='removeAttachement' onclick='MessageMenu.RemoveAttachment(" + i + ");'>X</div>";
-                html += messageMenu.attachments[i].name + " (" + world.Player.GetInventoryQuantity(messageMenu.attachments[i].name) + ")</td>";
-                html += "<td><input type='text' id='attach_" + i + "' value='" + messageMenu.attachments[i].quantity + "' onfocus='play.inField=true;' onblur='play.inField=false;' onkeyup='MessageMenu.ChangeAttach(" + i + ")'></tr>";
-            }
-            html += "</td></tr>";
-        }
-        html += "<tr><td>Attach:</td><td colspan='2'><select onchange='MessageMenu.Attach()' id='new_attach'><option>-- Select an item to attach --</option>";
-        for (var i = 0; i < world.Player.Inventory.length; i++) {
-            var canShow = true;
-            if (messageMenu.attachments)
-                for (var j = 0; j < messageMenu.attachments.length; j++) {
-                    if (messageMenu.attachments[j].name == world.Player.Inventory[i].Name) {
-                        canShow = false;
-                        break;
-                    }
-                }
-            if (!canShow)
-                continue;
-            html += "<option value='" + encodeURIComponent(world.Player.Inventory[i].Name) + "'>" + world.Player.Inventory[i].Name + " (" + world.Player.Inventory[i].Count + ")</option>";
-        }
-        html += "</select></td></tr>";
-        html += "</table>";
-        html += "<center><div class='gameButton' onclick='MessageMenu.Send()'>Send</div></center>";
-        $("#messageDetails").html(html);
-        setTimeout(function () {
-            $("#message_to").focus();
-        }, 100);
-    };
-    MessageMenu.RemoveAttachment = function (rowId) {
-        var to = $("#message_to").val();
-        var subject = $("#message_subject").val();
-        var message = $("#message_text").val();
-        messageMenu.attachments.splice(rowId, 1);
-        MessageMenu.ShowCompose();
-        $("#message_to").val(to);
-        $("#message_subject").val(subject);
-        $("#message_text").val(message);
-    };
-    MessageMenu.Attach = function () {
-        var to = $("#message_to").val();
-        var subject = $("#message_subject").val();
-        var message = $("#message_text").val();
-        if (!messageMenu.attachments)
-            messageMenu.attachments = [];
-        messageMenu.attachments.push({
-            name: decodeURIComponent($("#new_attach").val()),
-            quantity: 1
-        });
-        MessageMenu.ShowCompose();
-        $("#message_to").val(to);
-        $("#message_subject").val(subject);
-        $("#message_text").val(message);
-    };
-    MessageMenu.ChangeAttach = function (rowId) {
-        $("#attach_" + rowId).css("background-color", "");
-        var val = 0;
-        try {
-            val = parseInt($("#attach_" + rowId).val());
-        }
-        catch (ex) {
-            $("#attach_" + rowId).css('backgroundColor', '#FFE0E0');
-        }
-        if (val <= 0 || world.Player.GetInventoryQuantity(messageMenu.attachments[rowId].name) < val) {
-            $("#attach_" + rowId).css('backgroundColor', '#FFE0E0');
-            val = 0;
-        }
-        messageMenu.attachments[rowId].quantity = val;
-    };
-    MessageMenu.Send = function () {
-        if (messageMenu.attachments) {
-            for (var i = 0; i < messageMenu.attachments.length; i++) {
-                if (world.Player.GetInventoryQuantity(messageMenu.attachments[i].name) < messageMenu.attachments[i].quantity) {
-                    $("#messageResult").html("Error: you don't have " + messageMenu.attachments[i].quantity + " " + messageMenu.attachments[i].name);
-                    return;
-                }
-            }
-        }
-        $.ajax({
-            type: 'POST',
-            url: '/backend/AddGameMessage',
-            data: {
-                game: world.Id,
-                token: framework.Preferences['token'],
-                to: $("#message_to").val(),
-                subject: $("#message_subject").val() && $("#message_subject").val().trim() != "" ? $("#message_subject").val() : "(no subject)",
-                message: $("#message_text").val(),
-                attachments: JSON.stringify(messageMenu.attachments ? messageMenu.attachments : null)
-            },
-            success: function (msg) {
-                if (messageMenu.attachments && messageMenu.attachments.length > 0) {
-                    $("#messageDetails table tr:nth-child(5)").remove();
-                    for (var i = 0; i < messageMenu.attachments.length; i++) {
-                        world.Player.RemoveItem(messageMenu.attachments[i].name, messageMenu.attachments[i].quantity);
-                        $("#messageDetails table tr:nth-child(5)").remove();
-                    }
-                }
-                messageMenu.attachments = null;
-                $("#messageResult").html("Message sent successfully");
-                $("#message_to").val("");
-                $("#message_subject").val("");
-                $("#message_text").val("");
-            },
-            error: function (msg) {
-                var data = TryParse(msg);
-                $("#messageResult").html("Error: " + (data && data.error ? data.error : msg));
-            }
-        });
-    };
-    MessageMenu.SendMessage = function (destination, subject, message) {
-        if (!framework.Preferences['token'] || (world && world.ShowMessage === false) || framework.Preferences['token'] == "demo" || game) {
-            return;
-        }
-        $.ajax({
-            type: 'POST',
-            url: '/backend/AddGameMessage',
-            data: {
-                game: world.Id,
-                token: framework.Preferences['token'],
-                to: destination,
-                subject: subject,
-                message: message
-            },
-            success: function (msg) {
-            },
-            error: function (msg) {
-            }
-        });
-    };
-    return MessageMenu;
-}());
-/// <reference path="../../../Common/Libs/MiniQuery.ts"/>
-/// <reference path="../../../Common/Libs/Framework.ts"/>
-var MenuItem = (function () {
-    function MenuItem(label, link) {
-        this.Label = label;
-        this.Link = link;
-    }
-    return MenuItem;
-}());
-var menubarStatic = new ((function () {
-    function class_18() {
-        this.previousItem = null;
-        this.KnownItems = [];
-        this.hoverHideTimer = null;
-    }
-    return class_18;
-}()));
-var Menubar = (function () {
-    function Menubar() {
-    }
-    Menubar.InitFunction = function () {
-        var menu = document.getElementById("menubar");
-        if (!menu)
-            return;
-        /*var pos = 5;
-        for (var i = 0; i < menu.children.length; i++)
-        {
-            var item: HTMLElement = <HTMLElement>menu.children[i];
-            item.style.left = pos + "px";
-            pos += $(item).width();
-        }*/
-        $("#menubar a").bind("dragstart", function () { return false; }).bind("drop", function () { return false; });
-        $("#hideMenu").mouseover(Menubar.HoverHideMenus).mouseout(Menubar.StopHoverHideMenus);
-        $("#searchPanel").mouseover(Menubar.HoverHideMenus);
-        for (var i = 0; i < menu.children.length; i++) {
-            var item = menu.children[i];
-            if (item.children.length > 0) {
-                item.onmouseover = function () {
-                    var currentSubmenu = item.children[0];
-                    return function () {
-                        if (menubarStatic.previousItem == currentSubmenu.textContent)
-                            return;
-                        Menubar.HideMenus();
-                        menubarStatic.previousItem = currentSubmenu.textContent;
-                        $("#hideMenu").show();
-                        $(currentSubmenu).show();
-                    };
-                }();
-                Menubar.HookSubmenu(item.children[0]);
-            }
-            else
-                item.onmouseover = Menubar.HideMenus;
-        }
-        Menubar.ExtractItems();
-    };
-    Menubar.ExtractItems = function (menuItem) {
-        if (menuItem === void 0) { menuItem = null; }
-        if (!menuItem) {
-            menubarStatic.KnownItems = [];
-            menuItem = document.getElementById("menubar");
-        }
-        for (var i = 0; i < menuItem.children.length; i++) {
-            var item = menuItem.children[i];
-            if (item.children.length > 0) {
-                //if($(item).is(":visible"))
-                if (item.style.display !== "none")
-                    Menubar.ExtractItems(item.children[0]);
-            }
-            else if (item.style.display !== "none") {
-                var n = new MenuItem((item.attributes["label"] ? item.attributes["label"].textContent : item.textContent), (item.attributes["href"] ? item.attributes["href"].textContent : ""));
-                if (item.onclick && (!n.Link || n.Link == "" || n.Link == "#"))
-                    n.Link = item.onclick;
-                menubarStatic.KnownItems.push(n);
-            }
-            if (item.tagName.toLowerCase() == "a") {
-                $(item).bind("click", function () {
-                    $("#hideMenu").hide();
-                    Menubar.HideMenus();
-                });
-            }
-        }
-    };
-    Menubar.HookSubmenu = function (menuItem) {
-        for (var i = 0; i < menuItem.children.length; i++) {
-            var item = menuItem.children[i];
-            if (item.children.length > 0) {
-                item.onmouseover = function () {
-                    var child = item.children[0];
-                    $(child).addClass("childMenuBar");
-                    return function (e) {
-                        $("#menubar .childMenuBar").hide();
-                        $(child).show();
-                        e.stopPropagation();
-                    };
-                }();
-            }
-            else
-                item.onmouseover = function () {
-                    $("#menubar .childMenuBar").hide();
-                };
-        }
-    };
-    Menubar.HideMenus = function () {
-        menubarStatic.previousItem = null;
-        menubarStatic.hoverHideTimer = null;
-        $("#hideMenu").hide();
-        $("#menubar > div > div").hide();
-        $("#menubar .childMenuBar").hide();
-    };
-    Menubar.HoverHideMenus = function () {
-        if (menubarStatic.hoverHideTimer)
-            clearTimeout(menubarStatic.hoverHideTimer);
-        menubarStatic.hoverHideTimer = setTimeout(Menubar.HideMenus, 500);
-    };
-    Menubar.StopHoverHideMenus = function () {
-        if (menubarStatic.hoverHideTimer)
-            clearTimeout(menubarStatic.hoverHideTimer);
-        menubarStatic.hoverHideTimer = null;
-    };
-    /**
-     * Allows to disable a menu entry
-     * @param menuPath searched path in the form Main>Child>SubChild
-     */
-    Menubar.DisableMenu = function (menuPath, menuSection, currentPath) {
-        if (menuSection === void 0) { menuSection = null; }
-        if (currentPath === void 0) { currentPath = ""; }
-        if (!menuSection)
-            menuSection = document.getElementById("menubar");
-        for (var i = 0; i < menuSection.children.length; i++) {
-            var t = menuSection.children[i].textContent.trim();
-            var p = currentPath + t.split('\n')[0];
-            if (p == menuPath) {
-                $(menuSection.children[i]).hide();
-                Menubar.ExtractItems();
-                return true;
-            }
-            else if (menuSection.children[i].children.length > 0) {
-                var r = Menubar.DisableMenu(menuPath, menuSection.children[i].children[0], p + ">");
-                if (r == true)
-                    return true;
-            }
-        }
-        return false;
-    };
-    /**
-     * Allows to enable a menu entry
-     * @param menuPath searched path in the form Main>Child>SubChild
-     */
-    Menubar.EnableMenu = function (menuPath, menuSection, currentPath) {
-        if (menuSection === void 0) { menuSection = null; }
-        if (currentPath === void 0) { currentPath = ""; }
-        if (!menuSection)
-            menuSection = document.getElementById("menubar");
-        for (var i = 0; i < menuSection.children.length; i++) {
-            var t = menuSection.children[i].textContent.trim();
-            var p = currentPath + t.split('\n')[0];
-            if (p == menuPath) {
-                $(menuSection.children[i]).show();
-                Menubar.ExtractItems();
-                return true;
-            }
-            else if (menuSection.children[i].children.length > 0) {
-                var r = Menubar.EnableMenu(menuPath, menuSection.children[i].children[0], p + ">");
-                if (r == true)
-                    return true;
-            }
-        }
-        return false;
-    };
-    return Menubar;
-}());
-var profileMenu = new ((function () {
-    function class_19() {
-        this.profileDisplayed = false;
-    }
-    return class_19;
-}()));
-var ProfileMenu = (function () {
-    function ProfileMenu() {
-    }
-    ProfileMenu.AdditionalCSS = function () {
-        return "#profileIcon\n\
-{\n\
-    position: absolute;\n\
-    left: -" + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
-    top: 165px;\n\
-}\n\
-#profileIcon .gamePanelContentNoHeader\n\
-{\n\
-    width: 74px;\n\
-}\n\
-";
-    };
-    ProfileMenu.Init = function (position) {
-        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowStats === false))) {
-            $("#profileIcon").hide();
-            return position;
-        }
-        $("#profileIcon").css("top", position + "px");
-        if (game)
-            $("#profileIcon .gamePanelContentNoHeader").html("<img src='art/tileset2/profile_icon.png'><div>+</div>");
-        else
-            $("#profileIcon .gamePanelContentNoHeader").html("<img src='/art/tileset2/profile_icon.png'><div>+</div>");
-        if (!ProfileMenu.HasToUpgrade())
-            $("#profileIcon div.gamePanelContentNoHeader > div").hide();
-        return position + 64 + world.art.panelStyle.topBorder;
-    };
-    ProfileMenu.Toggle = function () {
-        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowStats === false)))
-            return;
-        inventoryMenu.inventoryDisplayed = false;
-        $("#inventoryIcon").removeClass("openPanelIcon");
-        messageMenu.messageDisplayed = false;
-        $("#messageIcon").removeClass("openPanelIcon");
-        $("#journalIcon").removeClass("openPanelIcon");
-        journalMenu.journalDisplayed = false;
-        if (profileMenu.profileDisplayed) {
-            $("#gameMenuPanel").hide();
-            $("#profileIcon").removeClass("openPanelIcon");
-            profileMenu.profileDisplayed = false;
-        }
-        else {
-            profileMenu.profileDisplayed = true;
-            $("#gameMenuPanel").show();
-            $("#profileIcon").addClass("openPanelIcon");
-            ProfileMenu.Update();
-        }
-    };
-    ProfileMenu.HasToUpgrade = function () {
-        for (var i = 0; i < world.Player.Stats.length; i++) {
-            if (world.Player.Stats[i].BaseStat.CodeVariable('PlayerVisible') === "false")
-                continue;
-            var res = world.Player.Stats[i].BaseStat.InvokeFunction("CanUpgrade", []);
-            if (res && res.GetBoolean() == true)
-                return true;
-        }
-        return false;
-    };
-    ProfileMenu.Update = function () {
-        if (ProfileMenu.HasToUpgrade())
-            $("#profileIcon div.gamePanelContentNoHeader > div").show();
-        else
-            $("#profileIcon div.gamePanelContentNoHeader > div").hide();
-        if (!profileMenu.profileDisplayed)
-            return;
-        var html = "";
-        html = "<h1>Profile<h1>";
-        html += "<h2>Stats</h2>";
-        html += "<table class='profileList'>";
-        html += "<thead><tr><td>Name:</td><td>Value:</td><td>Max:</td><td>&nbsp;</td></tr></thead>";
-        html += "<tbody>";
-        for (var i = 0; i < world.Player.Stats.length; i++) {
-            if (world.Player.Stats[i].BaseStat.CodeVariable('PlayerVisible') === "false")
-                continue;
-            html += "<tr>";
-            html += "<td>" + (world.Player.Stats[i].BaseStat.CodeVariable('DisplayName') ? world.Player.Stats[i].BaseStat.CodeVariable('DisplayName') : world.Player.Stats[i].Name).htmlEntities() + "</td>";
-            html += "<td>" + world.Player.Stats[i].Value + "</td>";
-            html += "<td>" + (world.Player.GetStatMaxValue(world.Player.Stats[i].Name) ? world.Player.GetStatMaxValue(world.Player.Stats[i].Name) : "&nbsp;") + "</td>";
-            var res = world.Player.Stats[i].BaseStat.InvokeFunction("CanUpgrade", []);
-            if (res && res.GetBoolean() == true)
-                html += "<td><div class='gameButton' onclick='ProfileMenu.UpgradeStat(\"" + world.Player.Stats[i].Name + "\")')>+</div></td>";
-            else
-                html += "<td>&nbsp;</td>";
-            html += "</tr>";
-        }
-        html += "</tbody>";
-        html += "</table>";
-        html += "<h2>Skills</h2>";
-        html += "<table class='profileList'>";
-        html += "<thead><tr><td>Name:</td><td>Level:</td><td>&nbsp;</td></tr></thead>";
-        html += "<tbody>";
-        for (var i = 0; i < world.Player.Skills.length; i++) {
-            html += "<tr>";
-            html += "<td>" + (world.Player.Skills[i].BaseSkill.CodeVariable('DisplayName') ? world.Player.Skills[i].BaseSkill.CodeVariable('DisplayName') : world.Player.Skills[i].Name).htmlEntities() + "</td><td>" + (world.Player.Skills[i].Level ? ("" + world.Player.Skills[i].Level).htmlEntities() : "&nbsp;") + "</td>";
-            html += "<td>";
-            if (world.Player.Skills[i].BaseSkill.CodeVariable("Quickslot") == "true" && world.Player.Skills[i].BaseSkill.CodeVariable("QuickslotEditable") !== "false")
-                html += "<div class='gameButton' onclick='ProfileMenu.Quickslot(\"" + world.Player.Skills[i].Name.htmlEntities() + "\");'>Quickslot</div>";
-            else
-                html += "&nbsp;";
-            html += "</td>";
-            html += "</tr>";
-        }
-        html += "</tbody>";
-        html += "</table>";
-        html += "<br><br>";
-        html += "<center><div class='gameButton' onclick=\"document.location='#action=Logout';\">Logout</div> <div class='gameButton' onclick='ProfileMenu.ResetPlayer();'>Reset your player</div></center>";
-        $("#gameMenuPanelContent").html(html);
-    };
-    ProfileMenu.DoResetPlayer = function () {
-        if (Main.CheckNW()) {
-            var saves = {};
-            if (framework.Preferences['gameSaves'])
-                saves = JSON.parse(framework.Preferences['gameSaves']);
-            delete saves["S" + world.Id];
-            framework.Preferences['gameSaves'] = JSON.stringify(saves);
-            Framework.SavePreferences();
-            world.Init();
-            Main.GenerateGameStyle();
-            world.ResetAreas();
-            world.ResetGenerator();
-            Framework.Rerun();
-            return;
-        }
-        if (!framework.Preferences['token'] || framework.Preferences['token'] == "demo") {
-            document.location.reload();
-            return;
-        }
-        $.ajax({
-            type: 'POST',
-            url: '/backend/ResetPlayer',
-            data: {
-                game: world.Id,
-                token: framework.Preferences['token']
-            },
-            success: function (msg) {
-                document.location.reload();
-            },
-            error: function (msg, textStatus) {
-                if (msg.d && msg.d.error)
-                    Framework.ShowMessage(msg.d.error);
-                else
-                    Framework.ShowMessage(msg);
-            }
-        });
-    };
-    ProfileMenu.ResetPlayer = function () {
-        Framework.Confirm("Are you sure you want to reset your player? You lose all the stats, items, and quests and start as a fresh new player.", ProfileMenu.DoResetPlayer);
-    };
-    ProfileMenu.UpgradeStat = function (statName) {
-        var res = world.Player.FindStat(statName).BaseStat.InvokeFunction("CanUpgrade", []);
-        if (!res || res.GetBoolean() !== true)
-            return;
-        world.Player.SetStat(statName, world.Player.GetStat(statName) + 1);
-        //world.Player.FindStat(statName).Value++;
-        ProfileMenu.Update();
-    };
-    ProfileMenu.Quickslot = function (skillName) {
-        profileMenu.profileDisplayed = false;
-        var html = "<h1>Quickslot</h1>";
-        for (var i = 0; i < 10; i++) {
-            var q = world.Player.QuickSlot[i];
-            var skill = null;
-            if (!q)
-                q = "-- Empty --";
-            else if (q.substring(0, 2) == "S/") {
-                var skill = world.GetSkill(q.substring(2));
-                q = "Skill " + q.substring(2).title().htmlEntities();
-            }
-            else
-                q = "Item " + q.substring(2).title().htmlEntities();
-            if (skill && skill.CodeVariable("QuickslotEditable") === "false") {
-                html += "Slot " + (i + 1) + " " + q + "<br>";
-            }
-            else
-                html += "<div class='gameButton' onclick='ProfileMenu.SetQuickslot(\"" + skillName.htmlEntities() + "\"," + i + ");'>Slot " + (i + 1) + "</div>" + q + "<br>";
-        }
-        html += "<center><div class='gameButton' onclick='ProfileMenu.Show();'>Cancel</div></center>";
-        $("#gameMenuPanelContent").html(html);
-    };
-    ProfileMenu.Show = function () {
-        profileMenu.profileDisplayed = true;
-        ProfileMenu.Update();
-    };
-    ProfileMenu.SetQuickslot = function (skillName, slotId) {
-        for (var i = 0; i < 10; i++)
-            if (world.Player.QuickSlot[i] == "S/" + skillName)
-                world.Player.QuickSlot[i] = null;
-        world.Player.QuickSlot[slotId] = "S/" + skillName;
-        world.Player.StoredCompare = world.Player.JSON();
-        world.Player.Save();
-        ProfileMenu.Show();
-    };
-    return ProfileMenu;
-}());
-var PublicViewPlayer = (function () {
-    function PublicViewPlayer() {
-    }
-    PublicViewPlayer.Show = function (name) {
-        $.ajax({
-            type: 'POST',
-            url: '/backend/PublicViewPlayer',
-            data: {
-                game: world.Id,
-                name: name
-            },
-            success: function (msg) {
-                var data = TryParse(msg);
-                if (!data)
-                    return;
-                $("#npcDialog").show();
-                $("#npcDialog .gamePanelHeader").html("View: " + name.htmlEntities());
-                var html = "";
-                html += "<table>";
-                html += "<tr><td>Name:</td><td>" + ("" + data.name).htmlEntities() + "</td></tr>";
-                html += "<tr><td>X:</td><td>" + ("" + data.x).htmlEntities() + "</td></tr>";
-                html += "<tr><td>Y:</td><td>" + ("" + data.x).htmlEntities() + "</td></tr>";
-                html += "<tr><td>Zone:</td><td>" + ("" + data.zone).htmlEntities() + "</td></tr>";
-                html += "</table>";
-                html += "<h3>Equiped with</h3>";
-                var items = [];
-                for (var item in data.equipedObjects)
-                    items.push(data.equipedObjects[item]);
-                items.sort();
-                for (var i = 0; i < items.length; i++)
-                    html += ("" + items[i].Name).htmlEntities() + "<br>";
-                html += "<h3>Stats</h3>";
-                html += "<table>";
-                data.stats.sort(function (a, b) {
-                    if (a.Name > b.Name)
-                        return 1;
-                    if (a.Name < b.Name)
-                        return -1;
-                    return 0;
-                });
-                for (var i = 0; i < data.stats.length; i++) {
-                    var stat = world.GetStat(data.stats[i].Name);
-                    if (!stat)
-                        continue;
-                    if (stat.CodeVariable("PlayerVisible") === "false")
-                        continue;
-                    html += "<tr><td>" + ("" + (stat.CodeVariable("DisplayName") ? stat.CodeVariable("DisplayName") : stat.Name)).htmlEntities() + "</td><td>" + ("" + data.stats[i].Value).htmlEntities() + "</td></tr>";
-                }
-                html += "<h3>Skills</h3>";
-                data.skills.sort(function (a, b) {
-                    if (a.Name > b.Name)
-                        return 1;
-                    if (a.Name < b.Name)
-                        return -1;
-                    return 0;
-                });
-                for (var i = 0; i < data.skills.length; i++) {
-                    var skill = world.GetSkill(data.skills[i].Name);
-                    if (!skill)
-                        continue;
-                    html += ("" + (skill.CodeVariable("DisplayName") ? skill.CodeVariable("DisplayName") : skill.Name)).htmlEntities() + "<br>";
-                }
-                $("#dialogSentence").html(html);
-                play.onDialogPaint = [];
-                $("#dialogAnswers").html("<div onclick='PublicViewPlayer.Close();' class='gameButton'>Close</div>");
-            },
-            error: function (msg, textStatus) {
-            }
-        });
-    };
-    PublicViewPlayer.Close = function () {
-        $("#npcDialog").hide();
-    };
-    return PublicViewPlayer;
-}());
-var searchPanel = new ((function () {
-    function class_20() {
-        this.links = [];
-    }
-    return class_20;
-}()));
-var SearchPanel = (function () {
-    function SearchPanel() {
-    }
-    SearchPanel.InitFunction = function () {
-        if (!$("#searchPanel").first())
-            return;
-        if (Main.CheckNW()) {
-            $("#searchPanel").css("top", "0px");
-        }
-        $("#game_Search").bind("click", SearchPanel.ShowHide);
-        $("#generalSearch").bind("keyup", SearchPanel.KeyUp);
-        // Control Q => quick search
-        $(document).bind('keydown', function (e) {
-            if (e.ctrlKey && (e.which == 81)) {
-                e.preventDefault();
-                SearchPanel.ShowHide();
-                return false;
-            }
-        });
-    };
-    SearchPanel.ShowHide = function () {
-        if ($("#searchPanel").is(":visible")) {
-            $("#searchPanel").hide();
-        }
-        else {
-            $("#searchPanel").show();
-            $("#generalSearch").focus();
-            SearchPanel.RenderResult();
-        }
-    };
-    SearchPanel.KeyUp = function (evt) {
-        switch (evt.keyCode) {
-            case 27:
-                $("#generalSearch").blur();
-                $("#searchPanel").hide();
-                break;
-            case 13:
-                if (searchPanel.links && searchPanel.links.length > 0)
-                    document.location.assign(searchPanel.links[0]);
-                break;
-        }
-        SearchPanel.RenderResult();
-    };
-    SearchPanel.Update = function () {
-        SearchPanel.RenderResult();
-    };
-    SearchPanel.RenderResult = function () {
-        if (!$("#searchPanel").is(":visible"))
-            return;
-        var toSearch = $("#generalSearch").val().toLowerCase();
-        searchPanel.links = [];
-        var html = "";
-        var itemsToSearch = [
-            { object: world.art.characters, title: "Characters", action: "ArtCharacterEditor" },
-            { object: world.art.houses, title: "Houses", action: "HouseEditor" },
-            { object: world.art.house_parts, title: "House parts", action: "HousePart" },
-            { object: world.art.objects, title: "Map Objects", action: "ArtObjectEditor" },
-            { object: world.art.sounds, title: "Sounds &amp; Musics", action: "ArtSoundEditor" },
-            { object: world.Codes, title: "Generic Code", action: "GenericCodeEditor" },
-            { object: world.InventorySlots, title: "Inventory Slots", action: "InventorySlotEditor" },
-            { object: world.Monsters, title: "Monsters", action: "MonsterEditor" },
-            { object: world.NPCs, title: "NPCs", action: "NPCEditor" },
-            { object: world.InventoryObjects, title: "Objects", action: "ObjectEditor" },
-            { object: world.InventoryObjectTypes, title: "Object Types", action: "ObjectTypeEditor" },
-            { object: world.ParticleEffects, title: "Particles Effects", action: "ParticleEditor" },
-            { object: world.Quests, title: "Quests", action: "QuestEditor" },
-            { object: world.Skills, title: "Skills", action: "SkillEditor" },
-            { object: world.Stats, title: "Stats", action: "StatEditor" },
-            { object: world.TemporaryEffects, title: "Temporary Effects", action: "TemporaryEffectEditor" },
-            { object: world.Zones, title: "Zones", action: "ZoneEditor" },
-            { object: world.ChatBots, title: "Chat Bots", action: "ChatBotEditor" },
-        ];
-        itemsToSearch.sort(function (a, b) {
-            if (a.title > b.title)
-                return 1;
-            if (a.title < b.title)
-                return -1;
-            return 0;
-        });
-        for (var j = 0; j < itemsToSearch.length; j++) {
-            var items = [];
-            if (itemsToSearch[j].object.length) {
-                for (var i = 0; i < itemsToSearch[j].object.length; i++) {
-                    if (itemsToSearch[j].object[i].Name.toLowerCase().indexOf(toSearch) == -1)
-                        continue;
-                    items.push(itemsToSearch[j].object[i].Name);
-                }
-            }
-            else {
-                for (var item in itemsToSearch[j].object) {
-                    if (item == "contains")
-                        continue;
-                    if (item.toLowerCase().indexOf(toSearch) == -1)
-                        continue;
-                    items.push(item);
-                }
-            }
-            if (items.length > 0) {
-                html += "<span>" + itemsToSearch[j].title + ":</span>";
-                html += "<div>";
-                items.sort();
-                for (var i = 0; i < items.length; i++) {
-                    var link = "#action=" + itemsToSearch[j].action + "&id=" + encodeURIComponent(items[i]);
-                    searchPanel.links.push(link);
-                    html += "<a href='" + link + "'>" + items[i] + "</a>";
-                }
-                html += "</div>";
-            }
-        }
-        $("#generalSearchResult").html(html);
-    };
-    return SearchPanel;
-}());
-var skillBar = new ((function () {
-    function class_21() {
-        this.SkillIcons = {};
-        this.lastCheckInventory = 0;
-    }
-    return class_21;
-}()));
-var SkillBar = (function () {
-    function SkillBar() {
-    }
-    SkillBar.Render = function () {
-        if (!framework.Preferences['token'] && !game && !Main.CheckNW())
-            return;
-        var canvas = document.getElementById("gameCanvas");
-        var height = canvas.height;
-        var width = canvas.width;
-        var ctx = canvas.getContext("2d");
-        if (!skillBar.SlotBar) {
-            skillBar.SlotBar = new Image();
-            skillBar.SlotBar.src = world.art.quickslotStyle.file;
-        }
-        if (!skillBar.StatBar) {
-            skillBar.StatBar = new Image();
-            skillBar.StatBar.src = world.art.statBarStyle.file;
-        }
-        if (!skillBar.SlotBar || !skillBar.SlotBar.width)
-            return;
-        ctx.save();
-        if (world.art.statBarStyle.barsToDisplay === null || world.art.statBarStyle.barsToDisplay === undefined)
-            world.art.statBarStyle.barsToDisplay = 1;
-        if ((world.art.statBarStyle.barsToDisplay == 1 || world.art.statBarStyle.barsToDisplay == 2) && skillBar.StatBar && skillBar.StatBar.width) {
-            var v = world.Player.GetStat('Life');
-            var maxV = world.Player.GetStatMaxValue('Life');
-            v = Math.min(Math.max(v, 0), maxV);
-            var h = Math.round((skillBar.StatBar.height - (world.art.statBarStyle.topBorder + world.art.statBarStyle.bottomBorder)) * (maxV - v) / maxV);
-            //h = Math.min(Math.max(h, 0), 100);
-            ctx.drawImage(skillBar.StatBar, 0, 0, skillBar.StatBar.width / 3, skillBar.StatBar.height, 10, height - (skillBar.StatBar.height + 10), skillBar.StatBar.width / 3, skillBar.StatBar.height);
-            try {
-                ctx.drawImage(skillBar.StatBar, skillBar.StatBar.width / 3, world.art.statBarStyle.topBorder + h, skillBar.StatBar.width / 3, skillBar.StatBar.height - (world.art.statBarStyle.topBorder + world.art.statBarStyle.bottomBorder + h), 10, height - ((skillBar.StatBar.height - (world.art.statBarStyle.topBorder + h)) + 10), skillBar.StatBar.width / 3, skillBar.StatBar.height - (world.art.statBarStyle.topBorder + world.art.statBarStyle.bottomBorder + h));
-            }
-            catch (ex) {
-            }
-        }
-        if ((world.art.statBarStyle.barsToDisplay == 2) && skillBar.StatBar && skillBar.StatBar.width) {
-            var v = world.Player.GetStat('Energy');
-            var maxV = world.Player.GetStatMaxValue('Energy');
-            v = Math.min(Math.max(v, 0), maxV);
-            var h = Math.round((skillBar.StatBar.height - (world.art.statBarStyle.topBorder + world.art.statBarStyle.bottomBorder)) * (maxV - v) / maxV);
-            //h = Math.min(Math.max(h, 0), 100);
-            ctx.drawImage(skillBar.StatBar, 0, 0, skillBar.StatBar.width / 3, skillBar.StatBar.height, 10 + skillBar.StatBar.width / 3, height - (skillBar.StatBar.height + 10), skillBar.StatBar.width / 3, skillBar.StatBar.height);
-            try {
-                ctx.drawImage(skillBar.StatBar, skillBar.StatBar.width * 2 / 3, world.art.statBarStyle.topBorder + h, skillBar.StatBar.width / 3, skillBar.StatBar.height - (world.art.statBarStyle.topBorder + world.art.statBarStyle.bottomBorder + h), 10 + skillBar.StatBar.width / 3, height - ((skillBar.StatBar.height - (world.art.statBarStyle.topBorder + h)) + 10), skillBar.StatBar.width / 3, skillBar.StatBar.height - (world.art.statBarStyle.topBorder + world.art.statBarStyle.bottomBorder + h));
-            }
-            catch (ex) {
-            }
-        }
-        if (world.art.quickslotStyle.quickslotVisible === false) {
-            ctx.restore();
-            return;
-        }
-        var pos = Math.round(width / 2 - skillBar.SlotBar.width / 2);
-        ctx.drawImage(skillBar.SlotBar, pos, height - skillBar.SlotBar.height);
-        pos += world.art.quickslotStyle.leftBorder;
-        for (var i = 0; i < world.Player.QuickSlot.length; i++) {
-            var q = world.Player.QuickSlot[i];
-            if (q == null) {
-                pos += 32 + world.art.quickslotStyle.itemSpacing;
-                continue;
-            }
-            var name = q.substring(2);
-            // Skill quickslot
-            if (q.substring(0, 2) == "S/") {
-                if (!skillBar.SkillIcons[q] && world.GetSkill(name)) {
-                    var skillInfo = world.GetSkill(name);
-                    skillBar.SkillIcons[q] = new Image();
-                    skillBar.SkillIcons[q].src = (skillInfo.CodeVariable("icon") ? skillInfo.CodeVariable("icon") : "/art/tileset2/fist_icon.png");
-                }
-                if (!skillBar.SkillIcons[q])
-                    continue;
-                ctx.drawImage(skillBar.SkillIcons[q], pos, height - skillBar.SlotBar.height + world.art.quickslotStyle.topBorder);
-                var timer = world.Player.GetTimer(name);
-                if (timer && !timer.IsOver()) {
-                    ctx.fillStyle = "#FFFFFF";
-                    ctx.globalAlpha = 0.8;
-                    var h = Math.round(Math.max(timer.Length - timer.Ellapsed(), 0) * 32 / timer.Length);
-                    ctx.fillRect(pos, height - skillBar.SlotBar.height + world.art.quickslotStyle.topBorder + (32 - h), 32, h);
-                }
-                if (world.Player.CurrentSkill.toLowerCase() == name.toLowerCase()) {
-                    ctx.strokeStyle = world.art.quickslotStyle.selectedSkillColor;
-                    ctx.globalAlpha = 1;
-                    ctx.lineWidth = 3;
-                    ctx.beginPath();
-                    ctx.strokeRect(pos, height - skillBar.SlotBar.height + world.art.quickslotStyle.topBorder, 32, 32);
-                    ctx.stroke();
-                }
-            }
-            else if (q.substring(0, 2) == "I/") {
-                var details = world.GetInventoryObject(name);
-                if (skillBar.lastCheckInventory <= 0) {
-                    if (world.Player.GetInventoryQuantity(name) <= 0) {
-                        world.Player.QuickSlot[i] = null;
-                        world.Player.StoredCompare = world.Player.JSON();
-                        world.Player.Save();
-                        continue;
-                    }
-                }
-                if (!skillBar.SkillIcons[q] && details) {
-                    skillBar.SkillIcons[q] = new Image();
-                    skillBar.SkillIcons[q].src = (details.Image ? details.Image : "/art/tileset2/inventory_object.png");
-                }
-                if (!skillBar.SkillIcons[q])
-                    continue;
-                ctx.drawImage(skillBar.SkillIcons[q], pos, height - skillBar.SlotBar.height + world.art.quickslotStyle.topBorder);
-            }
-            pos += 32 + world.art.quickslotStyle.itemSpacing;
-        }
-        ctx.restore();
-        skillBar.lastCheckInventory--;
-        if (skillBar.lastCheckInventory < 0)
-            skillBar.lastCheckInventory = 30;
-    };
-    SkillBar.SelectQuickslot = function (slot) {
-        if (slot == 0)
-            slot = 9;
-        else
-            slot--;
-        if (world.Player.QuickSlot[slot] && world.Player.QuickSlot[slot].substring(0, 2) == "S/") {
-            var oldSkill = world.Player.CurrentSkill;
-            var selectedSkill = world.Player.QuickSlot[slot].substring(2);
-            world.Player.CurrentSkill = selectedSkill;
-            var skill = world.GetSkill(selectedSkill);
-            var res = skill.InvokeFunction("Activate", []);
-            // Prevent selection
-            if (res !== null && res.GetBoolean() === false) {
-                world.Player.CurrentSkill = oldSkill;
-            }
-            world.Player.StoredCompare = world.Player.JSON();
-            world.Player.Save();
-        }
-        else if (world.Player.QuickSlot[slot] && world.Player.QuickSlot[slot].substring(0, 2) == "I/") {
-            var name = world.Player.QuickSlot[slot].substring(2);
-            var details = world.GetInventoryObject(name);
-            if (!details)
-                return;
-            if (world.Player.GetInventoryQuantity(name) > 0) {
-                if (details.CanWear())
-                    world.Player.Wear(name);
-                else if (details.ActionLabel() && details.CanUse())
-                    details.Use();
-            }
-        }
-    };
-    SkillBar.HandleClick = function (x, y) {
-        if (world.art.quickslotStyle.quickslotVisible === false)
-            return false;
-        if (!skillBar.StatBar)
-            return;
-        var canvas = document.getElementById("gameCanvas");
-        y -= $("#gameCanvas").position().top;
-        var width = canvas.width;
-        var height = canvas.height;
-        var barX = Math.round(width / 2 - skillBar.SlotBar.width / 2);
-        var barY = height - skillBar.SlotBar.height;
-        if (x >= barX && x <= barX + skillBar.SlotBar.width && y >= barY && y <= barY + skillBar.SlotBar.height) {
-            var s = Math.floor((x - (barX + world.art.quickslotStyle.leftBorder)) / (32 + world.art.quickslotStyle.itemSpacing));
-            if (s >= 0 && s <= 9) {
-                s = (s + 1) % 10;
-                SkillBar.SelectQuickslot(s);
-            }
-            return true;
-        }
-        return false;
-    };
-    return SkillBar;
-}());
-var About = (function () {
+var About = /** @class */ (function () {
     function About() {
     }
     About.Dispose = function () {
@@ -14865,9 +14878,9 @@ var About = (function () {
     };
     return About;
 }());
-var engineVersion = "1.2.1311";
-var engineBuild = "Wed, 08 Nov 2017 13:56:56 GMT";
-var artCharacterEditor = new ((function () {
+var engineVersion = "1.2.247";
+var engineBuild = "Tue, 06 Aug 2019 09:31:39 GMT";
+var artCharacterEditor = new (/** @class */ (function () {
     function class_22() {
         this.selector = null;
         this.groundSelection = null;
@@ -14878,7 +14891,7 @@ var artCharacterEditor = new ((function () {
     }
     return class_22;
 }()));
-var ArtCharacterEditor = (function () {
+var ArtCharacterEditor = /** @class */ (function () {
     function ArtCharacterEditor() {
     }
     ArtCharacterEditor.Dispose = function () {
@@ -15345,15 +15358,151 @@ var ArtCharacterEditor = (function () {
     };
     return ArtCharacterEditor;
 }());
-var artObjectEditor = new ((function () {
+var artPanelEditor = new (/** @class */ (function () {
     function class_23() {
+    }
+    return class_23;
+}()));
+var ArtPanelEditor = /** @class */ (function () {
+    function ArtPanelEditor() {
+    }
+    ArtPanelEditor.Dispose = function () {
+        if (artPanelEditor.refreshStyle)
+            clearInterval(artPanelEditor.refreshStyle);
+        artPanelEditor.refreshStyle = null;
+    };
+    ArtPanelEditor.IsAccessible = function () {
+        return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
+    };
+    ArtPanelEditor.Recover = function () {
+        if (Main.CheckNW()) {
+            $("#helpLink").first().onclick = function () {
+                StandaloneMaker.Help($("#helpLink").prop("href"));
+                return false;
+            };
+            $("#panelDetails").css("top", "5px");
+            $("#buttonUpload").html("Change");
+        }
+        artPanelEditor.panelStyle = new Image();
+        artPanelEditor.panelStyle.src = world.art.panelStyle.file;
+        artPanelEditor.refreshStyle = setInterval(ArtPanelEditor.UpdateStyle, 100);
+        $("#leftBorder").val(world.art.panelStyle.leftBorder);
+        $("#rightBorder").val(world.art.panelStyle.rightBorder);
+        $("#topBorder").val(world.art.panelStyle.topBorder);
+        $("#bottomBorder").val(world.art.panelStyle.bottomBorder);
+        $("#headerHeight").val(world.art.panelStyle.header);
+        $("#headerColor").val(world.art.panelStyle.headerColor);
+        $("#contentColor").val(world.art.panelStyle.contentColor);
+        $("#contentHeaderBackgroundColor").val(world.art.panelStyle.contentHeaderBackgroundColor);
+        $("#contentHeaderColor").val(world.art.panelStyle.contentHeaderColor);
+        $("#contentSelectedColor").val(world.art.panelStyle.contentSelectedColor);
+        $("#buttonBorder").val(world.art.panelStyle.buttonBorder);
+        $("#buttonBackground").val(world.art.panelStyle.buttonBackground);
+        $("#buttonBackgroundHover").val(world.art.panelStyle.buttonBackgroundHover);
+        $("#chatPlaceholderColor").val(world.art.panelStyle.chatPlaceholderColor ? world.art.panelStyle.chatPlaceholderColor : "#c7c7cd");
+        $("#chatNormalColor").val(world.art.panelStyle.chatNormalColor ? world.art.panelStyle.chatNormalColor : "#ffffff");
+        $("#chatSeparatorColor").val(world.art.panelStyle.chatSeparatorColor ? world.art.panelStyle.chatSeparatorColor : "#7a7ead");
+        $("#chatSystemMessageColor").val(world.art.panelStyle.chatSystemMessageColor ? world.art.panelStyle.chatSystemMessageColor : "#00e000");
+        Main.GenerateGameStyle();
+    };
+    ArtPanelEditor.ChangeParam = function (fieldName, paramName) {
+        var val = $("#" + fieldName).val();
+        if (typeof world.art.panelStyle[paramName] == "number") {
+            var nVal = parseInt(val);
+            if (!isNaN(nVal))
+                world.art.panelStyle[paramName] = nVal;
+        }
+        else
+            world.art.panelStyle[paramName] = val;
+        Main.GenerateGameStyle();
+    };
+    ArtPanelEditor.UpdateStyle = function () {
+        if (!artPanelEditor.panelStyle || !artPanelEditor.panelStyle.width)
+            return;
+        var canvas = $("#panelStyle").first();
+        if (canvas.width != artPanelEditor.panelStyle.width)
+            canvas.width = artPanelEditor.panelStyle.width;
+        if (canvas.height != artPanelEditor.panelStyle.height)
+            canvas.height = artPanelEditor.panelStyle.height;
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(artPanelEditor.panelStyle, 0, 0);
+        ctx.strokeStyle = "#E00000";
+        ctx.beginPath();
+        ctx.moveTo(0, world.art.panelStyle.topBorder + 0.5);
+        ctx.lineTo(canvas.width, world.art.panelStyle.topBorder + 0.5);
+        ctx.moveTo(0, world.art.panelStyle.topBorder + world.art.panelStyle.header + 0.5);
+        ctx.lineTo(canvas.width, world.art.panelStyle.topBorder + world.art.panelStyle.header + 0.5);
+        ctx.moveTo(0, canvas.height - world.art.panelStyle.bottomBorder + 0.5);
+        ctx.lineTo(canvas.width, canvas.height - world.art.panelStyle.bottomBorder + 0.5);
+        ctx.moveTo(world.art.panelStyle.leftBorder + 0.5, 0);
+        ctx.lineTo(world.art.panelStyle.leftBorder + 0.5, canvas.height);
+        ctx.moveTo(canvas.width - world.art.panelStyle.leftBorder + 0.5, 0);
+        ctx.lineTo(canvas.width - world.art.panelStyle.leftBorder + 0.5, canvas.height);
+        ctx.stroke();
+    };
+    ArtPanelEditor.GenerateHTML = function (divId) {
+        var html = "";
+        html += "<div id='" + divId + "' class='gamePanel'>\n";
+        html += "<div class='gamePanelTopBorder'></div>\n";
+        html += "<div class='gamePanelHeader'>Test Panel</div>\n";
+        html += "<div class='gamePanelContent'></div>\n";
+        html += "<div class='gamePanelBottomBorder'></div>\n";
+        html += "</div>";
+        return html;
+    };
+    ArtPanelEditor.ShowUpload = function () {
+        if (Main.CheckNW()) {
+            $("#fileOpenDialog").prop("accept", ".png");
+            $("#fileOpenDialog").unbind("change");
+            $("#fileOpenDialog").val("").bind("change", ArtPanelEditor.ImportFileImage).first().click();
+            return;
+        }
+        $("#uploadArtObject").show();
+        $("#uploadGameId").val("" + world.Id);
+        $("#uploadToken").val(framework.Preferences['token']);
+    };
+    ArtPanelEditor.ImportFileImage = function () {
+        ArtPanelEditor.FinishImport($("#fileOpenDialog").val());
+        $("#fileOpenDialog").unbind("change", ArtPanelEditor.ImportFileImage).val("");
+    };
+    ArtPanelEditor.CloseUpload = function () {
+        $("#uploadArtObject").hide();
+    };
+    ArtPanelEditor.Upload = function () {
+        $("#uploadArtObject").hide();
+        $("#artObjectUploadForm").submit();
+    };
+    ArtPanelEditor.Result = function (result) {
+        var data = JSON.parse(result);
+        if (data.error) {
+            Framework.Alert(data.error);
+            return;
+        }
+        else if (data.new_file) {
+            ArtPanelEditor.FinishImport(data.new_file);
+        }
+    };
+    ArtPanelEditor.FinishImport = function (filename) {
+        // Change background, we need to reset all the types, transitions, and world generators.
+        world.art.panelStyle.file = filename + "?v=" + Math.round((new Date()).getTime() / 1000);
+        artPanelEditor.panelStyle = new Image();
+        artPanelEditor.panelStyle.src = world.art.panelStyle.file;
+        artPanelEditor.panelStyle.onload = function () {
+            Main.GenerateGameStyle();
+        };
+        //artPanelEditor.refreshStyle = setInterval(ArtPanelEditor.UpdateStyle, 100);
+    };
+    return ArtPanelEditor;
+}());
+var artObjectEditor = new (/** @class */ (function () {
+    function class_24() {
         this.selector = null;
         this.positionSelection = null;
         this.groundSelection = null;
     }
-    return class_23;
+    return class_24;
 }()));
-var ArtObjectEditor = (function () {
+var ArtObjectEditor = /** @class */ (function () {
     function ArtObjectEditor() {
     }
     ArtObjectEditor.Dispose = function () {
@@ -16078,148 +16227,12 @@ var ArtObjectEditor = (function () {
     };
     return ArtObjectEditor;
 }());
-var artPanelEditor = new ((function () {
-    function class_24() {
-    }
-    return class_24;
-}()));
-var ArtPanelEditor = (function () {
-    function ArtPanelEditor() {
-    }
-    ArtPanelEditor.Dispose = function () {
-        if (artPanelEditor.refreshStyle)
-            clearInterval(artPanelEditor.refreshStyle);
-        artPanelEditor.refreshStyle = null;
-    };
-    ArtPanelEditor.IsAccessible = function () {
-        return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
-    };
-    ArtPanelEditor.Recover = function () {
-        if (Main.CheckNW()) {
-            $("#helpLink").first().onclick = function () {
-                StandaloneMaker.Help($("#helpLink").prop("href"));
-                return false;
-            };
-            $("#panelDetails").css("top", "5px");
-            $("#buttonUpload").html("Change");
-        }
-        artPanelEditor.panelStyle = new Image();
-        artPanelEditor.panelStyle.src = world.art.panelStyle.file;
-        artPanelEditor.refreshStyle = setInterval(ArtPanelEditor.UpdateStyle, 100);
-        $("#leftBorder").val(world.art.panelStyle.leftBorder);
-        $("#rightBorder").val(world.art.panelStyle.rightBorder);
-        $("#topBorder").val(world.art.panelStyle.topBorder);
-        $("#bottomBorder").val(world.art.panelStyle.bottomBorder);
-        $("#headerHeight").val(world.art.panelStyle.header);
-        $("#headerColor").val(world.art.panelStyle.headerColor);
-        $("#contentColor").val(world.art.panelStyle.contentColor);
-        $("#contentHeaderBackgroundColor").val(world.art.panelStyle.contentHeaderBackgroundColor);
-        $("#contentHeaderColor").val(world.art.panelStyle.contentHeaderColor);
-        $("#contentSelectedColor").val(world.art.panelStyle.contentSelectedColor);
-        $("#buttonBorder").val(world.art.panelStyle.buttonBorder);
-        $("#buttonBackground").val(world.art.panelStyle.buttonBackground);
-        $("#buttonBackgroundHover").val(world.art.panelStyle.buttonBackgroundHover);
-        $("#chatPlaceholderColor").val(world.art.panelStyle.chatPlaceholderColor ? world.art.panelStyle.chatPlaceholderColor : "#c7c7cd");
-        $("#chatNormalColor").val(world.art.panelStyle.chatNormalColor ? world.art.panelStyle.chatNormalColor : "#ffffff");
-        $("#chatSeparatorColor").val(world.art.panelStyle.chatSeparatorColor ? world.art.panelStyle.chatSeparatorColor : "#7a7ead");
-        $("#chatSystemMessageColor").val(world.art.panelStyle.chatSystemMessageColor ? world.art.panelStyle.chatSystemMessageColor : "#00e000");
-        Main.GenerateGameStyle();
-    };
-    ArtPanelEditor.ChangeParam = function (fieldName, paramName) {
-        var val = $("#" + fieldName).val();
-        if (typeof world.art.panelStyle[paramName] == "number") {
-            var nVal = parseInt(val);
-            if (!isNaN(nVal))
-                world.art.panelStyle[paramName] = nVal;
-        }
-        else
-            world.art.panelStyle[paramName] = val;
-        Main.GenerateGameStyle();
-    };
-    ArtPanelEditor.UpdateStyle = function () {
-        if (!artPanelEditor.panelStyle || !artPanelEditor.panelStyle.width)
-            return;
-        var canvas = $("#panelStyle").first();
-        if (canvas.width != artPanelEditor.panelStyle.width)
-            canvas.width = artPanelEditor.panelStyle.width;
-        if (canvas.height != artPanelEditor.panelStyle.height)
-            canvas.height = artPanelEditor.panelStyle.height;
-        var ctx = canvas.getContext("2d");
-        ctx.drawImage(artPanelEditor.panelStyle, 0, 0);
-        ctx.strokeStyle = "#E00000";
-        ctx.beginPath();
-        ctx.moveTo(0, world.art.panelStyle.topBorder + 0.5);
-        ctx.lineTo(canvas.width, world.art.panelStyle.topBorder + 0.5);
-        ctx.moveTo(0, world.art.panelStyle.topBorder + world.art.panelStyle.header + 0.5);
-        ctx.lineTo(canvas.width, world.art.panelStyle.topBorder + world.art.panelStyle.header + 0.5);
-        ctx.moveTo(0, canvas.height - world.art.panelStyle.bottomBorder + 0.5);
-        ctx.lineTo(canvas.width, canvas.height - world.art.panelStyle.bottomBorder + 0.5);
-        ctx.moveTo(world.art.panelStyle.leftBorder + 0.5, 0);
-        ctx.lineTo(world.art.panelStyle.leftBorder + 0.5, canvas.height);
-        ctx.moveTo(canvas.width - world.art.panelStyle.leftBorder + 0.5, 0);
-        ctx.lineTo(canvas.width - world.art.panelStyle.leftBorder + 0.5, canvas.height);
-        ctx.stroke();
-    };
-    ArtPanelEditor.GenerateHTML = function (divId) {
-        var html = "";
-        html += "<div id='" + divId + "' class='gamePanel'>\n";
-        html += "<div class='gamePanelTopBorder'></div>\n";
-        html += "<div class='gamePanelHeader'>Test Panel</div>\n";
-        html += "<div class='gamePanelContent'></div>\n";
-        html += "<div class='gamePanelBottomBorder'></div>\n";
-        html += "</div>";
-        return html;
-    };
-    ArtPanelEditor.ShowUpload = function () {
-        if (Main.CheckNW()) {
-            $("#fileOpenDialog").prop("accept", ".png");
-            $("#fileOpenDialog").unbind("change");
-            $("#fileOpenDialog").val("").bind("change", ArtPanelEditor.ImportFileImage).first().click();
-            return;
-        }
-        $("#uploadArtObject").show();
-        $("#uploadGameId").val("" + world.Id);
-        $("#uploadToken").val(framework.Preferences['token']);
-    };
-    ArtPanelEditor.ImportFileImage = function () {
-        ArtPanelEditor.FinishImport($("#fileOpenDialog").val());
-        $("#fileOpenDialog").unbind("change", ArtPanelEditor.ImportFileImage).val("");
-    };
-    ArtPanelEditor.CloseUpload = function () {
-        $("#uploadArtObject").hide();
-    };
-    ArtPanelEditor.Upload = function () {
-        $("#uploadArtObject").hide();
-        $("#artObjectUploadForm").submit();
-    };
-    ArtPanelEditor.Result = function (result) {
-        var data = JSON.parse(result);
-        if (data.error) {
-            Framework.Alert(data.error);
-            return;
-        }
-        else if (data.new_file) {
-            ArtPanelEditor.FinishImport(data.new_file);
-        }
-    };
-    ArtPanelEditor.FinishImport = function (filename) {
-        // Change background, we need to reset all the types, transitions, and world generators.
-        world.art.panelStyle.file = filename + "?v=" + Math.round((new Date()).getTime() / 1000);
-        artPanelEditor.panelStyle = new Image();
-        artPanelEditor.panelStyle.src = world.art.panelStyle.file;
-        artPanelEditor.panelStyle.onload = function () {
-            Main.GenerateGameStyle();
-        };
-        //artPanelEditor.refreshStyle = setInterval(ArtPanelEditor.UpdateStyle, 100);
-    };
-    return ArtPanelEditor;
-}());
-var artQuickslotEditor = new ((function () {
+var artQuickslotEditor = new (/** @class */ (function () {
     function class_25() {
     }
     return class_25;
 }()));
-var ArtQuickslotEditor = (function () {
+var ArtQuickslotEditor = /** @class */ (function () {
     function ArtQuickslotEditor() {
     }
     ArtQuickslotEditor.Dispose = function () {
@@ -16351,7 +16364,7 @@ var ArtQuickslotEditor = (function () {
     };
     return ArtQuickslotEditor;
 }());
-var artSoundEditor = new ((function () {
+var artSoundEditor = new (/** @class */ (function () {
     function class_26() {
         this.selector = null;
     }
@@ -16381,7 +16394,7 @@ var musics = [
     "/Sounds/Sculpture-Garden.mp3",
     "/Sounds/sm_mold_section.mp3"
 ];
-var ArtSoundEditor = (function () {
+var ArtSoundEditor = /** @class */ (function () {
     function ArtSoundEditor() {
     }
     ArtSoundEditor.Dispose = function () {
@@ -16509,6 +16522,7 @@ var ArtSoundEditor = (function () {
             Framework.Alert(data.error);
             return;
         }
+        //else if (data.mp3 && data.ogg)
         else if (data.mp3) {
             ArtSoundEditor.FinishImport(data.mp3);
         }
@@ -16578,12 +16592,12 @@ var ArtSoundEditor = (function () {
     };
     return ArtSoundEditor;
 }());
-var artStartBarEditor = new ((function () {
+var artStartBarEditor = new (/** @class */ (function () {
     function class_27() {
     }
     return class_27;
 }()));
-var ArtStartBarEditor = (function () {
+var ArtStartBarEditor = /** @class */ (function () {
     function ArtStartBarEditor() {
     }
     ArtStartBarEditor.Dispose = function () {
@@ -16697,13 +16711,13 @@ var ArtStartBarEditor = (function () {
     };
     return ArtStartBarEditor;
 }());
-var artTileEditor = new ((function () {
+var artTileEditor = new (/** @class */ (function () {
     function class_28() {
         this.loaded = false;
     }
     return class_28;
 }()));
-var ArtTileEditor = (function () {
+var ArtTileEditor = /** @class */ (function () {
     function ArtTileEditor() {
     }
     ArtTileEditor.Dispose = function () {
@@ -17081,6 +17095,7 @@ var ArtTileEditor = (function () {
             world.art.background.lastTile = Math.floor(artTileEditor.backgroundTiles.height / world.art.background.height) * world.art.background.nbColumns;
             ArtTileEditor.ListCurrentTiles();
         }
+        //ArtTileEditor.ProposeTypes();
         else
             artTileEditor.loadTimeout = setTimeout(ArtTileEditor.LoadUploaded, 100);
     };
@@ -17334,13 +17349,13 @@ var ArtTileEditor = (function () {
     };
     return ArtTileEditor;
 }());
-var chatBotEditor = new ((function () {
+var chatBotEditor = new (/** @class */ (function () {
     function class_29() {
         this.editor = null;
     }
     return class_29;
 }()));
-var ChatBotEditor = (function () {
+var ChatBotEditor = /** @class */ (function () {
     function ChatBotEditor() {
     }
     ChatBotEditor.Dispose = function () {
@@ -17570,7 +17585,7 @@ var ChatBotEditor = (function () {
     };
     return ChatBotEditor;
 }());
-var FileExplorer = (function () {
+var FileExplorer = /** @class */ (function () {
     function FileExplorer() {
     }
     FileExplorer.Dispose = function () {
@@ -17707,7 +17722,7 @@ var FileExplorer = (function () {
     };
     return FileExplorer;
 }());
-var GameEditor = (function () {
+var GameEditor = /** @class */ (function () {
     function GameEditor() {
     }
     GameEditor.Dispose = function () {
@@ -17857,12 +17872,12 @@ var GameEditor = (function () {
     };
     return GameEditor;
 }());
-var gameList = new ((function () {
+var gameList = new (/** @class */ (function () {
     function class_30() {
     }
     return class_30;
 }()));
-var GameList = (function () {
+var GameList = /** @class */ (function () {
     function GameList() {
     }
     GameList.Dispose = function () {
@@ -17964,7 +17979,131 @@ var GameList = (function () {
     };
     return GameList;
 }());
-var GameReset = (function () {
+var gameNews = new (/** @class */ (function () {
+    function class_31() {
+    }
+    return class_31;
+}()));
+var GameNews = /** @class */ (function () {
+    function GameNews() {
+    }
+    GameNews.Dispose = function () {
+        if (gameNews.selector)
+            gameNews.selector.Dispose();
+        gameNews.selector = null;
+    };
+    GameNews.IsAccessible = function () {
+        return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
+    };
+    GameNews.Recover = function () {
+        if (Main.CheckNW())
+            $("#helpLink").first().onclick = function () {
+                StandaloneMaker.Help($("#helpLink").prop("href"));
+                return false;
+            };
+        GameNews.UpdateList();
+    };
+    GameNews.UpdateList = function () {
+        $.ajax({
+            type: 'POST',
+            url: '/backend/GameNews',
+            data: {
+                game: world.Id
+            },
+            success: function (msg) {
+                var data = TryParse(msg);
+                if (!data)
+                    return;
+                gameNews.data = data;
+                if (gameNews.selector) {
+                    gameNews.selector.UpdateList(gameNews.data);
+                }
+                else {
+                    gameNews.selector = new ListSelector("newsList", gameNews.data, "postedOn");
+                    gameNews.selector.OnSelect = GameNews.Select;
+                }
+            },
+            error: function (msg, textStatus) {
+            }
+        });
+    };
+    GameNews.Select = function (rowId) {
+        gameNews.selectedRow = rowId;
+        if (rowId === null) {
+            GameNews.Add();
+            return;
+        }
+        var html = "";
+        html += "<h3>Update News:</h3>";
+        html += "<textarea id='news_content' rows='30' style='width: 100%; resize: none;'>" + ("" + gameNews.data[rowId].news).htmlEntities() + "</textarea>";
+        html += "<center><span class='button' onclick='GameNews.SaveUpdate();'>Save</span><span class='button' onclick='GameNews.Delete();'>Delete</span></center>";
+        $("#newsParameters").html(html);
+    };
+    GameNews.Add = function () {
+        var html = "";
+        html += "<h3>Add News:</h3>";
+        html += "<textarea id='news_content' rows='30' style='width: 100%; resize: none;'></textarea>";
+        html += "<center><span class='button' onclick='GameNews.DoAdd();'>Save</span></center>";
+        $("#newsParameters").html(html);
+    };
+    GameNews.DoAdd = function () {
+        $.ajax({
+            type: 'POST',
+            url: '/backend/AddGameNews',
+            data: {
+                game: world.Id,
+                token: framework.Preferences['token'],
+                news: $("#news_content").val()
+            },
+            success: function (msg) {
+                GameNews.UpdateList();
+                gameNews.selector.Select(null);
+                GameNews.Add();
+            },
+            error: function (msg, textStatus) {
+            }
+        });
+    };
+    GameNews.SaveUpdate = function () {
+        $.ajax({
+            type: 'POST',
+            url: '/backend/UpdateGameNews',
+            data: {
+                game: world.Id,
+                id: gameNews.data[gameNews.selectedRow].id,
+                token: framework.Preferences['token'],
+                news: $("#news_content").val()
+            },
+            success: function (msg) {
+                GameNews.UpdateList();
+                gameNews.selector.Select(null);
+                GameNews.Add();
+            },
+            error: function (msg, textStatus) {
+            }
+        });
+    };
+    GameNews.Delete = function () {
+        $.ajax({
+            type: 'POST',
+            url: '/backend/DeleteGameNews',
+            data: {
+                game: world.Id,
+                id: gameNews.data[gameNews.selectedRow].id,
+                token: framework.Preferences['token']
+            },
+            success: function (msg) {
+                GameNews.UpdateList();
+                gameNews.selector.Select(null);
+                GameNews.Add();
+            },
+            error: function (msg, textStatus) {
+            }
+        });
+    };
+    return GameNews;
+}());
+var GameReset = /** @class */ (function () {
     function GameReset() {
     }
     GameReset.Dispose = function () {
@@ -18203,131 +18342,7 @@ var GameReset = (function () {
     };
     return GameReset;
 }());
-var gameNews = new ((function () {
-    function class_31() {
-    }
-    return class_31;
-}()));
-var GameNews = (function () {
-    function GameNews() {
-    }
-    GameNews.Dispose = function () {
-        if (gameNews.selector)
-            gameNews.selector.Dispose();
-        gameNews.selector = null;
-    };
-    GameNews.IsAccessible = function () {
-        return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
-    };
-    GameNews.Recover = function () {
-        if (Main.CheckNW())
-            $("#helpLink").first().onclick = function () {
-                StandaloneMaker.Help($("#helpLink").prop("href"));
-                return false;
-            };
-        GameNews.UpdateList();
-    };
-    GameNews.UpdateList = function () {
-        $.ajax({
-            type: 'POST',
-            url: '/backend/GameNews',
-            data: {
-                game: world.Id
-            },
-            success: function (msg) {
-                var data = TryParse(msg);
-                if (!data)
-                    return;
-                gameNews.data = data;
-                if (gameNews.selector) {
-                    gameNews.selector.UpdateList(gameNews.data);
-                }
-                else {
-                    gameNews.selector = new ListSelector("newsList", gameNews.data, "postedOn");
-                    gameNews.selector.OnSelect = GameNews.Select;
-                }
-            },
-            error: function (msg, textStatus) {
-            }
-        });
-    };
-    GameNews.Select = function (rowId) {
-        gameNews.selectedRow = rowId;
-        if (rowId === null) {
-            GameNews.Add();
-            return;
-        }
-        var html = "";
-        html += "<h3>Update News:</h3>";
-        html += "<textarea id='news_content' rows='30' style='width: 100%; resize: none;'>" + ("" + gameNews.data[rowId].news).htmlEntities() + "</textarea>";
-        html += "<center><span class='button' onclick='GameNews.SaveUpdate();'>Save</span><span class='button' onclick='GameNews.Delete();'>Delete</span></center>";
-        $("#newsParameters").html(html);
-    };
-    GameNews.Add = function () {
-        var html = "";
-        html += "<h3>Add News:</h3>";
-        html += "<textarea id='news_content' rows='30' style='width: 100%; resize: none;'></textarea>";
-        html += "<center><span class='button' onclick='GameNews.DoAdd();'>Save</span></center>";
-        $("#newsParameters").html(html);
-    };
-    GameNews.DoAdd = function () {
-        $.ajax({
-            type: 'POST',
-            url: '/backend/AddGameNews',
-            data: {
-                game: world.Id,
-                token: framework.Preferences['token'],
-                news: $("#news_content").val()
-            },
-            success: function (msg) {
-                GameNews.UpdateList();
-                gameNews.selector.Select(null);
-                GameNews.Add();
-            },
-            error: function (msg, textStatus) {
-            }
-        });
-    };
-    GameNews.SaveUpdate = function () {
-        $.ajax({
-            type: 'POST',
-            url: '/backend/UpdateGameNews',
-            data: {
-                game: world.Id,
-                id: gameNews.data[gameNews.selectedRow].id,
-                token: framework.Preferences['token'],
-                news: $("#news_content").val()
-            },
-            success: function (msg) {
-                GameNews.UpdateList();
-                gameNews.selector.Select(null);
-                GameNews.Add();
-            },
-            error: function (msg, textStatus) {
-            }
-        });
-    };
-    GameNews.Delete = function () {
-        $.ajax({
-            type: 'POST',
-            url: '/backend/DeleteGameNews',
-            data: {
-                game: world.Id,
-                id: gameNews.data[gameNews.selectedRow].id,
-                token: framework.Preferences['token']
-            },
-            success: function (msg) {
-                GameNews.UpdateList();
-                gameNews.selector.Select(null);
-                GameNews.Add();
-            },
-            error: function (msg, textStatus) {
-            }
-        });
-    };
-    return GameNews;
-}());
-var gameStats = new ((function () {
+var gameStats = new (/** @class */ (function () {
     function class_32() {
         this.currentStat = 1;
         this.currentView = "Month";
@@ -18359,7 +18374,7 @@ var gameStats = new ((function () {
     }
     return class_32;
 }()));
-var GameStats = (function () {
+var GameStats = /** @class */ (function () {
     function GameStats() {
     }
     GameStats.Dispose = function () {
@@ -18617,7 +18632,7 @@ var GameStats = (function () {
     };
     return GameStats;
 }());
-var genericCodeEditor = new ((function () {
+var genericCodeEditor = new (/** @class */ (function () {
     function class_33() {
         this.selector = null;
         //editor: CodeMirror.EditorFromTextArea = null;
@@ -18625,7 +18640,7 @@ var genericCodeEditor = new ((function () {
     }
     return class_33;
 }()));
-var GenericCodeEditor = (function () {
+var GenericCodeEditor = /** @class */ (function () {
     function GenericCodeEditor() {
     }
     GenericCodeEditor.Dispose = function () {
@@ -18737,8 +18752,10 @@ var GenericCodeEditor = (function () {
         // Must show the description
         if (genericCodeEditor.selected.Description)
             GenericCodeEditor.ShowDescription();
+        // Must show parameters
         else if (genericCodeEditor.selected.Parameters && Keys(genericCodeEditor.selected.Parameters).length > 0)
             GenericCodeEditor.ShowParameters();
+        // Must show code
         else if (!genericCodeEditor.selected.Parameters || Keys(genericCodeEditor.selected.Parameters).length == 0) {
             GenericCodeEditor.ShowCode();
             genericCodeEditor.editor.Refresh();
@@ -19305,7 +19322,7 @@ var GenericCodeEditor = (function () {
     return GenericCodeEditor;
 }());
 /// <reference path="../../Logic/World/WorldRender.ts" />
-var houseEditor = new ((function () {
+var houseEditor = new (/** @class */ (function () {
     function class_34() {
         this.housePartImages = {};
         this.sticky = true;
@@ -19316,7 +19333,7 @@ var houseEditor = new ((function () {
     }
     return class_34;
 }()));
-var HouseEditor = (function () {
+var HouseEditor = /** @class */ (function () {
     function HouseEditor() {
     }
     HouseEditor.Dispose = function () {
@@ -19778,7 +19795,7 @@ var HouseEditor = (function () {
     };
     return HouseEditor;
 }());
-var housePart = new ((function () {
+var housePart = new (/** @class */ (function () {
     function class_35() {
         this.listParts = null;
         this.currentHousePart = null;
@@ -19787,7 +19804,7 @@ var housePart = new ((function () {
     }
     return class_35;
 }()));
-var HousePart = (function () {
+var HousePart = /** @class */ (function () {
     function HousePart() {
     }
     HousePart.Dispose = function () {
@@ -20029,7 +20046,7 @@ var HousePart = (function () {
     };
     return HousePart;
 }());
-var ImportExport = (function () {
+var ImportExport = /** @class */ (function () {
     function ImportExport() {
     }
     ImportExport.Dispose = function () {
@@ -20086,12 +20103,12 @@ var ImportExport = (function () {
     };
     return ImportExport;
 }());
-var inventorySlotEditor = new ((function () {
+var inventorySlotEditor = new (/** @class */ (function () {
     function class_36() {
     }
     return class_36;
 }()));
-var InventorySlotEditor = (function () {
+var InventorySlotEditor = /** @class */ (function () {
     function InventorySlotEditor() {
     }
     InventorySlotEditor.Dispose = function () {
@@ -20224,7 +20241,7 @@ var InventorySlotEditor = (function () {
     };
     return InventorySlotEditor;
 }());
-var Logout = (function () {
+var Logout = /** @class */ (function () {
     function Logout() {
     }
     Logout.Dispose = function () {
@@ -20234,7 +20251,7 @@ var Logout = (function () {
         delete framework.Preferences['user'];
         Framework.SavePreferences();
         var query = Framework.ParseQuery();
-        if (selfHosted)
+        if (selfHosted) // Special url for self-hosted engines.
             document.location.assign("/");
         else if (("" + document.location).indexOf("/maker.html?") != -1)
             document.location.assign("/");
@@ -20243,7 +20260,354 @@ var Logout = (function () {
     };
     return Logout;
 }());
-var MapEditor = (function () {
+/// <reference path="../../Libs/codemirror.d.ts" />
+var monsterEditor = new (/** @class */ (function () {
+    function class_37() {
+        this.selectedMonster = null;
+        this.selector = null;
+        this.editor = null;
+        this.FixedParams = ["Name",
+            "Speed",
+            "BaseDamage",
+            "AttackSpeed",
+            "ProximityAttack",
+            "Art",
+            "Life"];
+    }
+    return class_37;
+}()));
+var MonsterEditor = /** @class */ (function () {
+    function MonsterEditor() {
+    }
+    MonsterEditor.Dispose = function () {
+        monsterEditor.selector.Dispose();
+        monsterEditor.editor = null;
+    };
+    MonsterEditor.IsAccessible = function () {
+        return (("" + document.location).indexOf("/maker.html") != -1 || ("" + document.location).indexOf("/demo_code_editor.html") != -1 || Main.CheckNW());
+    };
+    MonsterEditor.Recover = function () {
+        if (Main.CheckNW()) {
+            $("#helpLink").first().onclick = function () {
+                StandaloneMaker.Help($("#helpLink").prop("href"));
+                return false;
+            };
+            $("#monsterList").css("top", "5px");
+            $("#monsterParameters").css("top", "5px");
+        }
+        if (("" + document.location).indexOf("/demo_code_editor.html") != -1)
+            monsterEditor.editor = new CodeGraphEditor("baseCode", false, "text");
+        else
+            monsterEditor.editor = new CodeGraphEditor("baseCode", false);
+        monsterEditor.editor.OnChange = MonsterEditor.ChangeCode;
+        monsterEditor.selector = new ListSelector("monsterList", world.Monsters, "Name");
+        monsterEditor.selector.OnSelect = function (rowId) {
+            Framework.SetLocation({
+                action: "MonsterEditor", id: rowId === null ? null : world.Monsters[rowId].Name
+            });
+            monsterEditor.selectedMonster = world.Monsters[rowId];
+            MonsterEditor.Render();
+        };
+        if (framework.CurrentUrl.id) {
+            var found = false;
+            for (var i = 0; i < world.Monsters.length; i++) {
+                if (world.Monsters[i].Name == framework.CurrentUrl.id) {
+                    monsterEditor.selector.Select(i);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                Framework.SetLocation({
+                    action: "MonsterEditor"
+                });
+                monsterEditor.selector.Select(0);
+                return;
+            }
+        }
+        else
+            monsterEditor.selector.Select(0);
+        if (("" + document.location).indexOf("/demo_code_editor.html") !== -1) {
+            $("#monsterParameters").hide();
+            $("#monsterList").hide();
+            $("#monsterListCommands").hide();
+            $("#monsterCommands").hide();
+            $("#monsterParamCommands").hide();
+            $(".elementCodeWarning").css("left", "5px").css("top", "5px").css("right", "5px").css("width", "auto");
+            $("#codeContainer").css("left", "5px").css("top", "25px").css("right", "5px").css("bottom", "5px");
+            $("#helpLink").hide();
+            $(".CodeMirror").css("height", "100%");
+        }
+    };
+    MonsterEditor.Render = function () {
+        $("#baseCode").val(monsterEditor.selectedMonster.SourceCode.trim());
+        monsterEditor.editor.SetCode(monsterEditor.selectedMonster.SourceCode.trim());
+        $(".elementCodeWarning").hide();
+        var html = "";
+        html += "<h1>" + monsterEditor.selectedMonster.Name + "</h1>";
+        html += "<table>";
+        for (var item in monsterEditor.selectedMonster.Code.CodeVariables) {
+            html += "<tr><td>";
+            if (monsterEditor.FixedParams.indexOf(monsterEditor.selectedMonster.Code.CodeVariables[item].name) == -1)
+                html += "<div class='dialogBlockDelete' onclick='MonsterEditor.DeleteParam(\"" + item + "\")'>X</div>";
+            html += monsterEditor.selectedMonster.Code.CodeVariables[item].name.title() + ":";
+            html += "</td><td>";
+            var val = monsterEditor.selectedMonster.Code.CodeVariables[item].value;
+            switch (monsterEditor.selectedMonster.Code.CodeVariables[item].type) {
+                case "boolean":
+                    html += "<select id='var_" + item + "' onkeyup='MonsterEditor.ChangeVariable(\"" + item + "\")'><option" + (val.trim().toLowerCase() == "true" ? " selected" : "") + ">true</option><option" + (val.trim().toLowerCase() == "true" ? "" : " selected") + ">false</option></select>";
+                    break;
+                case "monster_art":
+                    html += "<select id='var_" + item + "' onchange='MonsterEditor.ChangeVariable(\"" + item + "\")'>";
+                    var found = false;
+                    var names = [];
+                    for (var mName in world.art.characters)
+                        names.push(mName);
+                    names.sort();
+                    for (var i = 0; i < names.length; i++) {
+                        html += "<option value='" + names[i].htmlEntities() + "'" + (val == names[i] ? " selected" : "") + ">" + names[i] + "</option>";
+                    }
+                    if (!found)
+                        html += "<option value='" + val.htmlEntities + "' selected>" + val + "</option>";
+                    html += "</select>";
+                    break;
+                default:
+                    if (item == "name" && monsterEditor.selectedMonster.Name.toLowerCase() == "defaultmonster")
+                        html += val.htmlEntities();
+                    else
+                        html += "<input type='text' value='" + val.htmlEntities() + "' id='var_" + item + "' onkeyup='MonsterEditor.ChangeVariable(\"" + item + "\")'>";
+            }
+            html += "</td></tr>";
+        }
+        html += "</table>";
+        if (monsterEditor.selectedMonster.ItemDrop && monsterEditor.selectedMonster.ItemDrop.length) {
+            html += "<h2>Item drops:</h2>";
+            html += "<table>";
+            html += "<thead><tr><td>&nbsp;</td><td>Name:</td><td>Quantity:</td><td>Probability:</td></tr></thead>";
+            /*monsterEditor.selectedMonster.ItemDrop.sort((a, b) =>
+            {
+                if (a.Name > b.Name)
+                    return 1;
+                if (a.Name < b.Name)
+                    return -1;
+                return 0;
+            });*/
+            var names = [];
+            for (var i = 0; i < world.InventoryObjects.length; i++)
+                names.push(world.InventoryObjects[i].Name);
+            names.sort();
+            for (var i = 0; i < monsterEditor.selectedMonster.ItemDrop.length; i++) {
+                html += "<tr>";
+                html += "<td><div class='button' onclick='MonsterEditor.RemoveItemDrop(" + i + ")'>Remove</div></td>";
+                html += "<td><select id='itemdrop_" + i + "' onchange='MonsterEditor.ChangeItemDrop(" + i + ",\"itemdrop_\",\"Name\")'>";
+                for (var j = 0; j < names.length; j++)
+                    html += "<option value='" + names[j].htmlEntities() + "'" + (names[j] == monsterEditor.selectedMonster.ItemDrop[i].Name ? " selected" : "") + ">" + names[j] + "</option>";
+                html += "</select></td>";
+                html += "<td><input type='text' id='itemdrop_qt_" + i + "' value='" + monsterEditor.selectedMonster.ItemDrop[i].Quantity + "' onkeyup='MonsterEditor.ChangeItemDrop(" + i + ",\"itemdrop_qt_\",\"Quantity\")'></td>";
+                html += "<td><input type='text' id='itemdrop_prob_" + i + "' value='" + monsterEditor.selectedMonster.ItemDrop[i].Probability + "' onkeyup='MonsterEditor.ChangeItemDrop(" + i + ",\"itemdrop_prob_\",\"Probability\")'></td>";
+                html += "</tr>";
+            }
+            html += "</table>";
+        }
+        if (monsterEditor.selectedMonster.StatDrop && monsterEditor.selectedMonster.StatDrop.length) {
+            html += "<h2>Stat drops:</h2>";
+            html += "<table>";
+            html += "<thead><tr><td>&nbsp;</td><td>Name:</td><td>Quantity:</td><td>Probability:</td></tr></thead>";
+            /*monsterEditor.selectedMonster.StatDrop.sort((a, b) =>
+            {
+                if (a.Name > b.Name)
+                    return 1;
+                if (a.Name < b.Name)
+                    return -1;
+                return 0;
+            });*/
+            names = [];
+            for (var i = 0; i < world.Stats.length; i++)
+                names.push(world.Stats[i].Name);
+            names.sort();
+            for (var i = 0; i < monsterEditor.selectedMonster.StatDrop.length; i++) {
+                html += "<tr>";
+                html += "<td><div class='button' onclick='MonsterEditor.RemoveStatDrop(" + i + ")'>Remove</div></td>";
+                html += "<td><select id='statdrop_" + i + "' onchange='MonsterEditor.ChangeStatDrop(" + i + ",\"statdrop_\",\"Name\")'>";
+                for (var j = 0; j < names.length; j++)
+                    html += "<option value='" + names[j].htmlEntities() + "'" + (names[j] == monsterEditor.selectedMonster.StatDrop[i].Name ? " selected" : "") + ">" + names[j] + "</option>";
+                html += "</select></td>";
+                html += "<td><input type='text' id='statdrop_qt_" + i + "' value='" + monsterEditor.selectedMonster.StatDrop[i].Quantity + "' onkeyup='MonsterEditor.ChangeStatDrop(" + i + ",\"statdrop_qt_\",\"Quantity\")'></td>";
+                html += "<td><input type='text' id='statdrop_prob_" + i + "' value='" + monsterEditor.selectedMonster.StatDrop[i].Probability + "' onkeyup='MonsterEditor.ChangeStatDrop(" + i + ",\"statdrop_prob_\",\"Probability\")'></td>";
+                html += "</tr>";
+            }
+            html += "</table>";
+        }
+        $("#monsterParameters").html(html);
+    };
+    MonsterEditor.RemoveItemDrop = function (id) {
+        monsterEditor.selectedMonster.ItemDrop.splice(id, 1);
+        MonsterEditor.Render();
+    };
+    MonsterEditor.ChangeItemDrop = function (id, field, prop) {
+        if (typeof monsterEditor.selectedMonster.ItemDrop[id][prop] == "number") {
+            var v = parseFloat($("#" + field + id).val());
+            if (!isNaN(v))
+                monsterEditor.selectedMonster.ItemDrop[id][prop] = v;
+        }
+        else
+            monsterEditor.selectedMonster.ItemDrop[id][prop] = $("#" + field + id).val();
+    };
+    MonsterEditor.RemoveStatDrop = function (id) {
+        monsterEditor.selectedMonster.StatDrop.splice(id, 1);
+        MonsterEditor.Render();
+    };
+    MonsterEditor.ChangeStatDrop = function (id, field, prop) {
+        if (typeof monsterEditor.selectedMonster.StatDrop[id][prop] == "number") {
+            var v = parseFloat($("#" + field + id).val());
+            if (!isNaN(v))
+                monsterEditor.selectedMonster.StatDrop[id][prop] = v;
+        }
+        else
+            monsterEditor.selectedMonster.StatDrop[id][prop] = $("#" + field + id).val();
+    };
+    MonsterEditor.DeleteParam = function (name) {
+        delete monsterEditor.selectedMonster.Code.CodeVariables[name];
+        monsterEditor.selectedMonster.UpdateCodeVariables();
+        MonsterEditor.Render();
+    };
+    MonsterEditor.ChangeVariable = function (name) {
+        if (monsterEditor.selectedMonster.Name.toLowerCase() == "defaultmonster" && name == "name")
+            return;
+        var val = $("#var_" + name).val().trim();
+        if (name == "name" && val != "") {
+            if ((val.match(databaseNameRule) || !val || val.length < 1) || (world.GetMonster(val) && world.GetMonster(val) != monsterEditor.selectedMonster)) {
+                $("#var_name").css('backgroundColor', '#FFE0E0');
+                return;
+            }
+            $("#var_name").css('backgroundColor', '');
+            var oldName = monsterEditor.selectedMonster.Name;
+            var newName = val;
+            monsterEditor.selectedMonster.Name = val;
+            $("#monsterParameters > h1").html(val);
+            monsterEditor.selector.UpdateList();
+            for (var i = 0; i < world.Zones.length; i++) {
+                for (var j = 0; j < world.Zones[i].Monsters.length; j++) {
+                    if (world.Zones[i].Monsters[j].Name == oldName)
+                        world.Zones[i].Monsters[j].Name = newName;
+                }
+            }
+            MapUtilities.Modify("monster", oldName, newName);
+            SearchPanel.Update();
+        }
+        monsterEditor.selectedMonster.Code.CodeVariables[name].value = val;
+        monsterEditor.selectedMonster.UpdateCodeVariables();
+    };
+    MonsterEditor.Delete = function () {
+        if (monsterEditor.selectedMonster.Name.toLowerCase() == "defaultmonster") {
+            Framework.Alert("You cannot delete the DefaultMonster.");
+            return;
+        }
+        Framework.Confirm("Are you sure you want to delete this monster?", function () {
+            for (var i = 0; i < world.Monsters.length; i++) {
+                if (world.Monsters[i] == monsterEditor.selectedMonster) {
+                    world.Monsters.splice(i, 1);
+                    break;
+                }
+            }
+            var oldName = monsterEditor.selectedMonster.Name;
+            for (var i = 0; i < world.Zones.length; i++) {
+                for (var j = 0; j < world.Zones[i].Monsters.length;) {
+                    if (world.Zones[i].Monsters[j].Name == oldName)
+                        world.Zones[i].Monsters.splice(j, 1);
+                    else
+                        j++;
+                }
+            }
+            monsterEditor.selector.UpdateList();
+            monsterEditor.selector.Select(0);
+            MapUtilities.Modify("monster", oldName, null);
+            SearchPanel.Update();
+        });
+    };
+    MonsterEditor.Add = function () {
+        var nextId = world.Monsters.length;
+        while (world.GetMonster("monster_" + nextId))
+            nextId++;
+        var code = "/// Name: monster_" + nextId + ",string\n";
+        var defMonster = world.GetMonster("DefaultMonster");
+        // Recover the default code variables
+        for (var i in defMonster.Code.CodeVariables) {
+            if (i == "name")
+                continue;
+            code += "/// " + defMonster.Code.CodeVariables[i].name + ": " + defMonster.Code.CodeVariables[i].value + "," + defMonster.Code.CodeVariables[i].type + "\n";
+        }
+        // Find the name of the first art for a monster
+        var firstMonster = "";
+        for (var i in world.art.characters) {
+            firstMonster = i;
+            break;
+        }
+        code += "/// Art: " + i + ",monster_art\n";
+        // Recover the stats applied to monsters
+        for (var j = 0; j < world.Stats.length; j++) {
+            if (!world.Stats[j].MonsterStat)
+                continue;
+            code += "/// " + world.Stats[j].Name + ": " + world.Stats[j].DefaultValue + ",number\n";
+        }
+        monsterEditor.selectedMonster = KnownMonster.Rebuild(code);
+        monsterEditor.selectedMonster.DefaultMonster = defMonster;
+        world.Monsters.push(monsterEditor.selectedMonster);
+        monsterEditor.selector.UpdateList();
+        monsterEditor.selector.Select(world.Monsters.length - 1);
+        SearchPanel.Update();
+    };
+    MonsterEditor.Clone = function () {
+        if (monsterEditor.selectedMonster.Name.toLowerCase() == "defaultmonster")
+            return;
+        var nextId = world.Monsters.length;
+        while (world.GetMonster("monster_" + nextId))
+            nextId++;
+        var code = monsterEditor.selectedMonster.FullCode();
+        code = code.replace(/^\/\/\/\s*name:\s.*$/gim, "/// Name: monster_" + nextId + ",string\n");
+        var defMonster = world.GetMonster("DefaultMonster");
+        monsterEditor.selectedMonster = KnownMonster.Rebuild(code);
+        monsterEditor.selectedMonster.DefaultMonster = defMonster;
+        world.Monsters.push(monsterEditor.selectedMonster);
+        monsterEditor.selector.UpdateList();
+        monsterEditor.selector.Select(world.Monsters.length - 1);
+        SearchPanel.Update();
+    };
+    MonsterEditor.ChangeCode = function () {
+        $(".elementCodeWarning").hide();
+        var code = monsterEditor.editor.GetCode();
+        try {
+            monsterEditor.selectedMonster.Parse(code + "\n" + monsterEditor.selectedMonster.CodeVariables());
+        }
+        catch (ex) {
+        }
+    };
+    MonsterEditor.AddParam = function () {
+        Framework.Prompt("Enter the new parameter name:", "", function (newValue) {
+            if (!newValue.match(/^[a-z]+$/i)) {
+                Framework.Alert("Only letters are acceptable as parameter name.");
+                return;
+            }
+            monsterEditor.selectedMonster.Code.CodeVariables[newValue.toLowerCase()] = { name: newValue, type: "string", value: "" };
+            monsterEditor.selectedMonster.UpdateCodeVariables();
+            MonsterEditor.Render();
+        });
+    };
+    MonsterEditor.AddStat = function () {
+        if (monsterEditor.selectedMonster.Name == "DefaultMonster")
+            return;
+        monsterEditor.selectedMonster.StatDrop.push({ Name: world.Stats[0].Name, Quantity: 1, Probability: 100 });
+        MonsterEditor.Render();
+    };
+    MonsterEditor.AddItem = function () {
+        if (monsterEditor.selectedMonster.Name == "DefaultMonster")
+            return;
+        monsterEditor.selectedMonster.ItemDrop.push({ Name: world.InventoryObjects[0].Name, Quantity: 1, Probability: 100 });
+        MonsterEditor.Render();
+    };
+    return MonsterEditor;
+}());
+var MapEditor = /** @class */ (function () {
     function MapEditor() {
     }
     MapEditor.Dispose = function () {
@@ -21342,14 +21706,17 @@ var MapEditor = (function () {
                     if (Math.abs(dx1 - nx1) < 10) {
                         px = nx1 + obj_info.groundX;
                     }
+                    // Snap right
                     else if (Math.abs(dx2 - nx2) < 10) {
                         px = nx2 + obj_info.groundX;
                     }
+                    // Snap sides if sides are less than 10 pixels
                     else if (Math.abs(dx2 - nx1) <= 10 || Math.abs(dx1 - nx2) <= 10) {
                         // Going on the left side of the old object
                         if (Math.abs(dx2 - nx1) < Math.abs(dx1 - nx2)) {
                             px = nx1 - (obj_info.width - obj_info.groundX);
                         }
+                        // Going on the right side of the old object
                         else {
                             px = nx2 + (obj_info.groundX);
                         }
@@ -21358,14 +21725,17 @@ var MapEditor = (function () {
                     if (Math.abs(dy1 - ny1) <= 5) {
                         py = ny1 + (obj_info.groundY);
                     }
+                    // Snap on bottom
                     else if (Math.abs(dy2 - ny2) <= 5) {
                         py = ny2 - (obj_info.groundY);
                     }
+                    // Snap sides if top/bottom are less than 10 pixels
                     else if (Math.abs(dy2 - ny1) <= 10 || Math.abs(dy1 - ny2) <= 10) {
                         // Going on the left side of the old object
                         if (Math.abs(dy2 - ny1) < Math.abs(dy1 - ny2)) {
                             py = ny1 - (obj_info.height - obj_info.groundY);
                         }
+                        // Going on the right side of the old object
                         else {
                             py = ny2 + (obj_info.groundY);
                         }
@@ -22227,8 +22597,8 @@ var MapEditor = (function () {
     };
     return MapEditor;
 }());
-var mapEditor = new ((function () {
-    function class_37() {
+var mapEditor = new (/** @class */ (function () {
+    function class_38() {
         this.currentCellTile = 0;
         this.currentCellType = "water";
         this.currentObject = "flower_1";
@@ -22250,14 +22620,14 @@ var mapEditor = new ((function () {
         this.renderRectrangle = null;
         this.repeatTimer = 0;
     }
-    return class_37;
-}()));
-var moduleManager = new ((function () {
-    function class_38() {
-    }
     return class_38;
 }()));
-var ModuleManager = (function () {
+var moduleManager = new (/** @class */ (function () {
+    function class_39() {
+    }
+    return class_39;
+}()));
+var ModuleManager = /** @class */ (function () {
     function ModuleManager() {
     }
     ModuleManager.Dispose = function () {
@@ -22303,7 +22673,7 @@ var ModuleManager = (function () {
     ModuleManager.Search = function () {
         if (moduleManager.searchTimeout)
             clearTimeout(moduleManager.searchTimeout);
-        moduleManager.searchTimeout = setTimeout(ModuleManager.DoSearch(), 500);
+        moduleManager.searchTimeout = setTimeout(ModuleManager.DoSearch, 500);
     };
     ModuleManager.DoSearch = function () {
         moduleManager.searchTimeout = null;
@@ -22387,7 +22757,8 @@ var ModuleManager = (function () {
                             if (message.code) {
                                 var moduleCode = Object.cast(JSON.parse(message.code), KnownCode);
                                 var knownCode = world.GetCode(moduleCode.Name);
-                                if (knownCode) {
+                                if (knownCode) // Module already installed, we recover the parameters (if any)
+                                 {
                                     for (var i = 0; i < world.Codes.length; i++) {
                                         if (world.Codes[i].Name.toLowerCase() == knownCode.Name.toLowerCase()) {
                                             if (!moduleCode.Parameters)
@@ -22571,359 +22942,12 @@ var ModuleManager = (function () {
     };
     return ModuleManager;
 }());
-/// <reference path="../../Libs/codemirror.d.ts" />
-var monsterEditor = new ((function () {
-    function class_39() {
-        this.selectedMonster = null;
-        this.selector = null;
-        this.editor = null;
-        this.FixedParams = ["Name",
-            "Speed",
-            "BaseDamage",
-            "AttackSpeed",
-            "ProximityAttack",
-            "Art",
-            "Life"];
-    }
-    return class_39;
-}()));
-var MonsterEditor = (function () {
-    function MonsterEditor() {
-    }
-    MonsterEditor.Dispose = function () {
-        monsterEditor.selector.Dispose();
-        monsterEditor.editor = null;
-    };
-    MonsterEditor.IsAccessible = function () {
-        return (("" + document.location).indexOf("/maker.html") != -1 || ("" + document.location).indexOf("/demo_code_editor.html") != -1 || Main.CheckNW());
-    };
-    MonsterEditor.Recover = function () {
-        if (Main.CheckNW()) {
-            $("#helpLink").first().onclick = function () {
-                StandaloneMaker.Help($("#helpLink").prop("href"));
-                return false;
-            };
-            $("#monsterList").css("top", "5px");
-            $("#monsterParameters").css("top", "5px");
-        }
-        if (("" + document.location).indexOf("/demo_code_editor.html") != -1)
-            monsterEditor.editor = new CodeGraphEditor("baseCode", false, "text");
-        else
-            monsterEditor.editor = new CodeGraphEditor("baseCode", false);
-        monsterEditor.editor.OnChange = MonsterEditor.ChangeCode;
-        monsterEditor.selector = new ListSelector("monsterList", world.Monsters, "Name");
-        monsterEditor.selector.OnSelect = function (rowId) {
-            Framework.SetLocation({
-                action: "MonsterEditor", id: rowId === null ? null : world.Monsters[rowId].Name
-            });
-            monsterEditor.selectedMonster = world.Monsters[rowId];
-            MonsterEditor.Render();
-        };
-        if (framework.CurrentUrl.id) {
-            var found = false;
-            for (var i = 0; i < world.Monsters.length; i++) {
-                if (world.Monsters[i].Name == framework.CurrentUrl.id) {
-                    monsterEditor.selector.Select(i);
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                Framework.SetLocation({
-                    action: "MonsterEditor"
-                });
-                monsterEditor.selector.Select(0);
-                return;
-            }
-        }
-        else
-            monsterEditor.selector.Select(0);
-        if (("" + document.location).indexOf("/demo_code_editor.html") !== -1) {
-            $("#monsterParameters").hide();
-            $("#monsterList").hide();
-            $("#monsterListCommands").hide();
-            $("#monsterCommands").hide();
-            $("#monsterParamCommands").hide();
-            $(".elementCodeWarning").css("left", "5px").css("top", "5px").css("right", "5px").css("width", "auto");
-            $("#codeContainer").css("left", "5px").css("top", "25px").css("right", "5px").css("bottom", "5px");
-            $("#helpLink").hide();
-            $(".CodeMirror").css("height", "100%");
-        }
-    };
-    MonsterEditor.Render = function () {
-        $("#baseCode").val(monsterEditor.selectedMonster.SourceCode.trim());
-        monsterEditor.editor.SetCode(monsterEditor.selectedMonster.SourceCode.trim());
-        $(".elementCodeWarning").hide();
-        var html = "";
-        html += "<h1>" + monsterEditor.selectedMonster.Name + "</h1>";
-        html += "<table>";
-        for (var item in monsterEditor.selectedMonster.Code.CodeVariables) {
-            html += "<tr><td>";
-            if (monsterEditor.FixedParams.indexOf(monsterEditor.selectedMonster.Code.CodeVariables[item].name) == -1)
-                html += "<div class='dialogBlockDelete' onclick='MonsterEditor.DeleteParam(\"" + item + "\")'>X</div>";
-            html += monsterEditor.selectedMonster.Code.CodeVariables[item].name.title() + ":";
-            html += "</td><td>";
-            var val = monsterEditor.selectedMonster.Code.CodeVariables[item].value;
-            switch (monsterEditor.selectedMonster.Code.CodeVariables[item].type) {
-                case "boolean":
-                    html += "<select id='var_" + item + "' onkeyup='MonsterEditor.ChangeVariable(\"" + item + "\")'><option" + (val.trim().toLowerCase() == "true" ? " selected" : "") + ">true</option><option" + (val.trim().toLowerCase() == "true" ? "" : " selected") + ">false</option></select>";
-                    break;
-                case "monster_art":
-                    html += "<select id='var_" + item + "' onchange='MonsterEditor.ChangeVariable(\"" + item + "\")'>";
-                    var found = false;
-                    var names = [];
-                    for (var mName in world.art.characters)
-                        names.push(mName);
-                    names.sort();
-                    for (var i = 0; i < names.length; i++) {
-                        html += "<option value='" + names[i].htmlEntities() + "'" + (val == names[i] ? " selected" : "") + ">" + names[i] + "</option>";
-                    }
-                    if (!found)
-                        html += "<option value='" + val.htmlEntities + "' selected>" + val + "</option>";
-                    html += "</select>";
-                    break;
-                default:
-                    if (item == "name" && monsterEditor.selectedMonster.Name.toLowerCase() == "defaultmonster")
-                        html += val.htmlEntities();
-                    else
-                        html += "<input type='text' value='" + val.htmlEntities() + "' id='var_" + item + "' onkeyup='MonsterEditor.ChangeVariable(\"" + item + "\")'>";
-            }
-            html += "</td></tr>";
-        }
-        html += "</table>";
-        if (monsterEditor.selectedMonster.ItemDrop && monsterEditor.selectedMonster.ItemDrop.length) {
-            html += "<h2>Item drops:</h2>";
-            html += "<table>";
-            html += "<thead><tr><td>&nbsp;</td><td>Name:</td><td>Quantity:</td><td>Probability:</td></tr></thead>";
-            /*monsterEditor.selectedMonster.ItemDrop.sort((a, b) =>
-            {
-                if (a.Name > b.Name)
-                    return 1;
-                if (a.Name < b.Name)
-                    return -1;
-                return 0;
-            });*/
-            var names = [];
-            for (var i = 0; i < world.InventoryObjects.length; i++)
-                names.push(world.InventoryObjects[i].Name);
-            names.sort();
-            for (var i = 0; i < monsterEditor.selectedMonster.ItemDrop.length; i++) {
-                html += "<tr>";
-                html += "<td><div class='button' onclick='MonsterEditor.RemoveItemDrop(" + i + ")'>Remove</div></td>";
-                html += "<td><select id='itemdrop_" + i + "' onchange='MonsterEditor.ChangeItemDrop(" + i + ",\"itemdrop_\",\"Name\")'>";
-                for (var j = 0; j < names.length; j++)
-                    html += "<option value='" + names[j].htmlEntities() + "'" + (names[j] == monsterEditor.selectedMonster.ItemDrop[i].Name ? " selected" : "") + ">" + names[j] + "</option>";
-                html += "</select></td>";
-                html += "<td><input type='text' id='itemdrop_qt_" + i + "' value='" + monsterEditor.selectedMonster.ItemDrop[i].Quantity + "' onkeyup='MonsterEditor.ChangeItemDrop(" + i + ",\"itemdrop_qt_\",\"Quantity\")'></td>";
-                html += "<td><input type='text' id='itemdrop_prob_" + i + "' value='" + monsterEditor.selectedMonster.ItemDrop[i].Probability + "' onkeyup='MonsterEditor.ChangeItemDrop(" + i + ",\"itemdrop_prob_\",\"Probability\")'></td>";
-                html += "</tr>";
-            }
-            html += "</table>";
-        }
-        if (monsterEditor.selectedMonster.StatDrop && monsterEditor.selectedMonster.StatDrop.length) {
-            html += "<h2>Stat drops:</h2>";
-            html += "<table>";
-            html += "<thead><tr><td>&nbsp;</td><td>Name:</td><td>Quantity:</td><td>Probability:</td></tr></thead>";
-            /*monsterEditor.selectedMonster.StatDrop.sort((a, b) =>
-            {
-                if (a.Name > b.Name)
-                    return 1;
-                if (a.Name < b.Name)
-                    return -1;
-                return 0;
-            });*/
-            names = [];
-            for (var i = 0; i < world.Stats.length; i++)
-                names.push(world.Stats[i].Name);
-            names.sort();
-            for (var i = 0; i < monsterEditor.selectedMonster.StatDrop.length; i++) {
-                html += "<tr>";
-                html += "<td><div class='button' onclick='MonsterEditor.RemoveStatDrop(" + i + ")'>Remove</div></td>";
-                html += "<td><select id='statdrop_" + i + "' onchange='MonsterEditor.ChangeStatDrop(" + i + ",\"statdrop_\",\"Name\")'>";
-                for (var j = 0; j < names.length; j++)
-                    html += "<option value='" + names[j].htmlEntities() + "'" + (names[j] == monsterEditor.selectedMonster.StatDrop[i].Name ? " selected" : "") + ">" + names[j] + "</option>";
-                html += "</select></td>";
-                html += "<td><input type='text' id='statdrop_qt_" + i + "' value='" + monsterEditor.selectedMonster.StatDrop[i].Quantity + "' onkeyup='MonsterEditor.ChangeStatDrop(" + i + ",\"statdrop_qt_\",\"Quantity\")'></td>";
-                html += "<td><input type='text' id='statdrop_prob_" + i + "' value='" + monsterEditor.selectedMonster.StatDrop[i].Probability + "' onkeyup='MonsterEditor.ChangeStatDrop(" + i + ",\"statdrop_prob_\",\"Probability\")'></td>";
-                html += "</tr>";
-            }
-            html += "</table>";
-        }
-        $("#monsterParameters").html(html);
-    };
-    MonsterEditor.RemoveItemDrop = function (id) {
-        monsterEditor.selectedMonster.ItemDrop.splice(id, 1);
-        MonsterEditor.Render();
-    };
-    MonsterEditor.ChangeItemDrop = function (id, field, prop) {
-        if (typeof monsterEditor.selectedMonster.ItemDrop[id][prop] == "number") {
-            var v = parseFloat($("#" + field + id).val());
-            if (!isNaN(v))
-                monsterEditor.selectedMonster.ItemDrop[id][prop] = v;
-        }
-        else
-            monsterEditor.selectedMonster.ItemDrop[id][prop] = $("#" + field + id).val();
-    };
-    MonsterEditor.RemoveStatDrop = function (id) {
-        monsterEditor.selectedMonster.StatDrop.splice(id, 1);
-        MonsterEditor.Render();
-    };
-    MonsterEditor.ChangeStatDrop = function (id, field, prop) {
-        if (typeof monsterEditor.selectedMonster.StatDrop[id][prop] == "number") {
-            var v = parseFloat($("#" + field + id).val());
-            if (!isNaN(v))
-                monsterEditor.selectedMonster.StatDrop[id][prop] = v;
-        }
-        else
-            monsterEditor.selectedMonster.StatDrop[id][prop] = $("#" + field + id).val();
-    };
-    MonsterEditor.DeleteParam = function (name) {
-        delete monsterEditor.selectedMonster.Code.CodeVariables[name];
-        monsterEditor.selectedMonster.UpdateCodeVariables();
-        MonsterEditor.Render();
-    };
-    MonsterEditor.ChangeVariable = function (name) {
-        if (monsterEditor.selectedMonster.Name.toLowerCase() == "defaultmonster" && name == "name")
-            return;
-        var val = $("#var_" + name).val().trim();
-        if (name == "name" && val != "") {
-            if ((val.match(databaseNameRule) || !val || val.length < 1) || (world.GetMonster(val) && world.GetMonster(val) != monsterEditor.selectedMonster)) {
-                $("#var_name").css('backgroundColor', '#FFE0E0');
-                return;
-            }
-            $("#var_name").css('backgroundColor', '');
-            var oldName = monsterEditor.selectedMonster.Name;
-            var newName = val;
-            monsterEditor.selectedMonster.Name = val;
-            $("#monsterParameters > h1").html(val);
-            monsterEditor.selector.UpdateList();
-            for (var i = 0; i < world.Zones.length; i++) {
-                for (var j = 0; j < world.Zones[i].Monsters.length; j++) {
-                    if (world.Zones[i].Monsters[j].Name == oldName)
-                        world.Zones[i].Monsters[j].Name = newName;
-                }
-            }
-            MapUtilities.Modify("monster", oldName, newName);
-            SearchPanel.Update();
-        }
-        monsterEditor.selectedMonster.Code.CodeVariables[name].value = val;
-        monsterEditor.selectedMonster.UpdateCodeVariables();
-    };
-    MonsterEditor.Delete = function () {
-        if (monsterEditor.selectedMonster.Name.toLowerCase() == "defaultmonster") {
-            Framework.Alert("You cannot delete the DefaultMonster.");
-            return;
-        }
-        Framework.Confirm("Are you sure you want to delete this monster?", function () {
-            for (var i = 0; i < world.Monsters.length; i++) {
-                if (world.Monsters[i] == monsterEditor.selectedMonster) {
-                    world.Monsters.splice(i, 1);
-                    break;
-                }
-            }
-            var oldName = monsterEditor.selectedMonster.Name;
-            for (var i = 0; i < world.Zones.length; i++) {
-                for (var j = 0; j < world.Zones[i].Monsters.length;) {
-                    if (world.Zones[i].Monsters[j].Name == oldName)
-                        world.Zones[i].Monsters.splice(j, 1);
-                    else
-                        j++;
-                }
-            }
-            monsterEditor.selector.UpdateList();
-            monsterEditor.selector.Select(0);
-            MapUtilities.Modify("monster", oldName, null);
-            SearchPanel.Update();
-        });
-    };
-    MonsterEditor.Add = function () {
-        var nextId = world.Monsters.length;
-        while (world.GetMonster("monster_" + nextId))
-            nextId++;
-        var code = "/// Name: monster_" + nextId + ",string\n";
-        var defMonster = world.GetMonster("DefaultMonster");
-        // Recover the default code variables
-        for (var i in defMonster.Code.CodeVariables) {
-            if (i == "name")
-                continue;
-            code += "/// " + defMonster.Code.CodeVariables[i].name + ": " + defMonster.Code.CodeVariables[i].value + "," + defMonster.Code.CodeVariables[i].type + "\n";
-        }
-        // Find the name of the first art for a monster
-        var firstMonster = "";
-        for (var i in world.art.characters) {
-            firstMonster = i;
-            break;
-        }
-        code += "/// Art: " + i + ",monster_art\n";
-        // Recover the stats applied to monsters
-        for (var j = 0; j < world.Stats.length; j++) {
-            if (!world.Stats[j].MonsterStat)
-                continue;
-            code += "/// " + world.Stats[j].Name + ": " + world.Stats[j].DefaultValue + ",number\n";
-        }
-        monsterEditor.selectedMonster = KnownMonster.Rebuild(code);
-        monsterEditor.selectedMonster.DefaultMonster = defMonster;
-        world.Monsters.push(monsterEditor.selectedMonster);
-        monsterEditor.selector.UpdateList();
-        monsterEditor.selector.Select(world.Monsters.length - 1);
-        SearchPanel.Update();
-    };
-    MonsterEditor.Clone = function () {
-        if (monsterEditor.selectedMonster.Name.toLowerCase() == "defaultmonster")
-            return;
-        var nextId = world.Monsters.length;
-        while (world.GetMonster("monster_" + nextId))
-            nextId++;
-        var code = monsterEditor.selectedMonster.FullCode();
-        code = code.replace(/^\/\/\/\s*name:\s.*$/gim, "/// Name: monster_" + nextId + ",string\n");
-        var defMonster = world.GetMonster("DefaultMonster");
-        monsterEditor.selectedMonster = KnownMonster.Rebuild(code);
-        monsterEditor.selectedMonster.DefaultMonster = defMonster;
-        world.Monsters.push(monsterEditor.selectedMonster);
-        monsterEditor.selector.UpdateList();
-        monsterEditor.selector.Select(world.Monsters.length - 1);
-        SearchPanel.Update();
-    };
-    MonsterEditor.ChangeCode = function () {
-        $(".elementCodeWarning").hide();
-        var code = monsterEditor.editor.GetCode();
-        try {
-            monsterEditor.selectedMonster.Parse(code + "\n" + monsterEditor.selectedMonster.CodeVariables());
-        }
-        catch (ex) {
-        }
-    };
-    MonsterEditor.AddParam = function () {
-        Framework.Prompt("Enter the new parameter name:", "", function (newValue) {
-            if (!newValue.match(/^[a-z]+$/i)) {
-                Framework.Alert("Only letters are acceptable as parameter name.");
-                return;
-            }
-            monsterEditor.selectedMonster.Code.CodeVariables[newValue.toLowerCase()] = { name: newValue, type: "string", value: "" };
-            monsterEditor.selectedMonster.UpdateCodeVariables();
-            MonsterEditor.Render();
-        });
-    };
-    MonsterEditor.AddStat = function () {
-        if (monsterEditor.selectedMonster.Name == "DefaultMonster")
-            return;
-        monsterEditor.selectedMonster.StatDrop.push({ Name: world.Stats[0].Name, Quantity: 1, Probability: 100 });
-        MonsterEditor.Render();
-    };
-    MonsterEditor.AddItem = function () {
-        if (monsterEditor.selectedMonster.Name == "DefaultMonster")
-            return;
-        monsterEditor.selectedMonster.ItemDrop.push({ Name: world.InventoryObjects[0].Name, Quantity: 1, Probability: 100 });
-        MonsterEditor.Render();
-    };
-    return MonsterEditor;
-}());
-var npcEditor = new ((function () {
+var npcEditor = new (/** @class */ (function () {
     function class_40() {
     }
     return class_40;
 }()));
-var NPCEditor = (function () {
+var NPCEditor = /** @class */ (function () {
     function NPCEditor() {
     }
     NPCEditor.Dispose = function () {
@@ -23276,7 +23300,7 @@ var NPCEditor = (function () {
     };
     return NPCEditor;
 }());
-var NPCShopEditor = (function () {
+var NPCShopEditor = /** @class */ (function () {
     function NPCShopEditor() {
     }
     NPCShopEditor.ShowEditor = function () {
@@ -23365,13 +23389,13 @@ var NPCShopEditor = (function () {
     };
     return NPCShopEditor;
 }());
-var objectEditor = new ((function () {
+var objectEditor = new (/** @class */ (function () {
     function class_41() {
         this.editor = null;
     }
     return class_41;
 }()));
-var ObjectEditor = (function () {
+var ObjectEditor = /** @class */ (function () {
     function ObjectEditor() {
     }
     ObjectEditor.Dispose = function () {
@@ -23799,13 +23823,13 @@ var ObjectEditor = (function () {
     };
     return ObjectEditor;
 }());
-var objectTypeEditor = new ((function () {
+var objectTypeEditor = new (/** @class */ (function () {
     function class_42() {
         this.editor = null;
     }
     return class_42;
 }()));
-var ObjectTypeEditor = (function () {
+var ObjectTypeEditor = /** @class */ (function () {
     function ObjectTypeEditor() {
     }
     ObjectTypeEditor.Dispose = function () {
@@ -24138,13 +24162,13 @@ var ObjectTypeEditor = (function () {
     };
     return ObjectTypeEditor;
 }());
-var particleEditor = new ((function () {
+var particleEditor = new (/** @class */ (function () {
     function class_43() {
         this.refreshInterval = null;
     }
     return class_43;
 }()));
-var ParticleEditor = (function () {
+var ParticleEditor = /** @class */ (function () {
     function ParticleEditor() {
     }
     ParticleEditor.Dispose = function () {
@@ -24458,7 +24482,7 @@ var ParticleEditor = (function () {
     };
     return ParticleEditor;
 }());
-var PixelEditor = (function () {
+var PixelEditor = /** @class */ (function () {
     function PixelEditor() {
     }
     PixelEditor.Dispose = function () {
@@ -25511,11 +25535,11 @@ var PixelEditor = (function () {
                 PixelEditorColorChooser.ChooseShade(evt.keyCode - 49);
                 evt.cancelBubble = true;
                 break;
-            case 80:
+            case 80: // P for paint
                 PixelEditorActions.SelectAction('BlockPaint');
                 evt.cancelBubble = true;
                 break;
-            case 90:
+            case 90: // Z (Ctrl+Z for undo)
                 if (pixelEditor.keys[17] === true) {
                     pixelEditor.keys[17] = false;
                     PixelEditorActions.Undo();
@@ -25523,7 +25547,7 @@ var PixelEditor = (function () {
                     pixelEditor.keys[17] = true;
                 }
                 break;
-            case 89:
+            case 89: // Y (Ctrl+Y for redo)
                 if (pixelEditor.keys[17] === true) {
                     pixelEditor.keys[17] = false;
                     PixelEditorActions.Redo();
@@ -25531,15 +25555,15 @@ var PixelEditor = (function () {
                     pixelEditor.keys[17] = true;
                 }
                 break;
-            case 69:
+            case 69: // E for erase
                 PixelEditorActions.SelectAction('Eraser');
                 evt.cancelBubble = true;
                 break;
-            case 67:
+            case 67: // c for color picker
                 PixelEditorActions.SelectAction('Picker');
                 evt.cancelBubble = true;
                 break;
-            case 87:
+            case 87: // w for magic wand
                 PixelEditorActions.SelectAction('MagicWand');
                 evt.cancelBubble = true;
                 break;
@@ -25781,7 +25805,7 @@ var PixelEditor = (function () {
     };
     return PixelEditor;
 }());
-var PixelEditorActions = (function () {
+var PixelEditorActions = /** @class */ (function () {
     function PixelEditorActions() {
     }
     PixelEditorActions.SelectAction = function (action) {
@@ -26203,6 +26227,7 @@ var PixelEditorActions = (function () {
             if (oldWidth < width || oldHeight < height) {
                 PixelEditorActions.RepackMapObjects(oldImage);
             }
+            // We just need to change the map object info
             else {
                 var name = PixelEditorActions.FindMapObject(pixelEditor.currentSprite.x, pixelEditor.currentSprite.y);
                 if (name) {
@@ -26603,7 +26628,7 @@ var PixelEditorActions = (function () {
     };
     return PixelEditorActions;
 }());
-var PixelEditorColorChooser = (function () {
+var PixelEditorColorChooser = /** @class */ (function () {
     function PixelEditorColorChooser() {
     }
     PixelEditorColorChooser.ColorPickerMouseDown = function (evt) {
@@ -26720,7 +26745,7 @@ var PixelEditorColorChooser = (function () {
     };
     return PixelEditorColorChooser;
 }());
-var pixelEditor = new ((function () {
+var pixelEditor = new (/** @class */ (function () {
     function class_44() {
         this.colorPickerItem = null;
         this.colorPositionX = 1;
@@ -26748,7 +26773,7 @@ var pixelEditor = new ((function () {
     }
     return class_44;
 }()));
-var PixelEditorLayers = (function () {
+var PixelEditorLayers = /** @class */ (function () {
     function PixelEditorLayers() {
     }
     PixelEditorLayers.PaintLayer = function (ctx, width, height, layer, zoomFactor, offsetX, offsetY) {
@@ -27048,7 +27073,7 @@ var PixelEditorLayers = (function () {
     return PixelEditorLayers;
 }());
 ///<reference path="../../Logic/MovingActors/PathSolver.ts" />
-var play = new ((function () {
+var play = new (/** @class */ (function () {
     function class_45() {
         this.keys = [];
         this.path = null;
@@ -27073,7 +27098,7 @@ var play = new ((function () {
     }
     return class_45;
 }()));
-var Play = (function () {
+var Play = /** @class */ (function () {
     function Play() {
     }
     Play.Dispose = function () {
@@ -27378,11 +27403,11 @@ var Play = (function () {
         if (play.inField)
             return;
         var keyString = evt.key.toLowerCase();
-        if (play.keys[16])
+        if (play.keys[16]) // Shift key
             keyString = keyString.toUpperCase();
-        if (play.keys[17])
+        if (play.keys[17]) // Control key
             keyString = "^" + keyString;
-        if (play.keys[18])
+        if (play.keys[18]) // Alt key
             keyString = "!" + keyString;
         if (play.keyHook[keyString]) {
             ExecuteCodeFunction.ExecuteFunction([play.keyHook[keyString]]);
@@ -27393,16 +27418,16 @@ var Play = (function () {
             case 13:
                 Chat.Focus();
                 break;
-            case 73:
+            case 73: // i
                 InventoryMenu.Toggle();
                 break;
-            case 74:
+            case 74: // j
                 JournalMenu.Toggle();
                 break;
-            case 77:
+            case 77: // m
                 MessageMenu.Toggle();
                 break;
-            case 80:
+            case 80: // p
                 ProfileMenu.Toggle();
                 break;
             case 48: // 0
@@ -27414,7 +27439,7 @@ var Play = (function () {
             case 54: // 6
             case 55: // 7
             case 56: // 8
-            case 57:
+            case 57: // 9
                 SkillBar.SelectQuickslot(evt.keyCode - 48);
                 break;
             default:
@@ -27731,13 +27756,13 @@ var Play = (function () {
     };
     return Play;
 }());
-var questEditor = new ((function () {
+var questEditor = new (/** @class */ (function () {
     function class_46() {
         this.selectedQuest = null;
     }
     return class_46;
 }()));
-var QuestEditor = (function () {
+var QuestEditor = /** @class */ (function () {
     function QuestEditor() {
     }
     QuestEditor.Dispose = function () {
@@ -27888,7 +27913,7 @@ var QuestEditor = (function () {
     return QuestEditor;
 }());
 ///<reference path="../../../Common/Libs/MiniQuery.ts" />
-var skillEditor = new ((function () {
+var skillEditor = new (/** @class */ (function () {
     function class_47() {
         this.selectedSkill = null;
         this.editor = null;
@@ -27896,7 +27921,7 @@ var skillEditor = new ((function () {
     }
     return class_47;
 }()));
-var SkillEditor = (function () {
+var SkillEditor = /** @class */ (function () {
     function SkillEditor() {
     }
     SkillEditor.Dispose = function () {
@@ -28135,7 +28160,7 @@ var SkillEditor = (function () {
     return SkillEditor;
 }());
 ///<reference path="../../../Common/Libs/MiniQuery.ts" />
-var statEditor = new ((function () {
+var statEditor = new (/** @class */ (function () {
     function class_48() {
         this.selectedStat = null;
         this.selector = null;
@@ -28144,7 +28169,7 @@ var statEditor = new ((function () {
     }
     return class_48;
 }()));
-var StatEditor = (function () {
+var StatEditor = /** @class */ (function () {
     function StatEditor() {
     }
     StatEditor.Dispose = function () {
@@ -28334,7 +28359,7 @@ function CanUpgrade()\n\
     };
     return StatEditor;
 }());
-var StorageExplorer = (function () {
+var StorageExplorer = /** @class */ (function () {
     function StorageExplorer() {
     }
     StorageExplorer.Dispose = function () {
@@ -28422,14 +28447,14 @@ var StorageExplorer = (function () {
     return StorageExplorer;
 }());
 ///<reference path="../../../Common/Libs/MiniQuery.ts" />
-var temporaryEffectEditor = new ((function () {
+var temporaryEffectEditor = new (/** @class */ (function () {
     function class_49() {
         this.selectedEffect = null;
         this.selector = null;
     }
     return class_49;
 }()));
-var TemporaryEffectEditor = (function () {
+var TemporaryEffectEditor = /** @class */ (function () {
     function TemporaryEffectEditor() {
     }
     TemporaryEffectEditor.Dispose = function () {
@@ -28639,12 +28664,12 @@ var TemporaryEffectEditor = (function () {
     return TemporaryEffectEditor;
 }());
 ///<reference path="../../../Common/Libs/MiniQuery.ts" />
-var tilesetExplorer = new ((function () {
+var tilesetExplorer = new (/** @class */ (function () {
     function class_50() {
     }
     return class_50;
 }()));
-var TilesetExplorer = (function () {
+var TilesetExplorer = /** @class */ (function () {
     function TilesetExplorer() {
     }
     TilesetExplorer.Dispose = function () {
@@ -28694,12 +28719,12 @@ var TilesetExplorer = (function () {
     };
     return TilesetExplorer;
 }());
-var viewPlayer = new ((function () {
+var viewPlayer = new (/** @class */ (function () {
     function class_51() {
     }
     return class_51;
 }()));
-var ViewPlayer = (function () {
+var ViewPlayer = /** @class */ (function () {
     function ViewPlayer() {
     }
     ViewPlayer.Dispose = function () {
@@ -28858,7 +28883,7 @@ var ViewPlayer = (function () {
     };
     return ViewPlayer;
 }());
-var ZoneEditor = (function () {
+var ZoneEditor = /** @class */ (function () {
     function ZoneEditor() {
     }
     ZoneEditor.Dispose = function () {
@@ -29222,7 +29247,7 @@ var ZoneEditor = (function () {
     };
     return ZoneEditor;
 }());
-var zoneEditor = new ((function () {
+var zoneEditor = new (/** @class */ (function () {
     function class_52() {
         this.selectedZone = null;
         this.selector = null;
@@ -29233,6 +29258,60 @@ var zoneEditor = new ((function () {
     }
     return class_52;
 }()));
+///<reference path="../MovingActor.ts" />
+var MapMessage = /** @class */ (function (_super) {
+    __extends(MapMessage, _super);
+    function MapMessage(world) {
+        var _this = _super.call(this, world) || this;
+        _this.life = 0;
+        return _this;
+    }
+    MapMessage.Create = function (message, color, worldArea, x, y) {
+        var result = new MapMessage(world);
+        result.CurrentArea = worldArea;
+        result.X = x;
+        result.Y = y;
+        result.message = message;
+        result.color = color;
+        return result;
+    };
+    MapMessage.prototype.CanReachArea = function (x, y) {
+        return true;
+    };
+    MapMessage.prototype.Handle = function () {
+        this.Y -= 0.4;
+        this.life++;
+        if (this.life > 100)
+            this.Kill();
+        else
+            this.UpdatePosition();
+    };
+    MapMessage.prototype.Draw = function (renderEngine, ctx, x, y) {
+        var width = ctx.measureText(this.message).width;
+        if (this.life < 50)
+            ctx.globalAlpha = 1;
+        else {
+            var a = (50 - (this.life - 50)) / 50;
+            if (a < 0)
+                return;
+            ctx.globalAlpha = a;
+        }
+        var cx = x + Math.sin(this.life / 10) * 5;
+        ctx.font = "13px sans-serif";
+        ctx.strokeStyle = "#000000";
+        ctx.lineWidth = 4;
+        ctx.strokeText(this.message, Math.floor(cx) + 0.5, y + 0.5);
+        ctx.fillStyle = this.color;
+        ctx.fillText(this.message, Math.floor(cx) + 0.5, y + 0.5);
+        ctx.globalAlpha = 1;
+    };
+    MapMessage.prototype.PlayerInteract = function (ax, ay) {
+    };
+    MapMessage.prototype.PlayerMouseInteract = function (ax, ay) {
+        return false;
+    };
+    return MapMessage;
+}(MovingActor));
 var monsterCodes = ["/// Name: DefaultMonster,string\n\
 /// Speed: 2,number\n\
 /// BaseDamage: 5,number\n\
@@ -29312,7 +29391,7 @@ function AttackAnimationDone(monster)\n\
 /// Life: 50,number\n\
 /// StatDrop: [{'Name':'Experience','Quantity':25,'Probability':100},{'Name':'Money','Quantity':50,'Probability':50}],string\n\
 "];
-var DefaultMonsters = (function () {
+var DefaultMonsters = /** @class */ (function () {
     function DefaultMonsters() {
     }
     DefaultMonsters.Generate = function (game) {
@@ -29344,7 +29423,7 @@ var DefaultMonsters = (function () {
     };
     return DefaultMonsters;
 }());
-var KnownMonster = (function () {
+var KnownMonster = /** @class */ (function () {
     function KnownMonster() {
         this.StatDrop = [];
         this.ItemDrop = [];
@@ -29432,7 +29511,7 @@ var KnownMonster = (function () {
     return KnownMonster;
 }());
 ///<reference path="../MovingActor.ts" />
-var Monster = (function (_super) {
+var Monster = /** @class */ (function (_super) {
     __extends(Monster, _super);
     function Monster(world) {
         var _this = _super.call(this, world) || this;
@@ -29554,6 +29633,7 @@ var Monster = (function (_super) {
             this.Y = ny;
             this.UpdatePosition();
         }
+        // Let's try to turn 180°
         else {
             this.realDirection += Math.PI;
             if (this.realDirection < 0)
@@ -29659,18 +29739,18 @@ var Monster = (function (_super) {
                 var ox = sideAttack[Math.floor(this.ActionAnimationStep * sideAttack.length / 40)].x;
                 var oy = sideAttack[Math.floor(this.ActionAnimationStep * sideAttack.length / 40)].y;
                 switch (this.Direction) {
-                    case 0:
+                    case 0: // Down
                         iy -= ox;
                         break;
-                    case 1:
+                    case 1: // Left
                         ix += ox;
                         iy -= oy;
                         break;
-                    case 2:
+                    case 2: // Right
                         ix -= ox;
                         iy -= oy;
                         break;
-                    case 3:
+                    case 3: // Up
                         iy += ox;
                         break;
                     default:
@@ -29740,61 +29820,7 @@ var Monster = (function (_super) {
     };
     return Monster;
 }(MovingActor));
-///<reference path="../MovingActor.ts" />
-var MapMessage = (function (_super) {
-    __extends(MapMessage, _super);
-    function MapMessage(world) {
-        var _this = _super.call(this, world) || this;
-        _this.life = 0;
-        return _this;
-    }
-    MapMessage.Create = function (message, color, worldArea, x, y) {
-        var result = new MapMessage(world);
-        result.CurrentArea = worldArea;
-        result.X = x;
-        result.Y = y;
-        result.message = message;
-        result.color = color;
-        return result;
-    };
-    MapMessage.prototype.CanReachArea = function (x, y) {
-        return true;
-    };
-    MapMessage.prototype.Handle = function () {
-        this.Y -= 0.4;
-        this.life++;
-        if (this.life > 100)
-            this.Kill();
-        else
-            this.UpdatePosition();
-    };
-    MapMessage.prototype.Draw = function (renderEngine, ctx, x, y) {
-        var width = ctx.measureText(this.message).width;
-        if (this.life < 50)
-            ctx.globalAlpha = 1;
-        else {
-            var a = (50 - (this.life - 50)) / 50;
-            if (a < 0)
-                return;
-            ctx.globalAlpha = a;
-        }
-        var cx = x + Math.sin(this.life / 10) * 5;
-        ctx.font = "13px sans-serif";
-        ctx.strokeStyle = "#000000";
-        ctx.lineWidth = 4;
-        ctx.strokeText(this.message, Math.floor(cx) + 0.5, y + 0.5);
-        ctx.fillStyle = this.color;
-        ctx.fillText(this.message, Math.floor(cx) + 0.5, y + 0.5);
-        ctx.globalAlpha = 1;
-    };
-    MapMessage.prototype.PlayerInteract = function (ax, ay) {
-    };
-    MapMessage.prototype.PlayerMouseInteract = function (ax, ay) {
-        return false;
-    };
-    return MapMessage;
-}(MovingActor));
-var Answer = (function () {
+var Answer = /** @class */ (function () {
     function Answer() {
         this.Text = "Ok";
         this.Actions = [];
@@ -29803,7 +29829,7 @@ var Answer = (function () {
     }
     return Answer;
 }());
-var npcNames = new ((function () {
+var npcNames = new (/** @class */ (function () {
     function class_53() {
         this.firstNames = ["Adelaide", "Aleida", "Alexia", "Alianor", "Alice", "Althalos", "Amelia", "Anastas", "Angmar", "Anne", "Arabella", "Ariana",
             "Arthur", "Asher", "Atheena", "Ayleth", "Barda", "Beatrix", "Benedict", "Benevolence", "Berinon", "Borin", "Brangian", "Brom",
@@ -29830,7 +29856,7 @@ var npcNames = new ((function () {
     }
     return class_53;
 }()));
-var NPC = (function () {
+var NPC = /** @class */ (function () {
     function NPC() {
     }
     NPC.GenerateName = function (firstNameOnly) {
@@ -29859,12 +29885,12 @@ var NPC = (function () {
     return NPC;
 }());
 /// <reference path="../MovingActor.ts" />
-var npc = new ((function () {
+var npc = new (/** @class */ (function () {
     function class_54() {
     }
     return class_54;
 }()));
-var NPCActor = (function (_super) {
+var NPCActor = /** @class */ (function (_super) {
     __extends(NPCActor, _super);
     function NPCActor() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -30073,7 +30099,7 @@ var NPCActor = (function (_super) {
     return NPCActor;
 }(MovingActor));
 ///<reference path="../MovingActor.ts" />
-var OtherPlayer = (function (_super) {
+var OtherPlayer = /** @class */ (function (_super) {
     __extends(OtherPlayer, _super);
     function OtherPlayer() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -30160,7 +30186,7 @@ var OtherPlayer = (function (_super) {
     return OtherPlayer;
 }(MovingActor));
 ///<reference path="../MovingActor.ts" />
-var playerEffects = new ((function () {
+var playerEffects = new (/** @class */ (function () {
     function class_55() {
     }
     return class_55;
@@ -30182,7 +30208,7 @@ var EmotesArt;
     EmotesArt[EmotesArt["grr"] = 12] = "grr";
     EmotesArt[EmotesArt["ah"] = 13] = "ah";
 })(EmotesArt || (EmotesArt = {}));
-var Player = (function (_super) {
+var Player = /** @class */ (function (_super) {
     __extends(Player, _super);
     function Player(world) {
         var _this = _super.call(this, world) || this;
@@ -30432,18 +30458,18 @@ var Player = (function (_super) {
                     var ox = sideAttack[Math.floor(this.ActionAnimationStep * sideAttack.length / 40)].x;
                     var oy = sideAttack[Math.floor(this.ActionAnimationStep * sideAttack.length / 40)].y;
                     switch (this.Direction) {
-                        case 0:
+                        case 0: // Down
                             iy -= ox;
                             break;
-                        case 1:
+                        case 1: // Left
                             ix += ox;
                             iy -= oy;
                             break;
-                        case 2:
+                        case 2: // Right
                             ix -= ox;
                             iy -= oy;
                             break;
-                        case 3:
+                        case 3: // Up
                             iy += ox;
                             break;
                         default:
@@ -30987,7 +31013,7 @@ var Player = (function (_super) {
     return Player;
 }(MovingActor));
 /// <reference path="../CodeEnvironement.ts" />
-var EngineActor = (function () {
+var EngineActor = /** @class */ (function () {
     function EngineActor() {
     }
     EngineActor.prototype.Kill = function (values, env) {
@@ -31383,85 +31409,85 @@ var EngineActor = (function () {
         if (!world.GetParticleSystem(values[1]))
             throw "The particle effect '" + values[1] + "' is unknown at " + line + ":" + column;
     };
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the monster to kill." }], "Kills an a monster and remove it from the map.")
+    ], EngineActor.prototype, "Kill", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the monster to evaluate." }], "Distance between the player and the monster.")
+    ], EngineActor.prototype, "DistanceToPlayer", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "statName", description: "The STAT to check." }], "Returns true if the actor's stat has a maximum value.")
+    ], EngineActor.prototype, "HasMaxValue", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "statName", description: "The STAT to check." }], "Returns the maximum the given stat of the checked actor is.")
+    ], EngineActor.prototype, "GetMaxValue", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "statName", description: "The STAT to increase." }, { name: "value", description: "Quantity to increase." }], "Increase the actor stat by the given value.")
+    ], EngineActor.prototype, "IncreaseStat", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "statName", description: "The STAT to reduce." }, { name: "value", description: "Quantity to reduce." }], "Reduce the actor stat by the given value.")
+    ], EngineActor.prototype, "ReduceStat", null);
+    __decorate([
+        ApiMethod([{ name: "x", description: "X coordinate of the center of effect." }, { name: "y", description: "Y coordinate of the center of effect." }, { name: "statName", description: "The STAT to reduce." }, { name: "value", description: "Quantity to reduce." }, { name: "radius", description: "Area of effect." }], "Reduce all the actor (non player) within the radius stat by the given value.")
+    ], EngineActor.prototype, "RadiusReduceStat", null);
+    __decorate([
+        ApiMethod([{ name: "x", description: "X coordinate of the center of effect." }, { name: "y", description: "Y coordinate of the center of effect." }, { name: "statName", description: "The STAT to reduce." }, { name: "value", description: "Quantity to reduce." }, { name: "radius", description: "Area of effect." }], "Increase all the actor (non player) within the radius stat by the given value.")
+    ], EngineActor.prototype, "RadiusIncreaseStat", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "statName", description: "The STAT to read." }], "Get the player stat by the given value.")
+    ], EngineActor.prototype, "GetStat", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "statName", description: "The STAT to modify." }, { name: "value", description: "Value to set." }], "Set the player stat by the given value.")
+    ], EngineActor.prototype, "SetStat", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }], "Returns true if the actor is a monser.")
+    ], EngineActor.prototype, "IsMonster", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "timerName", description: "The name of the timer to check." }], "Returns true if the actor's timer is currently running. If it's finished it will return false.")
+    ], EngineActor.prototype, "TimerRunning", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "timerName", description: "The name of the timer to set." }, { name: "time", description: "The time the actor's timer needs to be set to." }], "Sets a timer which will run till the full time is elapsed.")
+    ], EngineActor.prototype, "StartTimer", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "timerName", description: "The name of the timer to stop." }], "Stops a currently actor's running timer.")
+    ], EngineActor.prototype, "StopTimer", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "timerName", description: "The name of the timer to check." }], "Returns the time left or 0 on the given actor's timer.")
+    ], EngineActor.prototype, "GetTimer", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }], "Returns the X coordinate of the actor.")
+    ], EngineActor.prototype, "GetX", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }], "Returns the Y coordinate of the actor.")
+    ], EngineActor.prototype, "GetY", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "name", description: "The variable to set." }, { name: "value", description: "The value to set." }], "Set a variable which can be read from another function or later on.")
+    ], EngineActor.prototype, "SetVariable", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "name", description: "The variable to read." }], "Retreives a variable previously stored.")
+    ], EngineActor.prototype, "GetVariable", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }], "Returns true if an animation is currently running.")
+    ], EngineActor.prototype, "IsAnimationRunning", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "name", description: "The animation effect to set. Can be either 'none', 'attack' or 'damage'." }], "Sets the animation effect.")
+    ], EngineActor.prototype, "SetAnimation", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "name", description: "The function name to execute when the player animation is over." }], "Will execute the function of the current block when the animation is over.")
+    ], EngineActor.prototype, "ExecuteWhenAnimationDone", null);
+    __decorate([
+        ApiMethod([], "Returns the current actor ID.")
+    ], EngineActor.prototype, "GetCurrentActor", null);
+    __decorate([
+        ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "name", description: "The particle effect name." }, { name: "time", description: "Time to keep this particle effect on the map." }], "Place particle effect on an actor for a given time.")
+    ], EngineActor.prototype, "AddParticleEffect", null);
+    EngineActor = __decorate([
+        ApiClass
+    ], EngineActor);
     return EngineActor;
 }());
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the monster to kill." }], "Kills an a monster and remove it from the map.")
-], EngineActor.prototype, "Kill", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the monster to evaluate." }], "Distance between the player and the monster.")
-], EngineActor.prototype, "DistanceToPlayer", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "statName", description: "The STAT to check." }], "Returns true if the actor's stat has a maximum value.")
-], EngineActor.prototype, "HasMaxValue", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "statName", description: "The STAT to check." }], "Returns the maximum the given stat of the checked actor is.")
-], EngineActor.prototype, "GetMaxValue", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "statName", description: "The STAT to increase." }, { name: "value", description: "Quantity to increase." }], "Increase the actor stat by the given value.")
-], EngineActor.prototype, "IncreaseStat", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "statName", description: "The STAT to reduce." }, { name: "value", description: "Quantity to reduce." }], "Reduce the actor stat by the given value.")
-], EngineActor.prototype, "ReduceStat", null);
-__decorate([
-    ApiMethod([{ name: "x", description: "X coordinate of the center of effect." }, { name: "y", description: "Y coordinate of the center of effect." }, { name: "statName", description: "The STAT to reduce." }, { name: "value", description: "Quantity to reduce." }, { name: "radius", description: "Area of effect." }], "Reduce all the actor (non player) within the radius stat by the given value.")
-], EngineActor.prototype, "RadiusReduceStat", null);
-__decorate([
-    ApiMethod([{ name: "x", description: "X coordinate of the center of effect." }, { name: "y", description: "Y coordinate of the center of effect." }, { name: "statName", description: "The STAT to reduce." }, { name: "value", description: "Quantity to reduce." }, { name: "radius", description: "Area of effect." }], "Increase all the actor (non player) within the radius stat by the given value.")
-], EngineActor.prototype, "RadiusIncreaseStat", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "statName", description: "The STAT to read." }], "Get the player stat by the given value.")
-], EngineActor.prototype, "GetStat", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "statName", description: "The STAT to modify." }, { name: "value", description: "Value to set." }], "Set the player stat by the given value.")
-], EngineActor.prototype, "SetStat", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }], "Returns true if the actor is a monser.")
-], EngineActor.prototype, "IsMonster", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "timerName", description: "The name of the timer to check." }], "Returns true if the actor's timer is currently running. If it's finished it will return false.")
-], EngineActor.prototype, "TimerRunning", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "timerName", description: "The name of the timer to set." }, { name: "time", description: "The time the actor's timer needs to be set to." }], "Sets a timer which will run till the full time is elapsed.")
-], EngineActor.prototype, "StartTimer", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "timerName", description: "The name of the timer to stop." }], "Stops a currently actor's running timer.")
-], EngineActor.prototype, "StopTimer", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "timerName", description: "The name of the timer to check." }], "Returns the time left or 0 on the given actor's timer.")
-], EngineActor.prototype, "GetTimer", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }], "Returns the X coordinate of the actor.")
-], EngineActor.prototype, "GetX", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }], "Returns the Y coordinate of the actor.")
-], EngineActor.prototype, "GetY", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "name", description: "The variable to set." }, { name: "value", description: "The value to set." }], "Set a variable which can be read from another function or later on.")
-], EngineActor.prototype, "SetVariable", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "name", description: "The variable to read." }], "Retreives a variable previously stored.")
-], EngineActor.prototype, "GetVariable", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }], "Returns true if an animation is currently running.")
-], EngineActor.prototype, "IsAnimationRunning", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "name", description: "The animation effect to set. Can be either 'none', 'attack' or 'damage'." }], "Sets the animation effect.")
-], EngineActor.prototype, "SetAnimation", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "name", description: "The function name to execute when the player animation is over." }], "Will execute the function of the current block when the animation is over.")
-], EngineActor.prototype, "ExecuteWhenAnimationDone", null);
-__decorate([
-    ApiMethod([], "Returns the current actor ID.")
-], EngineActor.prototype, "GetCurrentActor", null);
-__decorate([
-    ApiMethod([{ name: "actorId", description: "The unique ID identifying the actor to evaluate." }, { name: "name", description: "The particle effect name." }, { name: "time", description: "Time to keep this particle effect on the map." }], "Place particle effect on an actor for a given time.")
-], EngineActor.prototype, "AddParticleEffect", null);
-EngineActor = __decorate([
-    ApiClass
-], EngineActor);
 /// <reference path="../CodeEnvironement.ts" />
-var EngineArray = (function () {
+var EngineArray = /** @class */ (function () {
     function EngineArray() {
     }
     EngineArray.prototype.IsArray = function (values, env) {
@@ -31480,22 +31506,22 @@ var EngineArray = (function () {
         values[0].Value.splice(values[1].GetNumber(), 1);
         return null;
     };
+    __decorate([
+        ApiMethod([{ name: "variable", description: "The variable to check." }], "Checks if a variable is an array.")
+    ], EngineArray.prototype, "IsArray", null);
+    __decorate([
+        ApiMethod([{ name: "variable", description: "The variable to check." }], "Returns the number of elements of an array.")
+    ], EngineArray.prototype, "Count", null);
+    __decorate([
+        ApiMethod([{ name: "variable", description: "The variable to modify." }, { name: "index", description: "The position of the array to remove." }], "Removes an element from the array.")
+    ], EngineArray.prototype, "Remove", null);
+    EngineArray = __decorate([
+        ApiClass
+    ], EngineArray);
     return EngineArray;
 }());
-__decorate([
-    ApiMethod([{ name: "variable", description: "The variable to check." }], "Checks if a variable is an array.")
-], EngineArray.prototype, "IsArray", null);
-__decorate([
-    ApiMethod([{ name: "variable", description: "The variable to check." }], "Returns the number of elements of an array.")
-], EngineArray.prototype, "Count", null);
-__decorate([
-    ApiMethod([{ name: "variable", description: "The variable to modify." }, { name: "index", description: "The position of the array to remove." }], "Removes an element from the array.")
-], EngineArray.prototype, "Remove", null);
-EngineArray = __decorate([
-    ApiClass
-], EngineArray);
 /// <reference path="../CodeEnvironement.ts" />
-var EngineChat = (function () {
+var EngineChat = /** @class */ (function () {
     function EngineChat() {
     }
     EngineChat.prototype.SendMessage = function (values, env) {
@@ -31550,31 +31576,31 @@ var EngineChat = (function () {
         });
         return null;
     };
+    __decorate([
+        ApiMethod([{ name: "channel", description: "Name of the channel to send it to." }, { name: "message", description: "Message to send" }], "Sends a chat message.")
+    ], EngineChat.prototype, "SendMessage", null);
+    __decorate([
+        ApiMethod([{ name: "botName", description: "Bot name used for posting the message." }, { name: "channel", description: "Name of the channel to send it to." }, { name: "message", description: "Message to send" }], "Sends a chat message as a bot.")
+    ], EngineChat.prototype, "SendBotMessage", null);
+    __decorate([
+        ApiMethod([], "Returns the current active channel.")
+    ], EngineChat.prototype, "CurrentChannel", null);
+    __decorate([
+        ApiMethod([{ name: "line", description: "Chat line to split" }], "Split a chat line into words.")
+    ], EngineChat.prototype, "SplitLine", null);
+    __decorate([
+        ApiMethod([{ name: "playerName", description: "The player to ban." }, { name: "days", description: "The number of days to ban." }], "Ban a player from the chat for the specified number of days.")
+    ], EngineChat.prototype, "Ban", null);
+    __decorate([
+        ApiMethod([{ name: "playerName", description: "The player to mute." }, { name: "minutes", description: "The minutes to mute." }], "Mute a player for the specified number of minutes.")
+    ], EngineChat.prototype, "Mute", null);
+    EngineChat = __decorate([
+        ApiClass
+    ], EngineChat);
     return EngineChat;
 }());
-__decorate([
-    ApiMethod([{ name: "channel", description: "Name of the channel to send it to." }, { name: "message", description: "Message to send" }], "Sends a chat message.")
-], EngineChat.prototype, "SendMessage", null);
-__decorate([
-    ApiMethod([{ name: "botName", description: "Bot name used for posting the message." }, { name: "channel", description: "Name of the channel to send it to." }, { name: "message", description: "Message to send" }], "Sends a chat message as a bot.")
-], EngineChat.prototype, "SendBotMessage", null);
-__decorate([
-    ApiMethod([], "Returns the current active channel.")
-], EngineChat.prototype, "CurrentChannel", null);
-__decorate([
-    ApiMethod([{ name: "line", description: "Chat line to split" }], "Split a chat line into words.")
-], EngineChat.prototype, "SplitLine", null);
-__decorate([
-    ApiMethod([{ name: "playerName", description: "The player to ban." }, { name: "days", description: "The number of days to ban." }], "Ban a player from the chat for the specified number of days.")
-], EngineChat.prototype, "Ban", null);
-__decorate([
-    ApiMethod([{ name: "playerName", description: "The player to mute." }, { name: "minutes", description: "The minutes to mute." }], "Mute a player for the specified number of minutes.")
-], EngineChat.prototype, "Mute", null);
-EngineChat = __decorate([
-    ApiClass
-], EngineChat);
 /// <reference path="../CodeEnvironement.ts" />
-var engineDisplay = new ((function () {
+var engineDisplay = new (/** @class */ (function () {
     function class_56() {
         this.dialogSideButtons = [];
         this.dialogButtons = [];
@@ -31582,9 +31608,10 @@ var engineDisplay = new ((function () {
     }
     return class_56;
 }()));
-var EngineDisplay = EngineDisplay_1 = (function () {
+var EngineDisplay = /** @class */ (function () {
     function EngineDisplay() {
     }
+    EngineDisplay_1 = EngineDisplay;
     EngineDisplay.prototype.AddMapMessage = function (values, env) {
         if (values[0] === null || values[1] === null || values[2] === null)
             return;
@@ -31878,98 +31905,99 @@ var EngineDisplay = EngineDisplay_1 = (function () {
         var env = CodeParser.Parse("function buttonToExec() { " + func + "}");
         env.ExecuteFunction("buttonToExec", []);
     };
+    var EngineDisplay_1;
+    __decorate([
+        ApiMethod([{ name: "x", description: "The X coordinate where to place the map message" }, { name: "y", description: "The Y coordinate where to place the map message" }, { name: "message", description: "The message to place the map message" }, { name: "color", description: "(optional) The color to use to display the message. If skipped it will be white. Otherwise use the web color format." }], "Place a small floating temporary message on the map.")
+    ], EngineDisplay.prototype, "AddMapMessage", null);
+    __decorate([
+        ApiMethod([], "Shows the minimap on the screen.")
+    ], EngineDisplay.prototype, "ShowMinimap", null);
+    __decorate([
+        ApiMethod([], "Hides the minimap on the screen.")
+    ], EngineDisplay.prototype, "HideMinimap", null);
+    __decorate([
+        ApiMethod([{ name: "x", description: "The X coordinate where to place the map message" }, { name: "y", description: "The Y coordinate where to place the map message" }, { name: "name", description: "The particle effect name." }, { name: "time", description: "Time to keep this particle effect on the map." }], "Place particle effect on a map for a given time.")
+    ], EngineDisplay.prototype, "ParticleEffect", null);
+    __decorate([
+        ApiMethod([{ name: "message", description: "The message to show on the error log" }], "Display a message in the error log.")
+    ], EngineDisplay.prototype, "Log", null);
+    __decorate([
+        ApiMethod([{ name: "title", description: "The title of the dialog box." }], "Set the title of the dialog box.")
+    ], EngineDisplay.prototype, "SetDialogTitle", null);
+    __decorate([
+        ApiMethod([], "Shows the dialog box.")
+    ], EngineDisplay.prototype, "ShowDialog", null);
+    __decorate([
+        ApiMethod([{ name: "content", description: "The content as BB code." }], "Set the content of the dialog box.")
+    ], EngineDisplay.prototype, "SetDialogText", null);
+    __decorate([
+        ApiMethod([{ name: "imageId", description: "The id of the image." }, { name: "src", description: "Image source info." }], "Replace the current image with a new image.")
+    ], EngineDisplay.prototype, "ReplaceImage", null);
+    __decorate([
+        ApiMethod([{ name: "fieldName", description: "The field to read." }], "Reads a field and returns the value.")
+    ], EngineDisplay.prototype, "GetFieldValue", null);
+    __decorate([
+        ApiMethod([{ name: "fieldName", description: "The field to set." }, { name: "value", description: "The value to set." }], "Set the value of a field.")
+    ], EngineDisplay.prototype, "SetFieldValue", null);
+    __decorate([
+        ApiMethod([{ name: "fieldName", description: "The field to change." }, { name: "value", description: "The value of the option to set." }, { name: "text", description: "(optional) The text to display for the option." }], "Add a value to a dropdown menu.")
+    ], EngineDisplay.prototype, "AddOption", null);
+    __decorate([
+        ApiMethod([{ name: "fieldName", description: "The field to change." }], "Remove all the options of a dropdown.")
+    ], EngineDisplay.prototype, "ClearOptions", null);
+    __decorate([
+        ApiMethod([], "Clear up all the buttons on the side of the dialog.")
+    ], EngineDisplay.prototype, "ClearDialogSideButtons", null);
+    __decorate([
+        ApiMethod([{ name: "label", description: "Label of the button to add." }, { name: "functionToCall", description: "Function to call back when the button is pressed." }], "Add a button to the side of the dialog.")
+    ], EngineDisplay.prototype, "AddDialogSideButton", null);
+    __decorate([
+        ApiMethod([], "Dock the dialog to the bottom of the screen.")
+    ], EngineDisplay.prototype, "DockDialogBottom", null);
+    __decorate([
+        ApiMethod([], "Dock the dialog to the top of the screen.")
+    ], EngineDisplay.prototype, "DockDialogTop", null);
+    __decorate([
+        ApiMethod([], "Dock the dialog to the left of the screen.")
+    ], EngineDisplay.prototype, "DockDialogLeft", null);
+    __decorate([
+        ApiMethod([], "Dock the dialog to the right of the screen.")
+    ], EngineDisplay.prototype, "DockDialogRight", null);
+    __decorate([
+        ApiMethod([], "Place the dialog in the center.")
+    ], EngineDisplay.prototype, "DialogCenter", null);
+    __decorate([
+        ApiMethod([], "Dialog will take all the width of the screen.")
+    ], EngineDisplay.prototype, "DialogFillWidth", null);
+    __decorate([
+        ApiMethod([], "Dialog will take all the height of the screen.")
+    ], EngineDisplay.prototype, "DialogFillHeight", null);
+    __decorate([
+        ApiMethod([{ name: "height", description: "The wished height of the dialog box. If the parameter is a string and ends with a % sign it will be taken as % of the screen size." }], "Dialog will take all the height of the screen.")
+    ], EngineDisplay.prototype, "DialogHeight", null);
+    __decorate([
+        ApiMethod([{ name: "width", description: "The wished width of the dialog box. If the parameter is a string and ends with a % sign it will be taken as % of the screen size." }], "Dialog will take all the height of the screen.")
+    ], EngineDisplay.prototype, "DialogWidth", null);
+    __decorate([
+        ApiMethod([], "Hide the dialog box.")
+    ], EngineDisplay.prototype, "HideDialog", null);
+    __decorate([
+        ApiMethod([{ name: "source", description: "Source text to cleanup." }], "Removes all the BB codes.")
+    ], EngineDisplay.prototype, "CleanupBBCodes", null);
+    __decorate([
+        ApiMethod([{ name: "label", description: "Label of the button to add." }, { name: "functionToCall", description: "Function to call back when the button is pressed." }], "Generate button BB code to place within the text of a dialog.")
+    ], EngineDisplay.prototype, "InlineButton", null);
+    EngineDisplay = EngineDisplay_1 = __decorate([
+        ApiClass
+    ], EngineDisplay);
     return EngineDisplay;
 }());
-__decorate([
-    ApiMethod([{ name: "x", description: "The X coordinate where to place the map message" }, { name: "y", description: "The Y coordinate where to place the map message" }, { name: "message", description: "The message to place the map message" }, { name: "color", description: "(optional) The color to use to display the message. If skipped it will be white. Otherwise use the web color format." }], "Place a small floating temporary message on the map.")
-], EngineDisplay.prototype, "AddMapMessage", null);
-__decorate([
-    ApiMethod([], "Shows the minimap on the screen.")
-], EngineDisplay.prototype, "ShowMinimap", null);
-__decorate([
-    ApiMethod([], "Hides the minimap on the screen.")
-], EngineDisplay.prototype, "HideMinimap", null);
-__decorate([
-    ApiMethod([{ name: "x", description: "The X coordinate where to place the map message" }, { name: "y", description: "The Y coordinate where to place the map message" }, { name: "name", description: "The particle effect name." }, { name: "time", description: "Time to keep this particle effect on the map." }], "Place particle effect on a map for a given time.")
-], EngineDisplay.prototype, "ParticleEffect", null);
-__decorate([
-    ApiMethod([{ name: "message", description: "The message to show on the error log" }], "Display a message in the error log.")
-], EngineDisplay.prototype, "Log", null);
-__decorate([
-    ApiMethod([{ name: "title", description: "The title of the dialog box." }], "Set the title of the dialog box.")
-], EngineDisplay.prototype, "SetDialogTitle", null);
-__decorate([
-    ApiMethod([], "Shows the dialog box.")
-], EngineDisplay.prototype, "ShowDialog", null);
-__decorate([
-    ApiMethod([{ name: "content", description: "The content as BB code." }], "Set the content of the dialog box.")
-], EngineDisplay.prototype, "SetDialogText", null);
-__decorate([
-    ApiMethod([{ name: "imageId", description: "The id of the image." }, { name: "src", description: "Image source info." }], "Replace the current image with a new image.")
-], EngineDisplay.prototype, "ReplaceImage", null);
-__decorate([
-    ApiMethod([{ name: "fieldName", description: "The field to read." }], "Reads a field and returns the value.")
-], EngineDisplay.prototype, "GetFieldValue", null);
-__decorate([
-    ApiMethod([{ name: "fieldName", description: "The field to set." }, { name: "value", description: "The value to set." }], "Set the value of a field.")
-], EngineDisplay.prototype, "SetFieldValue", null);
-__decorate([
-    ApiMethod([{ name: "fieldName", description: "The field to change." }, { name: "value", description: "The value of the option to set." }, { name: "text", description: "(optional) The text to display for the option." }], "Add a value to a dropdown menu.")
-], EngineDisplay.prototype, "AddOption", null);
-__decorate([
-    ApiMethod([{ name: "fieldName", description: "The field to change." }], "Remove all the options of a dropdown.")
-], EngineDisplay.prototype, "ClearOptions", null);
-__decorate([
-    ApiMethod([], "Clear up all the buttons on the side of the dialog.")
-], EngineDisplay.prototype, "ClearDialogSideButtons", null);
-__decorate([
-    ApiMethod([{ name: "label", description: "Label of the button to add." }, { name: "functionToCall", description: "Function to call back when the button is pressed." }], "Add a button to the side of the dialog.")
-], EngineDisplay.prototype, "AddDialogSideButton", null);
-__decorate([
-    ApiMethod([], "Dock the dialog to the bottom of the screen.")
-], EngineDisplay.prototype, "DockDialogBottom", null);
-__decorate([
-    ApiMethod([], "Dock the dialog to the top of the screen.")
-], EngineDisplay.prototype, "DockDialogTop", null);
-__decorate([
-    ApiMethod([], "Dock the dialog to the left of the screen.")
-], EngineDisplay.prototype, "DockDialogLeft", null);
-__decorate([
-    ApiMethod([], "Dock the dialog to the right of the screen.")
-], EngineDisplay.prototype, "DockDialogRight", null);
-__decorate([
-    ApiMethod([], "Place the dialog in the center.")
-], EngineDisplay.prototype, "DialogCenter", null);
-__decorate([
-    ApiMethod([], "Dialog will take all the width of the screen.")
-], EngineDisplay.prototype, "DialogFillWidth", null);
-__decorate([
-    ApiMethod([], "Dialog will take all the height of the screen.")
-], EngineDisplay.prototype, "DialogFillHeight", null);
-__decorate([
-    ApiMethod([{ name: "height", description: "The wished height of the dialog box. If the parameter is a string and ends with a % sign it will be taken as % of the screen size." }], "Dialog will take all the height of the screen.")
-], EngineDisplay.prototype, "DialogHeight", null);
-__decorate([
-    ApiMethod([{ name: "width", description: "The wished width of the dialog box. If the parameter is a string and ends with a % sign it will be taken as % of the screen size." }], "Dialog will take all the height of the screen.")
-], EngineDisplay.prototype, "DialogWidth", null);
-__decorate([
-    ApiMethod([], "Hide the dialog box.")
-], EngineDisplay.prototype, "HideDialog", null);
-__decorate([
-    ApiMethod([{ name: "source", description: "Source text to cleanup." }], "Removes all the BB codes.")
-], EngineDisplay.prototype, "CleanupBBCodes", null);
-__decorate([
-    ApiMethod([{ name: "label", description: "Label of the button to add." }, { name: "functionToCall", description: "Function to call back when the button is pressed." }], "Generate button BB code to place within the text of a dialog.")
-], EngineDisplay.prototype, "InlineButton", null);
-EngineDisplay = EngineDisplay_1 = __decorate([
-    ApiClass
-], EngineDisplay);
-var EngineDisplay_1;
 /// <reference path="../CodeEnvironement.ts" />
 var gp = 0;
-var EngineGame = EngineGame_1 = (function () {
+var EngineGame = /** @class */ (function () {
     function EngineGame() {
     }
+    EngineGame_1 = EngineGame;
     EngineGame.prototype.AddStatistic = function (values, env) {
         if (Main.CheckNW())
             return;
@@ -32055,35 +32083,36 @@ var EngineGame = EngineGame_1 = (function () {
         play.keyHook[values[0].GetString()] = values[1].GetString();
         return null;
     };
+    var EngineGame_1;
+    __decorate([
+        ApiMethod([{ name: "statisticName", description: "The statistic type to add ('monster_kill', 'level_up', 'player_kill')." }], "Increment the statistic counter (visible in the \"Admin\" =&gt; \"Game Stat\" menu).")
+    ], EngineGame.prototype, "AddStatistic", null);
+    __decorate([
+        ApiMethod([{ name: "time", description: "Time in millisecond to pause the execution." }], "Pause the execution of the scripts and then continues.")
+    ], EngineGame.prototype, "Pause", null);
+    __decorate([
+        ApiMethod([], "Returns the date as string format (YYYY/MM/DD).")
+    ], EngineGame.prototype, "GetDateString", null);
+    __decorate([
+        ApiMethod([{ name: "key", description: "Key to bind." }, { name: "callback", description: "The function to call back once the key is pressed." }], "Hook a function to a key binding. Can be placed in the \"AutoRun\" function of your generic code to have it always set.")
+    ], EngineGame.prototype, "AddKeyBinding", null);
+    EngineGame = EngineGame_1 = __decorate([
+        ApiClass
+    ], EngineGame);
     return EngineGame;
 }());
-__decorate([
-    ApiMethod([{ name: "statisticName", description: "The statistic type to add ('monster_kill', 'level_up', 'player_kill')." }], "Increment the statistic counter (visible in the \"Admin\" =&gt; \"Game Stat\" menu).")
-], EngineGame.prototype, "AddStatistic", null);
-__decorate([
-    ApiMethod([{ name: "time", description: "Time in millisecond to pause the execution." }], "Pause the execution of the scripts and then continues.")
-], EngineGame.prototype, "Pause", null);
-__decorate([
-    ApiMethod([], "Returns the date as string format (YYYY/MM/DD).")
-], EngineGame.prototype, "GetDateString", null);
-__decorate([
-    ApiMethod([{ name: "key", description: "Key to bind." }, { name: "callback", description: "The function to call back once the key is pressed." }], "Hook a function to a key binding. Can be placed in the \"AutoRun\" function of your generic code to have it always set.")
-], EngineGame.prototype, "AddKeyBinding", null);
-EngineGame = EngineGame_1 = __decorate([
-    ApiClass
-], EngineGame);
-var EngineGame_1;
 /// <reference path="../CodeEnvironement.ts" />
-var engineGraphics = new ((function () {
+var engineGraphics = new (/** @class */ (function () {
     function class_57() {
         this.currentCanvas = null;
         this.imageCache = {};
     }
     return class_57;
 }()));
-var EngineGraphics = EngineGraphics_1 = (function () {
+var EngineGraphics = /** @class */ (function () {
     function EngineGraphics() {
     }
+    EngineGraphics_1 = EngineGraphics;
     EngineGraphics.prototype.Canvas = function (values, env) {
         engineGraphics.currentContext = $("#" + values[0].GetString()).first().getContext("2d");
         engineGraphics.currentCanvas = values[0].GetString();
@@ -32240,47 +32269,47 @@ var EngineGraphics = EngineGraphics_1 = (function () {
             engineGraphics.currentContext.drawImage(img, 0, 0, img.width, img.height, x, y, img.width, img.height);
         return null;
     };
+    var EngineGraphics_1;
+    __decorate([
+        ApiMethod([{ name: "canvasId", description: "The id of the canvas to recover the context from." }], "Set the current drawing context.")
+    ], EngineGraphics.prototype, "Canvas", null);
+    __decorate([
+        ApiMethod([{ name: "color", description: "The color to set." }], "Set the color for the further draw functions.")
+    ], EngineGraphics.prototype, "Color", null);
+    __decorate([
+        ApiMethod([{ name: "width", description: "The width to set." }], "Set the line width.")
+    ], EngineGraphics.prototype, "LineWidth", null);
+    __decorate([
+        ApiMethod([{ name: "x1", description: "First X coordinate." }, { name: "y1", description: "First Y coordinate." }, { name: "x2", description: "Second X coordinate." }, { name: "y2", description: "Second Y coordinate." }], "Draw a line.")
+    ], EngineGraphics.prototype, "Line", null);
+    __decorate([
+        ApiMethod([{ name: "text", description: "The text to draw." }, { name: "x", description: "X coordinate." }, { name: "y", description: "Y coordinate." }, { name: "size", description: "(optional) Font size. By default 12px." }], "Draw a line.")
+    ], EngineGraphics.prototype, "Text", null);
+    __decorate([
+        ApiMethod([{ name: "x", description: "X coordinate." }, { name: "y", description: "Y coordinate." }, { name: "width", description: "Rectangle width." }, { name: "height", description: "Rectangle height" }], "Draw the contour of a rectangle.")
+    ], EngineGraphics.prototype, "Rectangle", null);
+    __decorate([
+        ApiMethod([{ name: "x", description: "X coordinate." }, { name: "y", description: "Y coordinate." }, { name: "width", description: "Rectangle width." }, { name: "height", description: "Rectangle height" }], "Fill a rectangle.")
+    ], EngineGraphics.prototype, "FillRectangle", null);
+    __decorate([
+        ApiMethod([{ name: "x", description: "X coordinate." }, { name: "y", description: "Y coordinate." }, { name: "width", description: "Ellipse width." }, { name: "height", description: "Ellipse height" }], "Draw the contour of an ellipse.")
+    ], EngineGraphics.prototype, "Ellipse", null);
+    __decorate([
+        ApiMethod([{ name: "x", description: "X coordinate." }, { name: "y", description: "Y coordinate." }, { name: "width", description: "Ellipse width." }, { name: "height", description: "Ellipse height" }], "Fill an ellipse.")
+    ], EngineGraphics.prototype, "FillEllipse", null);
+    __decorate([
+        ApiMethod([{ name: "image", description: "Image to draw." }], "Draw an image on the coordinate specified.")
+    ], EngineGraphics.prototype, "LoadImage", null);
+    __decorate([
+        ApiMethod([{ name: "image", description: "Image to draw." }, { name: "x", description: "X coordinate." }, { name: "y", description: "Y coordinate." }], "Draw an image on the coordinate specified.")
+    ], EngineGraphics.prototype, "DrawImage", null);
+    EngineGraphics = EngineGraphics_1 = __decorate([
+        ApiClass
+    ], EngineGraphics);
     return EngineGraphics;
 }());
-__decorate([
-    ApiMethod([{ name: "canvasId", description: "The id of the canvas to recover the context from." }], "Set the current drawing context.")
-], EngineGraphics.prototype, "Canvas", null);
-__decorate([
-    ApiMethod([{ name: "color", description: "The color to set." }], "Set the color for the further draw functions.")
-], EngineGraphics.prototype, "Color", null);
-__decorate([
-    ApiMethod([{ name: "width", description: "The width to set." }], "Set the line width.")
-], EngineGraphics.prototype, "LineWidth", null);
-__decorate([
-    ApiMethod([{ name: "x1", description: "First X coordinate." }, { name: "y1", description: "First Y coordinate." }, { name: "x2", description: "Second X coordinate." }, { name: "y2", description: "Second Y coordinate." }], "Draw a line.")
-], EngineGraphics.prototype, "Line", null);
-__decorate([
-    ApiMethod([{ name: "text", description: "The text to draw." }, { name: "x", description: "X coordinate." }, { name: "y", description: "Y coordinate." }, { name: "size", description: "(optional) Font size. By default 12px." }], "Draw a line.")
-], EngineGraphics.prototype, "Text", null);
-__decorate([
-    ApiMethod([{ name: "x", description: "X coordinate." }, { name: "y", description: "Y coordinate." }, { name: "width", description: "Rectangle width." }, { name: "height", description: "Rectangle height" }], "Draw the contour of a rectangle.")
-], EngineGraphics.prototype, "Rectangle", null);
-__decorate([
-    ApiMethod([{ name: "x", description: "X coordinate." }, { name: "y", description: "Y coordinate." }, { name: "width", description: "Rectangle width." }, { name: "height", description: "Rectangle height" }], "Fill a rectangle.")
-], EngineGraphics.prototype, "FillRectangle", null);
-__decorate([
-    ApiMethod([{ name: "x", description: "X coordinate." }, { name: "y", description: "Y coordinate." }, { name: "width", description: "Ellipse width." }, { name: "height", description: "Ellipse height" }], "Draw the contour of an ellipse.")
-], EngineGraphics.prototype, "Ellipse", null);
-__decorate([
-    ApiMethod([{ name: "x", description: "X coordinate." }, { name: "y", description: "Y coordinate." }, { name: "width", description: "Ellipse width." }, { name: "height", description: "Ellipse height" }], "Fill an ellipse.")
-], EngineGraphics.prototype, "FillEllipse", null);
-__decorate([
-    ApiMethod([{ name: "image", description: "Image to draw." }], "Draw an image on the coordinate specified.")
-], EngineGraphics.prototype, "LoadImage", null);
-__decorate([
-    ApiMethod([{ name: "image", description: "Image to draw." }, { name: "x", description: "X coordinate." }, { name: "y", description: "Y coordinate." }], "Draw an image on the coordinate specified.")
-], EngineGraphics.prototype, "DrawImage", null);
-EngineGraphics = EngineGraphics_1 = __decorate([
-    ApiClass
-], EngineGraphics);
-var EngineGraphics_1;
 /// <reference path="../CodeEnvironement.ts" />
-var EngineInventory = (function () {
+var EngineInventory = /** @class */ (function () {
     function EngineInventory() {
     }
     EngineInventory.prototype.AddItem = function (values, env) {
@@ -32408,34 +32437,34 @@ var EngineInventory = (function () {
         }
         return null;
     };
+    __decorate([
+        ApiMethod([{ name: "itemName", description: "Item to add." }, { name: "quantity", description: "Quantity to add." }], "(optional) Adds an item to the player inventory. If skipped it will remove one.")
+    ], EngineInventory.prototype, "AddItem", null);
+    __decorate([
+        ApiMethod([{ name: "itemName", description: "Item to add." }, { name: "quantity", description: "(optional) Quantity to remove. If skipped it will remove one." }], "Removes an item from the player inventory.")
+    ], EngineInventory.prototype, "RemoveItem", null);
+    __decorate([
+        ApiMethod([{ name: "itemName", description: "Item to check." }, { name: "parameterName", description: "Name of the parameter to check." }], "Returns true if the item do have this parameter defined.")
+    ], EngineInventory.prototype, "ObjectParameterExists", null);
+    __decorate([
+        ApiMethod([{ name: "itemName", description: "Item to check." }, { name: "parameterName", description: "Value to calculate." }], "Returns the value of the item's parameter value.")
+    ], EngineInventory.prototype, "ObjectParameter", null);
+    __decorate([
+        ApiMethod([{ name: "statName", description: "The stat to evaluate." }], "Calculates the stat effect of all the items the player is currently wearing.")
+    ], EngineInventory.prototype, "GetWearedEffect", null);
+    __decorate([
+        ApiMethod([{ name: "itemName", description: "The inventory object to check." }], "Checks if the player is currently wearing the item.")
+    ], EngineInventory.prototype, "IsWearing", null);
+    __decorate([
+        ApiMethod([], "Executing all the Use actions of the weared items.")
+    ], EngineInventory.prototype, "ExecuteWearingUsage", null);
+    EngineInventory = __decorate([
+        ApiClass
+    ], EngineInventory);
     return EngineInventory;
 }());
-__decorate([
-    ApiMethod([{ name: "itemName", description: "Item to add." }, { name: "quantity", description: "Quantity to add." }], "(optional) Adds an item to the player inventory. If skipped it will remove one.")
-], EngineInventory.prototype, "AddItem", null);
-__decorate([
-    ApiMethod([{ name: "itemName", description: "Item to add." }, { name: "quantity", description: "(optional) Quantity to remove. If skipped it will remove one." }], "Removes an item from the player inventory.")
-], EngineInventory.prototype, "RemoveItem", null);
-__decorate([
-    ApiMethod([{ name: "itemName", description: "Item to check." }, { name: "parameterName", description: "Name of the parameter to check." }], "Returns true if the item do have this parameter defined.")
-], EngineInventory.prototype, "ObjectParameterExists", null);
-__decorate([
-    ApiMethod([{ name: "itemName", description: "Item to check." }, { name: "parameterName", description: "Value to calculate." }], "Returns the value of the item's parameter value.")
-], EngineInventory.prototype, "ObjectParameter", null);
-__decorate([
-    ApiMethod([{ name: "statName", description: "The stat to evaluate." }], "Calculates the stat effect of all the items the player is currently wearing.")
-], EngineInventory.prototype, "GetWearedEffect", null);
-__decorate([
-    ApiMethod([{ name: "itemName", description: "The inventory object to check." }], "Checks if the player is currently wearing the item.")
-], EngineInventory.prototype, "IsWearing", null);
-__decorate([
-    ApiMethod([], "Executing all the Use actions of the weared items.")
-], EngineInventory.prototype, "ExecuteWearingUsage", null);
-EngineInventory = __decorate([
-    ApiClass
-], EngineInventory);
 /// <reference path="../CodeEnvironement.ts" />
-var EngineMap = (function () {
+var EngineMap = /** @class */ (function () {
     function EngineMap() {
     }
     EngineMap.prototype.SpawnMapObject = function (values, env) {
@@ -32472,19 +32501,19 @@ var EngineMap = (function () {
         if (!world.art.objects[values[2]])
             throw "The map object '" + values[2] + "' is unknown at " + line + ":" + column;
     };
+    __decorate([
+        ApiMethod([{ name: "x", description: "Position x on the map." },
+            { name: "y", description: "Position y on the map." },
+            { name: "name", description: "Name of the object to place." },
+            { name: "timeToLive", description: "(optional) Time to live expressed in seconds." }], "Creates a new temporaty object on the map.")
+    ], EngineMap.prototype, "SpawnMapObject", null);
+    EngineMap = __decorate([
+        ApiClass
+    ], EngineMap);
     return EngineMap;
 }());
-__decorate([
-    ApiMethod([{ name: "x", description: "Position x on the map." },
-        { name: "y", description: "Position y on the map." },
-        { name: "name", description: "Name of the object to place." },
-        { name: "timeToLive", description: "(optional) Time to live expressed in seconds." }], "Creates a new temporaty object on the map.")
-], EngineMap.prototype, "SpawnMapObject", null);
-EngineMap = __decorate([
-    ApiClass
-], EngineMap);
 /// <reference path="../CodeEnvironement.ts" />
-var EngineMath = (function () {
+var EngineMath = /** @class */ (function () {
     function EngineMath() {
     }
     EngineMath.prototype.PI = function (values, env) {
@@ -32579,7 +32608,7 @@ var EngineMath = (function () {
     };
     EngineMath.CalculateAngle = function (ad, op) {
         var angle = 0.0;
-        if (ad == 0.0)
+        if (ad == 0.0) // Avoid angles of 0 where it would make a division by 0
             ad = 0.00001;
         // Get the angle formed by the line
         angle = Math.atan(op / ad);
@@ -32591,64 +32620,64 @@ var EngineMath = (function () {
             angle += Math.PI * 2.0;
         return angle;
     };
+    __decorate([
+        ApiMethod([], "Returns the mathematical constant PI which is 3.141592653589793 .")
+    ], EngineMath.prototype, "PI", null);
+    __decorate([
+        ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the sinusoidal of the given value.")
+    ], EngineMath.prototype, "Sin", null);
+    __decorate([
+        ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the arc sinusoidal of the given value.")
+    ], EngineMath.prototype, "ASin", null);
+    __decorate([
+        ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the cosinusoidal of the given value.")
+    ], EngineMath.prototype, "Cos", null);
+    __decorate([
+        ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the arc cosinusoidal of the given value.")
+    ], EngineMath.prototype, "ACos", null);
+    __decorate([
+        ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the tangent of the given value.")
+    ], EngineMath.prototype, "Tan", null);
+    __decorate([
+        ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the arc tangent of the given value.")
+    ], EngineMath.prototype, "ATan", null);
+    __decorate([
+        ApiMethod([{ name: "base", description: "Base number to calculate." }, { name: "exponent", description: "Exponent number to calculate." }], "Returns the base number power exponent.")
+    ], EngineMath.prototype, "Pow", null);
+    __decorate([
+        ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the rounded value (< 0.5 will be 0, >= 0.5 will be 1).")
+    ], EngineMath.prototype, "Round", null);
+    __decorate([
+        ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the floored value (< 1 will be 0).")
+    ], EngineMath.prototype, "Floor", null);
+    __decorate([
+        ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the ceiled value (> 0 will be 1).")
+    ], EngineMath.prototype, "Ceil", null);
+    __decorate([
+        ApiMethod([{ name: "var1", description: "The value to divide." }, { name: "var2", description: "The value to divide width." }], "Returns the remainder operator value when deviding the first variable with the second.")
+    ], EngineMath.prototype, "Mod", null);
+    __decorate([
+        ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the square root of the value.")
+    ], EngineMath.prototype, "Sqrt", null);
+    __decorate([
+        ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the natural logarithm (base e) of the value.")
+    ], EngineMath.prototype, "Log", null);
+    __decorate([
+        ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the e power of the value.")
+    ], EngineMath.prototype, "Exp", null);
+    __decorate([
+        ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the absolute number of the value.")
+    ], EngineMath.prototype, "Abs", null);
+    __decorate([
+        ApiMethod([{ name: "max", description: "(optional) max value to return (inclusive)." }, { name: "min", description: "(optional) min value to return (inclusive)." }], "Returns a random number. If no min/max is given the value is between 0 and 1.")
+    ], EngineMath.prototype, "Rnd", null);
+    EngineMath = __decorate([
+        ApiClass
+    ], EngineMath);
     return EngineMath;
 }());
-__decorate([
-    ApiMethod([], "Returns the mathematical constant PI which is 3.141592653589793 .")
-], EngineMath.prototype, "PI", null);
-__decorate([
-    ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the sinusoidal of the given value.")
-], EngineMath.prototype, "Sin", null);
-__decorate([
-    ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the arc sinusoidal of the given value.")
-], EngineMath.prototype, "ASin", null);
-__decorate([
-    ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the cosinusoidal of the given value.")
-], EngineMath.prototype, "Cos", null);
-__decorate([
-    ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the arc cosinusoidal of the given value.")
-], EngineMath.prototype, "ACos", null);
-__decorate([
-    ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the tangent of the given value.")
-], EngineMath.prototype, "Tan", null);
-__decorate([
-    ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the arc tangent of the given value.")
-], EngineMath.prototype, "ATan", null);
-__decorate([
-    ApiMethod([{ name: "base", description: "Base number to calculate." }, { name: "exponent", description: "Exponent number to calculate." }], "Returns the base number power exponent.")
-], EngineMath.prototype, "Pow", null);
-__decorate([
-    ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the rounded value (< 0.5 will be 0, >= 0.5 will be 1).")
-], EngineMath.prototype, "Round", null);
-__decorate([
-    ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the floored value (< 1 will be 0).")
-], EngineMath.prototype, "Floor", null);
-__decorate([
-    ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the ceiled value (> 0 will be 1).")
-], EngineMath.prototype, "Ceil", null);
-__decorate([
-    ApiMethod([{ name: "var1", description: "The value to divide." }, { name: "var2", description: "The value to divide width." }], "Returns the remainder operator value when deviding the first variable with the second.")
-], EngineMath.prototype, "Mod", null);
-__decorate([
-    ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the square root of the value.")
-], EngineMath.prototype, "Sqrt", null);
-__decorate([
-    ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the natural logarithm (base e) of the value.")
-], EngineMath.prototype, "Log", null);
-__decorate([
-    ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the e power of the value.")
-], EngineMath.prototype, "Exp", null);
-__decorate([
-    ApiMethod([{ name: "value", description: "Value to calculate." }], "Returns the absolute number of the value.")
-], EngineMath.prototype, "Abs", null);
-__decorate([
-    ApiMethod([{ name: "max", description: "(optional) max value to return (inclusive)." }, { name: "min", description: "(optional) min value to return (inclusive)." }], "Returns a random number. If no min/max is given the value is between 0 and 1.")
-], EngineMath.prototype, "Rnd", null);
-EngineMath = __decorate([
-    ApiClass
-], EngineMath);
 /// <reference path="../CodeEnvironement.ts" />
-var EngineMessage = (function () {
+var EngineMessage = /** @class */ (function () {
     function EngineMessage() {
     }
     EngineMessage.prototype.SendMessage = function (values, env) {
@@ -32658,19 +32687,19 @@ var EngineMessage = (function () {
     EngineMessage.prototype.HasNewMessage = function (values, env) {
         return new VariableValue(messageMenu.nonRead > 0);
     };
+    __decorate([
+        ApiMethod([{ name: "username", description: "Destination user." }, { name: "subject", description: "The subject of the message" }, { name: "message", description: "Message to send" }], "Sends an offline message (in-game email).")
+    ], EngineMessage.prototype, "SendMessage", null);
+    __decorate([
+        ApiMethod([], "Returns true if there is a new non-read message.")
+    ], EngineMessage.prototype, "HasNewMessage", null);
+    EngineMessage = __decorate([
+        ApiClass
+    ], EngineMessage);
     return EngineMessage;
 }());
-__decorate([
-    ApiMethod([{ name: "username", description: "Destination user." }, { name: "subject", description: "The subject of the message" }, { name: "message", description: "Message to send" }], "Sends an offline message (in-game email).")
-], EngineMessage.prototype, "SendMessage", null);
-__decorate([
-    ApiMethod([], "Returns true if there is a new non-read message.")
-], EngineMessage.prototype, "HasNewMessage", null);
-EngineMessage = __decorate([
-    ApiClass
-], EngineMessage);
 /// <reference path="../CodeEnvironement.ts" />
-var EngineMonster = (function () {
+var EngineMonster = /** @class */ (function () {
     function EngineMonster() {
     }
     EngineMonster.prototype.RetreiveSetting = function (values, env) {
@@ -32709,25 +32738,25 @@ var EngineMonster = (function () {
             return new VariableValue("");
         return new VariableValue(actor.Name);
     };
+    __decorate([
+        ApiMethod([{ name: "monsterId", description: "Monster ID to check." }, { name: "parameterName", description: "Monster parameter to read." }], "Returns the value of the monster parameter.")
+    ], EngineMonster.prototype, "RetreiveSetting", null);
+    __decorate([
+        ApiMethod([{ name: "monsterId", description: "Monster ID to handle." }, { name: "maxDistance", description: "Max distance in tiles before we use a random walk (must be between 5 and 20)." }], "Moves the monster toward the player if possible.")
+    ], EngineMonster.prototype, "HuntWalk", null);
+    __decorate([
+        ApiMethod([{ name: "monsterId", description: "Monster ID to handle." }], "Moves the monster randomly.")
+    ], EngineMonster.prototype, "RandomWalk", null);
+    __decorate([
+        ApiMethod([{ name: "monsterId", description: "Monster ID to handle." }], "Returns the name of the monster.")
+    ], EngineMonster.prototype, "GetName", null);
+    EngineMonster = __decorate([
+        ApiClass
+    ], EngineMonster);
     return EngineMonster;
 }());
-__decorate([
-    ApiMethod([{ name: "monsterId", description: "Monster ID to check." }, { name: "parameterName", description: "Monster parameter to read." }], "Returns the value of the monster parameter.")
-], EngineMonster.prototype, "RetreiveSetting", null);
-__decorate([
-    ApiMethod([{ name: "monsterId", description: "Monster ID to handle." }, { name: "maxDistance", description: "Max distance in tiles before we use a random walk (must be between 5 and 20)." }], "Moves the monster toward the player if possible.")
-], EngineMonster.prototype, "HuntWalk", null);
-__decorate([
-    ApiMethod([{ name: "monsterId", description: "Monster ID to handle." }], "Moves the monster randomly.")
-], EngineMonster.prototype, "RandomWalk", null);
-__decorate([
-    ApiMethod([{ name: "monsterId", description: "Monster ID to handle." }], "Returns the name of the monster.")
-], EngineMonster.prototype, "GetName", null);
-EngineMonster = __decorate([
-    ApiClass
-], EngineMonster);
 /// <reference path="../CodeEnvironement.ts" />
-var EngineObject = (function () {
+var EngineObject = /** @class */ (function () {
     function EngineObject() {
     }
     EngineObject.prototype.ObjectExists = function (values, env) {
@@ -32756,28 +32785,28 @@ var EngineObject = (function () {
         obj.UsageActions = [{ Name: "ExecuteCodeFunction", Values: [values[2].GetString()] }];
         return null;
     };
+    __decorate([
+        ApiMethod([{ name: "name", description: "The name to check." }], "Returns true if the object is defined in the object database.")
+    ], EngineObject.prototype, "ObjectExists", null);
+    __decorate([
+        ApiMethod([{ name: "name", description: "The name to create." }, { name: "typeName", description: "The name of the object type." }], "Returns the name of the created object or the existing object.")
+    ], EngineObject.prototype, "CreateObject", null);
+    __decorate([
+        ApiMethod([{ name: "name", description: "The name to check." }], "Returns true if the object type is defined in the object database.")
+    ], EngineObject.prototype, "TypeExists", null);
+    __decorate([
+        ApiMethod([{ name: "name", description: "The name to create." }, { name: "group", description: "(optional) The name of the object type." }], "Returns the name of the created object or the existing object.")
+    ], EngineObject.prototype, "CreateType", null);
+    __decorate([
+        ApiMethod([{ name: "name", description: "The name of the object." }, { name: "actionText", description: "Name of the action to show" }, { name: "actionCode", description: "Script code to execute" }], "Set an action to an object.")
+    ], EngineObject.prototype, "SetObjectUseAction", null);
+    EngineObject = __decorate([
+        ApiClass
+    ], EngineObject);
     return EngineObject;
 }());
-__decorate([
-    ApiMethod([{ name: "name", description: "The name to check." }], "Returns true if the object is defined in the object database.")
-], EngineObject.prototype, "ObjectExists", null);
-__decorate([
-    ApiMethod([{ name: "name", description: "The name to create." }, { name: "typeName", description: "The name of the object type." }], "Returns the name of the created object or the existing object.")
-], EngineObject.prototype, "CreateObject", null);
-__decorate([
-    ApiMethod([{ name: "name", description: "The name to check." }], "Returns true if the object type is defined in the object database.")
-], EngineObject.prototype, "TypeExists", null);
-__decorate([
-    ApiMethod([{ name: "name", description: "The name to create." }, { name: "group", description: "(optional) The name of the object type." }], "Returns the name of the created object or the existing object.")
-], EngineObject.prototype, "CreateType", null);
-__decorate([
-    ApiMethod([{ name: "name", description: "The name of the object." }, { name: "actionText", description: "Name of the action to show" }, { name: "actionCode", description: "Script code to execute" }], "Set an action to an object.")
-], EngineObject.prototype, "SetObjectUseAction", null);
-EngineObject = __decorate([
-    ApiClass
-], EngineObject);
 /// <reference path="../CodeEnvironement.ts" />
-var EnginePlayer = (function () {
+var EnginePlayer = /** @class */ (function () {
     function EnginePlayer() {
     }
     EnginePlayer.prototype.IsOnline = function (values, env) {
@@ -33177,118 +33206,118 @@ var EnginePlayer = (function () {
     EnginePlayer.prototype.GetName = function (values, env) {
         return new VariableValue(world.Player.Username);
     };
+    __decorate([
+        ApiMethod([{ name: "playerName", description: "The player to check." }], "Checks if a player is online.")
+    ], EnginePlayer.prototype, "IsOnline", null);
+    __decorate([
+        ApiMethod([{ name: "role", description: "The role to check." }], "Checks if the current player has a given role.")
+    ], EnginePlayer.prototype, "HasRole", null);
+    __decorate([
+        ApiMethod([{ name: "statName", description: "The STAT to increase." }, { name: "value", description: "Quantity to increase." }], "Increase the player stat by the given value.")
+    ], EnginePlayer.prototype, "IncreaseStat", null);
+    __decorate([
+        ApiMethod([{ name: "statName", description: "The STAT to decrease." }, { name: "value", description: "Quantity to decrease." }], "Decrease the player stat by the given value.")
+    ], EnginePlayer.prototype, "ReduceStat", null);
+    __decorate([
+        ApiMethod([{ name: "statName", description: "The STAT to read." }], "Get the player stat by the given value.")
+    ], EnginePlayer.prototype, "GetStat", null);
+    __decorate([
+        ApiMethod([{ name: "statName", description: "The STAT to check." }], "Returns true if the player's stat has a maximum value.")
+    ], EnginePlayer.prototype, "HasMaxValue", null);
+    __decorate([
+        ApiMethod([{ name: "statName", description: "The STAT to read." }], "Get the player stat max value by the given value.")
+    ], EnginePlayer.prototype, "GetStatMaxValue", null);
+    __decorate([
+        ApiMethod([{ name: "statName", description: "The STAT to modify." }, { name: "value", description: "Value to set." }], "Set the player stat by the given value.")
+    ], EnginePlayer.prototype, "SetStat", null);
+    __decorate([
+        ApiMethod([{ name: "timerName", description: "The name of the timer to check." }], "Returns true if the player's timer is currently running. If it's finished it will return false.")
+    ], EnginePlayer.prototype, "TimerRunning", null);
+    __decorate([
+        ApiMethod([{ name: "timerName", description: "The name of the timer to set." }, { name: "time", description: "The time the player's timer needs to be set to." }], "Sets a timer which will run till the full time is elapsed.")
+    ], EnginePlayer.prototype, "StartTimer", null);
+    __decorate([
+        ApiMethod([{ name: "timerName", description: "The name of the timer to stop." }], "Stops a currently player's running timer.")
+    ], EnginePlayer.prototype, "StopTimer", null);
+    __decorate([
+        ApiMethod([{ name: "timerName", description: "The name of the timer to check." }], "Returns the time left or 0 on the given player's timer.")
+    ], EnginePlayer.prototype, "GetTimer", null);
+    __decorate([
+        ApiMethod([], "Respawn the player to the initial position.")
+    ], EnginePlayer.prototype, "Respawn", null);
+    __decorate([
+        ApiMethod([{ name: "x", description: "The X coordinate where to place the player." }, { name: "y", description: "The Y coordinate where to place the player." }, { name: "zone", description: "The Zone where to place the player." }], "Set the respawn point of the player.")
+    ], EnginePlayer.prototype, "SetRespawn", null);
+    __decorate([
+        ApiMethod([{ name: "x", description: "The X coordinate where to place the player." }, { name: "y", description: "The Y coordinate where to place the player." }, { name: "zone", description: "The Zone where to place the player." }], "Place the player on another position on the same map or on another one.")
+    ], EnginePlayer.prototype, "Teleport", null);
+    __decorate([
+        ApiMethod([], "Returns the X coordinate of the player.")
+    ], EnginePlayer.prototype, "GetX", null);
+    __decorate([
+        ApiMethod([], "Returns the Y coordinate of the player.")
+    ], EnginePlayer.prototype, "GetY", null);
+    __decorate([
+        ApiMethod([], "Returns true if an animation is currently running.")
+    ], EnginePlayer.prototype, "IsAnimationRunning", null);
+    __decorate([
+        ApiMethod([{ name: "name", description: "The animation effect to set. Can be either 'none', 'attack' or 'damage'." }], "Sets the animation effect.")
+    ], EnginePlayer.prototype, "SetAnimation", null);
+    __decorate([
+        ApiMethod([{ name: "name", description: "The function name to execute when the player animation is over." }], "Will execute the function of the current block when the animation is over.")
+    ], EnginePlayer.prototype, "ExecuteWhenAnimationDone", null);
+    __decorate([
+        ApiMethod([{ name: "name", description: "The variable to set." }, { name: "value", description: "The value to set." }], "Set a variable which can be read from another function or later on.")
+    ], EnginePlayer.prototype, "SetVariable", null);
+    __decorate([
+        ApiMethod([{ name: "name", description: "The variable to read." }], "Retreives a variable previously stored.")
+    ], EnginePlayer.prototype, "GetVariable", null);
+    __decorate([
+        ApiMethod([{ name: "name", description: "The variable to set." }, { name: "value", description: "The value to set." }], "Set a quest variable which can be read from another function or later on.")
+    ], EnginePlayer.prototype, "SetQuestVariable", null);
+    __decorate([
+        ApiMethod([{ name: "name", description: "The variable to read." }], "Retreives a quest variable previously stored.")
+    ], EnginePlayer.prototype, "GetQuestVariable", null);
+    __decorate([
+        ApiMethod([{ name: "name", description: "The name of the character art to use." }], "Set the player look to the wished character art.")
+    ], EnginePlayer.prototype, "SetLook", null);
+    __decorate([
+        ApiMethod([], "Returns the player the current character art used by the player.")
+    ], EnginePlayer.prototype, "GetLook", null);
+    __decorate([
+        ApiMethod([], "Returns the currently player selected skill.")
+    ], EnginePlayer.prototype, "GetCurrentSkill", null);
+    __decorate([
+        ApiMethod([], "Returns the true if the player is currently within a NPC dialog / shop.")
+    ], EnginePlayer.prototype, "IsInDialog", null);
+    __decorate([
+        ApiMethod([{ name: "name", description: "The name of the temporary effect to add." }], "Adds a temporary effect.")
+    ], EnginePlayer.prototype, "StartTemporaryEffect", null);
+    __decorate([
+        ApiMethod([{ name: "name", description: "The name of the temporary effect to remove." }], "Removes the player temporary effects.")
+    ], EnginePlayer.prototype, "RemoveTemporaryEffect", null);
+    __decorate([
+        ApiMethod([], "Removes all the player temporary effects.")
+    ], EnginePlayer.prototype, "RemoveAllTemporaryEffects", null);
+    __decorate([
+        ApiMethod([], "Stores the current player look.")
+    ], EnginePlayer.prototype, "StorePlayerLook", null);
+    __decorate([
+        ApiMethod([], "Restores the current player look.")
+    ], EnginePlayer.prototype, "RestorePlayerLook", null);
+    __decorate([
+        ApiMethod([{ name: "name", description: "The particle effect name." }, { name: "time", description: "Time to keep this particle effect on the map." }], "Place particle effect on the player for a given time.")
+    ], EnginePlayer.prototype, "AddParticleEffect", null);
+    __decorate([
+        ApiMethod([], "Returns the player name.")
+    ], EnginePlayer.prototype, "GetName", null);
+    EnginePlayer = __decorate([
+        ApiClass
+    ], EnginePlayer);
     return EnginePlayer;
 }());
-__decorate([
-    ApiMethod([{ name: "playerName", description: "The player to check." }], "Checks if a player is online.")
-], EnginePlayer.prototype, "IsOnline", null);
-__decorate([
-    ApiMethod([{ name: "role", description: "The role to check." }], "Checks if the current player has a given role.")
-], EnginePlayer.prototype, "HasRole", null);
-__decorate([
-    ApiMethod([{ name: "statName", description: "The STAT to increase." }, { name: "value", description: "Quantity to increase." }], "Increase the player stat by the given value.")
-], EnginePlayer.prototype, "IncreaseStat", null);
-__decorate([
-    ApiMethod([{ name: "statName", description: "The STAT to decrease." }, { name: "value", description: "Quantity to decrease." }], "Decrease the player stat by the given value.")
-], EnginePlayer.prototype, "ReduceStat", null);
-__decorate([
-    ApiMethod([{ name: "statName", description: "The STAT to read." }], "Get the player stat by the given value.")
-], EnginePlayer.prototype, "GetStat", null);
-__decorate([
-    ApiMethod([{ name: "statName", description: "The STAT to check." }], "Returns true if the player's stat has a maximum value.")
-], EnginePlayer.prototype, "HasMaxValue", null);
-__decorate([
-    ApiMethod([{ name: "statName", description: "The STAT to read." }], "Get the player stat max value by the given value.")
-], EnginePlayer.prototype, "GetStatMaxValue", null);
-__decorate([
-    ApiMethod([{ name: "statName", description: "The STAT to modify." }, { name: "value", description: "Value to set." }], "Set the player stat by the given value.")
-], EnginePlayer.prototype, "SetStat", null);
-__decorate([
-    ApiMethod([{ name: "timerName", description: "The name of the timer to check." }], "Returns true if the player's timer is currently running. If it's finished it will return false.")
-], EnginePlayer.prototype, "TimerRunning", null);
-__decorate([
-    ApiMethod([{ name: "timerName", description: "The name of the timer to set." }, { name: "time", description: "The time the player's timer needs to be set to." }], "Sets a timer which will run till the full time is elapsed.")
-], EnginePlayer.prototype, "StartTimer", null);
-__decorate([
-    ApiMethod([{ name: "timerName", description: "The name of the timer to stop." }], "Stops a currently player's running timer.")
-], EnginePlayer.prototype, "StopTimer", null);
-__decorate([
-    ApiMethod([{ name: "timerName", description: "The name of the timer to check." }], "Returns the time left or 0 on the given player's timer.")
-], EnginePlayer.prototype, "GetTimer", null);
-__decorate([
-    ApiMethod([], "Respawn the player to the initial position.")
-], EnginePlayer.prototype, "Respawn", null);
-__decorate([
-    ApiMethod([{ name: "x", description: "The X coordinate where to place the player." }, { name: "y", description: "The Y coordinate where to place the player." }, { name: "zone", description: "The Zone where to place the player." }], "Set the respawn point of the player.")
-], EnginePlayer.prototype, "SetRespawn", null);
-__decorate([
-    ApiMethod([{ name: "x", description: "The X coordinate where to place the player." }, { name: "y", description: "The Y coordinate where to place the player." }, { name: "zone", description: "The Zone where to place the player." }], "Place the player on another position on the same map or on another one.")
-], EnginePlayer.prototype, "Teleport", null);
-__decorate([
-    ApiMethod([], "Returns the X coordinate of the player.")
-], EnginePlayer.prototype, "GetX", null);
-__decorate([
-    ApiMethod([], "Returns the Y coordinate of the player.")
-], EnginePlayer.prototype, "GetY", null);
-__decorate([
-    ApiMethod([], "Returns true if an animation is currently running.")
-], EnginePlayer.prototype, "IsAnimationRunning", null);
-__decorate([
-    ApiMethod([{ name: "name", description: "The animation effect to set. Can be either 'none', 'attack' or 'damage'." }], "Sets the animation effect.")
-], EnginePlayer.prototype, "SetAnimation", null);
-__decorate([
-    ApiMethod([{ name: "name", description: "The function name to execute when the player animation is over." }], "Will execute the function of the current block when the animation is over.")
-], EnginePlayer.prototype, "ExecuteWhenAnimationDone", null);
-__decorate([
-    ApiMethod([{ name: "name", description: "The variable to set." }, { name: "value", description: "The value to set." }], "Set a variable which can be read from another function or later on.")
-], EnginePlayer.prototype, "SetVariable", null);
-__decorate([
-    ApiMethod([{ name: "name", description: "The variable to read." }], "Retreives a variable previously stored.")
-], EnginePlayer.prototype, "GetVariable", null);
-__decorate([
-    ApiMethod([{ name: "name", description: "The variable to set." }, { name: "value", description: "The value to set." }], "Set a quest variable which can be read from another function or later on.")
-], EnginePlayer.prototype, "SetQuestVariable", null);
-__decorate([
-    ApiMethod([{ name: "name", description: "The variable to read." }], "Retreives a quest variable previously stored.")
-], EnginePlayer.prototype, "GetQuestVariable", null);
-__decorate([
-    ApiMethod([{ name: "name", description: "The name of the character art to use." }], "Set the player look to the wished character art.")
-], EnginePlayer.prototype, "SetLook", null);
-__decorate([
-    ApiMethod([], "Returns the player the current character art used by the player.")
-], EnginePlayer.prototype, "GetLook", null);
-__decorate([
-    ApiMethod([], "Returns the currently player selected skill.")
-], EnginePlayer.prototype, "GetCurrentSkill", null);
-__decorate([
-    ApiMethod([], "Returns the true if the player is currently within a NPC dialog / shop.")
-], EnginePlayer.prototype, "IsInDialog", null);
-__decorate([
-    ApiMethod([{ name: "name", description: "The name of the temporary effect to add." }], "Adds a temporary effect.")
-], EnginePlayer.prototype, "StartTemporaryEffect", null);
-__decorate([
-    ApiMethod([{ name: "name", description: "The name of the temporary effect to remove." }], "Removes the player temporary effects.")
-], EnginePlayer.prototype, "RemoveTemporaryEffect", null);
-__decorate([
-    ApiMethod([], "Removes all the player temporary effects.")
-], EnginePlayer.prototype, "RemoveAllTemporaryEffects", null);
-__decorate([
-    ApiMethod([], "Stores the current player look.")
-], EnginePlayer.prototype, "StorePlayerLook", null);
-__decorate([
-    ApiMethod([], "Restores the current player look.")
-], EnginePlayer.prototype, "RestorePlayerLook", null);
-__decorate([
-    ApiMethod([{ name: "name", description: "The particle effect name." }, { name: "time", description: "Time to keep this particle effect on the map." }], "Place particle effect on the player for a given time.")
-], EnginePlayer.prototype, "AddParticleEffect", null);
-__decorate([
-    ApiMethod([], "Returns the player name.")
-], EnginePlayer.prototype, "GetName", null);
-EnginePlayer = __decorate([
-    ApiClass
-], EnginePlayer);
 /// <reference path="../CodeEnvironement.ts" />
-var EngineQuest = (function () {
+var EngineQuest = /** @class */ (function () {
     function EngineQuest() {
     }
     EngineQuest.prototype.Start = function (values, env) {
@@ -33416,31 +33445,31 @@ var EngineQuest = (function () {
         if (!quest)
             throw "The quest '" + values[0] + "' doesn't contain a journal entry with the id '" + id + "' at " + line + ":" + column;
     };
+    __decorate([
+        ApiMethod([{ name: "questName", description: "The name of the quest to start." }], "Starts a player quest.")
+    ], EngineQuest.prototype, "Start", null);
+    __decorate([
+        ApiMethod([{ name: "questName", description: "The name of the quest to check." }], "Returns true if the player started this quest.")
+    ], EngineQuest.prototype, "CheckStarted", null);
+    __decorate([
+        ApiMethod([{ name: "questName", description: "The name of the quest to check." }], "Returns true if the player completed this quest.")
+    ], EngineQuest.prototype, "CheckCompleted", null);
+    __decorate([
+        ApiMethod([{ name: "questName", description: "The name of the quest to complete." }], "Completes a player quest.")
+    ], EngineQuest.prototype, "Complete", null);
+    __decorate([
+        ApiMethod([{ name: "questName", description: "The name of the quest." }, { name: "journalEntryId", description: "The id of the journal entry to add." }], "Adds a quest journal entry.")
+    ], EngineQuest.prototype, "AddJournalEntry", null);
+    __decorate([
+        ApiMethod([{ name: "questName", description: "The name of the quest." }, { name: "journalEntryId", description: "The id of the journal entry to check." }], "Returns true if the player received this journal entry.")
+    ], EngineQuest.prototype, "JournalEntryReceived", null);
+    EngineQuest = __decorate([
+        ApiClass
+    ], EngineQuest);
     return EngineQuest;
 }());
-__decorate([
-    ApiMethod([{ name: "questName", description: "The name of the quest to start." }], "Starts a player quest.")
-], EngineQuest.prototype, "Start", null);
-__decorate([
-    ApiMethod([{ name: "questName", description: "The name of the quest to check." }], "Returns true if the player started this quest.")
-], EngineQuest.prototype, "CheckStarted", null);
-__decorate([
-    ApiMethod([{ name: "questName", description: "The name of the quest to check." }], "Returns true if the player completed this quest.")
-], EngineQuest.prototype, "CheckCompleted", null);
-__decorate([
-    ApiMethod([{ name: "questName", description: "The name of the quest to complete." }], "Completes a player quest.")
-], EngineQuest.prototype, "Complete", null);
-__decorate([
-    ApiMethod([{ name: "questName", description: "The name of the quest." }, { name: "journalEntryId", description: "The id of the journal entry to add." }], "Adds a quest journal entry.")
-], EngineQuest.prototype, "AddJournalEntry", null);
-__decorate([
-    ApiMethod([{ name: "questName", description: "The name of the quest." }, { name: "journalEntryId", description: "The id of the journal entry to check." }], "Returns true if the player received this journal entry.")
-], EngineQuest.prototype, "JournalEntryReceived", null);
-EngineQuest = __decorate([
-    ApiClass
-], EngineQuest);
 /// <reference path="../CodeEnvironement.ts" />
-var EngineSkill = (function () {
+var EngineSkill = /** @class */ (function () {
     function EngineSkill() {
     }
     EngineSkill.prototype.RetreiveSetting = function (values, env) {
@@ -33521,25 +33550,25 @@ var EngineSkill = (function () {
         if (!world.GetSkill(values[0]))
             throw "The skill '" + values[0] + "' is unknown at " + line + ":" + column;
     };
+    __decorate([
+        ApiMethod([{ name: "parameterName", description: "Skill parameter to read." }], "Returns the value of the current skill parameter.")
+    ], EngineSkill.prototype, "RetreiveSetting", null);
+    __decorate([
+        ApiMethod([{ name: "skillName", description: "Skill to given to the player." }], "Adds a skill to the player.")
+    ], EngineSkill.prototype, "GiveSkill", null);
+    __decorate([
+        ApiMethod([{ name: "skillName", description: "Skill to check." }], "Checks if the player has the skill.")
+    ], EngineSkill.prototype, "HasSkill", null);
+    __decorate([
+        ApiMethod([{ name: "skillName", description: "Skill to activate." }], "Activate a player skill.")
+    ], EngineSkill.prototype, "ActivateSkill", null);
+    EngineSkill = __decorate([
+        ApiClass
+    ], EngineSkill);
     return EngineSkill;
 }());
-__decorate([
-    ApiMethod([{ name: "parameterName", description: "Skill parameter to read." }], "Returns the value of the current skill parameter.")
-], EngineSkill.prototype, "RetreiveSetting", null);
-__decorate([
-    ApiMethod([{ name: "skillName", description: "Skill to given to the player." }], "Adds a skill to the player.")
-], EngineSkill.prototype, "GiveSkill", null);
-__decorate([
-    ApiMethod([{ name: "skillName", description: "Skill to check." }], "Checks if the player has the skill.")
-], EngineSkill.prototype, "HasSkill", null);
-__decorate([
-    ApiMethod([{ name: "skillName", description: "Skill to activate." }], "Activate a player skill.")
-], EngineSkill.prototype, "ActivateSkill", null);
-EngineSkill = __decorate([
-    ApiClass
-], EngineSkill);
 /// <reference path="../CodeEnvironement.ts" />
-var EngineSound = (function () {
+var EngineSound = /** @class */ (function () {
     function EngineSound() {
     }
     EngineSound.prototype.Play = function (values, env) {
@@ -33560,19 +33589,19 @@ var EngineSound = (function () {
         Sounds.ClearSound();
         return null;
     };
+    __decorate([
+        ApiMethod([{ name: "soundName", description: "The unique ID of the sound to be played." }, { name: "volume", description: "(optional) The volume at which to play the sound." }], "Plays a sound once at the specified level.")
+    ], EngineSound.prototype, "Play", null);
+    __decorate([
+        ApiMethod([], "Stops all the currently played music and sounds.")
+    ], EngineSound.prototype, "StopAll", null);
+    EngineSound = __decorate([
+        ApiClass
+    ], EngineSound);
     return EngineSound;
 }());
-__decorate([
-    ApiMethod([{ name: "soundName", description: "The unique ID of the sound to be played." }, { name: "volume", description: "(optional) The volume at which to play the sound." }], "Plays a sound once at the specified level.")
-], EngineSound.prototype, "Play", null);
-__decorate([
-    ApiMethod([], "Stops all the currently played music and sounds.")
-], EngineSound.prototype, "StopAll", null);
-EngineSound = __decorate([
-    ApiClass
-], EngineSound);
 /// <reference path="../CodeEnvironement.ts" />
-var engineStorage = new ((function () {
+var engineStorage = new (/** @class */ (function () {
     function class_58() {
         this.lastRowId = null;
         this.nextQueryId = 1;
@@ -33595,9 +33624,10 @@ var charsMap = {
     '\'': '\\\'',
     '\\': '\\\\'
 };
-var EngineStorage = EngineStorage_1 = (function () {
+var EngineStorage = /** @class */ (function () {
     function EngineStorage() {
     }
+    EngineStorage_1 = EngineStorage;
     EngineStorage.prototype.AddNewData = function (values, env) {
         var table = values[0].GetString();
         var found = null;
@@ -34047,88 +34077,88 @@ var EngineStorage = EngineStorage_1 = (function () {
         });
         return new VariableValue(null);
     };
+    var EngineStorage_1;
+    __decorate([
+        ApiMethod([{ name: "tableName", description: "The table name." },
+            { name: "columnName", description: "The name of the column where to store the data." },
+            { name: "value", description: "The data to store." }], "Add a new column / row to the database.")
+    ], EngineStorage.prototype, "AddNewData", null);
+    __decorate([
+        ApiMethod([{ name: "tableName", description: "The table name." }], "Submit the data to add.")
+    ], EngineStorage.prototype, "StoreData", null);
+    __decorate([
+        ApiMethod([], "Returns the last rowId inserted.")
+    ], EngineStorage.prototype, "GetLastRowId", null);
+    __decorate([
+        ApiMethod([{ name: "tableName", description: "The table name." }], "Create a new read query and returns the id of the query.")
+    ], EngineStorage.prototype, "QueryData", null);
+    __decorate([
+        ApiMethod([{ name: "queryId", description: "The ID of the query." }, { name: "condition", description: "SQL Like condition." },
+            { name: "parameters", description: "(...) Parameters" }], "Allows to add one ore more SQL like conditions (E.g.: column = value). Use ? in the condition and optional parameters to avoid code injections.")
+    ], EngineStorage.prototype, "Where", null);
+    __decorate([
+        ApiMethod([{ name: "queryId", description: "The ID of the query." }], "Execute a query.")
+    ], EngineStorage.prototype, "ExecuteQuery", null);
+    __decorate([
+        ApiMethod([{ name: "queryId", description: "The ID of the query." }], "Returns the number of rows returned.")
+    ], EngineStorage.prototype, "GetNbRows", null);
+    __decorate([
+        ApiMethod([{ name: "queryId", description: "The ID of the query." }], "Moves to the next (or first) row of the query and returns true if there is more data to be queried.")
+    ], EngineStorage.prototype, "NextRow", null);
+    __decorate([
+        ApiMethod([{ name: "queryId", description: "The ID of the query." }, { name: "columnName", description: "The name of the column to read." }], "Returns the value of the column (identified either by the position or the name).")
+    ], EngineStorage.prototype, "GetValue", null);
+    __decorate([
+        ApiMethod([{ name: "queryId", description: "The ID of the query." }], "Close the query and free up the resources.")
+    ], EngineStorage.prototype, "CloseQuery", null);
+    __decorate([
+        ApiMethod([{ name: "table", description: "The name of the table to cleanup." }, { name: "nbToKeep", description: "The number of rows to keep." }], "Delete all the rows beside the nbToKeep last rows.")
+    ], EngineStorage.prototype, "KeepOnlyLast", null);
+    __decorate([
+        ApiMethod([{ name: "table", description: "The name of the table to cleanup." }, { name: "rowId", description: "The rowId to delete." }], "Delete a rowId.")
+    ], EngineStorage.prototype, "DeleteRow", null);
+    __decorate([
+        ApiMethod([{ name: "table", description: "The name of the table to cleanup." }, { name: "column", description: "The column to modify." },
+            { name: "value", description: "The column to set." }, { name: "condition", description: "Rows must match the condition to be modified." },
+            { name: "parameters", description: "(...) Parameters" }], "Modify data within the database.")
+    ], EngineStorage.prototype, "Update", null);
+    __decorate([
+        ApiMethod([{ name: "table", description: "The name of the table to cleanup." },
+            { name: "condition", description: "Rows must match the condition to be deleted." },
+            { name: "parameters", description: "(...) Parameters" }], "Delete data within the database.")
+    ], EngineStorage.prototype, "Delete", null);
+    __decorate([
+        ApiMethod([{ name: "table", description: "The name of the table to cleanup." }], "Drop completely a table of the database.")
+    ], EngineStorage.prototype, "Drop", null);
+    __decorate([
+        ApiMethod([], "Retrieve the list of all the tables stored by this game.")
+    ], EngineStorage.prototype, "RetrieveTableList", null);
+    __decorate([
+        ApiMethod([], "Number of tables retrieved with RetrieveTableList.")
+    ], EngineStorage.prototype, "NBTables", null);
+    __decorate([
+        ApiMethod([{ name: "position", description: "Position in the list." }], "Get the name of the table at the position.")
+    ], EngineStorage.prototype, "GetTableName", null);
+    __decorate([
+        ApiMethod([{ name: "table", description: "Name of the table to check." }], "Retrieve the list of all the columns of a given table stored by this game.")
+    ], EngineStorage.prototype, "RetrieveColumnList", null);
+    __decorate([
+        ApiMethod([], "Number of columns retrieved with RetrieveColumnList.")
+    ], EngineStorage.prototype, "NBColumns", null);
+    __decorate([
+        ApiMethod([{ name: "position", description: "Position in the list." }], "Get the name of the column at the position.")
+    ], EngineStorage.prototype, "GetColumnName", null);
+    __decorate([
+        ApiMethod([{ name: "table", description: "Name of the table to check." }], "Returns true if the table exists. Don't use directly the function, store the value within a variable and then use the value."),
+        ApiWrapper("function Storage_TableExists(table) { Storage._TableExists(table); return stackResult; }")
+    ], EngineStorage.prototype, "TableExists", null);
+    EngineStorage = EngineStorage_1 = __decorate([
+        ApiClass
+    ], EngineStorage);
     return EngineStorage;
 }());
-__decorate([
-    ApiMethod([{ name: "tableName", description: "The table name." },
-        { name: "columnName", description: "The name of the column where to store the data." },
-        { name: "value", description: "The data to store." }], "Add a new column / row to the database.")
-], EngineStorage.prototype, "AddNewData", null);
-__decorate([
-    ApiMethod([{ name: "tableName", description: "The table name." }], "Submit the data to add.")
-], EngineStorage.prototype, "StoreData", null);
-__decorate([
-    ApiMethod([], "Returns the last rowId inserted.")
-], EngineStorage.prototype, "GetLastRowId", null);
-__decorate([
-    ApiMethod([{ name: "tableName", description: "The table name." }], "Create a new read query and returns the id of the query.")
-], EngineStorage.prototype, "QueryData", null);
-__decorate([
-    ApiMethod([{ name: "queryId", description: "The ID of the query." }, { name: "condition", description: "SQL Like condition." },
-        { name: "parameters", description: "(...) Parameters" }], "Allows to add one ore more SQL like conditions (E.g.: column = value). Use ? in the condition and optional parameters to avoid code injections.")
-], EngineStorage.prototype, "Where", null);
-__decorate([
-    ApiMethod([{ name: "queryId", description: "The ID of the query." }], "Execute a query.")
-], EngineStorage.prototype, "ExecuteQuery", null);
-__decorate([
-    ApiMethod([{ name: "queryId", description: "The ID of the query." }], "Returns the number of rows returned.")
-], EngineStorage.prototype, "GetNbRows", null);
-__decorate([
-    ApiMethod([{ name: "queryId", description: "The ID of the query." }], "Moves to the next (or first) row of the query and returns true if there is more data to be queried.")
-], EngineStorage.prototype, "NextRow", null);
-__decorate([
-    ApiMethod([{ name: "queryId", description: "The ID of the query." }, { name: "columnName", description: "The name of the column to read." }], "Returns the value of the column (identified either by the position or the name).")
-], EngineStorage.prototype, "GetValue", null);
-__decorate([
-    ApiMethod([{ name: "queryId", description: "The ID of the query." }], "Close the query and free up the resources.")
-], EngineStorage.prototype, "CloseQuery", null);
-__decorate([
-    ApiMethod([{ name: "table", description: "The name of the table to cleanup." }, { name: "nbToKeep", description: "The number of rows to keep." }], "Delete all the rows beside the nbToKeep last rows.")
-], EngineStorage.prototype, "KeepOnlyLast", null);
-__decorate([
-    ApiMethod([{ name: "table", description: "The name of the table to cleanup." }, { name: "rowId", description: "The rowId to delete." }], "Delete a rowId.")
-], EngineStorage.prototype, "DeleteRow", null);
-__decorate([
-    ApiMethod([{ name: "table", description: "The name of the table to cleanup." }, { name: "column", description: "The column to modify." },
-        { name: "value", description: "The column to set." }, { name: "condition", description: "Rows must match the condition to be modified." },
-        { name: "parameters", description: "(...) Parameters" }], "Modify data within the database.")
-], EngineStorage.prototype, "Update", null);
-__decorate([
-    ApiMethod([{ name: "table", description: "The name of the table to cleanup." },
-        { name: "condition", description: "Rows must match the condition to be deleted." },
-        { name: "parameters", description: "(...) Parameters" }], "Delete data within the database.")
-], EngineStorage.prototype, "Delete", null);
-__decorate([
-    ApiMethod([{ name: "table", description: "The name of the table to cleanup." }], "Drop completely a table of the database.")
-], EngineStorage.prototype, "Drop", null);
-__decorate([
-    ApiMethod([], "Retrieve the list of all the tables stored by this game.")
-], EngineStorage.prototype, "RetrieveTableList", null);
-__decorate([
-    ApiMethod([], "Number of tables retrieved with RetrieveTableList.")
-], EngineStorage.prototype, "NBTables", null);
-__decorate([
-    ApiMethod([{ name: "position", description: "Position in the list." }], "Get the name of the table at the position.")
-], EngineStorage.prototype, "GetTableName", null);
-__decorate([
-    ApiMethod([{ name: "table", description: "Name of the table to check." }], "Retrieve the list of all the columns of a given table stored by this game.")
-], EngineStorage.prototype, "RetrieveColumnList", null);
-__decorate([
-    ApiMethod([], "Number of columns retrieved with RetrieveColumnList.")
-], EngineStorage.prototype, "NBColumns", null);
-__decorate([
-    ApiMethod([{ name: "position", description: "Position in the list." }], "Get the name of the column at the position.")
-], EngineStorage.prototype, "GetColumnName", null);
-__decorate([
-    ApiMethod([{ name: "table", description: "Name of the table to check." }], "Returns true if the table exists. Don't use directly the function, store the value within a variable and then use the value."),
-    ApiWrapper("function Storage_TableExists(table) { Storage._TableExists(table); return stackResult; }")
-], EngineStorage.prototype, "TableExists", null);
-EngineStorage = EngineStorage_1 = __decorate([
-    ApiClass
-], EngineStorage);
-var EngineStorage_1;
 /// <reference path="ExecutionCode.ts" />
-var AddCode = (function () {
+var AddCode = /** @class */ (function () {
     function AddCode() {
     }
     AddCode.prototype.Execute = function (env) {
@@ -34163,7 +34193,7 @@ var AddCode = (function () {
     return AddCode;
 }());
 /// <reference path="ExecutionCode.ts" />
-var AndCode = (function () {
+var AndCode = /** @class */ (function () {
     function AndCode() {
     }
     AndCode.prototype.Execute = function (env) {
@@ -34175,7 +34205,7 @@ var AndCode = (function () {
     return AndCode;
 }());
 /// <reference path="ExecutionCode.ts" />
-var AssignCode = (function () {
+var AssignCode = /** @class */ (function () {
     function AssignCode(name, index) {
         if (index === void 0) { index = false; }
         this.Index = false;
@@ -34198,7 +34228,7 @@ var AssignCode = (function () {
     return AssignCode;
 }());
 /// <reference path="ExecutionCode.ts" />
-var CompareCode = (function () {
+var CompareCode = /** @class */ (function () {
     function CompareCode(operation) {
         this.Operation = operation;
     }
@@ -34242,7 +34272,7 @@ var CompareCode = (function () {
     return CompareCode;
 }());
 /// <reference path="ExecutionCode.ts" />
-var DivideCode = (function () {
+var DivideCode = /** @class */ (function () {
     function DivideCode() {
     }
     DivideCode.prototype.Execute = function (env) {
@@ -34257,7 +34287,7 @@ var DivideCode = (function () {
     return DivideCode;
 }());
 /// <reference path="ExecutionCode.ts" />
-var FlushVariableStackCode = (function () {
+var FlushVariableStackCode = /** @class */ (function () {
     function FlushVariableStackCode() {
     }
     FlushVariableStackCode.prototype.Execute = function (env) {
@@ -34267,7 +34297,7 @@ var FlushVariableStackCode = (function () {
     return FlushVariableStackCode;
 }());
 /// <refe/rence path="ExecutionCode.ts" />
-var FunctionCallCode = (function () {
+var FunctionCallCode = /** @class */ (function () {
     function FunctionCallCode(name, parametersCount) {
         this.Name = name;
         this.ParametersCount = parametersCount;
@@ -34302,7 +34332,7 @@ var FunctionCallCode = (function () {
     };
     return FunctionCallCode;
 }());
-var FunctionDefinitionCode = (function () {
+var FunctionDefinitionCode = /** @class */ (function () {
     function FunctionDefinitionCode() {
         this.Code = [];
         this.LoopExitStack = [];
@@ -34310,7 +34340,7 @@ var FunctionDefinitionCode = (function () {
     return FunctionDefinitionCode;
 }());
 /// <reference path="ExecutionCode.ts" />
-var IfCode = (function () {
+var IfCode = /** @class */ (function () {
     function IfCode(trueJump, falseJump) {
         this.TrueJump = trueJump;
         this.FalseJump = falseJump;
@@ -34325,7 +34355,7 @@ var IfCode = (function () {
     return IfCode;
 }());
 /// <reference path="ExecutionCode.ts" />
-var JumpCode = (function () {
+var JumpCode = /** @class */ (function () {
     function JumpCode(jumpLine) {
         this.JumpLine = jumpLine;
     }
@@ -34335,7 +34365,7 @@ var JumpCode = (function () {
     return JumpCode;
 }());
 /// <reference path="ExecutionCode.ts" />
-var MultiplyCode = (function () {
+var MultiplyCode = /** @class */ (function () {
     function MultiplyCode() {
     }
     MultiplyCode.prototype.Execute = function (env) {
@@ -34350,7 +34380,7 @@ var MultiplyCode = (function () {
     return MultiplyCode;
 }());
 /// <reference path="ExecutionCode.ts" />
-var NewArrayCode = (function () {
+var NewArrayCode = /** @class */ (function () {
     function NewArrayCode() {
     }
     NewArrayCode.prototype.Execute = function (env) {
@@ -34360,7 +34390,7 @@ var NewArrayCode = (function () {
     return NewArrayCode;
 }());
 /// <reference path="ExecutionCode.ts" />
-var NotCode = (function () {
+var NotCode = /** @class */ (function () {
     function NotCode() {
     }
     NotCode.prototype.Execute = function (env) {
@@ -34370,7 +34400,7 @@ var NotCode = (function () {
     return NotCode;
 }());
 /// <reference path="ExecutionCode.ts" />
-var OrCode = (function () {
+var OrCode = /** @class */ (function () {
     function OrCode() {
     }
     OrCode.prototype.Execute = function (env) {
@@ -34382,7 +34412,7 @@ var OrCode = (function () {
     return OrCode;
 }());
 /// <reference path="ExecutionCode.ts" />
-var PushCode = (function () {
+var PushCode = /** @class */ (function () {
     function PushCode(value) {
         this.Value = value;
     }
@@ -34393,7 +34423,7 @@ var PushCode = (function () {
     return PushCode;
 }());
 /// <reference path="ExecutionCode.ts" />
-var ReadCode = (function () {
+var ReadCode = /** @class */ (function () {
     function ReadCode(name, index) {
         if (index === void 0) { index = false; }
         this.Index = false;
@@ -34413,7 +34443,7 @@ var ReadCode = (function () {
     return ReadCode;
 }());
 /// <reference path="ExecutionCode.ts" />
-var ReturnCode = (function () {
+var ReturnCode = /** @class */ (function () {
     function ReturnCode() {
     }
     ReturnCode.prototype.Execute = function (env) {
@@ -34422,7 +34452,7 @@ var ReturnCode = (function () {
     return ReturnCode;
 }());
 /// <reference path="ExecutionCode.ts" />
-var SubstractCode = (function () {
+var SubstractCode = /** @class */ (function () {
     function SubstractCode() {
     }
     SubstractCode.prototype.Execute = function (env) {
@@ -34438,7 +34468,7 @@ var SubstractCode = (function () {
 }());
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['Add'] = { help: "Add two values and return the result. If one of the two is a string a concatenation will be made.", params: [{ name: 'AStatement', type: 'CodeStatement' }, { name: 'BStatement', type: 'CodeStatement' }] };
-var AddStatement = (function (_super) {
+var AddStatement = /** @class */ (function (_super) {
     __extends(AddStatement, _super);
     function AddStatement(statementA, statementB) {
         var _this = _super.call(this) || this;
@@ -34461,14 +34491,14 @@ var AddStatement = (function (_super) {
     AddStatement.prototype.ToCode = function (indent) {
         return this.AStatement.ToCode(0) + " + " + this.BStatement.ToCode(0);
     };
+    AddStatement = __decorate([
+        StatementClass
+    ], AddStatement);
     return AddStatement;
 }(CodeStatement));
-AddStatement = __decorate([
-    StatementClass
-], AddStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['And'] = { help: "Returns a boolean AND operation. Both values must be true to returns true otherwise returns false.", params: [{ name: 'AStatement', type: 'CodeStatement' }, { name: 'BStatement', type: 'CodeStatement' }] };
-var AndStatement = (function (_super) {
+var AndStatement = /** @class */ (function (_super) {
     __extends(AndStatement, _super);
     function AndStatement(statementA, statementB) {
         var _this = _super.call(this) || this;
@@ -34491,14 +34521,14 @@ var AndStatement = (function (_super) {
     AndStatement.prototype.ToCode = function (indent) {
         return this.AStatement.ToCode(0) + " && " + this.BStatement.ToCode(0);
     };
+    AndStatement = __decorate([
+        StatementClass
+    ], AndStatement);
     return AndStatement;
 }(CodeStatement));
-AndStatement = __decorate([
-    StatementClass
-], AndStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['Assign'] = { help: "Set the variable to the value passed. A variable is like a box allowing you to store a number or a string inside.", params: [{ name: 'Variable', type: 'string' }, { name: 'Statement', type: 'CodeStatement' }] };
-var AssignStatement = (function (_super) {
+var AssignStatement = /** @class */ (function (_super) {
     __extends(AssignStatement, _super);
     function AssignStatement(variable, statement) {
         var _this = _super.call(this) || this;
@@ -34527,14 +34557,14 @@ var AssignStatement = (function (_super) {
     AssignStatement.prototype.ToCode = function (indent) {
         return this.Variable + (this.index ? "[" + this.index.ToCode(0) + "]" : "") + " = " + this.Statement.ToCode(0);
     };
+    AssignStatement = __decorate([
+        TopBlockStatementClass,
+        StatementClass
+    ], AssignStatement);
     return AssignStatement;
 }(CodeStatement));
-AssignStatement = __decorate([
-    TopBlockStatementClass,
-    StatementClass
-], AssignStatement);
 /// <reference path="../CodeStatement.ts" />
-var BlockStatement = (function (_super) {
+var BlockStatement = /** @class */ (function (_super) {
     __extends(BlockStatement, _super);
     function BlockStatement(statements) {
         var _this = _super.call(this) || this;
@@ -34578,14 +34608,14 @@ var BlockStatement = (function (_super) {
         html += "<span class='emptyBlock' path='" + path + "'>Empty</span>";
         return html;
     };
+    BlockStatement = __decorate([
+        StatementClass
+    ], BlockStatement);
     return BlockStatement;
 }(CodeStatement));
-BlockStatement = __decorate([
-    StatementClass
-], BlockStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['Boolean'] = { help: "A boolean value which can be either true or false. Click on the node to change from true to false and reverse.", params: [] };
-var BooleanStatement = (function (_super) {
+var BooleanStatement = /** @class */ (function (_super) {
     __extends(BooleanStatement, _super);
     function BooleanStatement(value) {
         if (value === void 0) { value = true; }
@@ -34610,14 +34640,14 @@ var BooleanStatement = (function (_super) {
         html += "</div>";
         return html;
     };
+    BooleanStatement = __decorate([
+        StatementClass
+    ], BooleanStatement);
     return BooleanStatement;
 }(CodeStatement));
-BooleanStatement = __decorate([
-    StatementClass
-], BooleanStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['Break'] = { help: "Stops the current loop (while, do while or for).", params: [] };
-var BreakStatement = (function (_super) {
+var BreakStatement = /** @class */ (function (_super) {
     __extends(BreakStatement, _super);
     function BreakStatement() {
         return _super.call(this) || this;
@@ -34633,15 +34663,15 @@ var BreakStatement = (function (_super) {
     };
     BreakStatement.prototype.Verify = function (env) {
     };
+    BreakStatement = __decorate([
+        TopBlockStatementClass,
+        StatementClass
+    ], BreakStatement);
     return BreakStatement;
 }(CodeStatement));
-BreakStatement = __decorate([
-    TopBlockStatementClass,
-    StatementClass
-], BreakStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['CodeVariable'] = { help: "Allows to create a parameter for extensions or stat / skills.", params: [{ name: 'Name', type: 'string' }] };
-var CodeVariableStatement = (function (_super) {
+var CodeVariableStatement = /** @class */ (function (_super) {
     __extends(CodeVariableStatement, _super);
     function CodeVariableStatement(name, startLine, startColumn) {
         var _this = _super.call(this) || this;
@@ -34659,14 +34689,14 @@ var CodeVariableStatement = (function (_super) {
     CodeVariableStatement.prototype.ToCode = function (indent) {
         return "@" + this.Name + "@";
     };
+    CodeVariableStatement = __decorate([
+        StatementClass
+    ], CodeVariableStatement);
     return CodeVariableStatement;
 }(CodeStatement));
-CodeVariableStatement = __decorate([
-    StatementClass
-], CodeVariableStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['Comment'] = { help: "Allows to put a comment on the code. It doesn't influence the logic otherwise.", params: [{ name: 'Comment', type: 'string', display: 'embed' }] };
-var CommentStatement = (function (_super) {
+var CommentStatement = /** @class */ (function (_super) {
     __extends(CommentStatement, _super);
     function CommentStatement(comment) {
         var _this = _super.call(this) || this;
@@ -34683,15 +34713,15 @@ var CommentStatement = (function (_super) {
     CommentStatement.prototype.ToCode = function (indent) {
         return "/* " + this.Comment + " */";
     };
+    CommentStatement = __decorate([
+        TopBlockStatementClass,
+        StatementClass
+    ], CommentStatement);
     return CommentStatement;
 }(CodeStatement));
-CommentStatement = __decorate([
-    TopBlockStatementClass,
-    StatementClass
-], CommentStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['Compare'] = { help: "Compares two values and if the comparison is correct returns true, otherwise returns false.", params: [{ name: 'AStatement', type: 'CodeStatement' }, { name: 'Operator', type: 'string' }, { name: 'BStatement', type: 'CodeStatement' }] };
-var CompareStatement = (function (_super) {
+var CompareStatement = /** @class */ (function (_super) {
     __extends(CompareStatement, _super);
     function CompareStatement(statementA, operator, statementB) {
         var _this = _super.call(this) || this;
@@ -34715,14 +34745,14 @@ var CompareStatement = (function (_super) {
     CompareStatement.prototype.ToCode = function (indent) {
         return this.AStatement.ToCode(0) + " " + this.Operator + " " + this.BStatement.ToCode(0);
     };
+    CompareStatement = __decorate([
+        StatementClass
+    ], CompareStatement);
     return CompareStatement;
 }(CodeStatement));
-CompareStatement = __decorate([
-    StatementClass
-], CompareStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['Divide'] = { help: "Divides A by B and returns the result.", params: [{ name: 'AStatement', type: 'CodeStatement' }, { name: 'BStatement', type: 'CodeStatement' }] };
-var DivideStatement = (function (_super) {
+var DivideStatement = /** @class */ (function (_super) {
     __extends(DivideStatement, _super);
     function DivideStatement(statementA, statementB) {
         var _this = _super.call(this) || this;
@@ -34745,14 +34775,14 @@ var DivideStatement = (function (_super) {
     DivideStatement.prototype.ToCode = function (indent) {
         return this.AStatement.ToCode(0) + " / " + this.BStatement.ToCode(0);
     };
+    DivideStatement = __decorate([
+        StatementClass
+    ], DivideStatement);
     return DivideStatement;
 }(CodeStatement));
-DivideStatement = __decorate([
-    StatementClass
-], DivideStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['DoWhile'] = { help: "Repeat the code as long as the condition is matched but runs at least once the code.", params: [{ name: 'Condition', type: 'CodeStatement' }, { name: 'BlockStatement', type: 'CodeStatement' }] };
-var DoWhileStatement = DoWhileStatement_1 = (function (_super) {
+var DoWhileStatement = /** @class */ (function (_super) {
     __extends(DoWhileStatement, _super);
     function DoWhileStatement(condition, blockStatement) {
         var _this = _super.call(this) || this;
@@ -34763,6 +34793,7 @@ var DoWhileStatement = DoWhileStatement_1 = (function (_super) {
             _this.BlockStatement = new BlockStatement([_this.BlockStatement]);
         return _this;
     }
+    DoWhileStatement_1 = DoWhileStatement;
     DoWhileStatement.Parse = function (parser) {
         var blockStatement = CodeStatement.Top(parser);
         if (!(parser.HasToken() && parser.PeekToken().Type == "TokenName" && parser.PeekToken().Value == "while"))
@@ -34800,15 +34831,15 @@ var DoWhileStatement = DoWhileStatement_1 = (function (_super) {
     DoWhileStatement.prototype.ToCode = function (indent) {
         return "do\n" + this.BlockStatement.ToCode(indent) + " while(" + this.Condition.ToCode(0) + ")";
     };
+    var DoWhileStatement_1;
+    DoWhileStatement = DoWhileStatement_1 = __decorate([
+        TopBlockStatementClass,
+        StatementClass
+    ], DoWhileStatement);
     return DoWhileStatement;
 }(CodeStatement));
-DoWhileStatement = DoWhileStatement_1 = __decorate([
-    TopBlockStatementClass,
-    StatementClass
-], DoWhileStatement);
-var DoWhileStatement_1;
 /// <reference path="../CodeStatement.ts" />
-var EmptyArrayStatement = (function (_super) {
+var EmptyArrayStatement = /** @class */ (function (_super) {
     __extends(EmptyArrayStatement, _super);
     function EmptyArrayStatement(startLine, startColumn) {
         return _super.call(this) || this;
@@ -34824,13 +34855,13 @@ var EmptyArrayStatement = (function (_super) {
     EmptyArrayStatement.prototype.ToCode = function (indent) {
         return "[]";
     };
+    EmptyArrayStatement = __decorate([
+        StatementClass
+    ], EmptyArrayStatement);
     return EmptyArrayStatement;
 }(CodeStatement));
-EmptyArrayStatement = __decorate([
-    StatementClass
-], EmptyArrayStatement);
 /// <reference path="../CodeStatement.ts" />
-var EmptyStatement = (function (_super) {
+var EmptyStatement = /** @class */ (function (_super) {
     __extends(EmptyStatement, _super);
     function EmptyStatement() {
         return _super.call(this) || this;
@@ -34845,14 +34876,14 @@ var EmptyStatement = (function (_super) {
     EmptyStatement.prototype.ToCode = function (indent) {
         return "";
     };
+    EmptyStatement = __decorate([
+        StatementClass
+    ], EmptyStatement);
     return EmptyStatement;
 }(CodeStatement));
-EmptyStatement = __decorate([
-    StatementClass
-], EmptyStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['For'] = { help: "First run the init code, then as long as the condition is matched runs the block code and at every repeatition runs the loop code.", params: [{ name: 'InitCode', type: 'CodeStatement' }, { name: 'Condition', type: 'CodeStatement' }, { name: 'LoopCode', type: 'CodeStatement' }, { name: 'BlockStatement', type: 'CodeStatement' }] };
-var ForStatement = ForStatement_1 = (function (_super) {
+var ForStatement = /** @class */ (function (_super) {
     __extends(ForStatement, _super);
     function ForStatement(initCode, condition, loopCode, blockStatement) {
         var _this = _super.call(this) || this;
@@ -34865,6 +34896,7 @@ var ForStatement = ForStatement_1 = (function (_super) {
             _this.BlockStatement = new BlockStatement([_this.BlockStatement]);
         return _this;
     }
+    ForStatement_1 = ForStatement;
     ForStatement.Parse = function (parser) {
         if (parser.PeekToken().Type != "TokenOpenParenthesis")
             throw "Was expecting a ( at " + parser.PeekToken().Line + ":" + parser.PeekToken().Column;
@@ -34908,16 +34940,16 @@ var ForStatement = ForStatement_1 = (function (_super) {
     ForStatement.prototype.ToCode = function (indent) {
         return "for(" + this.InitCode.ToCode(0) + ";" + this.Condition.ToCode(0) + ";" + this.LoopCode.ToCode(0) + ")\n" + this.BlockStatement.ToCode(indent);
     };
+    var ForStatement_1;
+    ForStatement = ForStatement_1 = __decorate([
+        TopBlockStatementClass,
+        StatementClass
+    ], ForStatement);
     return ForStatement;
 }(CodeStatement));
-ForStatement = ForStatement_1 = __decorate([
-    TopBlockStatementClass,
-    StatementClass
-], ForStatement);
-var ForStatement_1;
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['FunctionCall'] = { help: "", params: [{ name: 'Name', type: 'string' }, { name: 'values', type: 'any[]' }] };
-var FunctionCallStatement = FunctionCallStatement_1 = (function (_super) {
+var FunctionCallStatement = /** @class */ (function (_super) {
     __extends(FunctionCallStatement, _super);
     function FunctionCallStatement(name, values, startLine, startColumn) {
         var _this = _super.call(this) || this;
@@ -34929,6 +34961,7 @@ var FunctionCallStatement = FunctionCallStatement_1 = (function (_super) {
         _this.startColumn = startColumn - name.length;
         return _this;
     }
+    FunctionCallStatement_1 = FunctionCallStatement;
     FunctionCallStatement.Parse = function (name, parser) {
         var nodes = [];
         if (!parser.HasToken())
@@ -35080,16 +35113,16 @@ var FunctionCallStatement = FunctionCallStatement_1 = (function (_super) {
         html += "</div>";
         return html;
     };
+    var FunctionCallStatement_1;
+    FunctionCallStatement = FunctionCallStatement_1 = __decorate([
+        TopBlockStatementClass,
+        StatementClass
+    ], FunctionCallStatement);
     return FunctionCallStatement;
 }(CodeStatement));
-FunctionCallStatement = FunctionCallStatement_1 = __decorate([
-    TopBlockStatementClass,
-    StatementClass
-], FunctionCallStatement);
-var FunctionCallStatement_1;
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['FunctionDefinition'] = { help: "Defines a new function which will can be used by yourself or can be invoked by the engine.", params: [{ name: 'Name', display: 'embed' }, { name: 'Variables', type: 'string[]', display: 'Parameter Names' }, { name: 'Statement', type: 'CodeStatement' }] };
-var FunctionDefinitionStatement = FunctionDefinitionStatement_1 = (function (_super) {
+var FunctionDefinitionStatement = /** @class */ (function (_super) {
     __extends(FunctionDefinitionStatement, _super);
     function FunctionDefinitionStatement(name, variables, statement) {
         var _this = _super.call(this) || this;
@@ -35098,6 +35131,7 @@ var FunctionDefinitionStatement = FunctionDefinitionStatement_1 = (function (_su
         _this.Statement = (statement ? statement : new BlockStatement([]));
         return _this;
     }
+    FunctionDefinitionStatement_1 = FunctionDefinitionStatement;
     FunctionDefinitionStatement.Parse = function (name, parser) {
         var variables = [];
         parser.NextToken();
@@ -35157,15 +35191,15 @@ var FunctionDefinitionStatement = FunctionDefinitionStatement_1 = (function (_su
             code += "{\n}\n";
         return code + "\n";
     };
+    var FunctionDefinitionStatement_1;
+    FunctionDefinitionStatement = FunctionDefinitionStatement_1 = __decorate([
+        StatementClass
+    ], FunctionDefinitionStatement);
     return FunctionDefinitionStatement;
 }(CodeStatement));
-FunctionDefinitionStatement = FunctionDefinitionStatement_1 = __decorate([
-    StatementClass
-], FunctionDefinitionStatement);
-var FunctionDefinitionStatement_1;
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['If'] = { help: "If the condition is matched the \"true\" code will be run, otherwise the \"false\" code will be.", params: [{ name: 'Condition', type: 'CodeStatement' }, { name: 'TrueStatement', type: 'CodeStatement' }, { name: 'FalseStatement', type: 'CodeStatement' }] };
-var IfStatement = IfStatement_1 = (function (_super) {
+var IfStatement = /** @class */ (function (_super) {
     __extends(IfStatement, _super);
     function IfStatement(condition, statement, elseStatement) {
         var _this = _super.call(this) || this;
@@ -35179,6 +35213,7 @@ var IfStatement = IfStatement_1 = (function (_super) {
             _this.FalseStatement = new BlockStatement([_this.FalseStatement]);
         return _this;
     }
+    IfStatement_1 = IfStatement;
     IfStatement.Parse = function (parser) {
         parser.NextToken();
         var condition = CodeStatement.Element(parser);
@@ -35231,16 +35266,16 @@ var IfStatement = IfStatement_1 = (function (_super) {
         }
         return code;
     };
+    var IfStatement_1;
+    IfStatement = IfStatement_1 = __decorate([
+        TopBlockStatementClass,
+        StatementClass
+    ], IfStatement);
     return IfStatement;
 }(CodeStatement));
-IfStatement = IfStatement_1 = __decorate([
-    TopBlockStatementClass,
-    StatementClass
-], IfStatement);
-var IfStatement_1;
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['Multiply'] = { help: "Returns the multiplication of A by B.", params: [{ name: 'AStatement', type: 'CodeStatement' }, { name: 'BStatement', type: 'CodeStatement' }] };
-var MultiplyStatement = (function (_super) {
+var MultiplyStatement = /** @class */ (function (_super) {
     __extends(MultiplyStatement, _super);
     function MultiplyStatement(statementA, statementB) {
         var _this = _super.call(this) || this;
@@ -35263,14 +35298,14 @@ var MultiplyStatement = (function (_super) {
     MultiplyStatement.prototype.ToCode = function (indent) {
         return this.AStatement.ToCode(0) + " * " + this.BStatement.ToCode(0);
     };
+    MultiplyStatement = __decorate([
+        StatementClass
+    ], MultiplyStatement);
     return MultiplyStatement;
 }(CodeStatement));
-MultiplyStatement = __decorate([
-    StatementClass
-], MultiplyStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['Not'] = { help: "If the statement is true returns false otherwise returns true.", params: [{ name: 'Statement', type: 'CodeStatement' }] };
-var NotStatement = (function (_super) {
+var NotStatement = /** @class */ (function (_super) {
     __extends(NotStatement, _super);
     function NotStatement(statement) {
         var _this = _super.call(this) || this;
@@ -35292,14 +35327,14 @@ var NotStatement = (function (_super) {
     NotStatement.prototype.ToCode = function (indent) {
         return "!" + this.Statement.ToCode(0);
     };
+    NotStatement = __decorate([
+        StatementClass
+    ], NotStatement);
     return NotStatement;
 }(CodeStatement));
-NotStatement = __decorate([
-    StatementClass
-], NotStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['Null'] = { help: "Returns an (empty) or (null) value.", params: [] };
-var NullStatement = (function (_super) {
+var NullStatement = /** @class */ (function (_super) {
     __extends(NullStatement, _super);
     function NullStatement() {
         var _this = _super.call(this) || this;
@@ -35317,14 +35352,14 @@ var NullStatement = (function (_super) {
     NullStatement.prototype.ToCode = function (indent) {
         return "null";
     };
+    NullStatement = __decorate([
+        StatementClass
+    ], NullStatement);
     return NullStatement;
 }(CodeStatement));
-NullStatement = __decorate([
-    StatementClass
-], NullStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['Number'] = { help: "Returns a number.", params: [{ name: 'Value', display: 'embed', type: 'VariableValue', valueType: 'number' }] };
-var NumberStatement = (function (_super) {
+var NumberStatement = /** @class */ (function (_super) {
     __extends(NumberStatement, _super);
     function NumberStatement(stringValue, startLine, startColumn) {
         var _this = _super.call(this) || this;
@@ -35347,14 +35382,14 @@ var NumberStatement = (function (_super) {
     NumberStatement.prototype.ToCode = function (indent) {
         return "" + this.Value.GetNumber();
     };
+    NumberStatement = __decorate([
+        StatementClass
+    ], NumberStatement);
     return NumberStatement;
 }(CodeStatement));
-NumberStatement = __decorate([
-    StatementClass
-], NumberStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['Or'] = { help: "Returns a boolean OR operation. If any of the two values is true returns true ortherwise returns false.", params: [{ name: 'AStatement', type: 'CodeStatement' }, { name: 'BStatement', type: 'CodeStatement' }] };
-var OrStatement = (function (_super) {
+var OrStatement = /** @class */ (function (_super) {
     __extends(OrStatement, _super);
     function OrStatement(statementA, statementB) {
         var _this = _super.call(this) || this;
@@ -35377,14 +35412,14 @@ var OrStatement = (function (_super) {
     OrStatement.prototype.ToCode = function (indent) {
         return this.AStatement.ToCode(0) + " || " + this.BStatement.ToCode(0);
     };
+    OrStatement = __decorate([
+        StatementClass
+    ], OrStatement);
     return OrStatement;
 }(CodeStatement));
-OrStatement = __decorate([
-    StatementClass
-], OrStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['Return'] = { help: "Exits the current function and pass an optional returning value.", params: [{ name: 'Statement', type: 'CodeStatement' }] };
-var ReturnStatement = (function (_super) {
+var ReturnStatement = /** @class */ (function (_super) {
     __extends(ReturnStatement, _super);
     function ReturnStatement(statement) {
         var _this = _super.call(this) || this;
@@ -35410,15 +35445,15 @@ var ReturnStatement = (function (_super) {
         else
             return "return";
     };
+    ReturnStatement = __decorate([
+        TopBlockStatementClass,
+        StatementClass
+    ], ReturnStatement);
     return ReturnStatement;
 }(CodeStatement));
-ReturnStatement = __decorate([
-    TopBlockStatementClass,
-    StatementClass
-], ReturnStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['String'] = { help: "Returns a constant string value.", params: [{ name: 'Value', display: 'embed', type: 'VariableValue' }] };
-var StringStatement = (function (_super) {
+var StringStatement = /** @class */ (function (_super) {
     __extends(StringStatement, _super);
     function StringStatement(value) {
         var _this = _super.call(this) || this;
@@ -35436,14 +35471,14 @@ var StringStatement = (function (_super) {
     StringStatement.prototype.ToCode = function (indent) {
         return "\"" + this.Value.GetString().replace(/"/g, "\\\"") + "\"";
     };
+    StringStatement = __decorate([
+        StatementClass
+    ], StringStatement);
     return StringStatement;
 }(CodeStatement));
-StringStatement = __decorate([
-    StatementClass
-], StringStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['Substract'] = { help: "Returns the substraction of A by B.", params: [{ name: 'AStatement', type: 'CodeStatement' }, { name: 'BStatement', type: 'CodeStatement' }] };
-var SubstractStatement = (function (_super) {
+var SubstractStatement = /** @class */ (function (_super) {
     __extends(SubstractStatement, _super);
     function SubstractStatement(statementA, statementB) {
         var _this = _super.call(this) || this;
@@ -35468,14 +35503,14 @@ var SubstractStatement = (function (_super) {
     SubstractStatement.prototype.ToCode = function (indent) {
         return this.AStatement.ToCode(0) + " - " + this.BStatement.ToCode(0);
     };
+    SubstractStatement = __decorate([
+        StatementClass
+    ], SubstractStatement);
     return SubstractStatement;
 }(CodeStatement));
-SubstractStatement = __decorate([
-    StatementClass
-], SubstractStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['Variable'] = { help: "Returns the value of the variable. A variable is like a box allowing you to store a number or a string inside.", params: [{ name: 'Name', display: 'embed' }] };
-var VariableStatement = (function (_super) {
+var VariableStatement = /** @class */ (function (_super) {
     __extends(VariableStatement, _super);
     function VariableStatement(name, line, column, index) {
         if (index === void 0) { index = null; }
@@ -35500,7 +35535,7 @@ var VariableStatement = (function (_super) {
         return true;
     };
     VariableStatement.prototype.Verify = function (env) {
-        if (this.Name == "stackresult")
+        if (this.Name == "stackresult") // Special variable
             return;
         if (env.HasVariable(this.Name) || this.Name.toLowerCase() == "null" || this.Name.toLocaleLowerCase() == "true" || this.Name.toLocaleLowerCase() == "false")
             //if (env.GetVariablePosition(this.name) != -1 || this.name.toLowerCase() == "null" || this.name.toLocaleLowerCase() == "true" || this.name.toLocaleLowerCase() == "false")        
@@ -35510,14 +35545,14 @@ var VariableStatement = (function (_super) {
     VariableStatement.prototype.ToCode = function (indent) {
         return this.Name + (this.index ? "[" + this.index.ToCode(0) + "]" : "");
     };
+    VariableStatement = __decorate([
+        StatementClass
+    ], VariableStatement);
     return VariableStatement;
 }(CodeStatement));
-VariableStatement = __decorate([
-    StatementClass
-], VariableStatement);
 /// <reference path="../CodeStatement.ts" />
 statementEditorInfo['While'] = { help: "Repeat the code as long as the condition is matched may never run the code if the condition is not matched at the begining.", params: [{ name: 'Condition', type: 'CodeStatement' }, { name: 'BlockStatement', type: 'CodeStatement' }] };
-var WhileStatement = WhileStatement_1 = (function (_super) {
+var WhileStatement = /** @class */ (function (_super) {
     __extends(WhileStatement, _super);
     function WhileStatement(condition, blockStatement) {
         var _this = _super.call(this) || this;
@@ -35528,6 +35563,7 @@ var WhileStatement = WhileStatement_1 = (function (_super) {
             _this.BlockStatement = new BlockStatement([_this.BlockStatement]);
         return _this;
     }
+    WhileStatement_1 = WhileStatement;
     WhileStatement.Parse = function (parser) {
         if (parser.PeekToken().Type != "TokenOpenParenthesis")
             throw "Was expecting a ( at " + parser.PeekToken().Line + ":" + parser.PeekToken().Column;
@@ -35562,15 +35598,15 @@ var WhileStatement = WhileStatement_1 = (function (_super) {
     WhileStatement.prototype.ToCode = function (indent) {
         return "while(" + this.Condition.ToCode(0) + ") " + this.BlockStatement.ToCode(indent);
     };
+    var WhileStatement_1;
+    WhileStatement = WhileStatement_1 = __decorate([
+        TopBlockStatementClass,
+        StatementClass
+    ], WhileStatement);
     return WhileStatement;
 }(CodeStatement));
-WhileStatement = WhileStatement_1 = __decorate([
-    TopBlockStatementClass,
-    StatementClass
-], WhileStatement);
-var WhileStatement_1;
 /// <reference path="../CodeParser.ts" />
-var TokenAnd = (function (_super) {
+var TokenAnd = /** @class */ (function (_super) {
     __extends(TokenAnd, _super);
     function TokenAnd() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -35583,13 +35619,13 @@ var TokenAnd = (function (_super) {
         parser.SkipSpaces();
         return parser.NextChar() + parser.NextChar();
     };
+    TokenAnd = __decorate([
+        Token
+    ], TokenAnd);
     return TokenAnd;
 }(CodeToken));
-TokenAnd = __decorate([
-    Token
-], TokenAnd);
 /// <reference path="../CodeParser.ts" />
-var TokenAssign = (function (_super) {
+var TokenAssign = /** @class */ (function (_super) {
     __extends(TokenAssign, _super);
     function TokenAssign() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -35602,13 +35638,13 @@ var TokenAssign = (function (_super) {
         parser.SkipSpaces();
         return parser.NextChar();
     };
+    TokenAssign = __decorate([
+        Token
+    ], TokenAssign);
     return TokenAssign;
 }(CodeToken));
-TokenAssign = __decorate([
-    Token
-], TokenAssign);
 /// <reference path="../CodeParser.ts" />
-var TokenCloseParenthesis = (function (_super) {
+var TokenCloseParenthesis = /** @class */ (function (_super) {
     __extends(TokenCloseParenthesis, _super);
     function TokenCloseParenthesis() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -35621,13 +35657,13 @@ var TokenCloseParenthesis = (function (_super) {
         parser.SkipSpaces();
         return parser.NextChar();
     };
+    TokenCloseParenthesis = __decorate([
+        Token
+    ], TokenCloseParenthesis);
     return TokenCloseParenthesis;
 }(CodeToken));
-TokenCloseParenthesis = __decorate([
-    Token
-], TokenCloseParenthesis);
 /// <reference path="../CodeParser.ts" />
-var TokenCloseSquareBracket = (function (_super) {
+var TokenCloseSquareBracket = /** @class */ (function (_super) {
     __extends(TokenCloseSquareBracket, _super);
     function TokenCloseSquareBracket() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -35640,13 +35676,13 @@ var TokenCloseSquareBracket = (function (_super) {
         parser.SkipSpaces();
         return parser.NextChar();
     };
+    TokenCloseSquareBracket = __decorate([
+        Token
+    ], TokenCloseSquareBracket);
     return TokenCloseSquareBracket;
 }(CodeToken));
-TokenCloseSquareBracket = __decorate([
-    Token
-], TokenCloseSquareBracket);
 /// <reference path="../CodeParser.ts" />
-var TokenCodeVariable = (function (_super) {
+var TokenCodeVariable = /** @class */ (function (_super) {
     __extends(TokenCodeVariable, _super);
     function TokenCodeVariable() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -35666,14 +35702,14 @@ var TokenCodeVariable = (function (_super) {
         return extracted.substr(1, extracted.length - 2);
     };
     ;
+    TokenCodeVariable = __decorate([
+        Token
+    ], TokenCodeVariable);
     return TokenCodeVariable;
 }(CodeToken));
-TokenCodeVariable = __decorate([
-    Token
-], TokenCodeVariable);
 /// <reference path="../CodeToken.ts" />
 /// <reference path="../CodeParser.ts" />
-var TokenComment = (function (_super) {
+var TokenComment = /** @class */ (function (_super) {
     __extends(TokenComment, _super);
     function TokenComment() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -35710,13 +35746,13 @@ var TokenComment = (function (_super) {
         }
         return extracted;
     };
+    TokenComment = __decorate([
+        Token
+    ], TokenComment);
     return TokenComment;
 }(CodeToken));
-TokenComment = __decorate([
-    Token
-], TokenComment);
 /// <reference path="../CodeParser.ts" />
-var TokenCompare = (function (_super) {
+var TokenCompare = /** @class */ (function (_super) {
     __extends(TokenCompare, _super);
     function TokenCompare() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -35734,13 +35770,13 @@ var TokenCompare = (function (_super) {
             return parser.NextChar();
         return parser.NextChar() + parser.NextChar();
     };
+    TokenCompare = __decorate([
+        Token
+    ], TokenCompare);
     return TokenCompare;
 }(CodeToken));
-TokenCompare = __decorate([
-    Token
-], TokenCompare);
 /// <reference path="../CodeParser.ts" />
-var TokenDecrement = (function (_super) {
+var TokenDecrement = /** @class */ (function (_super) {
     __extends(TokenDecrement, _super);
     function TokenDecrement() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -35753,13 +35789,13 @@ var TokenDecrement = (function (_super) {
         parser.SkipSpaces();
         return parser.NextChar() + parser.NextChar();
     };
+    TokenDecrement = __decorate([
+        Token
+    ], TokenDecrement);
     return TokenDecrement;
 }(CodeToken));
-TokenDecrement = __decorate([
-    Token
-], TokenDecrement);
 /// <reference path="../CodeParser.ts" />
-var TokenDot = (function (_super) {
+var TokenDot = /** @class */ (function (_super) {
     __extends(TokenDot, _super);
     function TokenDot() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -35774,13 +35810,13 @@ var TokenDot = (function (_super) {
         parser.SkipSpaces();
         return parser.NextChar();
     };
+    TokenDot = __decorate([
+        Token
+    ], TokenDot);
     return TokenDot;
 }(CodeToken));
-TokenDot = __decorate([
-    Token
-], TokenDot);
 /// <reference path="../CodeParser.ts" />
-var TokenEndBlock = (function (_super) {
+var TokenEndBlock = /** @class */ (function (_super) {
     __extends(TokenEndBlock, _super);
     function TokenEndBlock() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -35793,13 +35829,13 @@ var TokenEndBlock = (function (_super) {
         parser.SkipSpaces();
         return parser.NextChar();
     };
+    TokenEndBlock = __decorate([
+        Token
+    ], TokenEndBlock);
     return TokenEndBlock;
 }(CodeToken));
-TokenEndBlock = __decorate([
-    Token
-], TokenEndBlock);
 /// <reference path="../CodeParser.ts" />
-var TokenEndLine = (function (_super) {
+var TokenEndLine = /** @class */ (function (_super) {
     __extends(TokenEndLine, _super);
     function TokenEndLine() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -35812,13 +35848,13 @@ var TokenEndLine = (function (_super) {
         parser.SkipSpaces();
         return parser.NextChar();
     };
+    TokenEndLine = __decorate([
+        Token
+    ], TokenEndLine);
     return TokenEndLine;
 }(CodeToken));
-TokenEndLine = __decorate([
-    Token
-], TokenEndLine);
 /// <reference path="../CodeParser.ts" />
-var TokenIncrement = (function (_super) {
+var TokenIncrement = /** @class */ (function (_super) {
     __extends(TokenIncrement, _super);
     function TokenIncrement() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -35831,13 +35867,13 @@ var TokenIncrement = (function (_super) {
         parser.SkipSpaces();
         return parser.NextChar() + parser.NextChar();
     };
+    TokenIncrement = __decorate([
+        Token
+    ], TokenIncrement);
     return TokenIncrement;
 }(CodeToken));
-TokenIncrement = __decorate([
-    Token
-], TokenIncrement);
 /// <reference path="../CodeParser.ts" />
-var TokenName = (function (_super) {
+var TokenName = /** @class */ (function (_super) {
     __extends(TokenName, _super);
     function TokenName() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -35861,13 +35897,13 @@ var TokenName = (function (_super) {
         }
         return extracted;
     };
+    TokenName = __decorate([
+        Token
+    ], TokenName);
     return TokenName;
 }(CodeToken));
-TokenName = __decorate([
-    Token
-], TokenName);
 /// <reference path="../CodeParser.ts" />
-var TokenNot = (function (_super) {
+var TokenNot = /** @class */ (function (_super) {
     __extends(TokenNot, _super);
     function TokenNot() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -35880,13 +35916,13 @@ var TokenNot = (function (_super) {
         parser.SkipSpaces();
         return parser.NextChar();
     };
+    TokenNot = __decorate([
+        Token
+    ], TokenNot);
     return TokenNot;
 }(CodeToken));
-TokenNot = __decorate([
-    Token
-], TokenNot);
 /// <reference path="../CodeParser.ts" />
-var TokenNumber = (function (_super) {
+var TokenNumber = /** @class */ (function (_super) {
     __extends(TokenNumber, _super);
     function TokenNumber() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -35909,13 +35945,13 @@ var TokenNumber = (function (_super) {
         }
         return extracted;
     };
+    TokenNumber = __decorate([
+        Token
+    ], TokenNumber);
     return TokenNumber;
 }(CodeToken));
-TokenNumber = __decorate([
-    Token
-], TokenNumber);
 /// <reference path="../CodeParser.ts" />
-var TokenOpenParenthesis = (function (_super) {
+var TokenOpenParenthesis = /** @class */ (function (_super) {
     __extends(TokenOpenParenthesis, _super);
     function TokenOpenParenthesis() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -35928,13 +35964,13 @@ var TokenOpenParenthesis = (function (_super) {
         parser.SkipSpaces();
         return parser.NextChar();
     };
+    TokenOpenParenthesis = __decorate([
+        Token
+    ], TokenOpenParenthesis);
     return TokenOpenParenthesis;
 }(CodeToken));
-TokenOpenParenthesis = __decorate([
-    Token
-], TokenOpenParenthesis);
 /// <reference path="../CodeParser.ts" />
-var TokenOpenSquareBracket = (function (_super) {
+var TokenOpenSquareBracket = /** @class */ (function (_super) {
     __extends(TokenOpenSquareBracket, _super);
     function TokenOpenSquareBracket() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -35947,13 +35983,13 @@ var TokenOpenSquareBracket = (function (_super) {
         parser.SkipSpaces();
         return parser.NextChar();
     };
+    TokenOpenSquareBracket = __decorate([
+        Token
+    ], TokenOpenSquareBracket);
     return TokenOpenSquareBracket;
 }(CodeToken));
-TokenOpenSquareBracket = __decorate([
-    Token
-], TokenOpenSquareBracket);
 /// <reference path="../CodeParser.ts" />
-var TokenOperator = (function (_super) {
+var TokenOperator = /** @class */ (function (_super) {
     __extends(TokenOperator, _super);
     function TokenOperator() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -35968,13 +36004,13 @@ var TokenOperator = (function (_super) {
         parser.SkipSpaces();
         return parser.NextChar();
     };
+    TokenOperator = __decorate([
+        Token
+    ], TokenOperator);
     return TokenOperator;
 }(CodeToken));
-TokenOperator = __decorate([
-    Token
-], TokenOperator);
 /// <reference path="../CodeParser.ts" />
-var TokenOperatorAssign = (function (_super) {
+var TokenOperatorAssign = /** @class */ (function (_super) {
     __extends(TokenOperatorAssign, _super);
     function TokenOperatorAssign() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -35989,13 +36025,13 @@ var TokenOperatorAssign = (function (_super) {
         parser.SkipSpaces();
         return parser.NextChar() + parser.NextChar();
     };
+    TokenOperatorAssign = __decorate([
+        Token
+    ], TokenOperatorAssign);
     return TokenOperatorAssign;
 }(CodeToken));
-TokenOperatorAssign = __decorate([
-    Token
-], TokenOperatorAssign);
 /// <reference path="../CodeParser.ts" />
-var TokenOr = (function (_super) {
+var TokenOr = /** @class */ (function (_super) {
     __extends(TokenOr, _super);
     function TokenOr() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -36008,13 +36044,13 @@ var TokenOr = (function (_super) {
         parser.SkipSpaces();
         return parser.NextChar() + parser.NextChar();
     };
+    TokenOr = __decorate([
+        Token
+    ], TokenOr);
     return TokenOr;
 }(CodeToken));
-TokenOr = __decorate([
-    Token
-], TokenOr);
 /// <reference path="../CodeParser.ts" />
-var TokenSplitParameter = (function (_super) {
+var TokenSplitParameter = /** @class */ (function (_super) {
     __extends(TokenSplitParameter, _super);
     function TokenSplitParameter() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -36027,13 +36063,13 @@ var TokenSplitParameter = (function (_super) {
         parser.SkipSpaces();
         return parser.NextChar();
     };
+    TokenSplitParameter = __decorate([
+        Token
+    ], TokenSplitParameter);
     return TokenSplitParameter;
 }(CodeToken));
-TokenSplitParameter = __decorate([
-    Token
-], TokenSplitParameter);
 /// <reference path="../CodeParser.ts" />
-var TokenStartBlock = (function (_super) {
+var TokenStartBlock = /** @class */ (function (_super) {
     __extends(TokenStartBlock, _super);
     function TokenStartBlock() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -36046,13 +36082,13 @@ var TokenStartBlock = (function (_super) {
         parser.SkipSpaces();
         return parser.NextChar();
     };
+    TokenStartBlock = __decorate([
+        Token
+    ], TokenStartBlock);
     return TokenStartBlock;
 }(CodeToken));
-TokenStartBlock = __decorate([
-    Token
-], TokenStartBlock);
 /// <reference path="../CodeParser.ts" />
-var TokenString = (function (_super) {
+var TokenString = /** @class */ (function (_super) {
     __extends(TokenString, _super);
     function TokenString() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -36072,11 +36108,11 @@ var TokenString = (function (_super) {
         return extracted.substr(1, extracted.length - 2);
     };
     ;
+    TokenString = __decorate([
+        Token
+    ], TokenString);
     return TokenString;
 }(CodeToken));
-TokenString = __decorate([
-    Token
-], TokenString);
 ///<reference path="../TilesetInformation.ts" />
 defaultTilesets['tileset2'] = {
     "background": { "file": "/art/tileset2/background.png?v=2", "height": 32, "width": 32, "types": { "grass": [43, 61], "dark_grass": [51], "water": [7], "sand": [25, 33], "empty": [115], "dirt": [64] }, "mainType": "grass", "nbColumns": 6, "nonWalkable": [7, 0, 1, 2, 8, 14, 13, 12, 6, 3, 9, 4, 5, 11, 17, 35, 53, 69, 83, 101, 107, 106, 125, 112, 118, 124, 123, 143, 142, 141, 117, 111, 110, 116, 122, 121, 115, 109, 108, 114, 120, 119, 113, 15], "lastTile": 144, "paths": { "grass_path": [126, 139, 140, 133, 134, 131, 132, 129, 130, 127, 128, 135, 136, 137, 138] }, "transitions": [{ "from": "water", "to": "grass", "size": 12, "transition": [5, 3, 11, 9, 14, 12, 2, 0, 13, 8, 6, 1] }, { "from": "grass", "to": "sand", "size": 12, "transition": [18, 20, 30, 32, 27, 29, 21, 23, 19, 24, 26, 31] }, { "from": "dark_grass", "to": "grass", "size": 12, "transition": [36, 38, 48, 50, 45, 47, 39, 41, 37, 42, 44, 49] }, { "from": "grass", "to": "grass", "size": 12, "transition": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] }, { "from": "grass", "to": "dirt", "size": 12, "transition": [59, 57, 65, 63, 68, 66, 56, 54, 67, 62, 60, 55] }, { "from": "empty", "to": "dirt", "size": 12, "transition": [113, 111, 119, 117, 122, 120, 110, 108, 121, 116, 114, 109] }] },
