@@ -23,7 +23,10 @@
             $(".hideForStandalone").hide();
         }
         if (selfHosted)
+        {
+            $("#buttonDeleteGame").hide();
             $(".hideForSelfHosted").hide();
+        }
 
         $("#gameName").html(world.Name);
         var url = "http://" + world.Name.replace(/ /g, "_") + ".dotworld.me/";

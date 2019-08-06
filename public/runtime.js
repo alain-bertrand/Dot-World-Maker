@@ -5063,27 +5063,6 @@ var VariableValue = /** @class */ (function () {
     };
     return VariableValue;
 }());
-var JournalEntry = /** @class */ (function () {
-    function JournalEntry() {
-    }
-    return JournalEntry;
-}());
-var KnownQuest = /** @class */ (function () {
-    function KnownQuest() {
-    }
-    return KnownQuest;
-}());
-var Quest = /** @class */ (function () {
-    function Quest() {
-        this.JournalEntries = [];
-    }
-    return Quest;
-}());
-var ReceivedJournalEntry = /** @class */ (function () {
-    function ReceivedJournalEntry() {
-    }
-    return ReceivedJournalEntry;
-}());
 var defaultParticleSystems = [{
         "Name": "blood", "InitialParticles": 0, "MaxParticles": 1000, "MaxAge": 100, "MaxSpeed": 10, "Emitter": { "SpawnRate": 4, "Velocity": 1, "Direction": -90, "JitterDirection": 5, "JitterVelocity": 0.5, "JitterX": 3, "JitterY": 3, "StopEmittingAfter": 100, "__type": "ParticleEmitterPoint" }, "Effectors": [{ "Gravity": 0.02, "GravityDirection": 90, "__type": "ParticleGravity" }, { "StartColor": "#FF0000", "EndColor": "", "__type": "ParticleColor" }, { "ParticleStartSize": 1, "ParticleStartAgeSizeChange": 0, "ParticleEndSize": 3, "__type": "ParticleSize" }, { "ParticleStartOpacity": 1, "ParticleStartAgeOpacityChange": 10, "ParticleEndOpacity": 0, "__type": "ParticleOpacity" }]
     },
@@ -5895,6 +5874,27 @@ var ParticleWave = /** @class */ (function () {
         ParticleEffectorClass
     ], ParticleWave);
     return ParticleWave;
+}());
+var JournalEntry = /** @class */ (function () {
+    function JournalEntry() {
+    }
+    return JournalEntry;
+}());
+var KnownQuest = /** @class */ (function () {
+    function KnownQuest() {
+    }
+    return KnownQuest;
+}());
+var Quest = /** @class */ (function () {
+    function Quest() {
+        this.JournalEntries = [];
+    }
+    return Quest;
+}());
+var ReceivedJournalEntry = /** @class */ (function () {
+    function ReceivedJournalEntry() {
+    }
+    return ReceivedJournalEntry;
 }());
 var skillCodes = ["// Default attack skill. Will be invoked while clicking on a monster.\n\
 \n\
@@ -18569,6 +18569,11 @@ var Framework = /** @class */ (function () {
                                 }
                                 framework.cachedTemplates[framework.Routing[i].Action] = msg;
                                 $("#contentArea").html(msg);
+                                if (selfHosted && $("#helpLink").length != 0) {
+                                    var helpLink = ($("#helpLink").prop("href"));
+                                    helpLink = helpLink.substr(helpLink.indexOf("/Help"));
+                                    $("#helpLink").prop("href", "https://www.dotworldmaker.com" + helpLink);
+                                }
                                 framework.LastRoute = page;
                                 framework.CurrentHandler = page;
                                 framework.Routing[i].Callback(framework.CurrentUrl);
@@ -18579,6 +18584,11 @@ var Framework = /** @class */ (function () {
                 }
                 if (isReady) {
                     framework.CurrentHandler = page;
+                    if (selfHosted && $("#helpLink").length != 0) {
+                        var helpLink = ($("#helpLink").prop("href"));
+                        helpLink = helpLink.substr(helpLink.indexOf("/Help"));
+                        $("#helpLink").prop("href", "https://www.dotworldmaker.com" + helpLink);
+                    }
                     framework.Routing[i].Callback(framework.CurrentUrl);
                     document.dispatchEvent(framework.eventRouteCall);
                 }

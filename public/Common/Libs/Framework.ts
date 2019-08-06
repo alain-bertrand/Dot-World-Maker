@@ -350,6 +350,12 @@ class Framework
                                 }
                                 framework.cachedTemplates[framework.Routing[i].Action] = msg;
                                 $("#contentArea").html(msg);
+                                if (selfHosted && $("#helpLink").length != 0)
+                                {
+                                    var helpLink=<string>($("#helpLink").prop("href"));
+                                    helpLink=helpLink.substr(helpLink.indexOf("/Help"));
+                                    $("#helpLink").prop("href", "https://www.dotworldmaker.com" + helpLink);
+                                }
                                 framework.LastRoute = page;
                                 framework.CurrentHandler = page;
                                 framework.Routing[i].Callback(framework.CurrentUrl);
@@ -361,6 +367,12 @@ class Framework
                 if (isReady)
                 {
                     framework.CurrentHandler = page;
+                    if (selfHosted && $("#helpLink").length != 0)
+                    {
+                        var helpLink=<string>($("#helpLink").prop("href"));
+                        helpLink=helpLink.substr(helpLink.indexOf("/Help"));
+                        $("#helpLink").prop("href", "https://www.dotworldmaker.com" + helpLink);
+                    }
                     framework.Routing[i].Callback(framework.CurrentUrl);
                     document.dispatchEvent(framework.eventRouteCall);
                 }

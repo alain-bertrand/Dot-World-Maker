@@ -2358,248 +2358,8 @@ var ARC4 = /** @class */ (function () {
     };
     return ARC4;
 }());
-var codeEditor = new (/** @class */ (function () {
-    function class_2() {
-        this.hideHelpTimer = null;
-        this.currentEditor = null;
-        this.currentSelection = null;
-        this.currentList = null;
-        this.currentSelectedCompletion = null;
-        this.currentTextToTheEnd = null;
-    }
-    return class_2;
-}()));
-var CodeEditor = /** @class */ (function () {
-    function CodeEditor() {
-    }
-    CodeEditor.Create = function (element) {
-        var editor = CodeMirror.fromTextArea($("#" + element).first(), {
-            lineNumbers: true,
-            matchBrackets: true,
-            continueComments: "Enter",
-            showCursorWhenSelecting: true,
-            tabSize: 4,
-            indentUnit: 4
-        });
-        codeEditor.currentEditor = editor;
-        editor.on("blur", function () {
-            if (codeEditor.hideHelpTimer) {
-                clearTimeout(codeEditor.hideHelpTimer);
-                codeEditor.hideHelpTimer = null;
-            }
-            codeEditor.hideHelpTimer = setTimeout(function () { CodeEditor.HideHelp(element); }, 500);
-        });
-        editor.setOption("extraKeys", {
-            "Enter": function () {
-                if (codeEditor.currentList && codeEditor.currentSelectedCompletion !== null) {
-                    CodeEditor.Add(codeEditor.currentList[codeEditor.currentSelectedCompletion]);
-                    event.preventDefault();
-                    event.stopPropagation();
-                    return false;
-                }
-                return CodeMirror.Pass;
-            },
-            "Tab": function () {
-                if (codeEditor.currentList && codeEditor.currentSelectedCompletion !== null) {
-                    CodeEditor.Add(codeEditor.currentList[codeEditor.currentSelectedCompletion]);
-                    event.preventDefault();
-                    event.stopPropagation();
-                    return false;
-                }
-                return CodeMirror.Pass;
-            },
-            "Up": function () {
-                if (codeEditor.currentList && codeEditor.currentSelectedCompletion !== null && codeEditor.currentList[0].indexOf(".") != -1) {
-                    codeEditor.currentSelectedCompletion--;
-                    if (codeEditor.currentSelectedCompletion < 0)
-                        codeEditor.currentSelectedCompletion = codeEditor.currentList.length - 1;
-                    CodeEditor.UpdateList(element);
-                    $("#codeHelp_" + element + " .selectedInsertion").first().scrollIntoView();
-                    return false;
-                }
-                return CodeMirror.Pass;
-            },
-            "Down": function () {
-                if (codeEditor.currentList && codeEditor.currentSelectedCompletion !== null && codeEditor.currentList[0].indexOf(".") != -1) {
-                    codeEditor.currentSelectedCompletion++;
-                    if (codeEditor.currentSelectedCompletion >= codeEditor.currentList.length)
-                        codeEditor.currentSelectedCompletion = 0;
-                    CodeEditor.UpdateList(element);
-                    $("#codeHelp_" + element + " .selectedInsertion").first().scrollIntoView();
-                    return false;
-                }
-                return CodeMirror.Pass;
-            },
-            "Esc": function () {
-                if (codeEditor.hideHelpTimer) {
-                    if (codeEditor.hideHelpTimer) {
-                        clearTimeout(codeEditor.hideHelpTimer);
-                        codeEditor.hideHelpTimer = null;
-                    }
-                    CodeEditor.HideHelp(element);
-                    return false;
-                }
-                return CodeMirror.Pass;
-            },
-            "Ctrl-Q": "toggleComment"
-        });
-        editor.on("cursorActivity", function () {
-            codeEditor.currentList = null;
-            codeEditor.currentSelectedCompletion = null;
-            if (codeEditor.hideHelpTimer) {
-                clearTimeout(codeEditor.hideHelpTimer);
-                codeEditor.hideHelpTimer = null;
-            }
-            var line = editor.getCursor().line;
-            var char = editor.getCursor().ch;
-            var code = editor.getValue();
-            var lines = code.split('\n');
-            if (lines[line]) {
-                var allowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._";
-                var overText = "";
-                var toTheEnd = 0;
-                char--;
-                for (var i = char; i >= 0; i--) {
-                    //var c = lines[line].charAt(i);
-                    var c = CodeEditor.GetCharAt(line, i);
-                    if (allowedChars.indexOf(c) == -1)
-                        break;
-                    overText = c + overText;
-                }
-                if (overText.length > 0)
-                    for (var i = char + 1; i < lines[line].length; i++) {
-                        var c = CodeEditor.GetCharAt(line, i);
-                        if (allowedChars.indexOf(c) == -1)
-                            break;
-                        overText += c;
-                        toTheEnd++;
-                    }
-                codeEditor.currentTextToTheEnd = toTheEnd;
-                codeEditor.currentSelection = overText;
-                var foundApi = GetApiDescription(overText);
-                if (foundApi) {
-                    var domLine = $(".CodeMirror-line").eq(line + 1);
-                    var coords = codeEditor.currentEditor.cursorCoords(true, "page");
-                    var y = coords.top;
-                    var x = coords.left - 150;
-                    $("#codeHelp_" + element).show();
-                    if (y + 200 > window.innerHeight - 35)
-                        $("#codeHelp_" + element).css("top", "" + (y - 110) + "px");
-                    else
-                        $("#codeHelp_" + element).css("top", "" + (y + 20) + "px");
-                    if (x < 0)
-                        x = 0;
-                    if (x > window.innerHeight - 310)
-                        x = window.innerHeight - 310;
-                    $("#codeHelp_" + element).css("left", "" + x + "px");
-                    $("#codeHelp_" + element).html(GetApiSignature(overText) + foundApi);
-                    codeEditor.hideHelpTimer = setTimeout(function () { CodeEditor.HideHelp(element); }, 5000);
-                }
-                else {
-                    // We still have to choose an API
-                    var list = [];
-                    if (overText != "") {
-                        if (overText.indexOf(".") == -1) {
-                            var last = null;
-                            for (var i = 0; i < apiFunctions.length; i++) {
-                                var f = apiFunctions[i].name.split('.')[0];
-                                if (last == f)
-                                    continue;
-                                if (f.toLowerCase().indexOf(overText.toLowerCase()) == 0)
-                                    list.push(f);
-                                last = f;
-                            }
-                        }
-                        else {
-                            for (var i = 0; i < apiFunctions.length; i++)
-                                if (apiFunctions[i].name.toLowerCase().indexOf(overText.toLowerCase()) == 0)
-                                    list.push(apiFunctions[i].name);
-                        }
-                        list.sort();
-                    }
-                    if (list && list.length > 0) {
-                        codeEditor.currentList = list;
-                        codeEditor.currentSelectedCompletion = 0;
-                        CodeEditor.UpdateList(element);
-                        var domLine = $(".CodeMirror-line").eq(line + 1);
-                        var coords = codeEditor.currentEditor.cursorCoords(true, "page");
-                        var y = coords.top;
-                        var x = coords.left - 150;
-                        $("#codeHelp_" + element).show();
-                        if (y + 200 > window.innerHeight - 35)
-                            $("#codeHelp_" + element).css("top", "" + (y - 110) + "px");
-                        else
-                            $("#codeHelp_" + element).css("top", "" + (y + 20) + "px");
-                        if (x < 0)
-                            x = 0;
-                        if (x > window.innerHeight - 310)
-                            x = window.innerHeight - 310;
-                        $("#codeHelp_" + element).css("left", "" + x + "px");
-                    }
-                    else
-                        CodeEditor.HideHelp(element);
-                }
-            }
-            else
-                CodeEditor.HideHelp(element);
-        });
-        editor.on('change', function () {
-            $("#codeError_" + element).hide();
-            var nblines = editor.getDoc().lineCount();
-            for (var i = 0; i < nblines; i++)
-                editor.removeLineClass(i, 'background', "line-error");
-            var code = editor.getValue();
-            try {
-                CodeParser.Parse(code.replace(/\@[a-z0-9_]+\@/gi, "1"));
-            }
-            catch (ex) {
-                var m = ("" + ex).match(/ ([0-9]+):([0-9]+)/);
-                if (m != null)
-                    editor.addLineClass(parseInt(m[1]) - 1, 'background', "line-error");
-                setTimeout(function () { $("#codeError_" + element).show().html(ex); }, 10);
-            }
-        });
-        return editor;
-    };
-    CodeEditor.GetCharAt = function (line, col) {
-        return codeEditor.currentEditor.getRange({ line: line, ch: col }, { line: line, ch: col + 1 });
-    };
-    CodeEditor.UpdateList = function (element) {
-        if (codeEditor.hideHelpTimer) {
-            clearTimeout(codeEditor.hideHelpTimer);
-            codeEditor.hideHelpTimer = null;
-        }
-        var html = "";
-        for (var i = 0; i < codeEditor.currentList.length; i++) {
-            html += "<div onclick='CodeEditor.Add(\"" + codeEditor.currentList[i] + "\");'" + (codeEditor.currentSelectedCompletion == i ? " class='selectedInsertion'" : "") + ">" + codeEditor.currentList[i] + "</div>";
-        }
-        $("#codeHelp_" + element).html(html);
-        codeEditor.hideHelpTimer = setTimeout(function () { CodeEditor.HideHelp(element); }, 5000);
-    };
-    CodeEditor.Add = function (text) {
-        if (codeEditor.hideHelpTimer) {
-            clearTimeout(codeEditor.hideHelpTimer);
-            codeEditor.hideHelpTimer = null;
-        }
-        if (text.indexOf('.') == -1)
-            text += '.';
-        else {
-            var api = GetApiSignature(text).replace(/<.{0,1}span[^>]*>/gi, "").replace(";", "");
-            text += api.substr(text.length);
-        }
-        var pos = codeEditor.currentEditor.getCursor();
-        codeEditor.currentEditor.replaceRange(text.substr(codeEditor.currentSelection.length), { line: pos.line, ch: pos.ch + (codeEditor.currentTextToTheEnd > 0 ? codeEditor.currentTextToTheEnd + 1 : 0) });
-    };
-    CodeEditor.HideHelp = function (element) {
-        $("#codeHelp_" + element).hide();
-        codeEditor.hideHelpTimer = null;
-        codeEditor.currentList = null;
-        codeEditor.currentSelectedCompletion = null;
-    };
-    return CodeEditor;
-}());
 var chat = new (/** @class */ (function () {
-    function class_3() {
+    function class_2() {
         this.intervalCounter = 0;
         this.chatNewMessage = false;
         this.wasHidden = false;
@@ -2611,7 +2371,7 @@ var chat = new (/** @class */ (function () {
             ["*.*"], [":X"], ["X.X", "x.x"], ["$.$"], ["o@@o"], ["9.9"], ["O:&lt;"], ["B|"], ["B("], ["B0"], ["@.@"], ["^**^"], ["9.6"],
             ["/.O"], ["d.b"], ["&gt;.&gt;"], ["=^_^="]];
     }
-    return class_3;
+    return class_2;
 }()));
 var Chat = /** @class */ (function () {
     function Chat() {
@@ -3053,6 +2813,472 @@ var Chat = /** @class */ (function () {
         Framework.SavePreferences();
     };
     return Chat;
+}());
+var codeEditor = new (/** @class */ (function () {
+    function class_3() {
+        this.hideHelpTimer = null;
+        this.currentEditor = null;
+        this.currentSelection = null;
+        this.currentList = null;
+        this.currentSelectedCompletion = null;
+        this.currentTextToTheEnd = null;
+    }
+    return class_3;
+}()));
+var CodeEditor = /** @class */ (function () {
+    function CodeEditor() {
+    }
+    CodeEditor.Create = function (element) {
+        var editor = CodeMirror.fromTextArea($("#" + element).first(), {
+            lineNumbers: true,
+            matchBrackets: true,
+            continueComments: "Enter",
+            showCursorWhenSelecting: true,
+            tabSize: 4,
+            indentUnit: 4
+        });
+        codeEditor.currentEditor = editor;
+        editor.on("blur", function () {
+            if (codeEditor.hideHelpTimer) {
+                clearTimeout(codeEditor.hideHelpTimer);
+                codeEditor.hideHelpTimer = null;
+            }
+            codeEditor.hideHelpTimer = setTimeout(function () { CodeEditor.HideHelp(element); }, 500);
+        });
+        editor.setOption("extraKeys", {
+            "Enter": function () {
+                if (codeEditor.currentList && codeEditor.currentSelectedCompletion !== null) {
+                    CodeEditor.Add(codeEditor.currentList[codeEditor.currentSelectedCompletion]);
+                    event.preventDefault();
+                    event.stopPropagation();
+                    return false;
+                }
+                return CodeMirror.Pass;
+            },
+            "Tab": function () {
+                if (codeEditor.currentList && codeEditor.currentSelectedCompletion !== null) {
+                    CodeEditor.Add(codeEditor.currentList[codeEditor.currentSelectedCompletion]);
+                    event.preventDefault();
+                    event.stopPropagation();
+                    return false;
+                }
+                return CodeMirror.Pass;
+            },
+            "Up": function () {
+                if (codeEditor.currentList && codeEditor.currentSelectedCompletion !== null && codeEditor.currentList[0].indexOf(".") != -1) {
+                    codeEditor.currentSelectedCompletion--;
+                    if (codeEditor.currentSelectedCompletion < 0)
+                        codeEditor.currentSelectedCompletion = codeEditor.currentList.length - 1;
+                    CodeEditor.UpdateList(element);
+                    $("#codeHelp_" + element + " .selectedInsertion").first().scrollIntoView();
+                    return false;
+                }
+                return CodeMirror.Pass;
+            },
+            "Down": function () {
+                if (codeEditor.currentList && codeEditor.currentSelectedCompletion !== null && codeEditor.currentList[0].indexOf(".") != -1) {
+                    codeEditor.currentSelectedCompletion++;
+                    if (codeEditor.currentSelectedCompletion >= codeEditor.currentList.length)
+                        codeEditor.currentSelectedCompletion = 0;
+                    CodeEditor.UpdateList(element);
+                    $("#codeHelp_" + element + " .selectedInsertion").first().scrollIntoView();
+                    return false;
+                }
+                return CodeMirror.Pass;
+            },
+            "Esc": function () {
+                if (codeEditor.hideHelpTimer) {
+                    if (codeEditor.hideHelpTimer) {
+                        clearTimeout(codeEditor.hideHelpTimer);
+                        codeEditor.hideHelpTimer = null;
+                    }
+                    CodeEditor.HideHelp(element);
+                    return false;
+                }
+                return CodeMirror.Pass;
+            },
+            "Ctrl-Q": "toggleComment"
+        });
+        editor.on("cursorActivity", function () {
+            codeEditor.currentList = null;
+            codeEditor.currentSelectedCompletion = null;
+            if (codeEditor.hideHelpTimer) {
+                clearTimeout(codeEditor.hideHelpTimer);
+                codeEditor.hideHelpTimer = null;
+            }
+            var line = editor.getCursor().line;
+            var char = editor.getCursor().ch;
+            var code = editor.getValue();
+            var lines = code.split('\n');
+            if (lines[line]) {
+                var allowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._";
+                var overText = "";
+                var toTheEnd = 0;
+                char--;
+                for (var i = char; i >= 0; i--) {
+                    //var c = lines[line].charAt(i);
+                    var c = CodeEditor.GetCharAt(line, i);
+                    if (allowedChars.indexOf(c) == -1)
+                        break;
+                    overText = c + overText;
+                }
+                if (overText.length > 0)
+                    for (var i = char + 1; i < lines[line].length; i++) {
+                        var c = CodeEditor.GetCharAt(line, i);
+                        if (allowedChars.indexOf(c) == -1)
+                            break;
+                        overText += c;
+                        toTheEnd++;
+                    }
+                codeEditor.currentTextToTheEnd = toTheEnd;
+                codeEditor.currentSelection = overText;
+                var foundApi = GetApiDescription(overText);
+                if (foundApi) {
+                    var domLine = $(".CodeMirror-line").eq(line + 1);
+                    var coords = codeEditor.currentEditor.cursorCoords(true, "page");
+                    var y = coords.top;
+                    var x = coords.left - 150;
+                    $("#codeHelp_" + element).show();
+                    if (y + 200 > window.innerHeight - 35)
+                        $("#codeHelp_" + element).css("top", "" + (y - 110) + "px");
+                    else
+                        $("#codeHelp_" + element).css("top", "" + (y + 20) + "px");
+                    if (x < 0)
+                        x = 0;
+                    if (x > window.innerHeight - 310)
+                        x = window.innerHeight - 310;
+                    $("#codeHelp_" + element).css("left", "" + x + "px");
+                    $("#codeHelp_" + element).html(GetApiSignature(overText) + foundApi);
+                    codeEditor.hideHelpTimer = setTimeout(function () { CodeEditor.HideHelp(element); }, 5000);
+                }
+                else {
+                    // We still have to choose an API
+                    var list = [];
+                    if (overText != "") {
+                        if (overText.indexOf(".") == -1) {
+                            var last = null;
+                            for (var i = 0; i < apiFunctions.length; i++) {
+                                var f = apiFunctions[i].name.split('.')[0];
+                                if (last == f)
+                                    continue;
+                                if (f.toLowerCase().indexOf(overText.toLowerCase()) == 0)
+                                    list.push(f);
+                                last = f;
+                            }
+                        }
+                        else {
+                            for (var i = 0; i < apiFunctions.length; i++)
+                                if (apiFunctions[i].name.toLowerCase().indexOf(overText.toLowerCase()) == 0)
+                                    list.push(apiFunctions[i].name);
+                        }
+                        list.sort();
+                    }
+                    if (list && list.length > 0) {
+                        codeEditor.currentList = list;
+                        codeEditor.currentSelectedCompletion = 0;
+                        CodeEditor.UpdateList(element);
+                        var domLine = $(".CodeMirror-line").eq(line + 1);
+                        var coords = codeEditor.currentEditor.cursorCoords(true, "page");
+                        var y = coords.top;
+                        var x = coords.left - 150;
+                        $("#codeHelp_" + element).show();
+                        if (y + 200 > window.innerHeight - 35)
+                            $("#codeHelp_" + element).css("top", "" + (y - 110) + "px");
+                        else
+                            $("#codeHelp_" + element).css("top", "" + (y + 20) + "px");
+                        if (x < 0)
+                            x = 0;
+                        if (x > window.innerHeight - 310)
+                            x = window.innerHeight - 310;
+                        $("#codeHelp_" + element).css("left", "" + x + "px");
+                    }
+                    else
+                        CodeEditor.HideHelp(element);
+                }
+            }
+            else
+                CodeEditor.HideHelp(element);
+        });
+        editor.on('change', function () {
+            $("#codeError_" + element).hide();
+            var nblines = editor.getDoc().lineCount();
+            for (var i = 0; i < nblines; i++)
+                editor.removeLineClass(i, 'background', "line-error");
+            var code = editor.getValue();
+            try {
+                CodeParser.Parse(code.replace(/\@[a-z0-9_]+\@/gi, "1"));
+            }
+            catch (ex) {
+                var m = ("" + ex).match(/ ([0-9]+):([0-9]+)/);
+                if (m != null)
+                    editor.addLineClass(parseInt(m[1]) - 1, 'background', "line-error");
+                setTimeout(function () { $("#codeError_" + element).show().html(ex); }, 10);
+            }
+        });
+        return editor;
+    };
+    CodeEditor.GetCharAt = function (line, col) {
+        return codeEditor.currentEditor.getRange({ line: line, ch: col }, { line: line, ch: col + 1 });
+    };
+    CodeEditor.UpdateList = function (element) {
+        if (codeEditor.hideHelpTimer) {
+            clearTimeout(codeEditor.hideHelpTimer);
+            codeEditor.hideHelpTimer = null;
+        }
+        var html = "";
+        for (var i = 0; i < codeEditor.currentList.length; i++) {
+            html += "<div onclick='CodeEditor.Add(\"" + codeEditor.currentList[i] + "\");'" + (codeEditor.currentSelectedCompletion == i ? " class='selectedInsertion'" : "") + ">" + codeEditor.currentList[i] + "</div>";
+        }
+        $("#codeHelp_" + element).html(html);
+        codeEditor.hideHelpTimer = setTimeout(function () { CodeEditor.HideHelp(element); }, 5000);
+    };
+    CodeEditor.Add = function (text) {
+        if (codeEditor.hideHelpTimer) {
+            clearTimeout(codeEditor.hideHelpTimer);
+            codeEditor.hideHelpTimer = null;
+        }
+        if (text.indexOf('.') == -1)
+            text += '.';
+        else {
+            var api = GetApiSignature(text).replace(/<.{0,1}span[^>]*>/gi, "").replace(";", "");
+            text += api.substr(text.length);
+        }
+        var pos = codeEditor.currentEditor.getCursor();
+        codeEditor.currentEditor.replaceRange(text.substr(codeEditor.currentSelection.length), { line: pos.line, ch: pos.ch + (codeEditor.currentTextToTheEnd > 0 ? codeEditor.currentTextToTheEnd + 1 : 0) });
+    };
+    CodeEditor.HideHelp = function (element) {
+        $("#codeHelp_" + element).hide();
+        codeEditor.hideHelpTimer = null;
+        codeEditor.currentList = null;
+        codeEditor.currentSelectedCompletion = null;
+    };
+    return CodeEditor;
+}());
+var inventoryMenu = new (/** @class */ (function () {
+    function class_4() {
+        this.inventoryDisplayed = false;
+    }
+    return class_4;
+}()));
+var InventoryMenu = /** @class */ (function () {
+    function InventoryMenu() {
+    }
+    InventoryMenu.AdditionalCSS = function () {
+        return "#inventoryIcon\n\
+{\n\
+    position: absolute;\n\
+    left: -" + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
+    top: 80px;\n\
+}\n\
+#inventoryIcon .gamePanelContentNoHeader\n\
+{\n\
+    width: 74px;\n\
+}\n\
+#inventoryObjectDetails\n\
+{\n\
+    position: absolute;\n\
+    left: " + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
+    right: " + parseInt("" + world.art.panelStyle.rightBorder) + "px;\n\
+    bottom: " + parseInt("" + world.art.panelStyle.bottomBorder) + "px;\n\
+    overflow: hidden;\n\
+    height: 150px;\n\
+    padding: 7px;\n\
+    box-sizing: border-box;\n\
+}\n\
+\n\
+#inventoryObjectList\n\
+{\n\
+    position: absolute;\n\
+    left: " + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
+    right: " + parseInt("" + world.art.panelStyle.rightBorder) + "px;\n\
+    top: " + parseInt("" + world.art.panelStyle.topBorder) + "px;\n\
+    bottom: " + (parseInt("" + world.art.panelStyle.bottomBorder) + 150) + "px;\n\
+    overflow-y: scroll;\n\
+}\n\
+\n\
+#inventoryObjectList h1\n\
+{\n\
+    border-bottom: solid 1px " + Main.EnsureColor(world.art.panelStyle.contentColor) + ";\n\
+    margin-bottom: 5px;\n\
+}\n\
+";
+    };
+    InventoryMenu.Init = function (position) {
+        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowInventory === false))) {
+            $("#inventoryIcon").hide();
+            return position;
+        }
+        $("#inventoryIcon").css("top", position + "px");
+        if (game)
+            $("#inventoryIcon .gamePanelContentNoHeader").html("<img src='art/tileset2/inventory_icon.png'>");
+        else
+            $("#inventoryIcon .gamePanelContentNoHeader").html("<img src='/art/tileset2/inventory_icon.png'>");
+        return position + 64 + world.art.panelStyle.topBorder;
+    };
+    InventoryMenu.Toggle = function () {
+        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowInventory === false)))
+            return;
+        $("#profileIcon").removeClass("openPanelIcon");
+        profileMenu.profileDisplayed = false;
+        $("#messageIcon").removeClass("openPanelIcon");
+        messageMenu.messageDisplayed = false;
+        $("#journalIcon").removeClass("openPanelIcon");
+        journalMenu.journalDisplayed = false;
+        if (inventoryMenu.inventoryDisplayed) {
+            $("#gameMenuPanel").hide();
+            $("#inventoryIcon").removeClass("openPanelIcon");
+            inventoryMenu.inventoryDisplayed = false;
+        }
+        else {
+            inventoryMenu.inventoryDisplayed = true;
+            $("#gameMenuPanel").show();
+            $("#inventoryIcon").addClass("openPanelIcon");
+            InventoryMenu.Update();
+        }
+    };
+    InventoryMenu.Update = function () {
+        if (!inventoryMenu.inventoryDisplayed)
+            return;
+        var html = "";
+        var wearSomething = false;
+        for (var slot in world.Player.EquipedObjects) {
+            wearSomething = true;
+            break;
+        }
+        html += "<div id='inventoryObjectList'>";
+        if (wearSomething) {
+            html += "<h1>Wearing</h1>";
+            html += "<table class='inventoryList'>";
+            for (var slot in world.Player.EquipedObjects) {
+                html += "<tr>";
+                var wearedItem = world.Player.EquipedObjects[slot];
+                var details = world.GetInventoryObject(wearedItem.Name);
+                if (!details)
+                    continue;
+                if (details.CanUnwear())
+                    html += "<td><div class='gameButton' onclick='InventoryMenu.Unwear(\"" + slot.htmlEntities() + "\");'>Unwear</div></td>";
+                else
+                    html += "<td>&nbsp;</td>";
+                html += "<td>" + (details.Image ? "<img src='" + details.Image.htmlEntities() + "' width='32' height='32'>" : "") + "</td>";
+                html += "<td>" + world.Player.EquipedObjects[slot].Name.htmlEntities() + "</td>";
+                html += "<td>" + slot.title().htmlEntities() + "</td>";
+                html += "</tr>";
+            }
+            html += "</table>";
+        }
+        html += "<h1>Inventory</h1>";
+        if (!world.Player.Inventory || !world.Player.Inventory.length) {
+            $("#gameMenuPanelContent").html(html);
+            return;
+        }
+        world.Player.Inventory.sort(function (a, b) {
+            if (a.Name > b.Name)
+                return 1;
+            if (a.Name < b.Name)
+                return -1;
+            return 0;
+        });
+        world.Player.StoredCompare = world.Player.JSON();
+        html += "<table class='inventoryList'>";
+        html += "<thead>";
+        html += "<tr><td>&nbsp;</td><td>&nbsp;</td><td>Item</td><td>Quantity</td></tr>";
+        html += "</thead>";
+        html += "<tbody>";
+        for (var i = 0; i < world.Player.Inventory.length; i++) {
+            var details = world.Player.Inventory[i].GetDetails();
+            if (details == null) {
+                world.Player.Inventory.splice(i, 1);
+                i--;
+                world.Player.StoredCompare = world.Player.JSON();
+                continue;
+            }
+            html += "<tr onmouseover='InventoryMenu.ShowDetails(" + i + ");' onmouseout='InventoryMenu.HideDetails();'>";
+            html += "<td>";
+            if (details.CanWear())
+                html += "<div class='gameButton' onclick='InventoryMenu.Wear(" + i + ");'>Equip</div>";
+            if (details.ActionLabel() && details.CanUse())
+                html += "<div class='gameButton' onclick='InventoryMenu.Use(" + i + ");'>" + details.ActionLabel().htmlEntities() + "</div>";
+            if (details.CanDrop())
+                html += "<div class='gameButton' onclick='InventoryMenu.Drop(" + i + ");'>Drop</div>";
+            if (details.CanWear() || (details.ActionLabel() && details.CanUse()))
+                html += "<div class='gameButton' onclick='InventoryMenu.Quickslot(" + i + ");'>Quickslot</div>";
+            html += "</td>";
+            html += "<td>" + (details.Image ? "<img src='" + details.Image.htmlEntities() + "' width='32' height='32'>" : "") + "</td>";
+            html += "<td><div>" + world.Player.Inventory[i].Name.htmlEntities() + "</div></td>";
+            html += "<td>" + ("" + world.Player.Inventory[i].Count).htmlEntities() + "</td>";
+            html += "</tr>";
+        }
+        html += "</tbody></table></div>";
+        html += "<div id='inventoryObjectDetails'></div>";
+        $("#gameMenuPanelContent").html(html);
+    };
+    InventoryMenu.ShowDetails = function (rowId) {
+        var details = world.Player.Inventory[rowId].GetDetails();
+        var html = "";
+        html += (details.Image ? "<img src='" + details.Image.htmlEntities() + "' width='32' height='32' style='vertical-align: middle;'>" : "");
+        html += "<b>" + details.Name.htmlEntities() + ":</b><br>";
+        html += Main.TextTransform(details.Description, true);
+        $("#inventoryObjectDetails").html(html);
+    };
+    InventoryMenu.HideDetails = function () {
+        $("#inventoryObjectDetails").html("");
+    };
+    InventoryMenu.Wear = function (rowId) {
+        var details = world.Player.Inventory[rowId].GetDetails();
+        if (details.CanWear())
+            world.Player.Wear(world.Player.Inventory[rowId].Name);
+    };
+    InventoryMenu.Unwear = function (slotName) {
+        var wearedItem = world.Player.EquipedObjects[slotName];
+        var details = world.GetInventoryObject(wearedItem.Name);
+        if (details.CanUnwear())
+            world.Player.Unwear(slotName);
+    };
+    InventoryMenu.Drop = function (rowId) {
+        var details = world.Player.Inventory[rowId].GetDetails();
+        if (details.CanDrop())
+            world.Player.RemoveItem(world.Player.Inventory[rowId].Name);
+    };
+    InventoryMenu.Use = function (rowId) {
+        var details = world.Player.Inventory[rowId].GetDetails();
+        if (details.CanUse())
+            details.Use();
+    };
+    InventoryMenu.Quickslot = function (rowId) {
+        profileMenu.profileDisplayed = false;
+        var html = "<h1>Quickslot</h1>";
+        for (var i = 0; i < 10; i++) {
+            var q = world.Player.QuickSlot[i];
+            var skill = null;
+            if (!q)
+                q = "-- Empty --";
+            else if (q.substring(0, 2) == "S/") {
+                var skill = world.GetSkill(q.substring(2));
+                q = "Skill " + q.substring(2).title().htmlEntities();
+            }
+            else
+                q = "Item " + q.substring(2).title().htmlEntities();
+            if (skill && skill.CodeVariable("QuickslotEditable") === "false") {
+                html += "Slot " + (i + 1) + " " + q + "<br>";
+            }
+            else
+                html += "<div class='gameButton' onclick='InventoryMenu.SetQuickslot(" + rowId + "," + i + ");'>Slot " + (i + 1) + "</div>" + q + "<br>";
+        }
+        html += "<center><div class='gameButton' onclick='InventoryMenu.Update();'>Cancel</div></center>";
+        $("#gameMenuPanelContent").html(html);
+    };
+    InventoryMenu.SetQuickslot = function (rowId, slotId) {
+        var details = world.Player.Inventory[rowId].GetDetails();
+        var itemName = details.Name;
+        for (var i = 0; i < 10; i++)
+            if (world.Player.QuickSlot[i] == "I/" + itemName)
+                world.Player.QuickSlot[i] = null;
+        world.Player.QuickSlot[slotId] = "I/" + itemName;
+        world.Player.StoredCompare = world.Player.JSON();
+        world.Player.Save();
+        InventoryMenu.Update();
+    };
+    return InventoryMenu;
 }());
 var CodeGraphEditor = /** @class */ (function () {
     function CodeGraphEditor(element, isGenericCode, tab) {
@@ -3676,232 +3902,6 @@ var CodeGraphEditor = /** @class */ (function () {
     };
     return CodeGraphEditor;
 }());
-var inventoryMenu = new (/** @class */ (function () {
-    function class_4() {
-        this.inventoryDisplayed = false;
-    }
-    return class_4;
-}()));
-var InventoryMenu = /** @class */ (function () {
-    function InventoryMenu() {
-    }
-    InventoryMenu.AdditionalCSS = function () {
-        return "#inventoryIcon\n\
-{\n\
-    position: absolute;\n\
-    left: -" + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
-    top: 80px;\n\
-}\n\
-#inventoryIcon .gamePanelContentNoHeader\n\
-{\n\
-    width: 74px;\n\
-}\n\
-#inventoryObjectDetails\n\
-{\n\
-    position: absolute;\n\
-    left: " + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
-    right: " + parseInt("" + world.art.panelStyle.rightBorder) + "px;\n\
-    bottom: " + parseInt("" + world.art.panelStyle.bottomBorder) + "px;\n\
-    overflow: hidden;\n\
-    height: 150px;\n\
-    padding: 7px;\n\
-    box-sizing: border-box;\n\
-}\n\
-\n\
-#inventoryObjectList\n\
-{\n\
-    position: absolute;\n\
-    left: " + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
-    right: " + parseInt("" + world.art.panelStyle.rightBorder) + "px;\n\
-    top: " + parseInt("" + world.art.panelStyle.topBorder) + "px;\n\
-    bottom: " + (parseInt("" + world.art.panelStyle.bottomBorder) + 150) + "px;\n\
-    overflow-y: scroll;\n\
-}\n\
-\n\
-#inventoryObjectList h1\n\
-{\n\
-    border-bottom: solid 1px " + Main.EnsureColor(world.art.panelStyle.contentColor) + ";\n\
-    margin-bottom: 5px;\n\
-}\n\
-";
-    };
-    InventoryMenu.Init = function (position) {
-        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowInventory === false))) {
-            $("#inventoryIcon").hide();
-            return position;
-        }
-        $("#inventoryIcon").css("top", position + "px");
-        if (game)
-            $("#inventoryIcon .gamePanelContentNoHeader").html("<img src='art/tileset2/inventory_icon.png'>");
-        else
-            $("#inventoryIcon .gamePanelContentNoHeader").html("<img src='/art/tileset2/inventory_icon.png'>");
-        return position + 64 + world.art.panelStyle.topBorder;
-    };
-    InventoryMenu.Toggle = function () {
-        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowInventory === false)))
-            return;
-        $("#profileIcon").removeClass("openPanelIcon");
-        profileMenu.profileDisplayed = false;
-        $("#messageIcon").removeClass("openPanelIcon");
-        messageMenu.messageDisplayed = false;
-        $("#journalIcon").removeClass("openPanelIcon");
-        journalMenu.journalDisplayed = false;
-        if (inventoryMenu.inventoryDisplayed) {
-            $("#gameMenuPanel").hide();
-            $("#inventoryIcon").removeClass("openPanelIcon");
-            inventoryMenu.inventoryDisplayed = false;
-        }
-        else {
-            inventoryMenu.inventoryDisplayed = true;
-            $("#gameMenuPanel").show();
-            $("#inventoryIcon").addClass("openPanelIcon");
-            InventoryMenu.Update();
-        }
-    };
-    InventoryMenu.Update = function () {
-        if (!inventoryMenu.inventoryDisplayed)
-            return;
-        var html = "";
-        var wearSomething = false;
-        for (var slot in world.Player.EquipedObjects) {
-            wearSomething = true;
-            break;
-        }
-        html += "<div id='inventoryObjectList'>";
-        if (wearSomething) {
-            html += "<h1>Wearing</h1>";
-            html += "<table class='inventoryList'>";
-            for (var slot in world.Player.EquipedObjects) {
-                html += "<tr>";
-                var wearedItem = world.Player.EquipedObjects[slot];
-                var details = world.GetInventoryObject(wearedItem.Name);
-                if (!details)
-                    continue;
-                if (details.CanUnwear())
-                    html += "<td><div class='gameButton' onclick='InventoryMenu.Unwear(\"" + slot.htmlEntities() + "\");'>Unwear</div></td>";
-                else
-                    html += "<td>&nbsp;</td>";
-                html += "<td>" + (details.Image ? "<img src='" + details.Image.htmlEntities() + "' width='32' height='32'>" : "") + "</td>";
-                html += "<td>" + world.Player.EquipedObjects[slot].Name.htmlEntities() + "</td>";
-                html += "<td>" + slot.title().htmlEntities() + "</td>";
-                html += "</tr>";
-            }
-            html += "</table>";
-        }
-        html += "<h1>Inventory</h1>";
-        if (!world.Player.Inventory || !world.Player.Inventory.length) {
-            $("#gameMenuPanelContent").html(html);
-            return;
-        }
-        world.Player.Inventory.sort(function (a, b) {
-            if (a.Name > b.Name)
-                return 1;
-            if (a.Name < b.Name)
-                return -1;
-            return 0;
-        });
-        world.Player.StoredCompare = world.Player.JSON();
-        html += "<table class='inventoryList'>";
-        html += "<thead>";
-        html += "<tr><td>&nbsp;</td><td>&nbsp;</td><td>Item</td><td>Quantity</td></tr>";
-        html += "</thead>";
-        html += "<tbody>";
-        for (var i = 0; i < world.Player.Inventory.length; i++) {
-            var details = world.Player.Inventory[i].GetDetails();
-            if (details == null) {
-                world.Player.Inventory.splice(i, 1);
-                i--;
-                world.Player.StoredCompare = world.Player.JSON();
-                continue;
-            }
-            html += "<tr onmouseover='InventoryMenu.ShowDetails(" + i + ");' onmouseout='InventoryMenu.HideDetails();'>";
-            html += "<td>";
-            if (details.CanWear())
-                html += "<div class='gameButton' onclick='InventoryMenu.Wear(" + i + ");'>Equip</div>";
-            if (details.ActionLabel() && details.CanUse())
-                html += "<div class='gameButton' onclick='InventoryMenu.Use(" + i + ");'>" + details.ActionLabel().htmlEntities() + "</div>";
-            if (details.CanDrop())
-                html += "<div class='gameButton' onclick='InventoryMenu.Drop(" + i + ");'>Drop</div>";
-            if (details.CanWear() || (details.ActionLabel() && details.CanUse()))
-                html += "<div class='gameButton' onclick='InventoryMenu.Quickslot(" + i + ");'>Quickslot</div>";
-            html += "</td>";
-            html += "<td>" + (details.Image ? "<img src='" + details.Image.htmlEntities() + "' width='32' height='32'>" : "") + "</td>";
-            html += "<td><div>" + world.Player.Inventory[i].Name.htmlEntities() + "</div></td>";
-            html += "<td>" + ("" + world.Player.Inventory[i].Count).htmlEntities() + "</td>";
-            html += "</tr>";
-        }
-        html += "</tbody></table></div>";
-        html += "<div id='inventoryObjectDetails'></div>";
-        $("#gameMenuPanelContent").html(html);
-    };
-    InventoryMenu.ShowDetails = function (rowId) {
-        var details = world.Player.Inventory[rowId].GetDetails();
-        var html = "";
-        html += (details.Image ? "<img src='" + details.Image.htmlEntities() + "' width='32' height='32' style='vertical-align: middle;'>" : "");
-        html += "<b>" + details.Name.htmlEntities() + ":</b><br>";
-        html += Main.TextTransform(details.Description, true);
-        $("#inventoryObjectDetails").html(html);
-    };
-    InventoryMenu.HideDetails = function () {
-        $("#inventoryObjectDetails").html("");
-    };
-    InventoryMenu.Wear = function (rowId) {
-        var details = world.Player.Inventory[rowId].GetDetails();
-        if (details.CanWear())
-            world.Player.Wear(world.Player.Inventory[rowId].Name);
-    };
-    InventoryMenu.Unwear = function (slotName) {
-        var wearedItem = world.Player.EquipedObjects[slotName];
-        var details = world.GetInventoryObject(wearedItem.Name);
-        if (details.CanUnwear())
-            world.Player.Unwear(slotName);
-    };
-    InventoryMenu.Drop = function (rowId) {
-        var details = world.Player.Inventory[rowId].GetDetails();
-        if (details.CanDrop())
-            world.Player.RemoveItem(world.Player.Inventory[rowId].Name);
-    };
-    InventoryMenu.Use = function (rowId) {
-        var details = world.Player.Inventory[rowId].GetDetails();
-        if (details.CanUse())
-            details.Use();
-    };
-    InventoryMenu.Quickslot = function (rowId) {
-        profileMenu.profileDisplayed = false;
-        var html = "<h1>Quickslot</h1>";
-        for (var i = 0; i < 10; i++) {
-            var q = world.Player.QuickSlot[i];
-            var skill = null;
-            if (!q)
-                q = "-- Empty --";
-            else if (q.substring(0, 2) == "S/") {
-                var skill = world.GetSkill(q.substring(2));
-                q = "Skill " + q.substring(2).title().htmlEntities();
-            }
-            else
-                q = "Item " + q.substring(2).title().htmlEntities();
-            if (skill && skill.CodeVariable("QuickslotEditable") === "false") {
-                html += "Slot " + (i + 1) + " " + q + "<br>";
-            }
-            else
-                html += "<div class='gameButton' onclick='InventoryMenu.SetQuickslot(" + rowId + "," + i + ");'>Slot " + (i + 1) + "</div>" + q + "<br>";
-        }
-        html += "<center><div class='gameButton' onclick='InventoryMenu.Update();'>Cancel</div></center>";
-        $("#gameMenuPanelContent").html(html);
-    };
-    InventoryMenu.SetQuickslot = function (rowId, slotId) {
-        var details = world.Player.Inventory[rowId].GetDetails();
-        var itemName = details.Name;
-        for (var i = 0; i < 10; i++)
-            if (world.Player.QuickSlot[i] == "I/" + itemName)
-                world.Player.QuickSlot[i] = null;
-        world.Player.QuickSlot[slotId] = "I/" + itemName;
-        world.Player.StoredCompare = world.Player.JSON();
-        world.Player.Save();
-        InventoryMenu.Update();
-    };
-    return InventoryMenu;
-}());
 var journalMenu = new (/** @class */ (function () {
     function class_5() {
         this.journalDisplayed = false;
@@ -4250,6 +4250,11 @@ var Framework = /** @class */ (function () {
                                 }
                                 framework.cachedTemplates[framework.Routing[i].Action] = msg;
                                 $("#contentArea").html(msg);
+                                if (selfHosted && $("#helpLink").length != 0) {
+                                    var helpLink = ($("#helpLink").prop("href"));
+                                    helpLink = helpLink.substr(helpLink.indexOf("/Help"));
+                                    $("#helpLink").prop("href", "https://www.dotworldmaker.com" + helpLink);
+                                }
                                 framework.LastRoute = page;
                                 framework.CurrentHandler = page;
                                 framework.Routing[i].Callback(framework.CurrentUrl);
@@ -4260,6 +4265,11 @@ var Framework = /** @class */ (function () {
                 }
                 if (isReady) {
                     framework.CurrentHandler = page;
+                    if (selfHosted && $("#helpLink").length != 0) {
+                        var helpLink = ($("#helpLink").prop("href"));
+                        helpLink = helpLink.substr(helpLink.indexOf("/Help"));
+                        $("#helpLink").prop("href", "https://www.dotworldmaker.com" + helpLink);
+                    }
                     framework.Routing[i].Callback(framework.CurrentUrl);
                     document.dispatchEvent(framework.eventRouteCall);
                 }
@@ -5534,6 +5544,81 @@ var ProfileMenu = /** @class */ (function () {
     };
     return ProfileMenu;
 }());
+var PublicViewPlayer = /** @class */ (function () {
+    function PublicViewPlayer() {
+    }
+    PublicViewPlayer.Show = function (name) {
+        $.ajax({
+            type: 'POST',
+            url: '/backend/PublicViewPlayer',
+            data: {
+                game: world.Id,
+                name: name
+            },
+            success: function (msg) {
+                var data = TryParse(msg);
+                if (!data)
+                    return;
+                $("#npcDialog").show();
+                $("#npcDialog .gamePanelHeader").html("View: " + name.htmlEntities());
+                var html = "";
+                html += "<table>";
+                html += "<tr><td>Name:</td><td>" + ("" + data.name).htmlEntities() + "</td></tr>";
+                html += "<tr><td>X:</td><td>" + ("" + data.x).htmlEntities() + "</td></tr>";
+                html += "<tr><td>Y:</td><td>" + ("" + data.x).htmlEntities() + "</td></tr>";
+                html += "<tr><td>Zone:</td><td>" + ("" + data.zone).htmlEntities() + "</td></tr>";
+                html += "</table>";
+                html += "<h3>Equiped with</h3>";
+                var items = [];
+                for (var item in data.equipedObjects)
+                    items.push(data.equipedObjects[item]);
+                items.sort();
+                for (var i = 0; i < items.length; i++)
+                    html += ("" + items[i].Name).htmlEntities() + "<br>";
+                html += "<h3>Stats</h3>";
+                html += "<table>";
+                data.stats.sort(function (a, b) {
+                    if (a.Name > b.Name)
+                        return 1;
+                    if (a.Name < b.Name)
+                        return -1;
+                    return 0;
+                });
+                for (var i = 0; i < data.stats.length; i++) {
+                    var stat = world.GetStat(data.stats[i].Name);
+                    if (!stat)
+                        continue;
+                    if (stat.CodeVariable("PlayerVisible") === "false")
+                        continue;
+                    html += "<tr><td>" + ("" + (stat.CodeVariable("DisplayName") ? stat.CodeVariable("DisplayName") : stat.Name)).htmlEntities() + "</td><td>" + ("" + data.stats[i].Value).htmlEntities() + "</td></tr>";
+                }
+                html += "<h3>Skills</h3>";
+                data.skills.sort(function (a, b) {
+                    if (a.Name > b.Name)
+                        return 1;
+                    if (a.Name < b.Name)
+                        return -1;
+                    return 0;
+                });
+                for (var i = 0; i < data.skills.length; i++) {
+                    var skill = world.GetSkill(data.skills[i].Name);
+                    if (!skill)
+                        continue;
+                    html += ("" + (skill.CodeVariable("DisplayName") ? skill.CodeVariable("DisplayName") : skill.Name)).htmlEntities() + "<br>";
+                }
+                $("#dialogSentence").html(html);
+                play.onDialogPaint = [];
+                $("#dialogAnswers").html("<div onclick='PublicViewPlayer.Close();' class='gameButton'>Close</div>");
+            },
+            error: function (msg, textStatus) {
+            }
+        });
+    };
+    PublicViewPlayer.Close = function () {
+        $("#npcDialog").hide();
+    };
+    return PublicViewPlayer;
+}());
 var searchPanel = new (/** @class */ (function () {
     function class_11() {
         this.links = [];
@@ -5652,81 +5737,6 @@ var SearchPanel = /** @class */ (function () {
         $("#generalSearchResult").html(html);
     };
     return SearchPanel;
-}());
-var PublicViewPlayer = /** @class */ (function () {
-    function PublicViewPlayer() {
-    }
-    PublicViewPlayer.Show = function (name) {
-        $.ajax({
-            type: 'POST',
-            url: '/backend/PublicViewPlayer',
-            data: {
-                game: world.Id,
-                name: name
-            },
-            success: function (msg) {
-                var data = TryParse(msg);
-                if (!data)
-                    return;
-                $("#npcDialog").show();
-                $("#npcDialog .gamePanelHeader").html("View: " + name.htmlEntities());
-                var html = "";
-                html += "<table>";
-                html += "<tr><td>Name:</td><td>" + ("" + data.name).htmlEntities() + "</td></tr>";
-                html += "<tr><td>X:</td><td>" + ("" + data.x).htmlEntities() + "</td></tr>";
-                html += "<tr><td>Y:</td><td>" + ("" + data.x).htmlEntities() + "</td></tr>";
-                html += "<tr><td>Zone:</td><td>" + ("" + data.zone).htmlEntities() + "</td></tr>";
-                html += "</table>";
-                html += "<h3>Equiped with</h3>";
-                var items = [];
-                for (var item in data.equipedObjects)
-                    items.push(data.equipedObjects[item]);
-                items.sort();
-                for (var i = 0; i < items.length; i++)
-                    html += ("" + items[i].Name).htmlEntities() + "<br>";
-                html += "<h3>Stats</h3>";
-                html += "<table>";
-                data.stats.sort(function (a, b) {
-                    if (a.Name > b.Name)
-                        return 1;
-                    if (a.Name < b.Name)
-                        return -1;
-                    return 0;
-                });
-                for (var i = 0; i < data.stats.length; i++) {
-                    var stat = world.GetStat(data.stats[i].Name);
-                    if (!stat)
-                        continue;
-                    if (stat.CodeVariable("PlayerVisible") === "false")
-                        continue;
-                    html += "<tr><td>" + ("" + (stat.CodeVariable("DisplayName") ? stat.CodeVariable("DisplayName") : stat.Name)).htmlEntities() + "</td><td>" + ("" + data.stats[i].Value).htmlEntities() + "</td></tr>";
-                }
-                html += "<h3>Skills</h3>";
-                data.skills.sort(function (a, b) {
-                    if (a.Name > b.Name)
-                        return 1;
-                    if (a.Name < b.Name)
-                        return -1;
-                    return 0;
-                });
-                for (var i = 0; i < data.skills.length; i++) {
-                    var skill = world.GetSkill(data.skills[i].Name);
-                    if (!skill)
-                        continue;
-                    html += ("" + (skill.CodeVariable("DisplayName") ? skill.CodeVariable("DisplayName") : skill.Name)).htmlEntities() + "<br>";
-                }
-                $("#dialogSentence").html(html);
-                play.onDialogPaint = [];
-                $("#dialogAnswers").html("<div onclick='PublicViewPlayer.Close();' class='gameButton'>Close</div>");
-            },
-            error: function (msg, textStatus) {
-            }
-        });
-    };
-    PublicViewPlayer.Close = function () {
-        $("#npcDialog").hide();
-    };
-    return PublicViewPlayer;
 }());
 var skillBar = new (/** @class */ (function () {
     function class_12() {
@@ -7152,28 +7162,6 @@ var ChatBotSentence = /** @class */ (function () {
     };
     return ChatBotSentence;
 }());
-var KnownCode = /** @class */ (function () {
-    function KnownCode() {
-        this.Parameters = {};
-        this.Includes = [];
-    }
-    KnownCode.prototype.Store = function () {
-        return {
-            Author: this.Author,
-            Name: this.Name,
-            Source: this.Source,
-            Parameters: this.Parameters,
-            Description: this.Description,
-            Includes: this.Includes,
-            Enabled: this.Enabled,
-            CodeBrowsing: this.CodeBrowsing,
-            AllowEditing: this.AllowEditing,
-            Price: this.Price,
-            Version: this.Version
-        };
-    };
-    return KnownCode;
-}());
 var dialogCondition = new (/** @class */ (function () {
     function class_14() {
         this.code = {};
@@ -7684,6 +7672,28 @@ var CheckUserStat = /** @class */ (function (_super) {
     ], CheckUserStat);
     return CheckUserStat;
 }(ConditionClass));
+var KnownCode = /** @class */ (function () {
+    function KnownCode() {
+        this.Parameters = {};
+        this.Includes = [];
+    }
+    KnownCode.prototype.Store = function () {
+        return {
+            Author: this.Author,
+            Name: this.Name,
+            Source: this.Source,
+            Parameters: this.Parameters,
+            Description: this.Description,
+            Includes: this.Includes,
+            Enabled: this.Enabled,
+            CodeBrowsing: this.CodeBrowsing,
+            AllowEditing: this.AllowEditing,
+            Price: this.Price,
+            Version: this.Version
+        };
+    };
+    return KnownCode;
+}());
 var Dialog = /** @class */ (function () {
     function Dialog() {
         this.Answers = [];
@@ -14878,8 +14888,8 @@ var About = /** @class */ (function () {
     };
     return About;
 }());
-var engineVersion = "1.2.247";
-var engineBuild = "Tue, 06 Aug 2019 09:31:39 GMT";
+var engineVersion = "1.2.249";
+var engineBuild = "Tue, 06 Aug 2019 10:20:17 GMT";
 var artCharacterEditor = new (/** @class */ (function () {
     function class_22() {
         this.selector = null;
@@ -15358,149 +15368,13 @@ var ArtCharacterEditor = /** @class */ (function () {
     };
     return ArtCharacterEditor;
 }());
-var artPanelEditor = new (/** @class */ (function () {
-    function class_23() {
-    }
-    return class_23;
-}()));
-var ArtPanelEditor = /** @class */ (function () {
-    function ArtPanelEditor() {
-    }
-    ArtPanelEditor.Dispose = function () {
-        if (artPanelEditor.refreshStyle)
-            clearInterval(artPanelEditor.refreshStyle);
-        artPanelEditor.refreshStyle = null;
-    };
-    ArtPanelEditor.IsAccessible = function () {
-        return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
-    };
-    ArtPanelEditor.Recover = function () {
-        if (Main.CheckNW()) {
-            $("#helpLink").first().onclick = function () {
-                StandaloneMaker.Help($("#helpLink").prop("href"));
-                return false;
-            };
-            $("#panelDetails").css("top", "5px");
-            $("#buttonUpload").html("Change");
-        }
-        artPanelEditor.panelStyle = new Image();
-        artPanelEditor.panelStyle.src = world.art.panelStyle.file;
-        artPanelEditor.refreshStyle = setInterval(ArtPanelEditor.UpdateStyle, 100);
-        $("#leftBorder").val(world.art.panelStyle.leftBorder);
-        $("#rightBorder").val(world.art.panelStyle.rightBorder);
-        $("#topBorder").val(world.art.panelStyle.topBorder);
-        $("#bottomBorder").val(world.art.panelStyle.bottomBorder);
-        $("#headerHeight").val(world.art.panelStyle.header);
-        $("#headerColor").val(world.art.panelStyle.headerColor);
-        $("#contentColor").val(world.art.panelStyle.contentColor);
-        $("#contentHeaderBackgroundColor").val(world.art.panelStyle.contentHeaderBackgroundColor);
-        $("#contentHeaderColor").val(world.art.panelStyle.contentHeaderColor);
-        $("#contentSelectedColor").val(world.art.panelStyle.contentSelectedColor);
-        $("#buttonBorder").val(world.art.panelStyle.buttonBorder);
-        $("#buttonBackground").val(world.art.panelStyle.buttonBackground);
-        $("#buttonBackgroundHover").val(world.art.panelStyle.buttonBackgroundHover);
-        $("#chatPlaceholderColor").val(world.art.panelStyle.chatPlaceholderColor ? world.art.panelStyle.chatPlaceholderColor : "#c7c7cd");
-        $("#chatNormalColor").val(world.art.panelStyle.chatNormalColor ? world.art.panelStyle.chatNormalColor : "#ffffff");
-        $("#chatSeparatorColor").val(world.art.panelStyle.chatSeparatorColor ? world.art.panelStyle.chatSeparatorColor : "#7a7ead");
-        $("#chatSystemMessageColor").val(world.art.panelStyle.chatSystemMessageColor ? world.art.panelStyle.chatSystemMessageColor : "#00e000");
-        Main.GenerateGameStyle();
-    };
-    ArtPanelEditor.ChangeParam = function (fieldName, paramName) {
-        var val = $("#" + fieldName).val();
-        if (typeof world.art.panelStyle[paramName] == "number") {
-            var nVal = parseInt(val);
-            if (!isNaN(nVal))
-                world.art.panelStyle[paramName] = nVal;
-        }
-        else
-            world.art.panelStyle[paramName] = val;
-        Main.GenerateGameStyle();
-    };
-    ArtPanelEditor.UpdateStyle = function () {
-        if (!artPanelEditor.panelStyle || !artPanelEditor.panelStyle.width)
-            return;
-        var canvas = $("#panelStyle").first();
-        if (canvas.width != artPanelEditor.panelStyle.width)
-            canvas.width = artPanelEditor.panelStyle.width;
-        if (canvas.height != artPanelEditor.panelStyle.height)
-            canvas.height = artPanelEditor.panelStyle.height;
-        var ctx = canvas.getContext("2d");
-        ctx.drawImage(artPanelEditor.panelStyle, 0, 0);
-        ctx.strokeStyle = "#E00000";
-        ctx.beginPath();
-        ctx.moveTo(0, world.art.panelStyle.topBorder + 0.5);
-        ctx.lineTo(canvas.width, world.art.panelStyle.topBorder + 0.5);
-        ctx.moveTo(0, world.art.panelStyle.topBorder + world.art.panelStyle.header + 0.5);
-        ctx.lineTo(canvas.width, world.art.panelStyle.topBorder + world.art.panelStyle.header + 0.5);
-        ctx.moveTo(0, canvas.height - world.art.panelStyle.bottomBorder + 0.5);
-        ctx.lineTo(canvas.width, canvas.height - world.art.panelStyle.bottomBorder + 0.5);
-        ctx.moveTo(world.art.panelStyle.leftBorder + 0.5, 0);
-        ctx.lineTo(world.art.panelStyle.leftBorder + 0.5, canvas.height);
-        ctx.moveTo(canvas.width - world.art.panelStyle.leftBorder + 0.5, 0);
-        ctx.lineTo(canvas.width - world.art.panelStyle.leftBorder + 0.5, canvas.height);
-        ctx.stroke();
-    };
-    ArtPanelEditor.GenerateHTML = function (divId) {
-        var html = "";
-        html += "<div id='" + divId + "' class='gamePanel'>\n";
-        html += "<div class='gamePanelTopBorder'></div>\n";
-        html += "<div class='gamePanelHeader'>Test Panel</div>\n";
-        html += "<div class='gamePanelContent'></div>\n";
-        html += "<div class='gamePanelBottomBorder'></div>\n";
-        html += "</div>";
-        return html;
-    };
-    ArtPanelEditor.ShowUpload = function () {
-        if (Main.CheckNW()) {
-            $("#fileOpenDialog").prop("accept", ".png");
-            $("#fileOpenDialog").unbind("change");
-            $("#fileOpenDialog").val("").bind("change", ArtPanelEditor.ImportFileImage).first().click();
-            return;
-        }
-        $("#uploadArtObject").show();
-        $("#uploadGameId").val("" + world.Id);
-        $("#uploadToken").val(framework.Preferences['token']);
-    };
-    ArtPanelEditor.ImportFileImage = function () {
-        ArtPanelEditor.FinishImport($("#fileOpenDialog").val());
-        $("#fileOpenDialog").unbind("change", ArtPanelEditor.ImportFileImage).val("");
-    };
-    ArtPanelEditor.CloseUpload = function () {
-        $("#uploadArtObject").hide();
-    };
-    ArtPanelEditor.Upload = function () {
-        $("#uploadArtObject").hide();
-        $("#artObjectUploadForm").submit();
-    };
-    ArtPanelEditor.Result = function (result) {
-        var data = JSON.parse(result);
-        if (data.error) {
-            Framework.Alert(data.error);
-            return;
-        }
-        else if (data.new_file) {
-            ArtPanelEditor.FinishImport(data.new_file);
-        }
-    };
-    ArtPanelEditor.FinishImport = function (filename) {
-        // Change background, we need to reset all the types, transitions, and world generators.
-        world.art.panelStyle.file = filename + "?v=" + Math.round((new Date()).getTime() / 1000);
-        artPanelEditor.panelStyle = new Image();
-        artPanelEditor.panelStyle.src = world.art.panelStyle.file;
-        artPanelEditor.panelStyle.onload = function () {
-            Main.GenerateGameStyle();
-        };
-        //artPanelEditor.refreshStyle = setInterval(ArtPanelEditor.UpdateStyle, 100);
-    };
-    return ArtPanelEditor;
-}());
 var artObjectEditor = new (/** @class */ (function () {
-    function class_24() {
+    function class_23() {
         this.selector = null;
         this.positionSelection = null;
         this.groundSelection = null;
     }
-    return class_24;
+    return class_23;
 }()));
 var ArtObjectEditor = /** @class */ (function () {
     function ArtObjectEditor() {
@@ -16227,6 +16101,142 @@ var ArtObjectEditor = /** @class */ (function () {
     };
     return ArtObjectEditor;
 }());
+var artPanelEditor = new (/** @class */ (function () {
+    function class_24() {
+    }
+    return class_24;
+}()));
+var ArtPanelEditor = /** @class */ (function () {
+    function ArtPanelEditor() {
+    }
+    ArtPanelEditor.Dispose = function () {
+        if (artPanelEditor.refreshStyle)
+            clearInterval(artPanelEditor.refreshStyle);
+        artPanelEditor.refreshStyle = null;
+    };
+    ArtPanelEditor.IsAccessible = function () {
+        return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
+    };
+    ArtPanelEditor.Recover = function () {
+        if (Main.CheckNW()) {
+            $("#helpLink").first().onclick = function () {
+                StandaloneMaker.Help($("#helpLink").prop("href"));
+                return false;
+            };
+            $("#panelDetails").css("top", "5px");
+            $("#buttonUpload").html("Change");
+        }
+        artPanelEditor.panelStyle = new Image();
+        artPanelEditor.panelStyle.src = world.art.panelStyle.file;
+        artPanelEditor.refreshStyle = setInterval(ArtPanelEditor.UpdateStyle, 100);
+        $("#leftBorder").val(world.art.panelStyle.leftBorder);
+        $("#rightBorder").val(world.art.panelStyle.rightBorder);
+        $("#topBorder").val(world.art.panelStyle.topBorder);
+        $("#bottomBorder").val(world.art.panelStyle.bottomBorder);
+        $("#headerHeight").val(world.art.panelStyle.header);
+        $("#headerColor").val(world.art.panelStyle.headerColor);
+        $("#contentColor").val(world.art.panelStyle.contentColor);
+        $("#contentHeaderBackgroundColor").val(world.art.panelStyle.contentHeaderBackgroundColor);
+        $("#contentHeaderColor").val(world.art.panelStyle.contentHeaderColor);
+        $("#contentSelectedColor").val(world.art.panelStyle.contentSelectedColor);
+        $("#buttonBorder").val(world.art.panelStyle.buttonBorder);
+        $("#buttonBackground").val(world.art.panelStyle.buttonBackground);
+        $("#buttonBackgroundHover").val(world.art.panelStyle.buttonBackgroundHover);
+        $("#chatPlaceholderColor").val(world.art.panelStyle.chatPlaceholderColor ? world.art.panelStyle.chatPlaceholderColor : "#c7c7cd");
+        $("#chatNormalColor").val(world.art.panelStyle.chatNormalColor ? world.art.panelStyle.chatNormalColor : "#ffffff");
+        $("#chatSeparatorColor").val(world.art.panelStyle.chatSeparatorColor ? world.art.panelStyle.chatSeparatorColor : "#7a7ead");
+        $("#chatSystemMessageColor").val(world.art.panelStyle.chatSystemMessageColor ? world.art.panelStyle.chatSystemMessageColor : "#00e000");
+        Main.GenerateGameStyle();
+    };
+    ArtPanelEditor.ChangeParam = function (fieldName, paramName) {
+        var val = $("#" + fieldName).val();
+        if (typeof world.art.panelStyle[paramName] == "number") {
+            var nVal = parseInt(val);
+            if (!isNaN(nVal))
+                world.art.panelStyle[paramName] = nVal;
+        }
+        else
+            world.art.panelStyle[paramName] = val;
+        Main.GenerateGameStyle();
+    };
+    ArtPanelEditor.UpdateStyle = function () {
+        if (!artPanelEditor.panelStyle || !artPanelEditor.panelStyle.width)
+            return;
+        var canvas = $("#panelStyle").first();
+        if (canvas.width != artPanelEditor.panelStyle.width)
+            canvas.width = artPanelEditor.panelStyle.width;
+        if (canvas.height != artPanelEditor.panelStyle.height)
+            canvas.height = artPanelEditor.panelStyle.height;
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(artPanelEditor.panelStyle, 0, 0);
+        ctx.strokeStyle = "#E00000";
+        ctx.beginPath();
+        ctx.moveTo(0, world.art.panelStyle.topBorder + 0.5);
+        ctx.lineTo(canvas.width, world.art.panelStyle.topBorder + 0.5);
+        ctx.moveTo(0, world.art.panelStyle.topBorder + world.art.panelStyle.header + 0.5);
+        ctx.lineTo(canvas.width, world.art.panelStyle.topBorder + world.art.panelStyle.header + 0.5);
+        ctx.moveTo(0, canvas.height - world.art.panelStyle.bottomBorder + 0.5);
+        ctx.lineTo(canvas.width, canvas.height - world.art.panelStyle.bottomBorder + 0.5);
+        ctx.moveTo(world.art.panelStyle.leftBorder + 0.5, 0);
+        ctx.lineTo(world.art.panelStyle.leftBorder + 0.5, canvas.height);
+        ctx.moveTo(canvas.width - world.art.panelStyle.leftBorder + 0.5, 0);
+        ctx.lineTo(canvas.width - world.art.panelStyle.leftBorder + 0.5, canvas.height);
+        ctx.stroke();
+    };
+    ArtPanelEditor.GenerateHTML = function (divId) {
+        var html = "";
+        html += "<div id='" + divId + "' class='gamePanel'>\n";
+        html += "<div class='gamePanelTopBorder'></div>\n";
+        html += "<div class='gamePanelHeader'>Test Panel</div>\n";
+        html += "<div class='gamePanelContent'></div>\n";
+        html += "<div class='gamePanelBottomBorder'></div>\n";
+        html += "</div>";
+        return html;
+    };
+    ArtPanelEditor.ShowUpload = function () {
+        if (Main.CheckNW()) {
+            $("#fileOpenDialog").prop("accept", ".png");
+            $("#fileOpenDialog").unbind("change");
+            $("#fileOpenDialog").val("").bind("change", ArtPanelEditor.ImportFileImage).first().click();
+            return;
+        }
+        $("#uploadArtObject").show();
+        $("#uploadGameId").val("" + world.Id);
+        $("#uploadToken").val(framework.Preferences['token']);
+    };
+    ArtPanelEditor.ImportFileImage = function () {
+        ArtPanelEditor.FinishImport($("#fileOpenDialog").val());
+        $("#fileOpenDialog").unbind("change", ArtPanelEditor.ImportFileImage).val("");
+    };
+    ArtPanelEditor.CloseUpload = function () {
+        $("#uploadArtObject").hide();
+    };
+    ArtPanelEditor.Upload = function () {
+        $("#uploadArtObject").hide();
+        $("#artObjectUploadForm").submit();
+    };
+    ArtPanelEditor.Result = function (result) {
+        var data = JSON.parse(result);
+        if (data.error) {
+            Framework.Alert(data.error);
+            return;
+        }
+        else if (data.new_file) {
+            ArtPanelEditor.FinishImport(data.new_file);
+        }
+    };
+    ArtPanelEditor.FinishImport = function (filename) {
+        // Change background, we need to reset all the types, transitions, and world generators.
+        world.art.panelStyle.file = filename + "?v=" + Math.round((new Date()).getTime() / 1000);
+        artPanelEditor.panelStyle = new Image();
+        artPanelEditor.panelStyle.src = world.art.panelStyle.file;
+        artPanelEditor.panelStyle.onload = function () {
+            Main.GenerateGameStyle();
+        };
+        //artPanelEditor.refreshStyle = setInterval(ArtPanelEditor.UpdateStyle, 100);
+    };
+    return ArtPanelEditor;
+}());
 var artQuickslotEditor = new (/** @class */ (function () {
     function class_25() {
     }
@@ -16711,11 +16721,247 @@ var ArtStartBarEditor = /** @class */ (function () {
     };
     return ArtStartBarEditor;
 }());
-var artTileEditor = new (/** @class */ (function () {
+var chatBotEditor = new (/** @class */ (function () {
     function class_28() {
-        this.loaded = false;
+        this.editor = null;
     }
     return class_28;
+}()));
+var ChatBotEditor = /** @class */ (function () {
+    function ChatBotEditor() {
+    }
+    ChatBotEditor.Dispose = function () {
+    };
+    ChatBotEditor.IsAccessible = function () {
+        return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
+    };
+    ChatBotEditor.Recover = function () {
+        dialogCondition.currentEditor = "ChatBotEditor";
+        chatBotEditor.listBot = new ListSelector("listChatBot", world.ChatBots, "Name");
+        chatBotEditor.listBot.OnSelect = function (rowId) {
+            Framework.SetLocation({
+                action: "ChatBotEditor", id: rowId === null ? null : world.ChatBots[rowId].Name
+            });
+            chatBotEditor.currentBot = (rowId === -1 || rowId === null ? null : world.ChatBots[rowId]);
+            chatBotEditor.listSentences.UpdateList(chatBotEditor.currentBot ? chatBotEditor.currentBot.Sentences : []);
+            chatBotEditor.listSentences.Select(null);
+        };
+        chatBotEditor.listSentences = new ListSelector("listBotSentences", [], "Trigger");
+        chatBotEditor.listSentences.OnSelect = function (rowId) {
+            chatBotEditor.selectedSentence = (chatBotEditor.currentBot && rowId !== null ? chatBotEditor.currentBot.Sentences[rowId] : null);
+            if (chatBotEditor.selectedSentence)
+                ChatBotEditor.ShowSentence();
+            else
+                ChatBotEditor.ShowBotDetails();
+        };
+        if (framework.CurrentUrl.id) {
+            var rowId = null;
+            for (var i = 0; i < world.ChatBots.length; i++) {
+                if (world.ChatBots[i].Name.toLowerCase() == framework.CurrentUrl.id.toLowerCase()) {
+                    rowId = i;
+                    chatBotEditor.listBot.Select(i);
+                    break;
+                }
+            }
+            if (rowId == null) {
+                framework.CurrentUrl.id = null;
+                Framework.SetLocation({
+                    action: "ChatBotEditor"
+                });
+            }
+        }
+    };
+    ChatBotEditor.NewBot = function () {
+        chatBotEditor.currentBot = new ChatBot();
+        chatBotEditor.currentBot.Name = NPC.GenerateName(true);
+        var s = new ChatBotSentence();
+        s.Trigger = "[hello,@bot@],[hi,@bot@],[hey,@bot@]";
+        s.Answer = "Hi @name@";
+        chatBotEditor.currentBot.Sentences.push(s);
+        s = new ChatBotSentence();
+        s.Trigger = "[how,are,@bot@]";
+        s.Answer = "I'm fine thanks, and you?";
+        s.FollowUp = true;
+        chatBotEditor.currentBot.Sentences.push(s);
+        s = new ChatBotSentence();
+        s.Trigger = "[thanks,@bot@]";
+        s.Answer = "You are welcome";
+        s.FollowUp = true;
+        chatBotEditor.currentBot.Sentences.push(s);
+        s = new ChatBotSentence();
+        s.Trigger = "[what,date,@bot@],[which,time,@bot@],[what,time,@bot@]";
+        s.Answer = "-";
+        s.FollowUp = true;
+        s.Code = "function Answer()\n{\n	return \"It's \" + game.GetDateString() + \" for you.\";\n}";
+        chatBotEditor.currentBot.Sentences.push(s);
+        s = new ChatBotSentence();
+        s.Trigger = "fuck,ass,gay,asshole";
+        s.Answer = "Stop swearing or I shall glue your mouth!";
+        s.FollowUp = false;
+        chatBotEditor.currentBot.Sentences.push(s);
+        world.ChatBots.push(chatBotEditor.currentBot);
+        chatBotEditor.listBot.UpdateList();
+        chatBotEditor.listBot.Select(world.ChatBots.length - 1);
+        SearchPanel.Update();
+        Chat.UpdateAllChannelsUserList();
+    };
+    ChatBotEditor.DeleteBot = function () {
+        if (!chatBotEditor.currentBot)
+            return;
+        Framework.Confirm("Are you sure you want to delete this chat bot?", function () {
+            for (var i = 0; i < world.ChatBots.length; i++) {
+                if (world.ChatBots[i] == chatBotEditor.currentBot) {
+                    world.ChatBots.splice(i, 1);
+                    break;
+                }
+            }
+            chatBotEditor.currentBot = null;
+            chatBotEditor.listBot.UpdateList();
+            chatBotEditor.listBot.Select(null);
+            SearchPanel.Update();
+            Chat.UpdateAllChannelsUserList();
+        });
+    };
+    ChatBotEditor.ShowBotDetails = function () {
+        if (chatBotEditor.currentBot === null) {
+            $("#chatBotDetails").html("");
+            return;
+        }
+        var html = "";
+        html += "<h2>" + chatBotEditor.currentBot.Name + "</h2>";
+        html += "<table>";
+        html += "<tr><td>Name:</td>";
+        html += "<td><input type='text' value='" + chatBotEditor.currentBot.Name.htmlEntities() + "' id='chatbot_name' onkeyup='ChatBotEditor.UpdateBot(\"chatbot_name\",\"Name\")'></td></tr>";
+        html += "<tr><td>Channel:</td>";
+        html += "<td><input type='text' value='" + chatBotEditor.currentBot.Channel.htmlEntities() + "' id='chatbot_channel' onkeyup='ChatBotEditor.UpdateBot(\"chatbot_channel\",\"Channel\")'></td></tr>";
+        html += "</table>";
+        $("#chatBotDetails").html(html);
+    };
+    ChatBotEditor.UpdateBot = function (fieldName, property) {
+        var val = $("#" + fieldName).val();
+        if (property == "Name") {
+            $("#" + fieldName).css('backgroundColor', '');
+            var alreadyExists = false;
+            for (var i = 0; i < world.ChatBots.length; i++) {
+                if (world.ChatBots[i].Name.toLowerCase() == val.toLowerCase() && world.ChatBots[i] != chatBotEditor.currentBot) {
+                    alreadyExists = true;
+                    break;
+                }
+            }
+            if ((!val.match(new RegExp("^\\~{0,1}[a-z _01-9\(\)\-]+$", "i")) || !val || val.length < 1) || alreadyExists) {
+                $("#" + fieldName).css('backgroundColor', '#FFE0E0');
+                return;
+            }
+        }
+        chatBotEditor.currentBot[property] = val;
+        if (property == "Name") {
+            chatBotEditor.listBot.UpdateList();
+            Framework.SetLocation({
+                action: "ChatBotEditor", id: chatBotEditor.currentBot.Name
+            }, true, true);
+            $("#chatBotDetails > h2").html(chatBotEditor.currentBot.Name);
+            SearchPanel.Update();
+            Chat.UpdateAllChannelsUserList();
+        }
+        else if (property == "Channel")
+            Chat.UpdateAllChannelsUserList();
+    };
+    ChatBotEditor.NewSentence = function () {
+        if (!chatBotEditor.currentBot)
+            return;
+        chatBotEditor.currentBot.Sentences.push(new ChatBotSentence());
+        chatBotEditor.listSentences.UpdateList();
+        chatBotEditor.listSentences.Select(chatBotEditor.currentBot.Sentences.length - 1);
+    };
+    ChatBotEditor.DeleteSentence = function () {
+        if (!chatBotEditor.currentBot)
+            return;
+        for (var i = 0; i < chatBotEditor.currentBot.Sentences.length; i++) {
+            if (chatBotEditor.currentBot.Sentences[i] == chatBotEditor.selectedSentence) {
+                chatBotEditor.currentBot.Sentences.splice(i, 1);
+                break;
+            }
+        }
+        chatBotEditor.listSentences.UpdateList();
+        chatBotEditor.listSentences.Select(null);
+    };
+    ChatBotEditor.ShowSentence = function () {
+        var html = "";
+        html += "<table>";
+        var conditions = [];
+        for (var item in dialogCondition.code)
+            conditions.push(item);
+        conditions.sort();
+        html += "<tr><td>Conditions:</td><td>&nbsp;</td>";
+        for (var i = 0; i < chatBotEditor.selectedSentence.Conditions.length; i++) {
+            var cond = chatBotEditor.selectedSentence.Conditions[i];
+            html += "<tr><td>" + cond.Name.title() + ": <span class='dialogBlockDelete' onclick='ChatBotEditor.DeleteCondition(" + i + ")'>X</span></td>";
+            html += "<td>" + dialogCondition.code[cond.Name].Display(i, cond.Values, "ChangeCondition") + "</td></tr>";
+        }
+        html += "<tr><td colspan='2'><select id='add_condition' onchange='ChatBotEditor.AddCondition()'>";
+        html += "<option value=''>- Add new condition --</option>";
+        for (var i = 0; i < conditions.length; i++)
+            html += "<option value='" + conditions[i] + "'>" + conditions[i].title() + "</option>";
+        html += "</select></td></tr>";
+        html += "<td></td></tr>";
+        html += "<tr><td>Trigger:</td>";
+        html += "<td><input type='text' value='" + chatBotEditor.selectedSentence.Trigger.htmlEntities() + "' id='chatbot_trigger' onkeyup='ChatBotEditor.UpdateSentence(\"chatbot_trigger\",\"Trigger\")'></td></tr>";
+        html += "<tr><td>Auto Follow Up:</td>";
+        html += "<td><select id='chatbot_followUp' onchange='ChatBotEditor.UpdateSentence(\"chatbot_followUp\",\"FollowUp\")'>";
+        html += "<option value='true'" + (chatBotEditor.selectedSentence.FollowUp === true ? " selected" : "") + ">Yes</option>";
+        html += "<option value='false'" + (chatBotEditor.selectedSentence.FollowUp !== true ? " selected" : "") + ">No</option>";
+        html += "</select></td></tr>";
+        html += "<tr><td>Answer:</td>";
+        html += "<td><input type='text' value='" + chatBotEditor.selectedSentence.Answer.htmlEntities() + "' id='chatbot_answer' onkeyup='ChatBotEditor.UpdateSentence(\"chatbot_answer\",\"Answer\")'></td></tr>";
+        html += "<tr><td>Code:</td>";
+        html += "<td><div id='chatbot_codecontainer'><textarea id='chatbot_code' rows='10'>" + chatBotEditor.selectedSentence.Code + "</textarea></div></td></tr>";
+        html += "</table>";
+        $("#chatBotDetails").html(html);
+        /*chatBotEditor.editor = CodeMirror.fromTextArea(<HTMLTextAreaElement>$("#chatbot_code").first(),
+            {
+                lineNumbers: true,
+                matchBrackets: true,
+                continueComments: "Enter",
+                tabSize: 4,
+                indentUnit: 4,
+                extraKeys: { "Ctrl-Q": "toggleComment" }
+            });*/
+        chatBotEditor.editor = new CodeGraphEditor("chatbot_code");
+        chatBotEditor.editor.OnChange = ChatBotEditor.ChangeCode;
+        $("#chatbot_codecontainer").width($("#chatBotDetails table tr > td:nth-child(2)").width() - 3);
+    };
+    ChatBotEditor.UpdateSentence = function (fieldName, property) {
+        var val = $("#" + fieldName).val();
+        if (property == "FollowUp")
+            val = (val === "true");
+        chatBotEditor.selectedSentence[property] = val;
+        chatBotEditor.selectedSentence.ResetLogic();
+        if (property == "Trigger")
+            chatBotEditor.listSentences.UpdateList();
+    };
+    ChatBotEditor.ChangeCondition = function (id, pos) {
+        chatBotEditor.selectedSentence.Conditions[id].Values[pos] = $("#ChangeCondition_" + id + "_" + pos).val();
+    };
+    ChatBotEditor.DeleteCondition = function (rowId) {
+        chatBotEditor.selectedSentence.Conditions.splice(rowId, 1);
+        ChatBotEditor.ShowSentence();
+    };
+    ChatBotEditor.AddCondition = function () {
+        var condition = $("#add_condition").val();
+        $("#add_condition").first().selectedIndex = 0;
+        chatBotEditor.selectedSentence.Conditions.push({ Name: condition, Values: [] });
+        ChatBotEditor.ShowSentence();
+    };
+    ChatBotEditor.ChangeCode = function () {
+        chatBotEditor.selectedSentence.Code = chatBotEditor.editor.GetCode();
+    };
+    return ChatBotEditor;
+}());
+var artTileEditor = new (/** @class */ (function () {
+    function class_29() {
+        this.loaded = false;
+    }
+    return class_29;
 }()));
 var ArtTileEditor = /** @class */ (function () {
     function ArtTileEditor() {
@@ -17349,242 +17595,6 @@ var ArtTileEditor = /** @class */ (function () {
     };
     return ArtTileEditor;
 }());
-var chatBotEditor = new (/** @class */ (function () {
-    function class_29() {
-        this.editor = null;
-    }
-    return class_29;
-}()));
-var ChatBotEditor = /** @class */ (function () {
-    function ChatBotEditor() {
-    }
-    ChatBotEditor.Dispose = function () {
-    };
-    ChatBotEditor.IsAccessible = function () {
-        return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
-    };
-    ChatBotEditor.Recover = function () {
-        dialogCondition.currentEditor = "ChatBotEditor";
-        chatBotEditor.listBot = new ListSelector("listChatBot", world.ChatBots, "Name");
-        chatBotEditor.listBot.OnSelect = function (rowId) {
-            Framework.SetLocation({
-                action: "ChatBotEditor", id: rowId === null ? null : world.ChatBots[rowId].Name
-            });
-            chatBotEditor.currentBot = (rowId === -1 || rowId === null ? null : world.ChatBots[rowId]);
-            chatBotEditor.listSentences.UpdateList(chatBotEditor.currentBot ? chatBotEditor.currentBot.Sentences : []);
-            chatBotEditor.listSentences.Select(null);
-        };
-        chatBotEditor.listSentences = new ListSelector("listBotSentences", [], "Trigger");
-        chatBotEditor.listSentences.OnSelect = function (rowId) {
-            chatBotEditor.selectedSentence = (chatBotEditor.currentBot && rowId !== null ? chatBotEditor.currentBot.Sentences[rowId] : null);
-            if (chatBotEditor.selectedSentence)
-                ChatBotEditor.ShowSentence();
-            else
-                ChatBotEditor.ShowBotDetails();
-        };
-        if (framework.CurrentUrl.id) {
-            var rowId = null;
-            for (var i = 0; i < world.ChatBots.length; i++) {
-                if (world.ChatBots[i].Name.toLowerCase() == framework.CurrentUrl.id.toLowerCase()) {
-                    rowId = i;
-                    chatBotEditor.listBot.Select(i);
-                    break;
-                }
-            }
-            if (rowId == null) {
-                framework.CurrentUrl.id = null;
-                Framework.SetLocation({
-                    action: "ChatBotEditor"
-                });
-            }
-        }
-    };
-    ChatBotEditor.NewBot = function () {
-        chatBotEditor.currentBot = new ChatBot();
-        chatBotEditor.currentBot.Name = NPC.GenerateName(true);
-        var s = new ChatBotSentence();
-        s.Trigger = "[hello,@bot@],[hi,@bot@],[hey,@bot@]";
-        s.Answer = "Hi @name@";
-        chatBotEditor.currentBot.Sentences.push(s);
-        s = new ChatBotSentence();
-        s.Trigger = "[how,are,@bot@]";
-        s.Answer = "I'm fine thanks, and you?";
-        s.FollowUp = true;
-        chatBotEditor.currentBot.Sentences.push(s);
-        s = new ChatBotSentence();
-        s.Trigger = "[thanks,@bot@]";
-        s.Answer = "You are welcome";
-        s.FollowUp = true;
-        chatBotEditor.currentBot.Sentences.push(s);
-        s = new ChatBotSentence();
-        s.Trigger = "[what,date,@bot@],[which,time,@bot@],[what,time,@bot@]";
-        s.Answer = "-";
-        s.FollowUp = true;
-        s.Code = "function Answer()\n{\n	return \"It's \" + game.GetDateString() + \" for you.\";\n}";
-        chatBotEditor.currentBot.Sentences.push(s);
-        s = new ChatBotSentence();
-        s.Trigger = "fuck,ass,gay,asshole";
-        s.Answer = "Stop swearing or I shall glue your mouth!";
-        s.FollowUp = false;
-        chatBotEditor.currentBot.Sentences.push(s);
-        world.ChatBots.push(chatBotEditor.currentBot);
-        chatBotEditor.listBot.UpdateList();
-        chatBotEditor.listBot.Select(world.ChatBots.length - 1);
-        SearchPanel.Update();
-        Chat.UpdateAllChannelsUserList();
-    };
-    ChatBotEditor.DeleteBot = function () {
-        if (!chatBotEditor.currentBot)
-            return;
-        Framework.Confirm("Are you sure you want to delete this chat bot?", function () {
-            for (var i = 0; i < world.ChatBots.length; i++) {
-                if (world.ChatBots[i] == chatBotEditor.currentBot) {
-                    world.ChatBots.splice(i, 1);
-                    break;
-                }
-            }
-            chatBotEditor.currentBot = null;
-            chatBotEditor.listBot.UpdateList();
-            chatBotEditor.listBot.Select(null);
-            SearchPanel.Update();
-            Chat.UpdateAllChannelsUserList();
-        });
-    };
-    ChatBotEditor.ShowBotDetails = function () {
-        if (chatBotEditor.currentBot === null) {
-            $("#chatBotDetails").html("");
-            return;
-        }
-        var html = "";
-        html += "<h2>" + chatBotEditor.currentBot.Name + "</h2>";
-        html += "<table>";
-        html += "<tr><td>Name:</td>";
-        html += "<td><input type='text' value='" + chatBotEditor.currentBot.Name.htmlEntities() + "' id='chatbot_name' onkeyup='ChatBotEditor.UpdateBot(\"chatbot_name\",\"Name\")'></td></tr>";
-        html += "<tr><td>Channel:</td>";
-        html += "<td><input type='text' value='" + chatBotEditor.currentBot.Channel.htmlEntities() + "' id='chatbot_channel' onkeyup='ChatBotEditor.UpdateBot(\"chatbot_channel\",\"Channel\")'></td></tr>";
-        html += "</table>";
-        $("#chatBotDetails").html(html);
-    };
-    ChatBotEditor.UpdateBot = function (fieldName, property) {
-        var val = $("#" + fieldName).val();
-        if (property == "Name") {
-            $("#" + fieldName).css('backgroundColor', '');
-            var alreadyExists = false;
-            for (var i = 0; i < world.ChatBots.length; i++) {
-                if (world.ChatBots[i].Name.toLowerCase() == val.toLowerCase() && world.ChatBots[i] != chatBotEditor.currentBot) {
-                    alreadyExists = true;
-                    break;
-                }
-            }
-            if ((!val.match(new RegExp("^\\~{0,1}[a-z _01-9\(\)\-]+$", "i")) || !val || val.length < 1) || alreadyExists) {
-                $("#" + fieldName).css('backgroundColor', '#FFE0E0');
-                return;
-            }
-        }
-        chatBotEditor.currentBot[property] = val;
-        if (property == "Name") {
-            chatBotEditor.listBot.UpdateList();
-            Framework.SetLocation({
-                action: "ChatBotEditor", id: chatBotEditor.currentBot.Name
-            }, true, true);
-            $("#chatBotDetails > h2").html(chatBotEditor.currentBot.Name);
-            SearchPanel.Update();
-            Chat.UpdateAllChannelsUserList();
-        }
-        else if (property == "Channel")
-            Chat.UpdateAllChannelsUserList();
-    };
-    ChatBotEditor.NewSentence = function () {
-        if (!chatBotEditor.currentBot)
-            return;
-        chatBotEditor.currentBot.Sentences.push(new ChatBotSentence());
-        chatBotEditor.listSentences.UpdateList();
-        chatBotEditor.listSentences.Select(chatBotEditor.currentBot.Sentences.length - 1);
-    };
-    ChatBotEditor.DeleteSentence = function () {
-        if (!chatBotEditor.currentBot)
-            return;
-        for (var i = 0; i < chatBotEditor.currentBot.Sentences.length; i++) {
-            if (chatBotEditor.currentBot.Sentences[i] == chatBotEditor.selectedSentence) {
-                chatBotEditor.currentBot.Sentences.splice(i, 1);
-                break;
-            }
-        }
-        chatBotEditor.listSentences.UpdateList();
-        chatBotEditor.listSentences.Select(null);
-    };
-    ChatBotEditor.ShowSentence = function () {
-        var html = "";
-        html += "<table>";
-        var conditions = [];
-        for (var item in dialogCondition.code)
-            conditions.push(item);
-        conditions.sort();
-        html += "<tr><td>Conditions:</td><td>&nbsp;</td>";
-        for (var i = 0; i < chatBotEditor.selectedSentence.Conditions.length; i++) {
-            var cond = chatBotEditor.selectedSentence.Conditions[i];
-            html += "<tr><td>" + cond.Name.title() + ": <span class='dialogBlockDelete' onclick='ChatBotEditor.DeleteCondition(" + i + ")'>X</span></td>";
-            html += "<td>" + dialogCondition.code[cond.Name].Display(i, cond.Values, "ChangeCondition") + "</td></tr>";
-        }
-        html += "<tr><td colspan='2'><select id='add_condition' onchange='ChatBotEditor.AddCondition()'>";
-        html += "<option value=''>- Add new condition --</option>";
-        for (var i = 0; i < conditions.length; i++)
-            html += "<option value='" + conditions[i] + "'>" + conditions[i].title() + "</option>";
-        html += "</select></td></tr>";
-        html += "<td></td></tr>";
-        html += "<tr><td>Trigger:</td>";
-        html += "<td><input type='text' value='" + chatBotEditor.selectedSentence.Trigger.htmlEntities() + "' id='chatbot_trigger' onkeyup='ChatBotEditor.UpdateSentence(\"chatbot_trigger\",\"Trigger\")'></td></tr>";
-        html += "<tr><td>Auto Follow Up:</td>";
-        html += "<td><select id='chatbot_followUp' onchange='ChatBotEditor.UpdateSentence(\"chatbot_followUp\",\"FollowUp\")'>";
-        html += "<option value='true'" + (chatBotEditor.selectedSentence.FollowUp === true ? " selected" : "") + ">Yes</option>";
-        html += "<option value='false'" + (chatBotEditor.selectedSentence.FollowUp !== true ? " selected" : "") + ">No</option>";
-        html += "</select></td></tr>";
-        html += "<tr><td>Answer:</td>";
-        html += "<td><input type='text' value='" + chatBotEditor.selectedSentence.Answer.htmlEntities() + "' id='chatbot_answer' onkeyup='ChatBotEditor.UpdateSentence(\"chatbot_answer\",\"Answer\")'></td></tr>";
-        html += "<tr><td>Code:</td>";
-        html += "<td><div id='chatbot_codecontainer'><textarea id='chatbot_code' rows='10'>" + chatBotEditor.selectedSentence.Code + "</textarea></div></td></tr>";
-        html += "</table>";
-        $("#chatBotDetails").html(html);
-        /*chatBotEditor.editor = CodeMirror.fromTextArea(<HTMLTextAreaElement>$("#chatbot_code").first(),
-            {
-                lineNumbers: true,
-                matchBrackets: true,
-                continueComments: "Enter",
-                tabSize: 4,
-                indentUnit: 4,
-                extraKeys: { "Ctrl-Q": "toggleComment" }
-            });*/
-        chatBotEditor.editor = new CodeGraphEditor("chatbot_code");
-        chatBotEditor.editor.OnChange = ChatBotEditor.ChangeCode;
-        $("#chatbot_codecontainer").width($("#chatBotDetails table tr > td:nth-child(2)").width() - 3);
-    };
-    ChatBotEditor.UpdateSentence = function (fieldName, property) {
-        var val = $("#" + fieldName).val();
-        if (property == "FollowUp")
-            val = (val === "true");
-        chatBotEditor.selectedSentence[property] = val;
-        chatBotEditor.selectedSentence.ResetLogic();
-        if (property == "Trigger")
-            chatBotEditor.listSentences.UpdateList();
-    };
-    ChatBotEditor.ChangeCondition = function (id, pos) {
-        chatBotEditor.selectedSentence.Conditions[id].Values[pos] = $("#ChangeCondition_" + id + "_" + pos).val();
-    };
-    ChatBotEditor.DeleteCondition = function (rowId) {
-        chatBotEditor.selectedSentence.Conditions.splice(rowId, 1);
-        ChatBotEditor.ShowSentence();
-    };
-    ChatBotEditor.AddCondition = function () {
-        var condition = $("#add_condition").val();
-        $("#add_condition").first().selectedIndex = 0;
-        chatBotEditor.selectedSentence.Conditions.push({ Name: condition, Values: [] });
-        ChatBotEditor.ShowSentence();
-    };
-    ChatBotEditor.ChangeCode = function () {
-        chatBotEditor.selectedSentence.Code = chatBotEditor.editor.GetCode();
-    };
-    return ChatBotEditor;
-}());
 var FileExplorer = /** @class */ (function () {
     function FileExplorer() {
     }
@@ -17722,6 +17732,113 @@ var FileExplorer = /** @class */ (function () {
     };
     return FileExplorer;
 }());
+var gameList = new (/** @class */ (function () {
+    function class_30() {
+    }
+    return class_30;
+}()));
+var GameList = /** @class */ (function () {
+    function GameList() {
+    }
+    GameList.Dispose = function () {
+    };
+    GameList.Recover = function () {
+        if (Main.CheckNW())
+            $("#helpLink").first().onclick = function () {
+                StandaloneMaker.Help($("#helpLink").prop("href"));
+                return false;
+            };
+        GameList.Search();
+    };
+    GameList.Search = function () {
+        if (gameList.searchTimeout)
+            clearTimeout(gameList.searchTimeout);
+        gameList.searchTimeout = setTimeout(GameList.DoSearch, 500);
+    };
+    GameList.DoSearch = function () {
+        gameList.searchTimeout = null;
+        $.ajax({
+            type: 'POST',
+            url: '/backend/GameList',
+            data: {
+                token: framework.Preferences['token'],
+                search: $("#searchGame").val().trim()
+            },
+            success: function (msg) {
+                var data = TryParse(msg);
+                gameList.data = data.games;
+                GameList.ShowList();
+            },
+            error: function (msg) {
+                var data = TryParse(msg);
+                if (data && data.error)
+                    $("#gameList").html(data.error);
+                else
+                    $("#gameList").html(("" + msg).htmlEntities());
+            }
+        });
+    };
+    GameList.ShowList = function () {
+        var html = "";
+        html += "<table>";
+        html += "<thead>";
+        html += "<tr><td>&nbsp;</td><td>Name</td><td>Description</td></tr>";
+        html += "</thead>";
+        html += "<tbody>";
+        for (var i = 0; i < gameList.data.length; i++) {
+            html += "<tr>";
+            html += "<td>";
+            if (gameList.data[i].can_edit == 'Y')
+                html += "<a class='button' href='/maker.html?game=" + gameList.data[i].name.replace(/ /g, "_") + "'>Manage</a>";
+            else
+                html += "<a class='button' href='/play.html?game=" + gameList.data[i].name.replace(/ /g, "_") + "'>Play</a>";
+            html += "</td>";
+            html += "<td>" + (gameList.data[i].name ? gameList.data[i].name.htmlEntities() : "") + "</td>";
+            html += "<td>" + Main.TextTransform(gameList.data[i].description ? gameList.data[i].description : "") + "</td>";
+            html += "</tr>";
+        }
+        html += "</tbody>";
+        html += "</table>";
+        $("#gameList").html(html);
+    };
+    GameList.ShowCreateGame = function () {
+        $("#showCreateGame").show();
+    };
+    GameList.HideCreateGame = function () {
+        $("#showCreateGame").hide();
+    };
+    GameList.CreateGame = function () {
+        var name = $("#newGameName").val().trim();
+        if (name.replace(/[a-z 0-9]+/gi, "").length > 0) {
+            Framework.Alert("Only letters, numbers and spaces are allowed within a game name");
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url: '/backend/OwnerCreateGame',
+            data: {
+                token: framework.Preferences['token'],
+                name: name
+            },
+            success: function (msg) {
+                var data = TryParse(msg);
+                if (data.error) {
+                    $("#result").html(data.error);
+                    return;
+                }
+                document.location.replace("/maker.html?id=" + data.id);
+            },
+            error: function (msg) {
+                var data = TryParse(msg);
+                if (data.error)
+                    $("#result").html(data.error);
+                else
+                    $("#result").html(("" + msg).htmlEntities());
+            }
+        });
+    };
+    return GameList;
+}());
 var GameEditor = /** @class */ (function () {
     function GameEditor() {
     }
@@ -17740,8 +17857,10 @@ var GameEditor = /** @class */ (function () {
             $("#buttonDeleteGame").hide();
             $(".hideForStandalone").hide();
         }
-        if (selfHosted)
+        if (selfHosted) {
+            $("#buttonDeleteGame").hide();
             $(".hideForSelfHosted").hide();
+        }
         $("#gameName").html(world.Name);
         var url = "http://" + world.Name.replace(/ /g, "_") + ".dotworld.me/";
         $("#gameURL").html("<a href='" + url + "' target='_blank'>" + url + "</a>");
@@ -17871,113 +17990,6 @@ var GameEditor = /** @class */ (function () {
         }
     };
     return GameEditor;
-}());
-var gameList = new (/** @class */ (function () {
-    function class_30() {
-    }
-    return class_30;
-}()));
-var GameList = /** @class */ (function () {
-    function GameList() {
-    }
-    GameList.Dispose = function () {
-    };
-    GameList.Recover = function () {
-        if (Main.CheckNW())
-            $("#helpLink").first().onclick = function () {
-                StandaloneMaker.Help($("#helpLink").prop("href"));
-                return false;
-            };
-        GameList.Search();
-    };
-    GameList.Search = function () {
-        if (gameList.searchTimeout)
-            clearTimeout(gameList.searchTimeout);
-        gameList.searchTimeout = setTimeout(GameList.DoSearch, 500);
-    };
-    GameList.DoSearch = function () {
-        gameList.searchTimeout = null;
-        $.ajax({
-            type: 'POST',
-            url: '/backend/GameList',
-            data: {
-                token: framework.Preferences['token'],
-                search: $("#searchGame").val().trim()
-            },
-            success: function (msg) {
-                var data = TryParse(msg);
-                gameList.data = data.games;
-                GameList.ShowList();
-            },
-            error: function (msg) {
-                var data = TryParse(msg);
-                if (data && data.error)
-                    $("#gameList").html(data.error);
-                else
-                    $("#gameList").html(("" + msg).htmlEntities());
-            }
-        });
-    };
-    GameList.ShowList = function () {
-        var html = "";
-        html += "<table>";
-        html += "<thead>";
-        html += "<tr><td>&nbsp;</td><td>Name</td><td>Description</td></tr>";
-        html += "</thead>";
-        html += "<tbody>";
-        for (var i = 0; i < gameList.data.length; i++) {
-            html += "<tr>";
-            html += "<td>";
-            if (gameList.data[i].can_edit == 'Y')
-                html += "<a class='button' href='/maker.html?game=" + gameList.data[i].name.replace(/ /g, "_") + "'>Manage</a>";
-            else
-                html += "<a class='button' href='/play.html?game=" + gameList.data[i].name.replace(/ /g, "_") + "'>Play</a>";
-            html += "</td>";
-            html += "<td>" + (gameList.data[i].name ? gameList.data[i].name.htmlEntities() : "") + "</td>";
-            html += "<td>" + Main.TextTransform(gameList.data[i].description ? gameList.data[i].description : "") + "</td>";
-            html += "</tr>";
-        }
-        html += "</tbody>";
-        html += "</table>";
-        $("#gameList").html(html);
-    };
-    GameList.ShowCreateGame = function () {
-        $("#showCreateGame").show();
-    };
-    GameList.HideCreateGame = function () {
-        $("#showCreateGame").hide();
-    };
-    GameList.CreateGame = function () {
-        var name = $("#newGameName").val().trim();
-        if (name.replace(/[a-z 0-9]+/gi, "").length > 0) {
-            Framework.Alert("Only letters, numbers and spaces are allowed within a game name");
-            return;
-        }
-        $.ajax({
-            type: 'POST',
-            url: '/backend/OwnerCreateGame',
-            data: {
-                token: framework.Preferences['token'],
-                name: name
-            },
-            success: function (msg) {
-                var data = TryParse(msg);
-                if (data.error) {
-                    $("#result").html(data.error);
-                    return;
-                }
-                document.location.replace("/maker.html?id=" + data.id);
-            },
-            error: function (msg) {
-                var data = TryParse(msg);
-                if (data.error)
-                    $("#result").html(data.error);
-                else
-                    $("#result").html(("" + msg).htmlEntities());
-            }
-        });
-    };
-    return GameList;
 }());
 var gameNews = new (/** @class */ (function () {
     function class_31() {
@@ -18632,13 +18644,487 @@ var GameStats = /** @class */ (function () {
     };
     return GameStats;
 }());
-var genericCodeEditor = new (/** @class */ (function () {
+/// <reference path="../../Logic/World/WorldRender.ts" />
+var houseEditor = new (/** @class */ (function () {
     function class_33() {
+        this.housePartImages = {};
+        this.sticky = true;
+        this.glueDistance = 5;
+        this.keys = [];
+        this.multiSelection = null;
+        this.collisionSelection = null;
+    }
+    return class_33;
+}()));
+var HouseEditor = /** @class */ (function () {
+    function HouseEditor() {
+    }
+    HouseEditor.Dispose = function () {
+        houseEditor.listHouses.Dispose();
+        houseEditor.listHouses = null;
+        houseEditor.listParts.Dispose();
+        houseEditor.listParts = null;
+        houseEditor.housePartImages = null;
+        $(window).unbind("resize", HouseEditor.Resize);
+        $(window).unbind("keydown", HouseEditor.KeyDown);
+        $(window).unbind("keyup", HouseEditor.KeyUp);
+    };
+    HouseEditor.IsAccessible = function () {
+        return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
+    };
+    HouseEditor.Recover = function () {
+        if (Main.CheckNW()) {
+            $("#helpLink").first().onclick = function () {
+                StandaloneMaker.Help($("#helpLink").prop("href"));
+                return false;
+            };
+            $("#listHouses").css("top", "5px");
+            $("#houseDetailsContainer").css("top", "5px");
+        }
+        houseEditor.keys = [];
+        houseEditor.partSelected = null;
+        houseEditor.multiSelection = null;
+        houseEditor.housePartImages = {};
+        houseEditor.listHouses = new ListSelector("listHouses", world.Houses);
+        houseEditor.listHouses.OnSelect = function (houseName) {
+            Framework.SetLocation({
+                action: "HouseEditor", id: houseName
+            });
+            if (!houseName) {
+                $("#houseTitle").html("");
+                houseEditor.currentHouse = houseEditor.currentHouseName = null;
+                $("#houseName").css('backgroundColor', '').val("").prop("disabled", true);
+                $("#houseCollisionX").val("").prop("disabled", true);
+                $("#houseCollisionY").val("").prop("disabled", true);
+                $("#houseCollisionWidth").val("").prop("disabled", true);
+                $("#houseCollisionHeight").val("").prop("disabled", true);
+            }
+            else {
+                $("#houseTitle").html("Details " + houseName);
+                houseEditor.currentHouseName = houseName;
+                houseEditor.currentHouse = world.Houses[houseEditor.currentHouseName];
+                $("#houseName").css('backgroundColor', '').val(houseEditor.currentHouseName).prop("disabled", false);
+                $("#houseCollisionX").val("" + houseEditor.currentHouse.collisionX).prop("disabled", false);
+                $("#houseCollisionY").val("" + houseEditor.currentHouse.collisionY).prop("disabled", false);
+                $("#houseCollisionWidth").val("" + houseEditor.currentHouse.collisionWidth).prop("disabled", false);
+                $("#houseCollisionHeight").val("" + houseEditor.currentHouse.collisionHeight).prop("disabled", false);
+            }
+        };
+        var firstHouse = null;
+        for (var item in world.Houses) {
+            firstHouse = item;
+            break;
+        }
+        houseEditor.listParts = new ListSelector("houseParts", world.art.house_parts);
+        houseEditor.listParts.OnSelect = function (partName) {
+            if (!partName)
+                return;
+            houseEditor.listParts.Select(null);
+            if (!houseEditor.currentHouse)
+                return;
+            houseEditor.currentHouse.parts.push({ part: partName, x: 0, y: 0 });
+            houseEditor.partSelected = [houseEditor.currentHouse[houseEditor.currentHouse.parts.length - 1]];
+        };
+        if (framework.CurrentUrl.id) {
+            if (!world.GetHouse(framework.CurrentUrl.id)) {
+                Framework.SetLocation({
+                    action: "HouseEditor"
+                });
+                houseEditor.listHouses.Select(null);
+            }
+            else
+                houseEditor.listHouses.Select(framework.CurrentUrl.id);
+        }
+        else if (firstHouse)
+            houseEditor.listHouses.Select(firstHouse);
+        else
+            houseEditor.listHouses.Select(null);
+        $(window).bind("resize", HouseEditor.Resize);
+        HouseEditor.Resize();
+        HouseEditor.Draw();
+        $("#houseEditor").bind("mousedown", HouseEditor.MouseDown);
+        $(window).bind("keydown", HouseEditor.KeyDown);
+        $(window).bind("keyup", HouseEditor.KeyUp);
+        if (framework.Preferences['houseSticky'] === false) {
+            houseEditor.sticky = false;
+            $("#stickyButton").removeClass("selectedButton");
+        }
+    };
+    HouseEditor.ChangeName = function () {
+        var newName = $("#houseName").val().trim();
+        if ((newName.match(databaseNameRule) || !newName || newName.length < 1) || (world.Houses[newName] && world.Houses[newName] != world.Houses[houseEditor.currentHouseName])) {
+            $("#houseName").css('backgroundColor', '#FFE0E0');
+            return;
+        }
+        $("#houseName").css('backgroundColor', '');
+        if (newName == "" || newName == houseEditor.currentHouseName || world.Houses[newName])
+            return;
+        var oldName = houseEditor.currentHouseName;
+        delete world.Houses[houseEditor.currentHouseName];
+        world.Houses[newName] = houseEditor.currentHouse;
+        houseEditor.currentHouseName = newName;
+        //houseEditor.listHouses.UpdateList();
+        HouseEditor.UpdateHouseList();
+        SearchPanel.Update();
+        for (var i = 0; i < world.Zones.length; i++) {
+            var zone = world.Zones[i];
+            for (var j = 0; j < zone.MapFragments.length; j++) {
+                var fragment = zone.MapFragments[i].Modifications;
+                for (var k = 0; k < fragment.length; k++)
+                    if (fragment[k].Action == "house" && fragment[k].Value == oldName)
+                        fragment[k].Value = newName;
+            }
+        }
+        MapUtilities.Modify("house", oldName, newName);
+    };
+    HouseEditor.UpdateHouseList = function () {
+        houseEditor.listHouses.UpdateList();
+        houseEditor.listHouses.Select(houseEditor.currentHouseName);
+    };
+    HouseEditor.ChangeCollisionX = function () {
+        houseEditor.currentHouse.collisionX = parseInt($("#houseCollisionX").val());
+    };
+    HouseEditor.ChangeCollisionY = function () {
+        houseEditor.currentHouse.collisionY = parseInt($("#houseCollisionY").val());
+    };
+    HouseEditor.ChangeCollisionWidth = function () {
+        houseEditor.currentHouse.collisionWidth = parseInt($("#houseCollisionWidth").val());
+    };
+    HouseEditor.ChangeCollisionHeight = function () {
+        houseEditor.currentHouse.collisionHeight = parseInt($("#houseCollisionHeight").val());
+    };
+    HouseEditor.CollisionSelection = function () {
+        houseEditor.collisionSelection = { X: 0, Y: 0, Width: 1, Height: 1 };
+    };
+    HouseEditor.MouseDown = function (evt) {
+        if (!houseEditor.currentHouse)
+            return;
+        var x = evt.pageX - $("#houseEditor").position().left + $("#houseEditorContainer").first().scrollLeft;
+        var y = evt.pageY - $("#houseEditor").position().top + $("#houseEditorContainer").first().scrollTop;
+        if (houseEditor.collisionSelection != null) {
+            houseEditor.mouseOffset = { X: x, Y: y };
+            houseEditor.collisionSelection = { X: x, Y: y, Width: 1, Height: 1 };
+            HouseEditor.HandleCollisionSelection(evt);
+        }
+        else {
+            var newSelection = null;
+            for (var i = 0; i < houseEditor.currentHouse.parts.length; i++) {
+                var item = houseEditor.currentHouse.parts[i];
+                var partInfo = world.art.house_parts[item.part];
+                if (x >= item.x && x <= item.x + partInfo.width && y >= item.y && y <= item.y + partInfo.height) {
+                    newSelection = [item];
+                    houseEditor.mouseOffset = { X: x - item.x, Y: y - item.y };
+                }
+            }
+            if (newSelection && houseEditor.partSelected && houseEditor.partSelected.indexOf(newSelection[0]) != -1)
+                houseEditor.mouseOffset = { X: x - houseEditor.partSelected[0].x, Y: y - houseEditor.partSelected[0].y };
+            else
+                houseEditor.partSelected = newSelection;
+            if (!houseEditor.partSelected) {
+                houseEditor.multiSelection = { X: x, Y: y, Width: 1, Height: 1 };
+                houseEditor.mouseOffset = { X: x, Y: y };
+            }
+        }
+        $("#houseEditorMouseOverlay").bind("mouseup", HouseEditor.MouseUp).bind("mousemove", HouseEditor.MouseMove).show();
+    };
+    HouseEditor.MouseUp = function (evt) {
+        houseEditor.multiSelection = null;
+        houseEditor.collisionSelection = null;
+        $("#houseEditorMouseOverlay").unbind("mousemove", HouseEditor.MouseMove).unbind("mouseup", HouseEditor.MouseUp).hide();
+    };
+    HouseEditor.MouseMove = function (evt) {
+        if (!houseEditor.currentHouse)
+            return;
+        if (houseEditor.collisionSelection)
+            HouseEditor.HandleCollisionSelection(evt);
+        else if (houseEditor.partSelected && houseEditor.partSelected.length > 0 && !houseEditor.multiSelection)
+            HouseEditor.MoveItems(evt);
+        else
+            HouseEditor.HandleMultiSelect(evt);
+    };
+    HouseEditor.HandleCollisionSelection = function (evt) {
+        if (!houseEditor.currentHouse)
+            return;
+        var x = evt.pageX - $("#houseEditor").position().left + $("#houseEditorContainer").first().scrollLeft;
+        var y = evt.pageY - $("#houseEditor").position().top + $("#houseEditorContainer").first().scrollTop;
+        houseEditor.currentHouse.collisionWidth = houseEditor.collisionSelection.Width = Math.abs(x - houseEditor.mouseOffset.X);
+        houseEditor.currentHouse.collisionHeight = houseEditor.collisionSelection.Height = Math.abs(y - houseEditor.mouseOffset.Y);
+        houseEditor.currentHouse.collisionX = houseEditor.collisionSelection.X = Math.min(houseEditor.mouseOffset.X, x);
+        houseEditor.currentHouse.collisionY = houseEditor.collisionSelection.Y = Math.min(houseEditor.mouseOffset.Y, y);
+        $("#houseCollisionX").val("" + houseEditor.currentHouse.collisionX);
+        $("#houseCollisionY").val("" + houseEditor.currentHouse.collisionY);
+        $("#houseCollisionWidth").val("" + houseEditor.currentHouse.collisionWidth);
+        $("#houseCollisionHeight").val("" + houseEditor.currentHouse.collisionHeight);
+    };
+    HouseEditor.HandleMultiSelect = function (evt) {
+        if (!houseEditor.currentHouse)
+            return;
+        var x = evt.pageX - $("#houseEditor").position().left + $("#houseEditorContainer").first().scrollLeft;
+        var y = evt.pageY - $("#houseEditor").position().top + $("#houseEditorContainer").first().scrollTop;
+        houseEditor.multiSelection.Width = Math.abs(x - houseEditor.mouseOffset.X);
+        houseEditor.multiSelection.Height = Math.abs(y - houseEditor.mouseOffset.Y);
+        houseEditor.multiSelection.X = Math.min(houseEditor.mouseOffset.X, x);
+        houseEditor.multiSelection.Y = Math.min(houseEditor.mouseOffset.Y, y);
+        var a = houseEditor.multiSelection.X;
+        var b = houseEditor.multiSelection.Y;
+        var c = houseEditor.multiSelection.X + houseEditor.multiSelection.Width;
+        var d = houseEditor.multiSelection.Y + houseEditor.multiSelection.Height;
+        houseEditor.partSelected = [];
+        for (var i = 0; i < houseEditor.currentHouse.parts.length; i++) {
+            var item = houseEditor.currentHouse.parts[i];
+            var partInfo = world.art.house_parts[item.part];
+            if (!(item.x + partInfo.width < a || item.x > c || item.y + partInfo.height < b || item.y > d))
+                houseEditor.partSelected.push(item);
+        }
+        if (houseEditor.partSelected.length == 0)
+            houseEditor.partSelected = null;
+    };
+    HouseEditor.MoveItems = function (evt) {
+        var partInfo = world.art.house_parts[houseEditor.partSelected[0].part];
+        var x = evt.pageX - $("#houseEditor").position().left + $("#houseEditorContainer").first().scrollLeft - houseEditor.mouseOffset.X;
+        var y = evt.pageY - $("#houseEditor").position().top + $("#houseEditorContainer").first().scrollTop - houseEditor.mouseOffset.Y;
+        /*var x = (evt.pageX - $("#houseEditor").position().left) - houseEditor.mouseOffset.X;
+        var y = (evt.pageY - $("#houseEditor").position().top) - houseEditor.mouseOffset.Y;*/
+        if (houseEditor.sticky) {
+            // Search others to glue
+            var gluedX = false;
+            var gluedY = false;
+            for (var i = 0; i < houseEditor.currentHouse.parts.length && !(gluedX && gluedY); i++) {
+                var other = houseEditor.currentHouse.parts[i];
+                // Don't glue on myself
+                if (houseEditor.partSelected.indexOf(other) != -1)
+                    continue;
+                var otherInfo = world.art.house_parts[other.part];
+                var a = Math.abs(other.x - x);
+                var b = Math.abs(other.y - y);
+                var c = Math.abs((other.x + otherInfo.width) - x);
+                var d = Math.abs((other.y + otherInfo.height) - y);
+                var e = Math.abs(other.x - (x + partInfo.width));
+                var f = Math.abs(other.y - (y + partInfo.height));
+                var g = Math.abs((other.x + otherInfo.width) - (x + partInfo.width));
+                var h = Math.abs((other.y + otherInfo.height) - (y + partInfo.height));
+                if (a <= houseEditor.glueDistance && gluedX == false) {
+                    x = other.x;
+                    gluedX = true;
+                }
+                if (b <= houseEditor.glueDistance && gluedY == false) {
+                    y = other.y;
+                    gluedY = true;
+                }
+                if (c <= houseEditor.glueDistance && gluedX == false) {
+                    x = other.x + otherInfo.width;
+                    gluedX = true;
+                }
+                if (d <= houseEditor.glueDistance && gluedY == false) {
+                    y = other.y + otherInfo.height;
+                    gluedY = true;
+                }
+                if (e <= houseEditor.glueDistance && gluedX == false) {
+                    x = other.x - partInfo.width;
+                    gluedX = true;
+                }
+                if (f <= houseEditor.glueDistance && gluedY == false) {
+                    y = other.y - partInfo.height;
+                    gluedY = true;
+                }
+                if (g <= houseEditor.glueDistance && gluedX == false) {
+                    x = other.x + otherInfo.width - partInfo.width;
+                    gluedX = true;
+                }
+                if (h <= houseEditor.glueDistance && gluedY == false) {
+                    y = other.y + otherInfo.height - partInfo.height;
+                    gluedY = true;
+                }
+            }
+        }
+        x = Math.max(0, Math.min(x, 500 - partInfo.width));
+        y = Math.max(0, Math.min(y, 500 - partInfo.height));
+        var dx = x - houseEditor.partSelected[0].x;
+        var dy = y - houseEditor.partSelected[0].y;
+        for (var i = 0; i < houseEditor.partSelected.length; i++) {
+            houseEditor.partSelected[i].x += dx;
+            houseEditor.partSelected[i].y += dy;
+        }
+    };
+    HouseEditor.Draw = function () {
+        if (!houseEditor.housePartImages)
+            return;
+        if (window['mozRequestAnimationFrame'])
+            window['mozRequestAnimationFrame'](HouseEditor.Draw);
+        else if (window['requestAnimationFrame'])
+            window['requestAnimationFrame'](HouseEditor.Draw);
+        else
+            setTimeout(HouseEditor.Draw, 16);
+        var ctx = $("#houseEditor").first().getContext("2d");
+        ctx.fillStyle = "#000000";
+        ctx.fillRect(0, 0, 500, 500);
+        if (!houseEditor.currentHouse)
+            return;
+        for (var i = 0; i < houseEditor.currentHouse.parts.length; i++) {
+            var item = houseEditor.currentHouse.parts[i];
+            var part = HouseEditor.GetPart(item.part);
+            if (!part)
+                continue;
+            var partInfo = world.art.house_parts[item.part];
+            ctx.drawImage(part, partInfo.x, partInfo.y, partInfo.width, partInfo.height, item.x, item.y, partInfo.width, partInfo.height);
+        }
+        // Highlight selected parts
+        if (houseEditor.partSelected && houseEditor.partSelected.length)
+            for (var i = 0; i < houseEditor.currentHouse.parts.length; i++) {
+                var item = houseEditor.currentHouse.parts[i];
+                if (houseEditor.partSelected.indexOf(item) != -1) {
+                    var partInfo = world.art.house_parts[item.part];
+                    ctx.strokeStyle = "#8080FF";
+                    ctx.strokeRect(item.x + 0.5, item.y + 0.5, partInfo.width, partInfo.height);
+                }
+            }
+        if (houseEditor.multiSelection) {
+            ctx.strokeStyle = "#8080FF";
+            ctx.strokeRect(houseEditor.multiSelection.X + 0.5, houseEditor.multiSelection.Y + 0.5, houseEditor.multiSelection.Width, houseEditor.multiSelection.Height);
+        }
+        ctx.strokeStyle = "#FF0000";
+        ctx.strokeRect(houseEditor.currentHouse.collisionX + 0.5, houseEditor.currentHouse.collisionY + 0.5, houseEditor.currentHouse.collisionWidth, houseEditor.currentHouse.collisionHeight);
+    };
+    HouseEditor.GetPart = function (name) {
+        if (!world.art.house_parts[name])
+            return null;
+        var file = world.art.house_parts[name].file;
+        if (!houseEditor.housePartImages[file]) {
+            houseEditor.housePartImages[file] = new Image();
+            houseEditor.housePartImages[file].src = file;
+        }
+        return houseEditor.housePartImages[file];
+    };
+    HouseEditor.Resize = function () {
+        var w = $("#houseEditorContainer").width();
+        var h = $("#houseEditorContainer").height();
+    };
+    HouseEditor.SwitchSticky = function () {
+        if (houseEditor.sticky)
+            $("#stickyButton").removeClass("selectedButton");
+        else
+            $("#stickyButton").addClass("selectedButton");
+        houseEditor.sticky = !houseEditor.sticky;
+        framework.Preferences['houseSticky'] = houseEditor.sticky;
+        Framework.SavePreferences();
+    };
+    HouseEditor.DeleteSelected = function () {
+        if (!houseEditor.partSelected)
+            return;
+        for (var i = 0; i < houseEditor.currentHouse.parts.length;) {
+            if (houseEditor.partSelected.indexOf(houseEditor.currentHouse.parts[i]) != -1)
+                houseEditor.currentHouse.parts.splice(i, 1);
+            else
+                i++;
+        }
+    };
+    HouseEditor.ToFront = function () {
+        if (!houseEditor.partSelected)
+            return;
+        HouseEditor.DeleteSelected();
+        for (var i = 0; i < houseEditor.partSelected.length; i++)
+            houseEditor.currentHouse.parts.push(houseEditor.partSelected[i]);
+    };
+    HouseEditor.ToBack = function () {
+        if (!houseEditor.partSelected)
+            return;
+        HouseEditor.DeleteSelected();
+        for (var i = 0; i < houseEditor.partSelected.length; i++)
+            houseEditor.currentHouse.parts.unshift(houseEditor.partSelected[i]);
+    };
+    HouseEditor.KeyDown = function (evt) {
+        houseEditor.keys[evt.keyCode] = true;
+        //console.log(evt.keyCode);
+        HouseEditor.HandleKeys();
+    };
+    HouseEditor.KeyUp = function (evt) {
+        houseEditor.keys[evt.keyCode] = false;
+    };
+    HouseEditor.HandleKeys = function () {
+        // Up key
+        if (houseEditor.keys[38] === true || houseEditor.keys[87] === true) {
+            if (houseEditor.partSelected)
+                for (var i = 0; i < houseEditor.partSelected.length; i++)
+                    houseEditor.partSelected[i].y -= (houseEditor.keys[16] ? 5 : 1);
+        }
+        // Left key
+        if (houseEditor.keys[37] === true || houseEditor.keys[65] === true) {
+            if (houseEditor.partSelected)
+                for (var i = 0; i < houseEditor.partSelected.length; i++)
+                    houseEditor.partSelected[i].x -= (houseEditor.keys[16] ? 5 : 1);
+        }
+        // Right key
+        if (houseEditor.keys[39] === true || houseEditor.keys[68] === true) {
+            if (houseEditor.partSelected)
+                for (var i = 0; i < houseEditor.partSelected.length; i++)
+                    houseEditor.partSelected[i].x += (houseEditor.keys[16] ? 5 : 1);
+        }
+        // Down key
+        if (houseEditor.keys[40] === true || houseEditor.keys[83] === true) {
+            if (houseEditor.partSelected)
+                for (var i = 0; i < houseEditor.partSelected.length; i++)
+                    houseEditor.partSelected[i].y += (houseEditor.keys[16] ? 5 : 1);
+        }
+    };
+    HouseEditor.NewHouse = function () {
+        var nextId = 1;
+        while (world.Houses["house_" + nextId])
+            nextId++;
+        world.Houses["house_" + nextId] = {
+            collisionX: 0,
+            collisionY: 0,
+            collisionWidth: 0,
+            collisionHeight: 0,
+            parts: []
+        };
+        houseEditor.currentHouse = world.Houses["house_" + nextId];
+        houseEditor.currentHouseName = "house_" + nextId;
+        houseEditor.partSelected = [];
+        HouseEditor.UpdateHouseList();
+        SearchPanel.Update();
+    };
+    HouseEditor.DeleteHouse = function () {
+        Framework.Confirm("Are you sure you want to delete this house?", function () {
+            var oldName = houseEditor.currentHouseName;
+            delete world.Houses[houseEditor.currentHouseName];
+            houseEditor.listHouses.Select(null);
+            HouseEditor.UpdateHouseList();
+            SearchPanel.Update();
+            for (var i = 0; i < world.Zones.length; i++) {
+                var zone = world.Zones[i];
+                for (var j = 0; j < zone.MapFragments.length; j++) {
+                    var fragment = zone.MapFragments[i].Modifications;
+                    for (var k = 0; k < fragment.length;) {
+                        if (fragment[k].Action == "house" && fragment[k].Value == oldName)
+                            fragment.splice(k, 1);
+                        else
+                            k++;
+                    }
+                }
+            }
+            MapUtilities.Modify("house", oldName, null);
+        });
+    };
+    HouseEditor.CloneHouse = function () {
+        var nextId = 1;
+        while (world.Houses["house_" + nextId])
+            nextId++;
+        world.Houses["house_" + nextId] = JSON.parse(JSON.stringify(world.Houses[houseEditor.currentHouseName]));
+        houseEditor.currentHouse = world.Houses["house_" + nextId];
+        houseEditor.currentHouseName = "house_" + nextId;
+        houseEditor.partSelected = [];
+        HouseEditor.UpdateHouseList();
+        SearchPanel.Update();
+    };
+    return HouseEditor;
+}());
+var genericCodeEditor = new (/** @class */ (function () {
+    function class_34() {
         this.selector = null;
         //editor: CodeMirror.EditorFromTextArea = null;
         this.editor = null;
     }
-    return class_33;
+    return class_34;
 }()));
 var GenericCodeEditor = /** @class */ (function () {
     function GenericCodeEditor() {
@@ -19321,480 +19807,6 @@ var GenericCodeEditor = /** @class */ (function () {
     };
     return GenericCodeEditor;
 }());
-/// <reference path="../../Logic/World/WorldRender.ts" />
-var houseEditor = new (/** @class */ (function () {
-    function class_34() {
-        this.housePartImages = {};
-        this.sticky = true;
-        this.glueDistance = 5;
-        this.keys = [];
-        this.multiSelection = null;
-        this.collisionSelection = null;
-    }
-    return class_34;
-}()));
-var HouseEditor = /** @class */ (function () {
-    function HouseEditor() {
-    }
-    HouseEditor.Dispose = function () {
-        houseEditor.listHouses.Dispose();
-        houseEditor.listHouses = null;
-        houseEditor.listParts.Dispose();
-        houseEditor.listParts = null;
-        houseEditor.housePartImages = null;
-        $(window).unbind("resize", HouseEditor.Resize);
-        $(window).unbind("keydown", HouseEditor.KeyDown);
-        $(window).unbind("keyup", HouseEditor.KeyUp);
-    };
-    HouseEditor.IsAccessible = function () {
-        return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
-    };
-    HouseEditor.Recover = function () {
-        if (Main.CheckNW()) {
-            $("#helpLink").first().onclick = function () {
-                StandaloneMaker.Help($("#helpLink").prop("href"));
-                return false;
-            };
-            $("#listHouses").css("top", "5px");
-            $("#houseDetailsContainer").css("top", "5px");
-        }
-        houseEditor.keys = [];
-        houseEditor.partSelected = null;
-        houseEditor.multiSelection = null;
-        houseEditor.housePartImages = {};
-        houseEditor.listHouses = new ListSelector("listHouses", world.Houses);
-        houseEditor.listHouses.OnSelect = function (houseName) {
-            Framework.SetLocation({
-                action: "HouseEditor", id: houseName
-            });
-            if (!houseName) {
-                $("#houseTitle").html("");
-                houseEditor.currentHouse = houseEditor.currentHouseName = null;
-                $("#houseName").css('backgroundColor', '').val("").prop("disabled", true);
-                $("#houseCollisionX").val("").prop("disabled", true);
-                $("#houseCollisionY").val("").prop("disabled", true);
-                $("#houseCollisionWidth").val("").prop("disabled", true);
-                $("#houseCollisionHeight").val("").prop("disabled", true);
-            }
-            else {
-                $("#houseTitle").html("Details " + houseName);
-                houseEditor.currentHouseName = houseName;
-                houseEditor.currentHouse = world.Houses[houseEditor.currentHouseName];
-                $("#houseName").css('backgroundColor', '').val(houseEditor.currentHouseName).prop("disabled", false);
-                $("#houseCollisionX").val("" + houseEditor.currentHouse.collisionX).prop("disabled", false);
-                $("#houseCollisionY").val("" + houseEditor.currentHouse.collisionY).prop("disabled", false);
-                $("#houseCollisionWidth").val("" + houseEditor.currentHouse.collisionWidth).prop("disabled", false);
-                $("#houseCollisionHeight").val("" + houseEditor.currentHouse.collisionHeight).prop("disabled", false);
-            }
-        };
-        var firstHouse = null;
-        for (var item in world.Houses) {
-            firstHouse = item;
-            break;
-        }
-        houseEditor.listParts = new ListSelector("houseParts", world.art.house_parts);
-        houseEditor.listParts.OnSelect = function (partName) {
-            if (!partName)
-                return;
-            houseEditor.listParts.Select(null);
-            if (!houseEditor.currentHouse)
-                return;
-            houseEditor.currentHouse.parts.push({ part: partName, x: 0, y: 0 });
-            houseEditor.partSelected = [houseEditor.currentHouse[houseEditor.currentHouse.parts.length - 1]];
-        };
-        if (framework.CurrentUrl.id) {
-            if (!world.GetHouse(framework.CurrentUrl.id)) {
-                Framework.SetLocation({
-                    action: "HouseEditor"
-                });
-                houseEditor.listHouses.Select(null);
-            }
-            else
-                houseEditor.listHouses.Select(framework.CurrentUrl.id);
-        }
-        else if (firstHouse)
-            houseEditor.listHouses.Select(firstHouse);
-        else
-            houseEditor.listHouses.Select(null);
-        $(window).bind("resize", HouseEditor.Resize);
-        HouseEditor.Resize();
-        HouseEditor.Draw();
-        $("#houseEditor").bind("mousedown", HouseEditor.MouseDown);
-        $(window).bind("keydown", HouseEditor.KeyDown);
-        $(window).bind("keyup", HouseEditor.KeyUp);
-        if (framework.Preferences['houseSticky'] === false) {
-            houseEditor.sticky = false;
-            $("#stickyButton").removeClass("selectedButton");
-        }
-    };
-    HouseEditor.ChangeName = function () {
-        var newName = $("#houseName").val().trim();
-        if ((newName.match(databaseNameRule) || !newName || newName.length < 1) || (world.Houses[newName] && world.Houses[newName] != world.Houses[houseEditor.currentHouseName])) {
-            $("#houseName").css('backgroundColor', '#FFE0E0');
-            return;
-        }
-        $("#houseName").css('backgroundColor', '');
-        if (newName == "" || newName == houseEditor.currentHouseName || world.Houses[newName])
-            return;
-        var oldName = houseEditor.currentHouseName;
-        delete world.Houses[houseEditor.currentHouseName];
-        world.Houses[newName] = houseEditor.currentHouse;
-        houseEditor.currentHouseName = newName;
-        //houseEditor.listHouses.UpdateList();
-        HouseEditor.UpdateHouseList();
-        SearchPanel.Update();
-        for (var i = 0; i < world.Zones.length; i++) {
-            var zone = world.Zones[i];
-            for (var j = 0; j < zone.MapFragments.length; j++) {
-                var fragment = zone.MapFragments[i].Modifications;
-                for (var k = 0; k < fragment.length; k++)
-                    if (fragment[k].Action == "house" && fragment[k].Value == oldName)
-                        fragment[k].Value = newName;
-            }
-        }
-        MapUtilities.Modify("house", oldName, newName);
-    };
-    HouseEditor.UpdateHouseList = function () {
-        houseEditor.listHouses.UpdateList();
-        houseEditor.listHouses.Select(houseEditor.currentHouseName);
-    };
-    HouseEditor.ChangeCollisionX = function () {
-        houseEditor.currentHouse.collisionX = parseInt($("#houseCollisionX").val());
-    };
-    HouseEditor.ChangeCollisionY = function () {
-        houseEditor.currentHouse.collisionY = parseInt($("#houseCollisionY").val());
-    };
-    HouseEditor.ChangeCollisionWidth = function () {
-        houseEditor.currentHouse.collisionWidth = parseInt($("#houseCollisionWidth").val());
-    };
-    HouseEditor.ChangeCollisionHeight = function () {
-        houseEditor.currentHouse.collisionHeight = parseInt($("#houseCollisionHeight").val());
-    };
-    HouseEditor.CollisionSelection = function () {
-        houseEditor.collisionSelection = { X: 0, Y: 0, Width: 1, Height: 1 };
-    };
-    HouseEditor.MouseDown = function (evt) {
-        if (!houseEditor.currentHouse)
-            return;
-        var x = evt.pageX - $("#houseEditor").position().left + $("#houseEditorContainer").first().scrollLeft;
-        var y = evt.pageY - $("#houseEditor").position().top + $("#houseEditorContainer").first().scrollTop;
-        if (houseEditor.collisionSelection != null) {
-            houseEditor.mouseOffset = { X: x, Y: y };
-            houseEditor.collisionSelection = { X: x, Y: y, Width: 1, Height: 1 };
-            HouseEditor.HandleCollisionSelection(evt);
-        }
-        else {
-            var newSelection = null;
-            for (var i = 0; i < houseEditor.currentHouse.parts.length; i++) {
-                var item = houseEditor.currentHouse.parts[i];
-                var partInfo = world.art.house_parts[item.part];
-                if (x >= item.x && x <= item.x + partInfo.width && y >= item.y && y <= item.y + partInfo.height) {
-                    newSelection = [item];
-                    houseEditor.mouseOffset = { X: x - item.x, Y: y - item.y };
-                }
-            }
-            if (newSelection && houseEditor.partSelected && houseEditor.partSelected.indexOf(newSelection[0]) != -1)
-                houseEditor.mouseOffset = { X: x - houseEditor.partSelected[0].x, Y: y - houseEditor.partSelected[0].y };
-            else
-                houseEditor.partSelected = newSelection;
-            if (!houseEditor.partSelected) {
-                houseEditor.multiSelection = { X: x, Y: y, Width: 1, Height: 1 };
-                houseEditor.mouseOffset = { X: x, Y: y };
-            }
-        }
-        $("#houseEditorMouseOverlay").bind("mouseup", HouseEditor.MouseUp).bind("mousemove", HouseEditor.MouseMove).show();
-    };
-    HouseEditor.MouseUp = function (evt) {
-        houseEditor.multiSelection = null;
-        houseEditor.collisionSelection = null;
-        $("#houseEditorMouseOverlay").unbind("mousemove", HouseEditor.MouseMove).unbind("mouseup", HouseEditor.MouseUp).hide();
-    };
-    HouseEditor.MouseMove = function (evt) {
-        if (!houseEditor.currentHouse)
-            return;
-        if (houseEditor.collisionSelection)
-            HouseEditor.HandleCollisionSelection(evt);
-        else if (houseEditor.partSelected && houseEditor.partSelected.length > 0 && !houseEditor.multiSelection)
-            HouseEditor.MoveItems(evt);
-        else
-            HouseEditor.HandleMultiSelect(evt);
-    };
-    HouseEditor.HandleCollisionSelection = function (evt) {
-        if (!houseEditor.currentHouse)
-            return;
-        var x = evt.pageX - $("#houseEditor").position().left + $("#houseEditorContainer").first().scrollLeft;
-        var y = evt.pageY - $("#houseEditor").position().top + $("#houseEditorContainer").first().scrollTop;
-        houseEditor.currentHouse.collisionWidth = houseEditor.collisionSelection.Width = Math.abs(x - houseEditor.mouseOffset.X);
-        houseEditor.currentHouse.collisionHeight = houseEditor.collisionSelection.Height = Math.abs(y - houseEditor.mouseOffset.Y);
-        houseEditor.currentHouse.collisionX = houseEditor.collisionSelection.X = Math.min(houseEditor.mouseOffset.X, x);
-        houseEditor.currentHouse.collisionY = houseEditor.collisionSelection.Y = Math.min(houseEditor.mouseOffset.Y, y);
-        $("#houseCollisionX").val("" + houseEditor.currentHouse.collisionX);
-        $("#houseCollisionY").val("" + houseEditor.currentHouse.collisionY);
-        $("#houseCollisionWidth").val("" + houseEditor.currentHouse.collisionWidth);
-        $("#houseCollisionHeight").val("" + houseEditor.currentHouse.collisionHeight);
-    };
-    HouseEditor.HandleMultiSelect = function (evt) {
-        if (!houseEditor.currentHouse)
-            return;
-        var x = evt.pageX - $("#houseEditor").position().left + $("#houseEditorContainer").first().scrollLeft;
-        var y = evt.pageY - $("#houseEditor").position().top + $("#houseEditorContainer").first().scrollTop;
-        houseEditor.multiSelection.Width = Math.abs(x - houseEditor.mouseOffset.X);
-        houseEditor.multiSelection.Height = Math.abs(y - houseEditor.mouseOffset.Y);
-        houseEditor.multiSelection.X = Math.min(houseEditor.mouseOffset.X, x);
-        houseEditor.multiSelection.Y = Math.min(houseEditor.mouseOffset.Y, y);
-        var a = houseEditor.multiSelection.X;
-        var b = houseEditor.multiSelection.Y;
-        var c = houseEditor.multiSelection.X + houseEditor.multiSelection.Width;
-        var d = houseEditor.multiSelection.Y + houseEditor.multiSelection.Height;
-        houseEditor.partSelected = [];
-        for (var i = 0; i < houseEditor.currentHouse.parts.length; i++) {
-            var item = houseEditor.currentHouse.parts[i];
-            var partInfo = world.art.house_parts[item.part];
-            if (!(item.x + partInfo.width < a || item.x > c || item.y + partInfo.height < b || item.y > d))
-                houseEditor.partSelected.push(item);
-        }
-        if (houseEditor.partSelected.length == 0)
-            houseEditor.partSelected = null;
-    };
-    HouseEditor.MoveItems = function (evt) {
-        var partInfo = world.art.house_parts[houseEditor.partSelected[0].part];
-        var x = evt.pageX - $("#houseEditor").position().left + $("#houseEditorContainer").first().scrollLeft - houseEditor.mouseOffset.X;
-        var y = evt.pageY - $("#houseEditor").position().top + $("#houseEditorContainer").first().scrollTop - houseEditor.mouseOffset.Y;
-        /*var x = (evt.pageX - $("#houseEditor").position().left) - houseEditor.mouseOffset.X;
-        var y = (evt.pageY - $("#houseEditor").position().top) - houseEditor.mouseOffset.Y;*/
-        if (houseEditor.sticky) {
-            // Search others to glue
-            var gluedX = false;
-            var gluedY = false;
-            for (var i = 0; i < houseEditor.currentHouse.parts.length && !(gluedX && gluedY); i++) {
-                var other = houseEditor.currentHouse.parts[i];
-                // Don't glue on myself
-                if (houseEditor.partSelected.indexOf(other) != -1)
-                    continue;
-                var otherInfo = world.art.house_parts[other.part];
-                var a = Math.abs(other.x - x);
-                var b = Math.abs(other.y - y);
-                var c = Math.abs((other.x + otherInfo.width) - x);
-                var d = Math.abs((other.y + otherInfo.height) - y);
-                var e = Math.abs(other.x - (x + partInfo.width));
-                var f = Math.abs(other.y - (y + partInfo.height));
-                var g = Math.abs((other.x + otherInfo.width) - (x + partInfo.width));
-                var h = Math.abs((other.y + otherInfo.height) - (y + partInfo.height));
-                if (a <= houseEditor.glueDistance && gluedX == false) {
-                    x = other.x;
-                    gluedX = true;
-                }
-                if (b <= houseEditor.glueDistance && gluedY == false) {
-                    y = other.y;
-                    gluedY = true;
-                }
-                if (c <= houseEditor.glueDistance && gluedX == false) {
-                    x = other.x + otherInfo.width;
-                    gluedX = true;
-                }
-                if (d <= houseEditor.glueDistance && gluedY == false) {
-                    y = other.y + otherInfo.height;
-                    gluedY = true;
-                }
-                if (e <= houseEditor.glueDistance && gluedX == false) {
-                    x = other.x - partInfo.width;
-                    gluedX = true;
-                }
-                if (f <= houseEditor.glueDistance && gluedY == false) {
-                    y = other.y - partInfo.height;
-                    gluedY = true;
-                }
-                if (g <= houseEditor.glueDistance && gluedX == false) {
-                    x = other.x + otherInfo.width - partInfo.width;
-                    gluedX = true;
-                }
-                if (h <= houseEditor.glueDistance && gluedY == false) {
-                    y = other.y + otherInfo.height - partInfo.height;
-                    gluedY = true;
-                }
-            }
-        }
-        x = Math.max(0, Math.min(x, 500 - partInfo.width));
-        y = Math.max(0, Math.min(y, 500 - partInfo.height));
-        var dx = x - houseEditor.partSelected[0].x;
-        var dy = y - houseEditor.partSelected[0].y;
-        for (var i = 0; i < houseEditor.partSelected.length; i++) {
-            houseEditor.partSelected[i].x += dx;
-            houseEditor.partSelected[i].y += dy;
-        }
-    };
-    HouseEditor.Draw = function () {
-        if (!houseEditor.housePartImages)
-            return;
-        if (window['mozRequestAnimationFrame'])
-            window['mozRequestAnimationFrame'](HouseEditor.Draw);
-        else if (window['requestAnimationFrame'])
-            window['requestAnimationFrame'](HouseEditor.Draw);
-        else
-            setTimeout(HouseEditor.Draw, 16);
-        var ctx = $("#houseEditor").first().getContext("2d");
-        ctx.fillStyle = "#000000";
-        ctx.fillRect(0, 0, 500, 500);
-        if (!houseEditor.currentHouse)
-            return;
-        for (var i = 0; i < houseEditor.currentHouse.parts.length; i++) {
-            var item = houseEditor.currentHouse.parts[i];
-            var part = HouseEditor.GetPart(item.part);
-            if (!part)
-                continue;
-            var partInfo = world.art.house_parts[item.part];
-            ctx.drawImage(part, partInfo.x, partInfo.y, partInfo.width, partInfo.height, item.x, item.y, partInfo.width, partInfo.height);
-        }
-        // Highlight selected parts
-        if (houseEditor.partSelected && houseEditor.partSelected.length)
-            for (var i = 0; i < houseEditor.currentHouse.parts.length; i++) {
-                var item = houseEditor.currentHouse.parts[i];
-                if (houseEditor.partSelected.indexOf(item) != -1) {
-                    var partInfo = world.art.house_parts[item.part];
-                    ctx.strokeStyle = "#8080FF";
-                    ctx.strokeRect(item.x + 0.5, item.y + 0.5, partInfo.width, partInfo.height);
-                }
-            }
-        if (houseEditor.multiSelection) {
-            ctx.strokeStyle = "#8080FF";
-            ctx.strokeRect(houseEditor.multiSelection.X + 0.5, houseEditor.multiSelection.Y + 0.5, houseEditor.multiSelection.Width, houseEditor.multiSelection.Height);
-        }
-        ctx.strokeStyle = "#FF0000";
-        ctx.strokeRect(houseEditor.currentHouse.collisionX + 0.5, houseEditor.currentHouse.collisionY + 0.5, houseEditor.currentHouse.collisionWidth, houseEditor.currentHouse.collisionHeight);
-    };
-    HouseEditor.GetPart = function (name) {
-        if (!world.art.house_parts[name])
-            return null;
-        var file = world.art.house_parts[name].file;
-        if (!houseEditor.housePartImages[file]) {
-            houseEditor.housePartImages[file] = new Image();
-            houseEditor.housePartImages[file].src = file;
-        }
-        return houseEditor.housePartImages[file];
-    };
-    HouseEditor.Resize = function () {
-        var w = $("#houseEditorContainer").width();
-        var h = $("#houseEditorContainer").height();
-    };
-    HouseEditor.SwitchSticky = function () {
-        if (houseEditor.sticky)
-            $("#stickyButton").removeClass("selectedButton");
-        else
-            $("#stickyButton").addClass("selectedButton");
-        houseEditor.sticky = !houseEditor.sticky;
-        framework.Preferences['houseSticky'] = houseEditor.sticky;
-        Framework.SavePreferences();
-    };
-    HouseEditor.DeleteSelected = function () {
-        if (!houseEditor.partSelected)
-            return;
-        for (var i = 0; i < houseEditor.currentHouse.parts.length;) {
-            if (houseEditor.partSelected.indexOf(houseEditor.currentHouse.parts[i]) != -1)
-                houseEditor.currentHouse.parts.splice(i, 1);
-            else
-                i++;
-        }
-    };
-    HouseEditor.ToFront = function () {
-        if (!houseEditor.partSelected)
-            return;
-        HouseEditor.DeleteSelected();
-        for (var i = 0; i < houseEditor.partSelected.length; i++)
-            houseEditor.currentHouse.parts.push(houseEditor.partSelected[i]);
-    };
-    HouseEditor.ToBack = function () {
-        if (!houseEditor.partSelected)
-            return;
-        HouseEditor.DeleteSelected();
-        for (var i = 0; i < houseEditor.partSelected.length; i++)
-            houseEditor.currentHouse.parts.unshift(houseEditor.partSelected[i]);
-    };
-    HouseEditor.KeyDown = function (evt) {
-        houseEditor.keys[evt.keyCode] = true;
-        //console.log(evt.keyCode);
-        HouseEditor.HandleKeys();
-    };
-    HouseEditor.KeyUp = function (evt) {
-        houseEditor.keys[evt.keyCode] = false;
-    };
-    HouseEditor.HandleKeys = function () {
-        // Up key
-        if (houseEditor.keys[38] === true || houseEditor.keys[87] === true) {
-            if (houseEditor.partSelected)
-                for (var i = 0; i < houseEditor.partSelected.length; i++)
-                    houseEditor.partSelected[i].y -= (houseEditor.keys[16] ? 5 : 1);
-        }
-        // Left key
-        if (houseEditor.keys[37] === true || houseEditor.keys[65] === true) {
-            if (houseEditor.partSelected)
-                for (var i = 0; i < houseEditor.partSelected.length; i++)
-                    houseEditor.partSelected[i].x -= (houseEditor.keys[16] ? 5 : 1);
-        }
-        // Right key
-        if (houseEditor.keys[39] === true || houseEditor.keys[68] === true) {
-            if (houseEditor.partSelected)
-                for (var i = 0; i < houseEditor.partSelected.length; i++)
-                    houseEditor.partSelected[i].x += (houseEditor.keys[16] ? 5 : 1);
-        }
-        // Down key
-        if (houseEditor.keys[40] === true || houseEditor.keys[83] === true) {
-            if (houseEditor.partSelected)
-                for (var i = 0; i < houseEditor.partSelected.length; i++)
-                    houseEditor.partSelected[i].y += (houseEditor.keys[16] ? 5 : 1);
-        }
-    };
-    HouseEditor.NewHouse = function () {
-        var nextId = 1;
-        while (world.Houses["house_" + nextId])
-            nextId++;
-        world.Houses["house_" + nextId] = {
-            collisionX: 0,
-            collisionY: 0,
-            collisionWidth: 0,
-            collisionHeight: 0,
-            parts: []
-        };
-        houseEditor.currentHouse = world.Houses["house_" + nextId];
-        houseEditor.currentHouseName = "house_" + nextId;
-        houseEditor.partSelected = [];
-        HouseEditor.UpdateHouseList();
-        SearchPanel.Update();
-    };
-    HouseEditor.DeleteHouse = function () {
-        Framework.Confirm("Are you sure you want to delete this house?", function () {
-            var oldName = houseEditor.currentHouseName;
-            delete world.Houses[houseEditor.currentHouseName];
-            houseEditor.listHouses.Select(null);
-            HouseEditor.UpdateHouseList();
-            SearchPanel.Update();
-            for (var i = 0; i < world.Zones.length; i++) {
-                var zone = world.Zones[i];
-                for (var j = 0; j < zone.MapFragments.length; j++) {
-                    var fragment = zone.MapFragments[i].Modifications;
-                    for (var k = 0; k < fragment.length;) {
-                        if (fragment[k].Action == "house" && fragment[k].Value == oldName)
-                            fragment.splice(k, 1);
-                        else
-                            k++;
-                    }
-                }
-            }
-            MapUtilities.Modify("house", oldName, null);
-        });
-    };
-    HouseEditor.CloneHouse = function () {
-        var nextId = 1;
-        while (world.Houses["house_" + nextId])
-            nextId++;
-        world.Houses["house_" + nextId] = JSON.parse(JSON.stringify(world.Houses[houseEditor.currentHouseName]));
-        houseEditor.currentHouse = world.Houses["house_" + nextId];
-        houseEditor.currentHouseName = "house_" + nextId;
-        houseEditor.partSelected = [];
-        HouseEditor.UpdateHouseList();
-        SearchPanel.Update();
-    };
-    return HouseEditor;
-}());
 var housePart = new (/** @class */ (function () {
     function class_35() {
         this.listParts = null;
@@ -20259,353 +20271,6 @@ var Logout = /** @class */ (function () {
             document.location.assign("/play.html?game=" + query.game);
     };
     return Logout;
-}());
-/// <reference path="../../Libs/codemirror.d.ts" />
-var monsterEditor = new (/** @class */ (function () {
-    function class_37() {
-        this.selectedMonster = null;
-        this.selector = null;
-        this.editor = null;
-        this.FixedParams = ["Name",
-            "Speed",
-            "BaseDamage",
-            "AttackSpeed",
-            "ProximityAttack",
-            "Art",
-            "Life"];
-    }
-    return class_37;
-}()));
-var MonsterEditor = /** @class */ (function () {
-    function MonsterEditor() {
-    }
-    MonsterEditor.Dispose = function () {
-        monsterEditor.selector.Dispose();
-        monsterEditor.editor = null;
-    };
-    MonsterEditor.IsAccessible = function () {
-        return (("" + document.location).indexOf("/maker.html") != -1 || ("" + document.location).indexOf("/demo_code_editor.html") != -1 || Main.CheckNW());
-    };
-    MonsterEditor.Recover = function () {
-        if (Main.CheckNW()) {
-            $("#helpLink").first().onclick = function () {
-                StandaloneMaker.Help($("#helpLink").prop("href"));
-                return false;
-            };
-            $("#monsterList").css("top", "5px");
-            $("#monsterParameters").css("top", "5px");
-        }
-        if (("" + document.location).indexOf("/demo_code_editor.html") != -1)
-            monsterEditor.editor = new CodeGraphEditor("baseCode", false, "text");
-        else
-            monsterEditor.editor = new CodeGraphEditor("baseCode", false);
-        monsterEditor.editor.OnChange = MonsterEditor.ChangeCode;
-        monsterEditor.selector = new ListSelector("monsterList", world.Monsters, "Name");
-        monsterEditor.selector.OnSelect = function (rowId) {
-            Framework.SetLocation({
-                action: "MonsterEditor", id: rowId === null ? null : world.Monsters[rowId].Name
-            });
-            monsterEditor.selectedMonster = world.Monsters[rowId];
-            MonsterEditor.Render();
-        };
-        if (framework.CurrentUrl.id) {
-            var found = false;
-            for (var i = 0; i < world.Monsters.length; i++) {
-                if (world.Monsters[i].Name == framework.CurrentUrl.id) {
-                    monsterEditor.selector.Select(i);
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                Framework.SetLocation({
-                    action: "MonsterEditor"
-                });
-                monsterEditor.selector.Select(0);
-                return;
-            }
-        }
-        else
-            monsterEditor.selector.Select(0);
-        if (("" + document.location).indexOf("/demo_code_editor.html") !== -1) {
-            $("#monsterParameters").hide();
-            $("#monsterList").hide();
-            $("#monsterListCommands").hide();
-            $("#monsterCommands").hide();
-            $("#monsterParamCommands").hide();
-            $(".elementCodeWarning").css("left", "5px").css("top", "5px").css("right", "5px").css("width", "auto");
-            $("#codeContainer").css("left", "5px").css("top", "25px").css("right", "5px").css("bottom", "5px");
-            $("#helpLink").hide();
-            $(".CodeMirror").css("height", "100%");
-        }
-    };
-    MonsterEditor.Render = function () {
-        $("#baseCode").val(monsterEditor.selectedMonster.SourceCode.trim());
-        monsterEditor.editor.SetCode(monsterEditor.selectedMonster.SourceCode.trim());
-        $(".elementCodeWarning").hide();
-        var html = "";
-        html += "<h1>" + monsterEditor.selectedMonster.Name + "</h1>";
-        html += "<table>";
-        for (var item in monsterEditor.selectedMonster.Code.CodeVariables) {
-            html += "<tr><td>";
-            if (monsterEditor.FixedParams.indexOf(monsterEditor.selectedMonster.Code.CodeVariables[item].name) == -1)
-                html += "<div class='dialogBlockDelete' onclick='MonsterEditor.DeleteParam(\"" + item + "\")'>X</div>";
-            html += monsterEditor.selectedMonster.Code.CodeVariables[item].name.title() + ":";
-            html += "</td><td>";
-            var val = monsterEditor.selectedMonster.Code.CodeVariables[item].value;
-            switch (monsterEditor.selectedMonster.Code.CodeVariables[item].type) {
-                case "boolean":
-                    html += "<select id='var_" + item + "' onkeyup='MonsterEditor.ChangeVariable(\"" + item + "\")'><option" + (val.trim().toLowerCase() == "true" ? " selected" : "") + ">true</option><option" + (val.trim().toLowerCase() == "true" ? "" : " selected") + ">false</option></select>";
-                    break;
-                case "monster_art":
-                    html += "<select id='var_" + item + "' onchange='MonsterEditor.ChangeVariable(\"" + item + "\")'>";
-                    var found = false;
-                    var names = [];
-                    for (var mName in world.art.characters)
-                        names.push(mName);
-                    names.sort();
-                    for (var i = 0; i < names.length; i++) {
-                        html += "<option value='" + names[i].htmlEntities() + "'" + (val == names[i] ? " selected" : "") + ">" + names[i] + "</option>";
-                    }
-                    if (!found)
-                        html += "<option value='" + val.htmlEntities + "' selected>" + val + "</option>";
-                    html += "</select>";
-                    break;
-                default:
-                    if (item == "name" && monsterEditor.selectedMonster.Name.toLowerCase() == "defaultmonster")
-                        html += val.htmlEntities();
-                    else
-                        html += "<input type='text' value='" + val.htmlEntities() + "' id='var_" + item + "' onkeyup='MonsterEditor.ChangeVariable(\"" + item + "\")'>";
-            }
-            html += "</td></tr>";
-        }
-        html += "</table>";
-        if (monsterEditor.selectedMonster.ItemDrop && monsterEditor.selectedMonster.ItemDrop.length) {
-            html += "<h2>Item drops:</h2>";
-            html += "<table>";
-            html += "<thead><tr><td>&nbsp;</td><td>Name:</td><td>Quantity:</td><td>Probability:</td></tr></thead>";
-            /*monsterEditor.selectedMonster.ItemDrop.sort((a, b) =>
-            {
-                if (a.Name > b.Name)
-                    return 1;
-                if (a.Name < b.Name)
-                    return -1;
-                return 0;
-            });*/
-            var names = [];
-            for (var i = 0; i < world.InventoryObjects.length; i++)
-                names.push(world.InventoryObjects[i].Name);
-            names.sort();
-            for (var i = 0; i < monsterEditor.selectedMonster.ItemDrop.length; i++) {
-                html += "<tr>";
-                html += "<td><div class='button' onclick='MonsterEditor.RemoveItemDrop(" + i + ")'>Remove</div></td>";
-                html += "<td><select id='itemdrop_" + i + "' onchange='MonsterEditor.ChangeItemDrop(" + i + ",\"itemdrop_\",\"Name\")'>";
-                for (var j = 0; j < names.length; j++)
-                    html += "<option value='" + names[j].htmlEntities() + "'" + (names[j] == monsterEditor.selectedMonster.ItemDrop[i].Name ? " selected" : "") + ">" + names[j] + "</option>";
-                html += "</select></td>";
-                html += "<td><input type='text' id='itemdrop_qt_" + i + "' value='" + monsterEditor.selectedMonster.ItemDrop[i].Quantity + "' onkeyup='MonsterEditor.ChangeItemDrop(" + i + ",\"itemdrop_qt_\",\"Quantity\")'></td>";
-                html += "<td><input type='text' id='itemdrop_prob_" + i + "' value='" + monsterEditor.selectedMonster.ItemDrop[i].Probability + "' onkeyup='MonsterEditor.ChangeItemDrop(" + i + ",\"itemdrop_prob_\",\"Probability\")'></td>";
-                html += "</tr>";
-            }
-            html += "</table>";
-        }
-        if (monsterEditor.selectedMonster.StatDrop && monsterEditor.selectedMonster.StatDrop.length) {
-            html += "<h2>Stat drops:</h2>";
-            html += "<table>";
-            html += "<thead><tr><td>&nbsp;</td><td>Name:</td><td>Quantity:</td><td>Probability:</td></tr></thead>";
-            /*monsterEditor.selectedMonster.StatDrop.sort((a, b) =>
-            {
-                if (a.Name > b.Name)
-                    return 1;
-                if (a.Name < b.Name)
-                    return -1;
-                return 0;
-            });*/
-            names = [];
-            for (var i = 0; i < world.Stats.length; i++)
-                names.push(world.Stats[i].Name);
-            names.sort();
-            for (var i = 0; i < monsterEditor.selectedMonster.StatDrop.length; i++) {
-                html += "<tr>";
-                html += "<td><div class='button' onclick='MonsterEditor.RemoveStatDrop(" + i + ")'>Remove</div></td>";
-                html += "<td><select id='statdrop_" + i + "' onchange='MonsterEditor.ChangeStatDrop(" + i + ",\"statdrop_\",\"Name\")'>";
-                for (var j = 0; j < names.length; j++)
-                    html += "<option value='" + names[j].htmlEntities() + "'" + (names[j] == monsterEditor.selectedMonster.StatDrop[i].Name ? " selected" : "") + ">" + names[j] + "</option>";
-                html += "</select></td>";
-                html += "<td><input type='text' id='statdrop_qt_" + i + "' value='" + monsterEditor.selectedMonster.StatDrop[i].Quantity + "' onkeyup='MonsterEditor.ChangeStatDrop(" + i + ",\"statdrop_qt_\",\"Quantity\")'></td>";
-                html += "<td><input type='text' id='statdrop_prob_" + i + "' value='" + monsterEditor.selectedMonster.StatDrop[i].Probability + "' onkeyup='MonsterEditor.ChangeStatDrop(" + i + ",\"statdrop_prob_\",\"Probability\")'></td>";
-                html += "</tr>";
-            }
-            html += "</table>";
-        }
-        $("#monsterParameters").html(html);
-    };
-    MonsterEditor.RemoveItemDrop = function (id) {
-        monsterEditor.selectedMonster.ItemDrop.splice(id, 1);
-        MonsterEditor.Render();
-    };
-    MonsterEditor.ChangeItemDrop = function (id, field, prop) {
-        if (typeof monsterEditor.selectedMonster.ItemDrop[id][prop] == "number") {
-            var v = parseFloat($("#" + field + id).val());
-            if (!isNaN(v))
-                monsterEditor.selectedMonster.ItemDrop[id][prop] = v;
-        }
-        else
-            monsterEditor.selectedMonster.ItemDrop[id][prop] = $("#" + field + id).val();
-    };
-    MonsterEditor.RemoveStatDrop = function (id) {
-        monsterEditor.selectedMonster.StatDrop.splice(id, 1);
-        MonsterEditor.Render();
-    };
-    MonsterEditor.ChangeStatDrop = function (id, field, prop) {
-        if (typeof monsterEditor.selectedMonster.StatDrop[id][prop] == "number") {
-            var v = parseFloat($("#" + field + id).val());
-            if (!isNaN(v))
-                monsterEditor.selectedMonster.StatDrop[id][prop] = v;
-        }
-        else
-            monsterEditor.selectedMonster.StatDrop[id][prop] = $("#" + field + id).val();
-    };
-    MonsterEditor.DeleteParam = function (name) {
-        delete monsterEditor.selectedMonster.Code.CodeVariables[name];
-        monsterEditor.selectedMonster.UpdateCodeVariables();
-        MonsterEditor.Render();
-    };
-    MonsterEditor.ChangeVariable = function (name) {
-        if (monsterEditor.selectedMonster.Name.toLowerCase() == "defaultmonster" && name == "name")
-            return;
-        var val = $("#var_" + name).val().trim();
-        if (name == "name" && val != "") {
-            if ((val.match(databaseNameRule) || !val || val.length < 1) || (world.GetMonster(val) && world.GetMonster(val) != monsterEditor.selectedMonster)) {
-                $("#var_name").css('backgroundColor', '#FFE0E0');
-                return;
-            }
-            $("#var_name").css('backgroundColor', '');
-            var oldName = monsterEditor.selectedMonster.Name;
-            var newName = val;
-            monsterEditor.selectedMonster.Name = val;
-            $("#monsterParameters > h1").html(val);
-            monsterEditor.selector.UpdateList();
-            for (var i = 0; i < world.Zones.length; i++) {
-                for (var j = 0; j < world.Zones[i].Monsters.length; j++) {
-                    if (world.Zones[i].Monsters[j].Name == oldName)
-                        world.Zones[i].Monsters[j].Name = newName;
-                }
-            }
-            MapUtilities.Modify("monster", oldName, newName);
-            SearchPanel.Update();
-        }
-        monsterEditor.selectedMonster.Code.CodeVariables[name].value = val;
-        monsterEditor.selectedMonster.UpdateCodeVariables();
-    };
-    MonsterEditor.Delete = function () {
-        if (monsterEditor.selectedMonster.Name.toLowerCase() == "defaultmonster") {
-            Framework.Alert("You cannot delete the DefaultMonster.");
-            return;
-        }
-        Framework.Confirm("Are you sure you want to delete this monster?", function () {
-            for (var i = 0; i < world.Monsters.length; i++) {
-                if (world.Monsters[i] == monsterEditor.selectedMonster) {
-                    world.Monsters.splice(i, 1);
-                    break;
-                }
-            }
-            var oldName = monsterEditor.selectedMonster.Name;
-            for (var i = 0; i < world.Zones.length; i++) {
-                for (var j = 0; j < world.Zones[i].Monsters.length;) {
-                    if (world.Zones[i].Monsters[j].Name == oldName)
-                        world.Zones[i].Monsters.splice(j, 1);
-                    else
-                        j++;
-                }
-            }
-            monsterEditor.selector.UpdateList();
-            monsterEditor.selector.Select(0);
-            MapUtilities.Modify("monster", oldName, null);
-            SearchPanel.Update();
-        });
-    };
-    MonsterEditor.Add = function () {
-        var nextId = world.Monsters.length;
-        while (world.GetMonster("monster_" + nextId))
-            nextId++;
-        var code = "/// Name: monster_" + nextId + ",string\n";
-        var defMonster = world.GetMonster("DefaultMonster");
-        // Recover the default code variables
-        for (var i in defMonster.Code.CodeVariables) {
-            if (i == "name")
-                continue;
-            code += "/// " + defMonster.Code.CodeVariables[i].name + ": " + defMonster.Code.CodeVariables[i].value + "," + defMonster.Code.CodeVariables[i].type + "\n";
-        }
-        // Find the name of the first art for a monster
-        var firstMonster = "";
-        for (var i in world.art.characters) {
-            firstMonster = i;
-            break;
-        }
-        code += "/// Art: " + i + ",monster_art\n";
-        // Recover the stats applied to monsters
-        for (var j = 0; j < world.Stats.length; j++) {
-            if (!world.Stats[j].MonsterStat)
-                continue;
-            code += "/// " + world.Stats[j].Name + ": " + world.Stats[j].DefaultValue + ",number\n";
-        }
-        monsterEditor.selectedMonster = KnownMonster.Rebuild(code);
-        monsterEditor.selectedMonster.DefaultMonster = defMonster;
-        world.Monsters.push(monsterEditor.selectedMonster);
-        monsterEditor.selector.UpdateList();
-        monsterEditor.selector.Select(world.Monsters.length - 1);
-        SearchPanel.Update();
-    };
-    MonsterEditor.Clone = function () {
-        if (monsterEditor.selectedMonster.Name.toLowerCase() == "defaultmonster")
-            return;
-        var nextId = world.Monsters.length;
-        while (world.GetMonster("monster_" + nextId))
-            nextId++;
-        var code = monsterEditor.selectedMonster.FullCode();
-        code = code.replace(/^\/\/\/\s*name:\s.*$/gim, "/// Name: monster_" + nextId + ",string\n");
-        var defMonster = world.GetMonster("DefaultMonster");
-        monsterEditor.selectedMonster = KnownMonster.Rebuild(code);
-        monsterEditor.selectedMonster.DefaultMonster = defMonster;
-        world.Monsters.push(monsterEditor.selectedMonster);
-        monsterEditor.selector.UpdateList();
-        monsterEditor.selector.Select(world.Monsters.length - 1);
-        SearchPanel.Update();
-    };
-    MonsterEditor.ChangeCode = function () {
-        $(".elementCodeWarning").hide();
-        var code = monsterEditor.editor.GetCode();
-        try {
-            monsterEditor.selectedMonster.Parse(code + "\n" + monsterEditor.selectedMonster.CodeVariables());
-        }
-        catch (ex) {
-        }
-    };
-    MonsterEditor.AddParam = function () {
-        Framework.Prompt("Enter the new parameter name:", "", function (newValue) {
-            if (!newValue.match(/^[a-z]+$/i)) {
-                Framework.Alert("Only letters are acceptable as parameter name.");
-                return;
-            }
-            monsterEditor.selectedMonster.Code.CodeVariables[newValue.toLowerCase()] = { name: newValue, type: "string", value: "" };
-            monsterEditor.selectedMonster.UpdateCodeVariables();
-            MonsterEditor.Render();
-        });
-    };
-    MonsterEditor.AddStat = function () {
-        if (monsterEditor.selectedMonster.Name == "DefaultMonster")
-            return;
-        monsterEditor.selectedMonster.StatDrop.push({ Name: world.Stats[0].Name, Quantity: 1, Probability: 100 });
-        MonsterEditor.Render();
-    };
-    MonsterEditor.AddItem = function () {
-        if (monsterEditor.selectedMonster.Name == "DefaultMonster")
-            return;
-        monsterEditor.selectedMonster.ItemDrop.push({ Name: world.InventoryObjects[0].Name, Quantity: 1, Probability: 100 });
-        MonsterEditor.Render();
-    };
-    return MonsterEditor;
 }());
 var MapEditor = /** @class */ (function () {
     function MapEditor() {
@@ -22598,7 +22263,7 @@ var MapEditor = /** @class */ (function () {
     return MapEditor;
 }());
 var mapEditor = new (/** @class */ (function () {
-    function class_38() {
+    function class_37() {
         this.currentCellTile = 0;
         this.currentCellType = "water";
         this.currentObject = "flower_1";
@@ -22620,12 +22285,12 @@ var mapEditor = new (/** @class */ (function () {
         this.renderRectrangle = null;
         this.repeatTimer = 0;
     }
-    return class_38;
+    return class_37;
 }()));
 var moduleManager = new (/** @class */ (function () {
-    function class_39() {
+    function class_38() {
     }
-    return class_39;
+    return class_38;
 }()));
 var ModuleManager = /** @class */ (function () {
     function ModuleManager() {
@@ -22943,9 +22608,9 @@ var ModuleManager = /** @class */ (function () {
     return ModuleManager;
 }());
 var npcEditor = new (/** @class */ (function () {
-    function class_40() {
+    function class_39() {
     }
-    return class_40;
+    return class_39;
 }()));
 var NPCEditor = /** @class */ (function () {
     function NPCEditor() {
@@ -23389,11 +23054,697 @@ var NPCShopEditor = /** @class */ (function () {
     };
     return NPCShopEditor;
 }());
-var objectEditor = new (/** @class */ (function () {
+/// <reference path="../../Libs/codemirror.d.ts" />
+var monsterEditor = new (/** @class */ (function () {
+    function class_40() {
+        this.selectedMonster = null;
+        this.selector = null;
+        this.editor = null;
+        this.FixedParams = ["Name",
+            "Speed",
+            "BaseDamage",
+            "AttackSpeed",
+            "ProximityAttack",
+            "Art",
+            "Life"];
+    }
+    return class_40;
+}()));
+var MonsterEditor = /** @class */ (function () {
+    function MonsterEditor() {
+    }
+    MonsterEditor.Dispose = function () {
+        monsterEditor.selector.Dispose();
+        monsterEditor.editor = null;
+    };
+    MonsterEditor.IsAccessible = function () {
+        return (("" + document.location).indexOf("/maker.html") != -1 || ("" + document.location).indexOf("/demo_code_editor.html") != -1 || Main.CheckNW());
+    };
+    MonsterEditor.Recover = function () {
+        if (Main.CheckNW()) {
+            $("#helpLink").first().onclick = function () {
+                StandaloneMaker.Help($("#helpLink").prop("href"));
+                return false;
+            };
+            $("#monsterList").css("top", "5px");
+            $("#monsterParameters").css("top", "5px");
+        }
+        if (("" + document.location).indexOf("/demo_code_editor.html") != -1)
+            monsterEditor.editor = new CodeGraphEditor("baseCode", false, "text");
+        else
+            monsterEditor.editor = new CodeGraphEditor("baseCode", false);
+        monsterEditor.editor.OnChange = MonsterEditor.ChangeCode;
+        monsterEditor.selector = new ListSelector("monsterList", world.Monsters, "Name");
+        monsterEditor.selector.OnSelect = function (rowId) {
+            Framework.SetLocation({
+                action: "MonsterEditor", id: rowId === null ? null : world.Monsters[rowId].Name
+            });
+            monsterEditor.selectedMonster = world.Monsters[rowId];
+            MonsterEditor.Render();
+        };
+        if (framework.CurrentUrl.id) {
+            var found = false;
+            for (var i = 0; i < world.Monsters.length; i++) {
+                if (world.Monsters[i].Name == framework.CurrentUrl.id) {
+                    monsterEditor.selector.Select(i);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                Framework.SetLocation({
+                    action: "MonsterEditor"
+                });
+                monsterEditor.selector.Select(0);
+                return;
+            }
+        }
+        else
+            monsterEditor.selector.Select(0);
+        if (("" + document.location).indexOf("/demo_code_editor.html") !== -1) {
+            $("#monsterParameters").hide();
+            $("#monsterList").hide();
+            $("#monsterListCommands").hide();
+            $("#monsterCommands").hide();
+            $("#monsterParamCommands").hide();
+            $(".elementCodeWarning").css("left", "5px").css("top", "5px").css("right", "5px").css("width", "auto");
+            $("#codeContainer").css("left", "5px").css("top", "25px").css("right", "5px").css("bottom", "5px");
+            $("#helpLink").hide();
+            $(".CodeMirror").css("height", "100%");
+        }
+    };
+    MonsterEditor.Render = function () {
+        $("#baseCode").val(monsterEditor.selectedMonster.SourceCode.trim());
+        monsterEditor.editor.SetCode(monsterEditor.selectedMonster.SourceCode.trim());
+        $(".elementCodeWarning").hide();
+        var html = "";
+        html += "<h1>" + monsterEditor.selectedMonster.Name + "</h1>";
+        html += "<table>";
+        for (var item in monsterEditor.selectedMonster.Code.CodeVariables) {
+            html += "<tr><td>";
+            if (monsterEditor.FixedParams.indexOf(monsterEditor.selectedMonster.Code.CodeVariables[item].name) == -1)
+                html += "<div class='dialogBlockDelete' onclick='MonsterEditor.DeleteParam(\"" + item + "\")'>X</div>";
+            html += monsterEditor.selectedMonster.Code.CodeVariables[item].name.title() + ":";
+            html += "</td><td>";
+            var val = monsterEditor.selectedMonster.Code.CodeVariables[item].value;
+            switch (monsterEditor.selectedMonster.Code.CodeVariables[item].type) {
+                case "boolean":
+                    html += "<select id='var_" + item + "' onkeyup='MonsterEditor.ChangeVariable(\"" + item + "\")'><option" + (val.trim().toLowerCase() == "true" ? " selected" : "") + ">true</option><option" + (val.trim().toLowerCase() == "true" ? "" : " selected") + ">false</option></select>";
+                    break;
+                case "monster_art":
+                    html += "<select id='var_" + item + "' onchange='MonsterEditor.ChangeVariable(\"" + item + "\")'>";
+                    var found = false;
+                    var names = [];
+                    for (var mName in world.art.characters)
+                        names.push(mName);
+                    names.sort();
+                    for (var i = 0; i < names.length; i++) {
+                        html += "<option value='" + names[i].htmlEntities() + "'" + (val == names[i] ? " selected" : "") + ">" + names[i] + "</option>";
+                    }
+                    if (!found)
+                        html += "<option value='" + val.htmlEntities + "' selected>" + val + "</option>";
+                    html += "</select>";
+                    break;
+                default:
+                    if (item == "name" && monsterEditor.selectedMonster.Name.toLowerCase() == "defaultmonster")
+                        html += val.htmlEntities();
+                    else
+                        html += "<input type='text' value='" + val.htmlEntities() + "' id='var_" + item + "' onkeyup='MonsterEditor.ChangeVariable(\"" + item + "\")'>";
+            }
+            html += "</td></tr>";
+        }
+        html += "</table>";
+        if (monsterEditor.selectedMonster.ItemDrop && monsterEditor.selectedMonster.ItemDrop.length) {
+            html += "<h2>Item drops:</h2>";
+            html += "<table>";
+            html += "<thead><tr><td>&nbsp;</td><td>Name:</td><td>Quantity:</td><td>Probability:</td></tr></thead>";
+            /*monsterEditor.selectedMonster.ItemDrop.sort((a, b) =>
+            {
+                if (a.Name > b.Name)
+                    return 1;
+                if (a.Name < b.Name)
+                    return -1;
+                return 0;
+            });*/
+            var names = [];
+            for (var i = 0; i < world.InventoryObjects.length; i++)
+                names.push(world.InventoryObjects[i].Name);
+            names.sort();
+            for (var i = 0; i < monsterEditor.selectedMonster.ItemDrop.length; i++) {
+                html += "<tr>";
+                html += "<td><div class='button' onclick='MonsterEditor.RemoveItemDrop(" + i + ")'>Remove</div></td>";
+                html += "<td><select id='itemdrop_" + i + "' onchange='MonsterEditor.ChangeItemDrop(" + i + ",\"itemdrop_\",\"Name\")'>";
+                for (var j = 0; j < names.length; j++)
+                    html += "<option value='" + names[j].htmlEntities() + "'" + (names[j] == monsterEditor.selectedMonster.ItemDrop[i].Name ? " selected" : "") + ">" + names[j] + "</option>";
+                html += "</select></td>";
+                html += "<td><input type='text' id='itemdrop_qt_" + i + "' value='" + monsterEditor.selectedMonster.ItemDrop[i].Quantity + "' onkeyup='MonsterEditor.ChangeItemDrop(" + i + ",\"itemdrop_qt_\",\"Quantity\")'></td>";
+                html += "<td><input type='text' id='itemdrop_prob_" + i + "' value='" + monsterEditor.selectedMonster.ItemDrop[i].Probability + "' onkeyup='MonsterEditor.ChangeItemDrop(" + i + ",\"itemdrop_prob_\",\"Probability\")'></td>";
+                html += "</tr>";
+            }
+            html += "</table>";
+        }
+        if (monsterEditor.selectedMonster.StatDrop && monsterEditor.selectedMonster.StatDrop.length) {
+            html += "<h2>Stat drops:</h2>";
+            html += "<table>";
+            html += "<thead><tr><td>&nbsp;</td><td>Name:</td><td>Quantity:</td><td>Probability:</td></tr></thead>";
+            /*monsterEditor.selectedMonster.StatDrop.sort((a, b) =>
+            {
+                if (a.Name > b.Name)
+                    return 1;
+                if (a.Name < b.Name)
+                    return -1;
+                return 0;
+            });*/
+            names = [];
+            for (var i = 0; i < world.Stats.length; i++)
+                names.push(world.Stats[i].Name);
+            names.sort();
+            for (var i = 0; i < monsterEditor.selectedMonster.StatDrop.length; i++) {
+                html += "<tr>";
+                html += "<td><div class='button' onclick='MonsterEditor.RemoveStatDrop(" + i + ")'>Remove</div></td>";
+                html += "<td><select id='statdrop_" + i + "' onchange='MonsterEditor.ChangeStatDrop(" + i + ",\"statdrop_\",\"Name\")'>";
+                for (var j = 0; j < names.length; j++)
+                    html += "<option value='" + names[j].htmlEntities() + "'" + (names[j] == monsterEditor.selectedMonster.StatDrop[i].Name ? " selected" : "") + ">" + names[j] + "</option>";
+                html += "</select></td>";
+                html += "<td><input type='text' id='statdrop_qt_" + i + "' value='" + monsterEditor.selectedMonster.StatDrop[i].Quantity + "' onkeyup='MonsterEditor.ChangeStatDrop(" + i + ",\"statdrop_qt_\",\"Quantity\")'></td>";
+                html += "<td><input type='text' id='statdrop_prob_" + i + "' value='" + monsterEditor.selectedMonster.StatDrop[i].Probability + "' onkeyup='MonsterEditor.ChangeStatDrop(" + i + ",\"statdrop_prob_\",\"Probability\")'></td>";
+                html += "</tr>";
+            }
+            html += "</table>";
+        }
+        $("#monsterParameters").html(html);
+    };
+    MonsterEditor.RemoveItemDrop = function (id) {
+        monsterEditor.selectedMonster.ItemDrop.splice(id, 1);
+        MonsterEditor.Render();
+    };
+    MonsterEditor.ChangeItemDrop = function (id, field, prop) {
+        if (typeof monsterEditor.selectedMonster.ItemDrop[id][prop] == "number") {
+            var v = parseFloat($("#" + field + id).val());
+            if (!isNaN(v))
+                monsterEditor.selectedMonster.ItemDrop[id][prop] = v;
+        }
+        else
+            monsterEditor.selectedMonster.ItemDrop[id][prop] = $("#" + field + id).val();
+    };
+    MonsterEditor.RemoveStatDrop = function (id) {
+        monsterEditor.selectedMonster.StatDrop.splice(id, 1);
+        MonsterEditor.Render();
+    };
+    MonsterEditor.ChangeStatDrop = function (id, field, prop) {
+        if (typeof monsterEditor.selectedMonster.StatDrop[id][prop] == "number") {
+            var v = parseFloat($("#" + field + id).val());
+            if (!isNaN(v))
+                monsterEditor.selectedMonster.StatDrop[id][prop] = v;
+        }
+        else
+            monsterEditor.selectedMonster.StatDrop[id][prop] = $("#" + field + id).val();
+    };
+    MonsterEditor.DeleteParam = function (name) {
+        delete monsterEditor.selectedMonster.Code.CodeVariables[name];
+        monsterEditor.selectedMonster.UpdateCodeVariables();
+        MonsterEditor.Render();
+    };
+    MonsterEditor.ChangeVariable = function (name) {
+        if (monsterEditor.selectedMonster.Name.toLowerCase() == "defaultmonster" && name == "name")
+            return;
+        var val = $("#var_" + name).val().trim();
+        if (name == "name" && val != "") {
+            if ((val.match(databaseNameRule) || !val || val.length < 1) || (world.GetMonster(val) && world.GetMonster(val) != monsterEditor.selectedMonster)) {
+                $("#var_name").css('backgroundColor', '#FFE0E0');
+                return;
+            }
+            $("#var_name").css('backgroundColor', '');
+            var oldName = monsterEditor.selectedMonster.Name;
+            var newName = val;
+            monsterEditor.selectedMonster.Name = val;
+            $("#monsterParameters > h1").html(val);
+            monsterEditor.selector.UpdateList();
+            for (var i = 0; i < world.Zones.length; i++) {
+                for (var j = 0; j < world.Zones[i].Monsters.length; j++) {
+                    if (world.Zones[i].Monsters[j].Name == oldName)
+                        world.Zones[i].Monsters[j].Name = newName;
+                }
+            }
+            MapUtilities.Modify("monster", oldName, newName);
+            SearchPanel.Update();
+        }
+        monsterEditor.selectedMonster.Code.CodeVariables[name].value = val;
+        monsterEditor.selectedMonster.UpdateCodeVariables();
+    };
+    MonsterEditor.Delete = function () {
+        if (monsterEditor.selectedMonster.Name.toLowerCase() == "defaultmonster") {
+            Framework.Alert("You cannot delete the DefaultMonster.");
+            return;
+        }
+        Framework.Confirm("Are you sure you want to delete this monster?", function () {
+            for (var i = 0; i < world.Monsters.length; i++) {
+                if (world.Monsters[i] == monsterEditor.selectedMonster) {
+                    world.Monsters.splice(i, 1);
+                    break;
+                }
+            }
+            var oldName = monsterEditor.selectedMonster.Name;
+            for (var i = 0; i < world.Zones.length; i++) {
+                for (var j = 0; j < world.Zones[i].Monsters.length;) {
+                    if (world.Zones[i].Monsters[j].Name == oldName)
+                        world.Zones[i].Monsters.splice(j, 1);
+                    else
+                        j++;
+                }
+            }
+            monsterEditor.selector.UpdateList();
+            monsterEditor.selector.Select(0);
+            MapUtilities.Modify("monster", oldName, null);
+            SearchPanel.Update();
+        });
+    };
+    MonsterEditor.Add = function () {
+        var nextId = world.Monsters.length;
+        while (world.GetMonster("monster_" + nextId))
+            nextId++;
+        var code = "/// Name: monster_" + nextId + ",string\n";
+        var defMonster = world.GetMonster("DefaultMonster");
+        // Recover the default code variables
+        for (var i in defMonster.Code.CodeVariables) {
+            if (i == "name")
+                continue;
+            code += "/// " + defMonster.Code.CodeVariables[i].name + ": " + defMonster.Code.CodeVariables[i].value + "," + defMonster.Code.CodeVariables[i].type + "\n";
+        }
+        // Find the name of the first art for a monster
+        var firstMonster = "";
+        for (var i in world.art.characters) {
+            firstMonster = i;
+            break;
+        }
+        code += "/// Art: " + i + ",monster_art\n";
+        // Recover the stats applied to monsters
+        for (var j = 0; j < world.Stats.length; j++) {
+            if (!world.Stats[j].MonsterStat)
+                continue;
+            code += "/// " + world.Stats[j].Name + ": " + world.Stats[j].DefaultValue + ",number\n";
+        }
+        monsterEditor.selectedMonster = KnownMonster.Rebuild(code);
+        monsterEditor.selectedMonster.DefaultMonster = defMonster;
+        world.Monsters.push(monsterEditor.selectedMonster);
+        monsterEditor.selector.UpdateList();
+        monsterEditor.selector.Select(world.Monsters.length - 1);
+        SearchPanel.Update();
+    };
+    MonsterEditor.Clone = function () {
+        if (monsterEditor.selectedMonster.Name.toLowerCase() == "defaultmonster")
+            return;
+        var nextId = world.Monsters.length;
+        while (world.GetMonster("monster_" + nextId))
+            nextId++;
+        var code = monsterEditor.selectedMonster.FullCode();
+        code = code.replace(/^\/\/\/\s*name:\s.*$/gim, "/// Name: monster_" + nextId + ",string\n");
+        var defMonster = world.GetMonster("DefaultMonster");
+        monsterEditor.selectedMonster = KnownMonster.Rebuild(code);
+        monsterEditor.selectedMonster.DefaultMonster = defMonster;
+        world.Monsters.push(monsterEditor.selectedMonster);
+        monsterEditor.selector.UpdateList();
+        monsterEditor.selector.Select(world.Monsters.length - 1);
+        SearchPanel.Update();
+    };
+    MonsterEditor.ChangeCode = function () {
+        $(".elementCodeWarning").hide();
+        var code = monsterEditor.editor.GetCode();
+        try {
+            monsterEditor.selectedMonster.Parse(code + "\n" + monsterEditor.selectedMonster.CodeVariables());
+        }
+        catch (ex) {
+        }
+    };
+    MonsterEditor.AddParam = function () {
+        Framework.Prompt("Enter the new parameter name:", "", function (newValue) {
+            if (!newValue.match(/^[a-z]+$/i)) {
+                Framework.Alert("Only letters are acceptable as parameter name.");
+                return;
+            }
+            monsterEditor.selectedMonster.Code.CodeVariables[newValue.toLowerCase()] = { name: newValue, type: "string", value: "" };
+            monsterEditor.selectedMonster.UpdateCodeVariables();
+            MonsterEditor.Render();
+        });
+    };
+    MonsterEditor.AddStat = function () {
+        if (monsterEditor.selectedMonster.Name == "DefaultMonster")
+            return;
+        monsterEditor.selectedMonster.StatDrop.push({ Name: world.Stats[0].Name, Quantity: 1, Probability: 100 });
+        MonsterEditor.Render();
+    };
+    MonsterEditor.AddItem = function () {
+        if (monsterEditor.selectedMonster.Name == "DefaultMonster")
+            return;
+        monsterEditor.selectedMonster.ItemDrop.push({ Name: world.InventoryObjects[0].Name, Quantity: 1, Probability: 100 });
+        MonsterEditor.Render();
+    };
+    return MonsterEditor;
+}());
+var objectTypeEditor = new (/** @class */ (function () {
     function class_41() {
         this.editor = null;
     }
     return class_41;
+}()));
+var ObjectTypeEditor = /** @class */ (function () {
+    function ObjectTypeEditor() {
+    }
+    ObjectTypeEditor.Dispose = function () {
+        if (objectTypeEditor.listObjectType)
+            objectTypeEditor.listObjectType.Dispose();
+        objectTypeEditor.listObjectType = null;
+        $(window).unbind("resize", ObjectTypeEditor.Resize);
+    };
+    ObjectTypeEditor.IsAccessible = function () {
+        return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
+    };
+    ObjectTypeEditor.Recover = function () {
+        if (Main.CheckNW()) {
+            $("#helpLink").first().onclick = function () {
+                StandaloneMaker.Help($("#helpLink").prop("href"));
+                return false;
+            };
+            $("#listObjectType").css("top", "5px");
+            $("#objectTypeDetails").css("top", "5px");
+        }
+        objectTypeEditor.listObjectType = new ListSelector("listObjectType", world.InventoryObjectTypes, "Name");
+        objectTypeEditor.listObjectType.OnSelect = ObjectTypeEditor.Select;
+        $(window).bind("resize", ObjectTypeEditor.Resize);
+        dialogCondition.currentEditor = "ObjectTypeEditor";
+        dialogAction.currentEditor = "ObjectTypeEditor";
+        if (framework.CurrentUrl.id) {
+            var found = false;
+            for (var i = 0; i < world.InventoryObjectTypes.length; i++) {
+                if (world.InventoryObjectTypes[i].Name == framework.CurrentUrl.id) {
+                    objectTypeEditor.listObjectType.Select(i);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                Framework.SetLocation({
+                    action: "ObjectTypeEditor"
+                });
+                objectTypeEditor.listObjectType.Select(null);
+                return;
+            }
+        }
+        else
+            objectTypeEditor.listObjectType.Select(null);
+    };
+    ObjectTypeEditor.Resize = function () {
+        try {
+            $("#obj_codecontainer").width($("#objectTypeDetails table tr > td:nth-child(2)").width() - 3);
+        }
+        catch (ex) {
+        }
+    };
+    ObjectTypeEditor.Select = function (rowId) {
+        Framework.SetLocation({
+            action: "ObjectTypeEditor", id: rowId === null ? null : world.InventoryObjectTypes[rowId].Name
+        });
+        if (rowId < 0 || rowId === null) {
+            objectTypeEditor.selected = null;
+            $("#objectTypeDetails").html("");
+            return;
+        }
+        objectTypeEditor.selected = rowId;
+        ObjectTypeEditor.Display();
+    };
+    ObjectTypeEditor.Display = function () {
+        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
+        var html = "";
+        html = "<h1>" + objectType.Name + "</h1>";
+        html += "<table>";
+        html += "<tr><td>Name:</td><td><input type='text' id='obj_name' value='" + objectType.Name.htmlEntities() + "' onkeyup='ObjectTypeEditor.Change(\"Name\")'></td></tr>";
+        html += "<tr><td>Group:</td><td><input type='text' id='obj_group' value='" + objectType.Group.htmlEntities() + "' onkeyup='ObjectTypeEditor.Change(\"Group\")'></td></tr>";
+        for (var i = 0; i < objectType.Parameters.length; i++) {
+            html += "<tr><td><input id='param_name_" + i + "' type='text' value='" + objectType.Parameters[i].Name + "' onkeyup='ObjectTypeEditor.ChangeParam(" + i + ",\"Name\");'></td>";
+            html += "<td><input  id='param_defaultvalue_" + i + "' type='text' value='" + objectType.Parameters[i].DefaultValue + "' onkeyup='ObjectTypeEditor.ChangeParam(" + i + ",\"DefaultValue\");'></td>";
+            html += "<td><div class='button' onclick='ObjectTypeEditor.RemoveParameter(" + i + ");'>Remove</div></td>";
+            html += "</tr>";
+        }
+        html += "<tr><td>Action Name:</td><td><input type='text' id='obj_action' value='" + (objectType.Action ? objectType.Action : "").htmlEntities() + "' onkeyup='ObjectTypeEditor.Change(\"Action\")'></td></tr>";
+        if (world.SimplifiedObjectLogic) {
+            var conditions = [];
+            for (var item in dialogCondition.code)
+                conditions.push(item);
+            conditions.sort();
+            var actions = [];
+            for (var item in dialogAction.code)
+                actions.push(item);
+            actions.sort();
+            //---------------------- WEAR CONDITION
+            html += "<tr><td>Wear Conditions:</td><td>&nbsp;</td>";
+            for (var i = 0; i < objectType.WearConditions.length; i++) {
+                var cond = objectType.WearConditions[i];
+                html += "<tr><td>" + cond.Name.title() + ": <span class='dialogBlockDelete' onclick='ObjectTypeEditor.DeleteWearCondition(" + i + ")'>X</span></td>";
+                html += "<td>" + dialogCondition.code[cond.Name].Display(i, cond.Values, "ChangeWearCondition") + "</td></tr>";
+            }
+            html += "<tr><td colspan='2'><select id='add_wear_condition' onchange='ObjectTypeEditor.AddWearCondition()'>";
+            html += "<option value=''>- Add new condition --</option>";
+            for (var i = 0; i < conditions.length; i++)
+                html += "<option value='" + conditions[i] + "'>" + conditions[i].title() + "</option>";
+            html += "</select></td></tr>";
+            //---------------------- UNWEAR CONDITION
+            html += "<tr><td>Unwear Conditions:</td><td>&nbsp;</td>";
+            for (var i = 0; i < objectType.UnwearConditions.length; i++) {
+                var cond = objectType.UnwearConditions[i];
+                html += "<tr><td>" + cond.Name.title() + ": <span class='dialogBlockDelete' onclick='ObjectTypeEditor.DeleteUnwearCondition(" + i + ")'>X</span></td>";
+                html += "<td>" + dialogCondition.code[cond.Name].Display(i, cond.Values, "ChangeUnwearCondition") + "</td></tr>";
+            }
+            html += "<tr><td colspan='2'><select id='add_unwear_condition' onchange='ObjectTypeEditor.AddUnwearCondition()'>";
+            html += "<option value=''>- Add new condition --</option>";
+            for (var i = 0; i < conditions.length; i++)
+                html += "<option value='" + conditions[i] + "'>" + conditions[i].title() + "</option>";
+            html += "</select></td></tr>";
+            //---------------------- DROP CONDITION
+            html += "<tr><td>Drop Conditions:</td><td>&nbsp;</td>";
+            for (var i = 0; i < objectType.DropConditions.length; i++) {
+                var cond = objectType.DropConditions[i];
+                html += "<tr><td>" + cond.Name.title() + ": <span class='dialogBlockDelete' onclick='ObjectTypeEditor.DeleteDropCondition(" + i + ")'>X</span></td>";
+                html += "<td>" + dialogCondition.code[cond.Name].Display(i, cond.Values, "ChangeDropCondition") + "</td></tr>";
+            }
+            html += "<tr><td colspan='2'><select id='add_drop_condition' onchange='ObjectTypeEditor.AddDropCondition()'>";
+            html += "<option value=''>- Add new condition --</option>";
+            for (var i = 0; i < conditions.length; i++)
+                html += "<option value='" + conditions[i] + "'>" + conditions[i].title() + "</option>";
+            html += "</select></td></tr>";
+            //---------------------- USAGE CONDITION
+            html += "<tr><td>Usage Conditions:</td><td>&nbsp;</td>";
+            for (var i = 0; i < objectType.UsageConditions.length; i++) {
+                var cond = objectType.UsageConditions[i];
+                html += "<tr><td>" + cond.Name.title() + ": <span class='dialogBlockDelete' onclick='ObjectTypeEditor.DeleteUsageCondition(" + i + ")'>X</span></td>";
+                html += "<td>" + dialogCondition.code[cond.Name].Display(i, cond.Values, "ChangeUsageCondition") + "</td></tr>";
+            }
+            html += "<tr><td colspan='2'><select id='add_usage_condition' onchange='ObjectTypeEditor.AddUsageCondition()'>";
+            html += "<option value=''>- Add new condition --</option>";
+            for (var i = 0; i < conditions.length; i++)
+                html += "<option value='" + conditions[i] + "'>" + conditions[i].title() + "</option>";
+            html += "</select></td></tr>";
+            //---------------------- USAGE ACTION
+            html += "<tr><td>Usage Action:</td><td>&nbsp;</td>";
+            for (var i = 0; i < objectType.UsageActions.length; i++) {
+                var action = objectType.UsageActions[i];
+                html += "<tr><td>" + action.Name.title() + ": <span class='dialogBlockDelete' onclick='ObjectTypeEditor.DeleteUsageAction(" + i + ")'>X</span></td>";
+                html += "<td>" + dialogAction.code[action.Name].Display(i, action.Values, "ChangeUsageAction") + "</td></tr>";
+            }
+            html += "<tr><td colspan='2'><select id='add_usage_action' onchange='ObjectTypeEditor.AddUsageAction()'>";
+            html += "<option value=''>- Add new action --</option>";
+            for (var i = 0; i < actions.length; i++)
+                html += "<option value='" + actions[i] + "'>" + actions[i].title() + "</option>";
+            html += "</select></td></tr>";
+        }
+        else
+            html += "<tr><td>Action Code:</td><td><div id='obj_codecontainer'><textarea type='text' id='obj_actioncode' rows='10' onkeyup='ObjectTypeEditor.Change(\"ActionCode\")'>" + (objectType.ActionCode ? objectType.ActionCode : "").htmlEntities() + "</textarea></div></td></tr>";
+        html += "</table>";
+        $("#objectTypeDetails").html(html);
+        if (!world.SimplifiedObjectLogic) {
+            objectEditor.editor = CodeMirror.fromTextArea($("#obj_actioncode").first(), {
+                lineNumbers: true,
+                matchBrackets: true,
+                continueComments: "Enter",
+                tabSize: 4,
+                indentUnit: 4,
+                extraKeys: { "Ctrl-Q": "toggleComment" }
+            });
+            objectEditor.editor.on('change', ObjectTypeEditor.ChangeCode);
+        }
+        $("#obj_codecontainer").width($("#objectTypeDetails table tr > td:nth-child(2)").width() - 3);
+    };
+    ObjectTypeEditor.ChangeWearCondition = function (id, pos) {
+        world.InventoryObjectTypes[objectTypeEditor.selected].WearConditions[id].Values[pos] = $("#ChangeWearCondition_" + id + "_" + pos).val();
+    };
+    ObjectTypeEditor.DeleteWearCondition = function (rowId) {
+        world.InventoryObjectTypes[objectTypeEditor.selected].WearConditions.splice(rowId, 1);
+        ObjectTypeEditor.Display();
+    };
+    ObjectTypeEditor.AddWearCondition = function () {
+        var condition = $("#add_wear_condition").val();
+        $("#add_wear_condition").first().selectedIndex = 0;
+        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
+        objectType.WearConditions.push({ Name: condition, Values: [] });
+        ObjectTypeEditor.Display();
+    };
+    ObjectTypeEditor.ChangeUnwearCondition = function (id, pos) {
+        world.InventoryObjectTypes[objectTypeEditor.selected].UnwearConditions[id].Values[pos] = $("#ChangeUnwearCondition_" + id + "_" + pos).val();
+    };
+    ObjectTypeEditor.DeleteUnwearCondition = function (rowId) {
+        world.InventoryObjectTypes[objectTypeEditor.selected].UnwearConditions.splice(rowId, 1);
+        ObjectTypeEditor.Display();
+    };
+    ObjectTypeEditor.AddUnwearCondition = function () {
+        var condition = $("#add_unwear_condition").val();
+        $("#add_unwear_condition").first().selectedIndex = 0;
+        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
+        objectType.UnwearConditions.push({ Name: condition, Values: [] });
+        ObjectTypeEditor.Display();
+    };
+    ObjectTypeEditor.ChangeDropCondition = function (id, pos) {
+        world.InventoryObjectTypes[objectTypeEditor.selected].DropConditions[id].Values[pos] = $("#ChangeDropCondition_" + id + "_" + pos).val();
+    };
+    ObjectTypeEditor.DeleteDropCondition = function (rowId) {
+        world.InventoryObjectTypes[objectTypeEditor.selected].DropConditions.splice(rowId, 1);
+        ObjectTypeEditor.Display();
+    };
+    ObjectTypeEditor.AddDropCondition = function () {
+        var condition = $("#add_drop_condition").val();
+        $("#add_drop_condition").first().selectedIndex = 0;
+        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
+        objectType.DropConditions.push({ Name: condition, Values: [] });
+        ObjectTypeEditor.Display();
+    };
+    ObjectTypeEditor.ChangeUsageAction = function (id, pos) {
+        world.InventoryObjectTypes[objectTypeEditor.selected].UsageActions[id].Values[pos] = $("#ChangeUsageAction_" + id + "_" + pos).val();
+    };
+    ObjectTypeEditor.DeleteUsageAction = function (rowId) {
+        world.InventoryObjectTypes[objectTypeEditor.selected].UsageActions.splice(rowId, 1);
+        ObjectTypeEditor.Display();
+    };
+    ObjectTypeEditor.AddUsageAction = function () {
+        var condition = $("#add_usage_action").val();
+        $("#add_usage_action").first().selectedIndex = 0;
+        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
+        objectType.UsageActions.push({ Name: condition, Values: [] });
+        ObjectTypeEditor.Display();
+    };
+    ObjectTypeEditor.ChangeUsageCondition = function (id, pos) {
+        world.InventoryObjectTypes[objectTypeEditor.selected].UsageConditions[id].Values[pos] = $("#ChangeUsageCondition_" + id + "_" + pos).val();
+    };
+    ObjectTypeEditor.DeleteUsageCondition = function (rowId) {
+        world.InventoryObjectTypes[objectTypeEditor.selected].UsageConditions.splice(rowId, 1);
+        ObjectTypeEditor.Display();
+    };
+    ObjectTypeEditor.AddUsageCondition = function () {
+        var condition = $("#add_usage_condition").val();
+        $("#add_usage_condition").first().selectedIndex = 0;
+        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
+        objectType.UsageConditions.push({ Name: condition, Values: [] });
+        ObjectTypeEditor.Display();
+    };
+    ObjectTypeEditor.AddParameter = function () {
+        if (!objectTypeEditor.selected)
+            return;
+        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
+        objectType.Parameters.push(new ObjectDefinedParameter("Param" + (objectType.Parameters.length + 1), "1"));
+        ObjectTypeEditor.Display();
+    };
+    ObjectTypeEditor.RemoveParameter = function (id) {
+        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
+        objectType.Parameters.splice(id, 1);
+        ObjectTypeEditor.Display();
+    };
+    ObjectTypeEditor.ChangeCode = function () {
+        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
+        objectType.ActionCode = objectEditor.editor.getValue();
+    };
+    ObjectTypeEditor.ChangeParam = function (id, param) {
+        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
+        objectType.Parameters[id][param] = $("#param_" + param.toLowerCase() + "_" + id).val();
+    };
+    ObjectTypeEditor.Change = function (param) {
+        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
+        var oldName = objectType.Name;
+        if (param == 'Name') {
+            var newName = $("#obj_" + param.toLowerCase()).val();
+            if ((newName.match(databaseNameRule) || !newName || newName.length < 1) || (world.GetInventoryObjectType(newName) && world.GetInventoryObjectType(newName) != world.InventoryObjectTypes[objectTypeEditor.selected])) {
+                $("#obj_" + param.toLowerCase()).css('backgroundColor', '#FFE0E0');
+                return;
+            }
+            $("#obj_" + param.toLowerCase()).css('backgroundColor', '');
+        }
+        objectType[param] = $("#obj_" + param.toLowerCase()).val();
+        if (param == "Name") {
+            objectTypeEditor.listObjectType.UpdateList();
+            for (var i = 0; i < world.InventoryObjects.length; i++)
+                if (world.InventoryObjects[i].ObjectType == oldName)
+                    world.InventoryObjects[i].ObjectType = objectType.Name;
+            SearchPanel.Update();
+        }
+    };
+    ObjectTypeEditor.New = function () {
+        var newObjectType = new ObjectType("ObjType " + world.InventoryObjectTypes.length, "Group", null, null, []);
+        newObjectType.ActionCode = "// Uncomment the functions you want to define.\n\
+\n\
+// Checks if the player can unwear the item\n\
+// function CanUnwear(itemName)\n\
+// {\n\
+//      return true;\n\
+// }\n\
+\n\
+// Checks if the player can wear the item\n\
+// function CanWear(itemName)\n\
+// {\n\
+//      return true;\n\
+// }\n\
+\n\
+// Checks if the player can use the item\n\
+// function CanUse(itemName)\n\
+// {\n\
+//      return true;\n\
+// }\n\
+\n\
+// Checks if the player can drop the item\n\
+// function CanDrop(itemName)\n\
+// {\n\
+//      return true;\n\
+// }\n\
+\n\
+// Executed when the player uses the item\n\
+// function Use(itemName)\n\
+// {\n\
+// }\n\
+";
+        world.InventoryObjectTypes.push(newObjectType);
+        objectTypeEditor.listObjectType.UpdateList();
+        objectTypeEditor.listObjectType.Select(world.InventoryObjectTypes.length - 1);
+        SearchPanel.Update();
+    };
+    ObjectTypeEditor.Delete = function () {
+        if (objectTypeEditor.selected == null)
+            return;
+        Framework.Confirm("Are you sure you want to delete this object type and all the objects using it?", function () {
+            var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
+            for (var i = 0; i < world.InventoryObjects.length;) {
+                if (world.InventoryObjects[i].ObjectType == objectType.Name)
+                    world.InventoryObjects.splice(i, 1);
+                else
+                    i++;
+            }
+            world.InventoryObjectTypes.splice(objectTypeEditor.selected, 1);
+            objectTypeEditor.listObjectType.UpdateList();
+            objectTypeEditor.listObjectType.Select(-1);
+            SearchPanel.Update();
+        });
+    };
+    return ObjectTypeEditor;
+}());
+var objectEditor = new (/** @class */ (function () {
+    function class_42() {
+        this.editor = null;
+    }
+    return class_42;
 }()));
 var ObjectEditor = /** @class */ (function () {
     function ObjectEditor() {
@@ -23822,345 +24173,6 @@ var ObjectEditor = /** @class */ (function () {
         }, false);
     };
     return ObjectEditor;
-}());
-var objectTypeEditor = new (/** @class */ (function () {
-    function class_42() {
-        this.editor = null;
-    }
-    return class_42;
-}()));
-var ObjectTypeEditor = /** @class */ (function () {
-    function ObjectTypeEditor() {
-    }
-    ObjectTypeEditor.Dispose = function () {
-        if (objectTypeEditor.listObjectType)
-            objectTypeEditor.listObjectType.Dispose();
-        objectTypeEditor.listObjectType = null;
-        $(window).unbind("resize", ObjectTypeEditor.Resize);
-    };
-    ObjectTypeEditor.IsAccessible = function () {
-        return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
-    };
-    ObjectTypeEditor.Recover = function () {
-        if (Main.CheckNW()) {
-            $("#helpLink").first().onclick = function () {
-                StandaloneMaker.Help($("#helpLink").prop("href"));
-                return false;
-            };
-            $("#listObjectType").css("top", "5px");
-            $("#objectTypeDetails").css("top", "5px");
-        }
-        objectTypeEditor.listObjectType = new ListSelector("listObjectType", world.InventoryObjectTypes, "Name");
-        objectTypeEditor.listObjectType.OnSelect = ObjectTypeEditor.Select;
-        $(window).bind("resize", ObjectTypeEditor.Resize);
-        dialogCondition.currentEditor = "ObjectTypeEditor";
-        dialogAction.currentEditor = "ObjectTypeEditor";
-        if (framework.CurrentUrl.id) {
-            var found = false;
-            for (var i = 0; i < world.InventoryObjectTypes.length; i++) {
-                if (world.InventoryObjectTypes[i].Name == framework.CurrentUrl.id) {
-                    objectTypeEditor.listObjectType.Select(i);
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                Framework.SetLocation({
-                    action: "ObjectTypeEditor"
-                });
-                objectTypeEditor.listObjectType.Select(null);
-                return;
-            }
-        }
-        else
-            objectTypeEditor.listObjectType.Select(null);
-    };
-    ObjectTypeEditor.Resize = function () {
-        try {
-            $("#obj_codecontainer").width($("#objectTypeDetails table tr > td:nth-child(2)").width() - 3);
-        }
-        catch (ex) {
-        }
-    };
-    ObjectTypeEditor.Select = function (rowId) {
-        Framework.SetLocation({
-            action: "ObjectTypeEditor", id: rowId === null ? null : world.InventoryObjectTypes[rowId].Name
-        });
-        if (rowId < 0 || rowId === null) {
-            objectTypeEditor.selected = null;
-            $("#objectTypeDetails").html("");
-            return;
-        }
-        objectTypeEditor.selected = rowId;
-        ObjectTypeEditor.Display();
-    };
-    ObjectTypeEditor.Display = function () {
-        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
-        var html = "";
-        html = "<h1>" + objectType.Name + "</h1>";
-        html += "<table>";
-        html += "<tr><td>Name:</td><td><input type='text' id='obj_name' value='" + objectType.Name.htmlEntities() + "' onkeyup='ObjectTypeEditor.Change(\"Name\")'></td></tr>";
-        html += "<tr><td>Group:</td><td><input type='text' id='obj_group' value='" + objectType.Group.htmlEntities() + "' onkeyup='ObjectTypeEditor.Change(\"Group\")'></td></tr>";
-        for (var i = 0; i < objectType.Parameters.length; i++) {
-            html += "<tr><td><input id='param_name_" + i + "' type='text' value='" + objectType.Parameters[i].Name + "' onkeyup='ObjectTypeEditor.ChangeParam(" + i + ",\"Name\");'></td>";
-            html += "<td><input  id='param_defaultvalue_" + i + "' type='text' value='" + objectType.Parameters[i].DefaultValue + "' onkeyup='ObjectTypeEditor.ChangeParam(" + i + ",\"DefaultValue\");'></td>";
-            html += "<td><div class='button' onclick='ObjectTypeEditor.RemoveParameter(" + i + ");'>Remove</div></td>";
-            html += "</tr>";
-        }
-        html += "<tr><td>Action Name:</td><td><input type='text' id='obj_action' value='" + (objectType.Action ? objectType.Action : "").htmlEntities() + "' onkeyup='ObjectTypeEditor.Change(\"Action\")'></td></tr>";
-        if (world.SimplifiedObjectLogic) {
-            var conditions = [];
-            for (var item in dialogCondition.code)
-                conditions.push(item);
-            conditions.sort();
-            var actions = [];
-            for (var item in dialogAction.code)
-                actions.push(item);
-            actions.sort();
-            //---------------------- WEAR CONDITION
-            html += "<tr><td>Wear Conditions:</td><td>&nbsp;</td>";
-            for (var i = 0; i < objectType.WearConditions.length; i++) {
-                var cond = objectType.WearConditions[i];
-                html += "<tr><td>" + cond.Name.title() + ": <span class='dialogBlockDelete' onclick='ObjectTypeEditor.DeleteWearCondition(" + i + ")'>X</span></td>";
-                html += "<td>" + dialogCondition.code[cond.Name].Display(i, cond.Values, "ChangeWearCondition") + "</td></tr>";
-            }
-            html += "<tr><td colspan='2'><select id='add_wear_condition' onchange='ObjectTypeEditor.AddWearCondition()'>";
-            html += "<option value=''>- Add new condition --</option>";
-            for (var i = 0; i < conditions.length; i++)
-                html += "<option value='" + conditions[i] + "'>" + conditions[i].title() + "</option>";
-            html += "</select></td></tr>";
-            //---------------------- UNWEAR CONDITION
-            html += "<tr><td>Unwear Conditions:</td><td>&nbsp;</td>";
-            for (var i = 0; i < objectType.UnwearConditions.length; i++) {
-                var cond = objectType.UnwearConditions[i];
-                html += "<tr><td>" + cond.Name.title() + ": <span class='dialogBlockDelete' onclick='ObjectTypeEditor.DeleteUnwearCondition(" + i + ")'>X</span></td>";
-                html += "<td>" + dialogCondition.code[cond.Name].Display(i, cond.Values, "ChangeUnwearCondition") + "</td></tr>";
-            }
-            html += "<tr><td colspan='2'><select id='add_unwear_condition' onchange='ObjectTypeEditor.AddUnwearCondition()'>";
-            html += "<option value=''>- Add new condition --</option>";
-            for (var i = 0; i < conditions.length; i++)
-                html += "<option value='" + conditions[i] + "'>" + conditions[i].title() + "</option>";
-            html += "</select></td></tr>";
-            //---------------------- DROP CONDITION
-            html += "<tr><td>Drop Conditions:</td><td>&nbsp;</td>";
-            for (var i = 0; i < objectType.DropConditions.length; i++) {
-                var cond = objectType.DropConditions[i];
-                html += "<tr><td>" + cond.Name.title() + ": <span class='dialogBlockDelete' onclick='ObjectTypeEditor.DeleteDropCondition(" + i + ")'>X</span></td>";
-                html += "<td>" + dialogCondition.code[cond.Name].Display(i, cond.Values, "ChangeDropCondition") + "</td></tr>";
-            }
-            html += "<tr><td colspan='2'><select id='add_drop_condition' onchange='ObjectTypeEditor.AddDropCondition()'>";
-            html += "<option value=''>- Add new condition --</option>";
-            for (var i = 0; i < conditions.length; i++)
-                html += "<option value='" + conditions[i] + "'>" + conditions[i].title() + "</option>";
-            html += "</select></td></tr>";
-            //---------------------- USAGE CONDITION
-            html += "<tr><td>Usage Conditions:</td><td>&nbsp;</td>";
-            for (var i = 0; i < objectType.UsageConditions.length; i++) {
-                var cond = objectType.UsageConditions[i];
-                html += "<tr><td>" + cond.Name.title() + ": <span class='dialogBlockDelete' onclick='ObjectTypeEditor.DeleteUsageCondition(" + i + ")'>X</span></td>";
-                html += "<td>" + dialogCondition.code[cond.Name].Display(i, cond.Values, "ChangeUsageCondition") + "</td></tr>";
-            }
-            html += "<tr><td colspan='2'><select id='add_usage_condition' onchange='ObjectTypeEditor.AddUsageCondition()'>";
-            html += "<option value=''>- Add new condition --</option>";
-            for (var i = 0; i < conditions.length; i++)
-                html += "<option value='" + conditions[i] + "'>" + conditions[i].title() + "</option>";
-            html += "</select></td></tr>";
-            //---------------------- USAGE ACTION
-            html += "<tr><td>Usage Action:</td><td>&nbsp;</td>";
-            for (var i = 0; i < objectType.UsageActions.length; i++) {
-                var action = objectType.UsageActions[i];
-                html += "<tr><td>" + action.Name.title() + ": <span class='dialogBlockDelete' onclick='ObjectTypeEditor.DeleteUsageAction(" + i + ")'>X</span></td>";
-                html += "<td>" + dialogAction.code[action.Name].Display(i, action.Values, "ChangeUsageAction") + "</td></tr>";
-            }
-            html += "<tr><td colspan='2'><select id='add_usage_action' onchange='ObjectTypeEditor.AddUsageAction()'>";
-            html += "<option value=''>- Add new action --</option>";
-            for (var i = 0; i < actions.length; i++)
-                html += "<option value='" + actions[i] + "'>" + actions[i].title() + "</option>";
-            html += "</select></td></tr>";
-        }
-        else
-            html += "<tr><td>Action Code:</td><td><div id='obj_codecontainer'><textarea type='text' id='obj_actioncode' rows='10' onkeyup='ObjectTypeEditor.Change(\"ActionCode\")'>" + (objectType.ActionCode ? objectType.ActionCode : "").htmlEntities() + "</textarea></div></td></tr>";
-        html += "</table>";
-        $("#objectTypeDetails").html(html);
-        if (!world.SimplifiedObjectLogic) {
-            objectEditor.editor = CodeMirror.fromTextArea($("#obj_actioncode").first(), {
-                lineNumbers: true,
-                matchBrackets: true,
-                continueComments: "Enter",
-                tabSize: 4,
-                indentUnit: 4,
-                extraKeys: { "Ctrl-Q": "toggleComment" }
-            });
-            objectEditor.editor.on('change', ObjectTypeEditor.ChangeCode);
-        }
-        $("#obj_codecontainer").width($("#objectTypeDetails table tr > td:nth-child(2)").width() - 3);
-    };
-    ObjectTypeEditor.ChangeWearCondition = function (id, pos) {
-        world.InventoryObjectTypes[objectTypeEditor.selected].WearConditions[id].Values[pos] = $("#ChangeWearCondition_" + id + "_" + pos).val();
-    };
-    ObjectTypeEditor.DeleteWearCondition = function (rowId) {
-        world.InventoryObjectTypes[objectTypeEditor.selected].WearConditions.splice(rowId, 1);
-        ObjectTypeEditor.Display();
-    };
-    ObjectTypeEditor.AddWearCondition = function () {
-        var condition = $("#add_wear_condition").val();
-        $("#add_wear_condition").first().selectedIndex = 0;
-        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
-        objectType.WearConditions.push({ Name: condition, Values: [] });
-        ObjectTypeEditor.Display();
-    };
-    ObjectTypeEditor.ChangeUnwearCondition = function (id, pos) {
-        world.InventoryObjectTypes[objectTypeEditor.selected].UnwearConditions[id].Values[pos] = $("#ChangeUnwearCondition_" + id + "_" + pos).val();
-    };
-    ObjectTypeEditor.DeleteUnwearCondition = function (rowId) {
-        world.InventoryObjectTypes[objectTypeEditor.selected].UnwearConditions.splice(rowId, 1);
-        ObjectTypeEditor.Display();
-    };
-    ObjectTypeEditor.AddUnwearCondition = function () {
-        var condition = $("#add_unwear_condition").val();
-        $("#add_unwear_condition").first().selectedIndex = 0;
-        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
-        objectType.UnwearConditions.push({ Name: condition, Values: [] });
-        ObjectTypeEditor.Display();
-    };
-    ObjectTypeEditor.ChangeDropCondition = function (id, pos) {
-        world.InventoryObjectTypes[objectTypeEditor.selected].DropConditions[id].Values[pos] = $("#ChangeDropCondition_" + id + "_" + pos).val();
-    };
-    ObjectTypeEditor.DeleteDropCondition = function (rowId) {
-        world.InventoryObjectTypes[objectTypeEditor.selected].DropConditions.splice(rowId, 1);
-        ObjectTypeEditor.Display();
-    };
-    ObjectTypeEditor.AddDropCondition = function () {
-        var condition = $("#add_drop_condition").val();
-        $("#add_drop_condition").first().selectedIndex = 0;
-        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
-        objectType.DropConditions.push({ Name: condition, Values: [] });
-        ObjectTypeEditor.Display();
-    };
-    ObjectTypeEditor.ChangeUsageAction = function (id, pos) {
-        world.InventoryObjectTypes[objectTypeEditor.selected].UsageActions[id].Values[pos] = $("#ChangeUsageAction_" + id + "_" + pos).val();
-    };
-    ObjectTypeEditor.DeleteUsageAction = function (rowId) {
-        world.InventoryObjectTypes[objectTypeEditor.selected].UsageActions.splice(rowId, 1);
-        ObjectTypeEditor.Display();
-    };
-    ObjectTypeEditor.AddUsageAction = function () {
-        var condition = $("#add_usage_action").val();
-        $("#add_usage_action").first().selectedIndex = 0;
-        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
-        objectType.UsageActions.push({ Name: condition, Values: [] });
-        ObjectTypeEditor.Display();
-    };
-    ObjectTypeEditor.ChangeUsageCondition = function (id, pos) {
-        world.InventoryObjectTypes[objectTypeEditor.selected].UsageConditions[id].Values[pos] = $("#ChangeUsageCondition_" + id + "_" + pos).val();
-    };
-    ObjectTypeEditor.DeleteUsageCondition = function (rowId) {
-        world.InventoryObjectTypes[objectTypeEditor.selected].UsageConditions.splice(rowId, 1);
-        ObjectTypeEditor.Display();
-    };
-    ObjectTypeEditor.AddUsageCondition = function () {
-        var condition = $("#add_usage_condition").val();
-        $("#add_usage_condition").first().selectedIndex = 0;
-        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
-        objectType.UsageConditions.push({ Name: condition, Values: [] });
-        ObjectTypeEditor.Display();
-    };
-    ObjectTypeEditor.AddParameter = function () {
-        if (!objectTypeEditor.selected)
-            return;
-        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
-        objectType.Parameters.push(new ObjectDefinedParameter("Param" + (objectType.Parameters.length + 1), "1"));
-        ObjectTypeEditor.Display();
-    };
-    ObjectTypeEditor.RemoveParameter = function (id) {
-        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
-        objectType.Parameters.splice(id, 1);
-        ObjectTypeEditor.Display();
-    };
-    ObjectTypeEditor.ChangeCode = function () {
-        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
-        objectType.ActionCode = objectEditor.editor.getValue();
-    };
-    ObjectTypeEditor.ChangeParam = function (id, param) {
-        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
-        objectType.Parameters[id][param] = $("#param_" + param.toLowerCase() + "_" + id).val();
-    };
-    ObjectTypeEditor.Change = function (param) {
-        var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
-        var oldName = objectType.Name;
-        if (param == 'Name') {
-            var newName = $("#obj_" + param.toLowerCase()).val();
-            if ((newName.match(databaseNameRule) || !newName || newName.length < 1) || (world.GetInventoryObjectType(newName) && world.GetInventoryObjectType(newName) != world.InventoryObjectTypes[objectTypeEditor.selected])) {
-                $("#obj_" + param.toLowerCase()).css('backgroundColor', '#FFE0E0');
-                return;
-            }
-            $("#obj_" + param.toLowerCase()).css('backgroundColor', '');
-        }
-        objectType[param] = $("#obj_" + param.toLowerCase()).val();
-        if (param == "Name") {
-            objectTypeEditor.listObjectType.UpdateList();
-            for (var i = 0; i < world.InventoryObjects.length; i++)
-                if (world.InventoryObjects[i].ObjectType == oldName)
-                    world.InventoryObjects[i].ObjectType = objectType.Name;
-            SearchPanel.Update();
-        }
-    };
-    ObjectTypeEditor.New = function () {
-        var newObjectType = new ObjectType("ObjType " + world.InventoryObjectTypes.length, "Group", null, null, []);
-        newObjectType.ActionCode = "// Uncomment the functions you want to define.\n\
-\n\
-// Checks if the player can unwear the item\n\
-// function CanUnwear(itemName)\n\
-// {\n\
-//      return true;\n\
-// }\n\
-\n\
-// Checks if the player can wear the item\n\
-// function CanWear(itemName)\n\
-// {\n\
-//      return true;\n\
-// }\n\
-\n\
-// Checks if the player can use the item\n\
-// function CanUse(itemName)\n\
-// {\n\
-//      return true;\n\
-// }\n\
-\n\
-// Checks if the player can drop the item\n\
-// function CanDrop(itemName)\n\
-// {\n\
-//      return true;\n\
-// }\n\
-\n\
-// Executed when the player uses the item\n\
-// function Use(itemName)\n\
-// {\n\
-// }\n\
-";
-        world.InventoryObjectTypes.push(newObjectType);
-        objectTypeEditor.listObjectType.UpdateList();
-        objectTypeEditor.listObjectType.Select(world.InventoryObjectTypes.length - 1);
-        SearchPanel.Update();
-    };
-    ObjectTypeEditor.Delete = function () {
-        if (objectTypeEditor.selected == null)
-            return;
-        Framework.Confirm("Are you sure you want to delete this object type and all the objects using it?", function () {
-            var objectType = world.InventoryObjectTypes[objectTypeEditor.selected];
-            for (var i = 0; i < world.InventoryObjects.length;) {
-                if (world.InventoryObjects[i].ObjectType == objectType.Name)
-                    world.InventoryObjects.splice(i, 1);
-                else
-                    i++;
-            }
-            world.InventoryObjectTypes.splice(objectTypeEditor.selected, 1);
-            objectTypeEditor.listObjectType.UpdateList();
-            objectTypeEditor.listObjectType.Select(-1);
-            SearchPanel.Update();
-        });
-    };
-    return ObjectTypeEditor;
 }());
 var particleEditor = new (/** @class */ (function () {
     function class_43() {
@@ -27072,9 +27084,165 @@ var PixelEditorLayers = /** @class */ (function () {
     };
     return PixelEditorLayers;
 }());
+var questEditor = new (/** @class */ (function () {
+    function class_45() {
+        this.selectedQuest = null;
+    }
+    return class_45;
+}()));
+var QuestEditor = /** @class */ (function () {
+    function QuestEditor() {
+    }
+    QuestEditor.Dispose = function () {
+        questEditor.selector.Dispose();
+        questEditor.selector = null;
+    };
+    QuestEditor.IsAccessible = function () {
+        return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
+    };
+    QuestEditor.Recover = function () {
+        if (Main.CheckNW()) {
+            $("#helpLink").first().onclick = function () {
+                StandaloneMaker.Help($("#helpLink").prop("href"));
+                return false;
+            };
+            $("#questList").css("top", "5px");
+            $("#questDetails").css("top", "5px");
+            $("#questJournalEntries").css("top", "210px");
+        }
+        questEditor.selector = new ListSelector("questList", world.Quests, "Name");
+        questEditor.selector.OnSelect = (function (rowId) {
+            Framework.SetLocation({
+                action: "QuestEditor", id: rowId === null ? null : world.Quests[rowId].Name
+            });
+            if (rowId === null)
+                questEditor.selectedQuest = null;
+            else
+                questEditor.selectedQuest = world.Quests[rowId];
+            QuestEditor.Display();
+        });
+        if (framework.CurrentUrl.id) {
+            var found = false;
+            for (var i = 0; i < world.Quests.length; i++) {
+                if (world.Quests[i].Name == framework.CurrentUrl.id) {
+                    questEditor.selector.Select(i);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                Framework.SetLocation({
+                    action: "QuestEditor"
+                });
+                questEditor.selector.Select(null);
+                return;
+            }
+        }
+        else
+            questEditor.selector.Select(null);
+    };
+    QuestEditor.Display = function () {
+        $("#questName").css("backgroundColor", "");
+        if (questEditor.selectedQuest === null) {
+            $("#questName").val("").prop("disabled", true);
+            $("#questDescription").val("").prop("disabled", true);
+            $("#questJournalEntries").html("");
+            return;
+        }
+        $("#questName").val(questEditor.selectedQuest.Name).prop("disabled", false).focus();
+        $("#questDescription").val(questEditor.selectedQuest.Description).prop("disabled", false);
+        QuestEditor.UpdateJournalEntries();
+    };
+    QuestEditor.UpdateJournalEntries = function () {
+        var html = "";
+        if (questEditor.selectedQuest !== null) {
+            for (var i = 0; i < questEditor.selectedQuest.JournalEntries.length; i++) {
+                html += "<div class='button' onclick='QuestEditor.DeleteJournalEntry(" + i + ")'>Remove</div> ";
+                html += "<b>Entry #" + questEditor.selectedQuest.JournalEntries[i].Id + "</b><br>";
+                html += "<textarea id='entry_" + i + "' onkeyup='QuestEditor.ChangeJournalEntry(" + i + ");'>" + ("" + questEditor.selectedQuest.JournalEntries[i].Entry).htmlEntities() + "</textarea><br>";
+            }
+        }
+        $("#questJournalEntries").html(html);
+    };
+    QuestEditor.DeleteJournalEntry = function (id) {
+        questEditor.selectedQuest.JournalEntries.splice(id, 1);
+        QuestEditor.UpdateJournalEntries();
+    };
+    QuestEditor.ChangeJournalEntry = function (id) {
+        questEditor.selectedQuest.JournalEntries[id].Entry = $("#entry_" + id).val();
+    };
+    QuestEditor.AddQuest = function () {
+        var nextId = 1;
+        while (world.GetQuest("quest_" + nextId))
+            nextId++;
+        var quest = new KnownQuest();
+        quest.Name = "quest_" + nextId;
+        quest.Description = "This quest doesn't have any description. How sad...";
+        quest.JournalEntries = [];
+        world.Quests.push(quest);
+        questEditor.selector.UpdateList();
+        questEditor.selector.Select(world.Quests.length - 1);
+        SearchPanel.Update();
+    };
+    QuestEditor.CloneQuest = function () {
+        if (questEditor.selectedQuest === null)
+            return;
+        var nextId = 1;
+        while (world.GetQuest("quest_" + nextId))
+            nextId++;
+        var quest = JSON.parse(JSON.stringify(questEditor.selectedQuest));
+        quest.Name = "quest_" + nextId;
+        world.Quests.push(quest);
+        questEditor.selector.UpdateList();
+        questEditor.selector.Select(world.Quests.length - 1);
+        SearchPanel.Update();
+    };
+    QuestEditor.DeleteQuest = function () {
+        if (questEditor.selectedQuest === null)
+            return;
+        Framework.Confirm("Are you sure you want to delete this quest?", function () {
+            for (var i = 0; i < world.Quests.length; i++) {
+                if (world.Quests[i].Name == questEditor.selectedQuest.Name) {
+                    world.Quests.splice(i, 1);
+                    questEditor.selector.UpdateList();
+                    questEditor.selector.Select(null);
+                    SearchPanel.Update();
+                    return;
+                }
+            }
+        });
+    };
+    QuestEditor.ChangeName = function () {
+        var newName = $("#questName").val();
+        if ((newName.match(databaseNameRule) || !newName || newName.length < 1) || (world.GetQuest(newName) && world.GetQuest(newName) != questEditor.selectedQuest)) {
+            $("#questName").css('backgroundColor', '#FFE0E0');
+            return;
+        }
+        $("#questName").css('backgroundColor', '');
+        questEditor.selectedQuest.Name = newName;
+        questEditor.selector.UpdateList();
+        SearchPanel.Update();
+    };
+    QuestEditor.ChangeDescription = function () {
+        questEditor.selectedQuest.Description = $("#questDescription").val();
+    };
+    QuestEditor.AddJournalEntry = function () {
+        if (questEditor.selectedQuest === null)
+            return;
+        var journalEntry = new JournalEntry();
+        var nextId = 1;
+        for (var i = 0; i < questEditor.selectedQuest.JournalEntries.length; i++)
+            nextId = Math.max(questEditor.selectedQuest.JournalEntries[i].Id + 1, nextId);
+        journalEntry.Entry = "Entry...";
+        journalEntry.Id = nextId;
+        questEditor.selectedQuest.JournalEntries.push(journalEntry);
+        QuestEditor.UpdateJournalEntries();
+    };
+    return QuestEditor;
+}());
 ///<reference path="../../Logic/MovingActors/PathSolver.ts" />
 var play = new (/** @class */ (function () {
-    function class_45() {
+    function class_46() {
         this.keys = [];
         this.path = null;
         this.mouseDown = false;
@@ -27096,7 +27264,7 @@ var play = new (/** @class */ (function () {
         this.showMinimap = false;
         this.onDialogPaint = [];
     }
-    return class_45;
+    return class_46;
 }()));
 var Play = /** @class */ (function () {
     function Play() {
@@ -27755,162 +27923,6 @@ var Play = /** @class */ (function () {
         play.inField = false;
     };
     return Play;
-}());
-var questEditor = new (/** @class */ (function () {
-    function class_46() {
-        this.selectedQuest = null;
-    }
-    return class_46;
-}()));
-var QuestEditor = /** @class */ (function () {
-    function QuestEditor() {
-    }
-    QuestEditor.Dispose = function () {
-        questEditor.selector.Dispose();
-        questEditor.selector = null;
-    };
-    QuestEditor.IsAccessible = function () {
-        return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
-    };
-    QuestEditor.Recover = function () {
-        if (Main.CheckNW()) {
-            $("#helpLink").first().onclick = function () {
-                StandaloneMaker.Help($("#helpLink").prop("href"));
-                return false;
-            };
-            $("#questList").css("top", "5px");
-            $("#questDetails").css("top", "5px");
-            $("#questJournalEntries").css("top", "210px");
-        }
-        questEditor.selector = new ListSelector("questList", world.Quests, "Name");
-        questEditor.selector.OnSelect = (function (rowId) {
-            Framework.SetLocation({
-                action: "QuestEditor", id: rowId === null ? null : world.Quests[rowId].Name
-            });
-            if (rowId === null)
-                questEditor.selectedQuest = null;
-            else
-                questEditor.selectedQuest = world.Quests[rowId];
-            QuestEditor.Display();
-        });
-        if (framework.CurrentUrl.id) {
-            var found = false;
-            for (var i = 0; i < world.Quests.length; i++) {
-                if (world.Quests[i].Name == framework.CurrentUrl.id) {
-                    questEditor.selector.Select(i);
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                Framework.SetLocation({
-                    action: "QuestEditor"
-                });
-                questEditor.selector.Select(null);
-                return;
-            }
-        }
-        else
-            questEditor.selector.Select(null);
-    };
-    QuestEditor.Display = function () {
-        $("#questName").css("backgroundColor", "");
-        if (questEditor.selectedQuest === null) {
-            $("#questName").val("").prop("disabled", true);
-            $("#questDescription").val("").prop("disabled", true);
-            $("#questJournalEntries").html("");
-            return;
-        }
-        $("#questName").val(questEditor.selectedQuest.Name).prop("disabled", false).focus();
-        $("#questDescription").val(questEditor.selectedQuest.Description).prop("disabled", false);
-        QuestEditor.UpdateJournalEntries();
-    };
-    QuestEditor.UpdateJournalEntries = function () {
-        var html = "";
-        if (questEditor.selectedQuest !== null) {
-            for (var i = 0; i < questEditor.selectedQuest.JournalEntries.length; i++) {
-                html += "<div class='button' onclick='QuestEditor.DeleteJournalEntry(" + i + ")'>Remove</div> ";
-                html += "<b>Entry #" + questEditor.selectedQuest.JournalEntries[i].Id + "</b><br>";
-                html += "<textarea id='entry_" + i + "' onkeyup='QuestEditor.ChangeJournalEntry(" + i + ");'>" + ("" + questEditor.selectedQuest.JournalEntries[i].Entry).htmlEntities() + "</textarea><br>";
-            }
-        }
-        $("#questJournalEntries").html(html);
-    };
-    QuestEditor.DeleteJournalEntry = function (id) {
-        questEditor.selectedQuest.JournalEntries.splice(id, 1);
-        QuestEditor.UpdateJournalEntries();
-    };
-    QuestEditor.ChangeJournalEntry = function (id) {
-        questEditor.selectedQuest.JournalEntries[id].Entry = $("#entry_" + id).val();
-    };
-    QuestEditor.AddQuest = function () {
-        var nextId = 1;
-        while (world.GetQuest("quest_" + nextId))
-            nextId++;
-        var quest = new KnownQuest();
-        quest.Name = "quest_" + nextId;
-        quest.Description = "This quest doesn't have any description. How sad...";
-        quest.JournalEntries = [];
-        world.Quests.push(quest);
-        questEditor.selector.UpdateList();
-        questEditor.selector.Select(world.Quests.length - 1);
-        SearchPanel.Update();
-    };
-    QuestEditor.CloneQuest = function () {
-        if (questEditor.selectedQuest === null)
-            return;
-        var nextId = 1;
-        while (world.GetQuest("quest_" + nextId))
-            nextId++;
-        var quest = JSON.parse(JSON.stringify(questEditor.selectedQuest));
-        quest.Name = "quest_" + nextId;
-        world.Quests.push(quest);
-        questEditor.selector.UpdateList();
-        questEditor.selector.Select(world.Quests.length - 1);
-        SearchPanel.Update();
-    };
-    QuestEditor.DeleteQuest = function () {
-        if (questEditor.selectedQuest === null)
-            return;
-        Framework.Confirm("Are you sure you want to delete this quest?", function () {
-            for (var i = 0; i < world.Quests.length; i++) {
-                if (world.Quests[i].Name == questEditor.selectedQuest.Name) {
-                    world.Quests.splice(i, 1);
-                    questEditor.selector.UpdateList();
-                    questEditor.selector.Select(null);
-                    SearchPanel.Update();
-                    return;
-                }
-            }
-        });
-    };
-    QuestEditor.ChangeName = function () {
-        var newName = $("#questName").val();
-        if ((newName.match(databaseNameRule) || !newName || newName.length < 1) || (world.GetQuest(newName) && world.GetQuest(newName) != questEditor.selectedQuest)) {
-            $("#questName").css('backgroundColor', '#FFE0E0');
-            return;
-        }
-        $("#questName").css('backgroundColor', '');
-        questEditor.selectedQuest.Name = newName;
-        questEditor.selector.UpdateList();
-        SearchPanel.Update();
-    };
-    QuestEditor.ChangeDescription = function () {
-        questEditor.selectedQuest.Description = $("#questDescription").val();
-    };
-    QuestEditor.AddJournalEntry = function () {
-        if (questEditor.selectedQuest === null)
-            return;
-        var journalEntry = new JournalEntry();
-        var nextId = 1;
-        for (var i = 0; i < questEditor.selectedQuest.JournalEntries.length; i++)
-            nextId = Math.max(questEditor.selectedQuest.JournalEntries[i].Id + 1, nextId);
-        journalEntry.Entry = "Entry...";
-        journalEntry.Id = nextId;
-        questEditor.selectedQuest.JournalEntries.push(journalEntry);
-        QuestEditor.UpdateJournalEntries();
-    };
-    return QuestEditor;
 }());
 ///<reference path="../../../Common/Libs/MiniQuery.ts" />
 var skillEditor = new (/** @class */ (function () {
