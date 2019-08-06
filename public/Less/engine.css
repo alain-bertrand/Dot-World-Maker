@@ -1428,7 +1428,7 @@ h1 {
 }
 .imageDisplayContainer {
   position: absolute;
-  top: calc(227px);
+  top: calc(192px + 35px);
   right: 30px;
   bottom: 30px;
   left: 207px;
@@ -2289,7 +2289,7 @@ h1 {
   position: absolute;
   left: 0px;
   right: 30px;
-  top: calc(135px);
+  top: calc(100px + 35px);
   bottom: 25px;
   overflow: scroll;
   border: solid 1px #c0c0c0;
@@ -2330,7 +2330,7 @@ h1 {
   left: 0px;
   right: 30px;
   bottom: 25px;
-  top: calc(132px);
+  top: calc(97px + 35px);
   border: solid 1px #c0c0c0;
   overflow: scroll;
 }
@@ -2391,7 +2391,7 @@ h1 {
   position: absolute;
   left: 210px;
   right: 0px;
-  top: calc(65px);
+  top: calc(35px + 30);
   bottom: 0px;
 }
 .mapWithSubPanel {
@@ -2557,7 +2557,7 @@ h1 {
 }
 #mapEditorToolbar {
   position: absolute;
-  top: calc(33px);
+  top: calc(35px - 2px);
   left: 210px;
   right: 0px;
   height: 30px;
@@ -2652,7 +2652,7 @@ h1 {
 }
 #modulesList {
   position: absolute;
-  top: calc(70px);
+  top: calc(35px + 35px);
   left: 5px;
   right: 35px;
   bottom: 40px;

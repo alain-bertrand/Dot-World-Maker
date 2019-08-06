@@ -59,7 +59,7 @@ gulp.task("compile:less", compileLess);
 function compileLess(cb)
 {
     process.chdir(__dirname);
-    return gulp.src(['./public/Less/engine.less', './public/Less/home.less']).pipe(less({})).pipe(gulp.dest('./public/Less')).on('error', swallowError);
+    return gulp.src(['./public/Less/engine.less']).pipe(less({})).pipe(gulp.dest('./public/Less')).on('error', swallowError);
 }
 
 function cleanCSS(cb)
