@@ -455,7 +455,6 @@ class Main
                     },
                     error: function (msg, textStatus)
                     {
-                        //if (("" + document.location).indexOf("dotworld.me") == -1 && ("" + document.location).indexOf("/play.html") == -1)
                         if (("" + document.location).indexOf("maker.html") != -1)
                             Main.ReLogin(Main.CheckAccess);
                         else
@@ -466,7 +465,6 @@ class Main
             },
             error: function (msg, textStatus)
             {
-                //if (("" + document.location).indexOf("dotworld.me") == -1 && ("" + document.location).indexOf("/play.html") == -1)
                 if (("" + document.location).indexOf("maker.html") != -1)
                     Main.ReLogin(Main.CheckAccess);
                 else
