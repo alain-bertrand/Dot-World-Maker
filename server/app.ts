@@ -1,12 +1,9 @@
-﻿///<reference path="../typings/node.d.ts" />
-
-var express = require('express');
+﻿var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var fs = require('fs');
-var mysql = require('mysql');
 var hash = require('crypto');
 var compression = require('compression');
 var multer = require('multer');
@@ -163,29 +160,6 @@ function staticInclude(req, res, next)
             res.setHeader("Expires", new Date(Date.now() + 360 * 86400000).toUTCString());
         }
         next();
-    }
-}
-
-function getConnection()
-{
-    try
-    {
-        var conn = mysql.createConnection({
-            host: packageJson.config.dbhost,
-            user: packageJson.config.dbuser,
-            password: packageJson.config.dbpass,
-            database: packageJson.config.dbname,
-            insecureAuth: true
-        });
-        conn.on("error", function (err)
-        {
-
-        });
-        return conn;
-    }
-    catch (ex)
-    {
-        return null;
     }
 }
 

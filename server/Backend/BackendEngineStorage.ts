@@ -1,4 +1,6 @@
-﻿app.post('/backend/SaveGameStorage', function (req, res, next)
+﻿/// <reference path="Database.ts" />
+
+app.post('/backend/SaveGameStorage', async function (req, res, next)
 {
     if (!req.body.game)
     {
@@ -58,53 +60,44 @@
         return;
     }
 
-    connection.connect(function (err)
+    try
     {
-        if (err != null)
-        {
-            connection.end();
-            console.log(err);
-            res.writeHead(500, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ error: "error with database." }));
-            res.end();
-            return;
-        }
-        connection.query('select id from storage_table where game_id = ? and table_name = ?', [req.body.game, req.body.table], function (err1, result)
-        {
-            if (err1 != null)
-            {
-                connection.end();
-                console.log(err1);
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "error with database." }));
-                res.end();
-                return;
-            }
-            // First time writing data to this storage
-            if (result.length == 0)
-                CreateEngineStorage(res, connection, req.body.game, req.body.table, JSON.parse(req.body.headers), JSON.parse(req.body.values));
-            else
-                CheckInsertRowEngineStorage(res, connection, result[0].id, JSON.parse(req.body.headers), JSON.parse(req.body.values));
-        });
-    });
+        await connection.connect();
+    }
+    catch (ex)
+    {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "error with database." }));
+        res.end();
+        return;
+    }
+
+    try
+    {
+        var result = await connection.query('select id from storage_table where game_id = ? and table_name = ?', [req.body.game, req.body.table]);
+        // First time writing data to this storage
+        if (result.length == 0)
+            CreateEngineStorage(res, connection, req.body.game, req.body.table, JSON.parse(req.body.headers), JSON.parse(req.body.values));
+        else
+            CheckInsertRowEngineStorage(res, connection, result[0].id, JSON.parse(req.body.headers), JSON.parse(req.body.values));
+    }
+    catch (ex)
+    {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "error with database." }));
+        res.end();
+        return;
+    }
 });
 
-function CreateEngineStorage(res, connection, gameId: number, table: string, headers: string[], values: string[])
+async function CreateEngineStorage(res, connection, gameId: number, table: string, headers: string[], values: string[])
 {
-    connection.query('insert into storage_table(game_id, table_name) values(?, ?)', [gameId, table], function (err1, result)
-    {
-        if (err1 != null)
-        {
-            connection.end();
-            console.log(err1);
-            res.writeHead(500, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ error: "error with database." }));
-            res.end();
-            return;
-        }
-
-        CheckInsertRowEngineStorage(res, connection, result.insertId, headers, values);
-    });
+    var result = await connection.query('insert into storage_table(game_id, table_name) values(?, ?)', [gameId, table]);
+    CheckInsertRowEngineStorage(res, connection, result.insertId, headers, values);
 }
 
 interface StorageColumn
@@ -114,144 +107,99 @@ interface StorageColumn
     value?: string;
 }
 
-function CheckInsertRowEngineStorage(res, connection, tableId: number, headers: string[], values: string[])
+async function CheckInsertRowEngineStorage(res, connection, tableId: number, headers: string[], values: string[])
 {
-    connection.query('select id, column_name from storage_table_column where table_id = ?', [tableId], function (err1, result)
+    var result = await connection.query('select id, column_name from storage_table_column where table_id = ?', [tableId]);
+
+    var missingNames = headers.slice();
+    var missingValues = values.slice();
+    var names: StorageColumn[] = [];
+    var todo = [];
+
+    for (var i = 0; i < result.length; i++)
     {
-        if (err1 != null)
+        var n = result[i].column_name.toLowerCase();
+        for (var j = 0; j < headers.length; j++)
         {
-            connection.end();
-            console.log(err1);
-            res.writeHead(500, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ error: "error with database." }));
-            res.end();
-            return;
-        }
-
-        var missingNames = headers.slice();
-        var missingValues = values.slice();
-        var names: StorageColumn[] = [];
-        var todo = [];
-
-        for (var i = 0; i < result.length; i++)
-        {
-            var n = result[i].column_name.toLowerCase();
-            for (var j = 0; j < headers.length; j++)
+            if (missingNames[j].toLowerCase() == n)
             {
-                if (missingNames[j].toLowerCase() == n)
+                names.push({
+                    name: missingNames[j],
+                    id: result[i].id,
+                    value: missingValues[j]
+                });
+                missingNames.splice(j, 1);
+                missingValues.splice(j, 1);
+                break;
+            }
+        }
+    }
+
+    for (var i = 0; i < missingNames.length; i++)
+        names.push({
+            name: missingNames[i],
+            id: -1,
+            value: missingValues[i]
+        });
+
+    if (missingNames.length == 0)
+        await InsertRowEngineStorage(res, connection, tableId, names);
+    else
+    {
+        var sql = 'insert into storage_table_column(table_id, column_name) values';
+        var sqlValues = [];
+        for (var i = 0; i < missingNames.length; i++)
+        {
+            if (i != 0)
+                sql += ", ";
+            sql += "(?,?)";
+            sqlValues.push(tableId, missingNames[i]);
+        }
+        //console.log(sql);
+
+        var res2 = await connection.query(sql, sqlValues);
+        for (var i = 0; i < missingNames.length; i++)
+        {
+            for (var j = 0; j < names.length; j++)
+            {
+                if (names[j].name == missingNames[i])
                 {
-                    names.push({
-                        name: missingNames[j],
-                        id: result[i].id,
-                        value: missingValues[j]
-                    });
-                    missingNames.splice(j, 1);
-                    missingValues.splice(j, 1);
+                    names[j].id = res2.insertId + i;
                     break;
                 }
             }
         }
 
-        for (var i = 0; i < missingNames.length; i++)
-            names.push({
-                name: missingNames[i],
-                id: -1,
-                value: missingValues[i]
-            });
-
-        if (missingNames.length == 0)
-            InsertRowEngineStorage(res, connection, tableId, names);
-        else
-        {
-            var sql = 'insert into storage_table_column(table_id, column_name) values';
-            var sqlValues = [];
-            for (var i = 0; i < missingNames.length; i++)
-            {
-                if (i != 0)
-                    sql += ", ";
-                sql += "(?,?)";
-                sqlValues.push(tableId, missingNames[i]);
-            }
-            //console.log(sql);
-
-            connection.query(sql, sqlValues, function (err2, res2)
-            {
-                if (err2 != null)
-                {
-                    connection.end();
-                    console.log(err2);
-                    res.writeHead(500, { 'Content-Type': 'text/json' });
-                    res.write(JSON.stringify({ error: "error with database." }));
-                    res.end();
-                    return;
-                }
-
-                for (var i = 0; i < missingNames.length; i++)
-                {
-                    for (var j = 0; j < names.length; j++)
-                    {
-                        if (names[j].name == missingNames[i])
-                        {
-                            names[j].id = res2.insertId + i;
-                            break;
-                        }
-                    }
-                }
-
-                InsertRowEngineStorage(res, connection, tableId, names);
-            });
-        }
-    });
+        await InsertRowEngineStorage(res, connection, tableId, names);
+    }
 }
 
-function InsertRowEngineStorage(res, connection, tableId: number, headers: StorageColumn[])
+async function InsertRowEngineStorage(res, connection, tableId: number, headers: StorageColumn[])
 {
-    connection.query('insert into storage_entry(table_id) values(?)', [tableId], function (err1, result)
+    var result = await connection.query('insert into storage_entry(table_id) values(?)', [tableId]);
+
+    var rowId = result.insertId;
+    var sqlValues = [];
+
+    var sql = 'insert into storage_value(row_id, column_id, value) value';
+    for (var i = 0; i < headers.length; i++)
     {
-        if (err1 != null)
-        {
-            connection.end();
-            console.log(err1);
-            res.writeHead(500, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ error: "error with database." }));
-            res.end();
-            return;
-        }
+        if (i != 0)
+            sql += ", ";
+        sql += "(?,?,?)";
+        sqlValues.push(rowId);
+        sqlValues.push(headers[i].id);
+        sqlValues.push(headers[i].value);
+    }
 
-        var rowId = result.insertId;
-        var sqlValues = [];
+    var res2 = await connection.query(sql, sqlValues);
 
-        var sql = 'insert into storage_value(row_id, column_id, value) value';
-        for (var i = 0; i < headers.length; i++)
-        {
-            if (i != 0)
-                sql += ", ";
-            sql += "(?,?,?)";
-            sqlValues.push(rowId);
-            sqlValues.push(headers[i].id);
-            sqlValues.push(headers[i].value);
-        }
-
-        connection.query(sql, sqlValues, function (err2, res2)
-        {
-            if (err2 != null)
-            {
-                connection.end();
-                console.log(err2);
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "error with database." }));
-                res.end();
-                return;
-            }
-
-            res.writeHead(200, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify(rowId));
-            res.end();
-        });
-    });
+    res.writeHead(200, { 'Content-Type': 'text/json' });
+    res.write(JSON.stringify(rowId));
+    res.end();
 }
 
-app.post('/backend/GetGameStorage', function (req, res, next)
+app.post('/backend/GetGameStorage', async function (req, res, next)
 {
     if (!req.body.game)
     {
@@ -301,125 +249,104 @@ app.post('/backend/GetGameStorage', function (req, res, next)
         return;
     }
 
-    connection.connect(function (err)
+    try
     {
-        if (err != null)
+        await connection.connect();
+    }
+    catch (ex)
+    {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "error with database." }));
+        res.end();
+        return;
+    }
+
+    try
+    {
+        var result = await connection.query('select id from storage_table where game_id = ? and table_name = ?', [req.body.game, req.body.table]);
+        if (result.length == 0)
         {
-            connection.end();
-            console.log(err);
-            res.writeHead(500, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ error: "error with database." }));
+            res.writeHead(200, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify({ headers: [], rows: [] }));
             res.end();
             return;
         }
-
-        connection.query('select id from storage_table where game_id = ? and table_name = ?', [req.body.game, req.body.table], function (err1, result)
+        else
         {
-            if (err1 != null)
-            {
-                connection.end();
-                console.log(err1);
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "error with database." }));
-                res.end();
-                return;
-            }
-            if (result.length == 0)
-            {
-                res.writeHead(200, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ headers: [], rows: [] }));
-                res.end();
-                return;
-            }
-            else
-            {
-                SelectColumnEngineStorage(res, connection, (0 + result[0].id), JSON.parse(req.body.headers), req.body.condition, req.body.orderBy, (cols: string[], rows: string[][], storageColumns: StorageColumn[]) =>
-                {
-                    connection.end();
-                    res.writeHead(200, { 'Content-Type': 'text/json' });
-                    res.write(JSON.stringify({ headers: cols, rows: rows }));
-                    res.end();
-                });
-                return;
-            }
-        });
-    });
+            var output = await SelectColumnEngineStorage(res, connection, (0 + result[0].id), JSON.parse(req.body.headers), req.body.condition, req.body.orderBy);
+            connection.end();
+            res.writeHead(200, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify({ headers: output.Columns, rows: output.Rows }));
+            res.end();
+            return;
+        }
+    }
+    catch (ex)
+    {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "error with database." }));
+        res.end();
+        return;
+    }
 });
 
-function SelectColumnEngineStorage(res, connection, tableId: number, headers: string[], condition: string, orderBy: string, callBack: (cols: string[], rows: string[][], storageColumns: StorageColumn[]) => void)
+interface ColumnStorageContainer
+{
+    Columns: string[];
+    Rows: string[][];
+    Storage: StorageColumn[];
+}
+
+async function SelectColumnEngineStorage(res, connection, tableId: number, headers: string[], condition: string, orderBy: string): Promise<ColumnStorageContainer>
 {
     var names: StorageColumn[] = [];
     if (!headers || headers.length == 0)
     {
-        connection.query('select id, column_name from storage_table_column where table_id = ?', [tableId], function (err1, result)
-        {
-            if (err1 != null)
-            {
-                connection.end();
-                console.log(err1);
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "error with database." }));
-                res.end();
-                return;
-            }
+        var result = await connection.query('select id, column_name from storage_table_column where table_id = ?', [tableId]);
 
-            names.push({ id: 0, name: "rowId" });
+        names.push({ id: 0, name: "rowId" });
 
-            for (var i = 0; i < result.length; i++)
-                names.push({ id: result[i].id, name: result[i].column_name });
+        for (var i = 0; i < result.length; i++)
+            names.push({ id: result[i].id, name: result[i].column_name });
 
-            SelectEngineStorage(res, connection, tableId, names, condition, orderBy, callBack);
-        });
+        return SelectEngineStorage(res, connection, tableId, names, condition, orderBy);
     }
     else
     {
         for (var i = 0; i < headers.length; i++)
         {
             if (!headers[i].match(/^[a-z][a-z_0-9]*$/i))
-            {
-                connection.end();
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "Column '" + headers[i] + "' is not a valid column name." }));
-                res.end();
-                return;
-            }
+                throw new Error("Column '" + headers[i] + "' is not a valid column name.");
         }
         var columnsNames = "('" + headers.join("','") + "')";
 
-        connection.query('select id, column_name from storage_table_column where table_id = ? and column_name in ' + columnsNames, [tableId], function (err1, result)
+        var result = await connection.query('select id, column_name from storage_table_column where table_id = ? and column_name in ' + columnsNames, [tableId]);
+
+        for (var j = 0; j < headers.length; j++)
         {
-            if (err1 != null)
+            var found = false;
+            for (var i = 0; i < result.length; i++)
             {
-                connection.end();
-                console.log(err1);
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "error with database." }));
-                res.end();
-                return;
-            }
-
-            for (var j = 0; j < headers.length; j++)
-            {
-                var found = false;
-                for (var i = 0; i < result.length; i++)
+                if (headers[j].toLowerCase() == result[i].column_name.toLowerCase())
                 {
-                    if (headers[j].toLowerCase() == result[i].column_name.toLowerCase())
-                    {
-                        names.push({ id: result[i].id, name: result[i].column_name });
-                        found = true;
-                        break;
-                    }
+                    names.push({ id: result[i].id, name: result[i].column_name });
+                    found = true;
+                    break;
                 }
-                if (!found)
-                    names.push({ id: -1, name: headers[j] });
             }
+            if (!found)
+                names.push({ id: -1, name: headers[j] });
+        }
 
-            SelectEngineStorage(res, connection, tableId, names, condition, orderBy, callBack);
-        });
+        return SelectEngineStorage(res, connection, tableId, names, condition, orderBy);
     }
 }
 
-function SelectEngineStorage(res, connection, tableId: number, columns: StorageColumn[], condition: string, orderBy: string, callBack: (cols: string[], rows: string[][], storageColumns: StorageColumn[]) => void)
+async function SelectEngineStorage(res, connection, tableId: number, columns: StorageColumn[], condition: string, orderBy: string): Promise<ColumnStorageContainer>
 {
     var select = "";
     var join = "";
@@ -451,40 +378,28 @@ function SelectEngineStorage(res, connection, tableId: number, columns: StorageC
     }
     sql += " limit 30";
 
-    //console.log(sql);
+    var result = await connection.query(sql, [tableId]);
 
-    connection.query(sql, [tableId], function (err1, result)
+    var rows: string[][] = [];
+    for (var i = 0; i < result.length; i++)
     {
-        if (err1 != null)
+        var row: string[] = [];
+        for (var j = 0; j < columns.length; j++)
         {
-            console.log(err1);
-            res.writeHead(500, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ error: "error with database." }));
-            res.end();
-            return;
+            if (columns[j].id == 0)
+                row.push(result[i].id);
+            else if (columns[j].id > 0)
+                row.push(result[i]["c" + j]);
+            else
+                row.push(null);
         }
+        rows.push(row);
+    }
 
-        var rows: string[][] = [];
-        for (var i = 0; i < result.length; i++)
-        {
-            var row: string[] = [];
-            for (var j = 0; j < columns.length; j++)
-            {
-                if (columns[j].id == 0)
-                    row.push(result[i].id);
-                else if (columns[j].id > 0)
-                    row.push(result[i]["c" + j]);
-                else
-                    row.push(null);
-            }
-            rows.push(row);
-        }
-
-        callBack(cols, rows, columns);
-    });
+    return { Columns: cols, Rows: rows, Storage: columns };
 }
 
-app.post('/backend/DeleteOlderStorage', function (req, res, next)
+app.post('/backend/DeleteOlderStorage', async function (req, res, next)
 {
     if (!req.body.game)
     {
@@ -528,89 +443,47 @@ app.post('/backend/DeleteOlderStorage', function (req, res, next)
         return;
     }
 
-    connection.connect(function (err)
+    try
     {
-        if (err != null)
+        await connection.connect();
+
+        var result = await connection.query('select id from storage_table where game_id = ? and table_name = ?', [req.body.game, req.body.table]);
+
+        var tableId = result[0].id;
+
+        var res2 = await connection.query('select id from storage_entry where table_id = ? order by id desc limit 0, ?', [tableId, parseInt(req.body.keep)]);
+
+        var ids: number[] = [];
+        for (var i = 0; i < res2.length; i++)
+            ids.push(res2[i].id);
+        if (ids.length == 0)
         {
-            connection.end();
-            console.log(err);
-            res.writeHead(500, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ error: "error with database." }));
+            res.writeHead(200, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify(true));
             res.end();
             return;
         }
-        connection.query('select id from storage_table where game_id = ? and table_name = ?', [req.body.game, req.body.table], function (err1, result)
-        {
-            if (err1 != null)
-            {
-                connection.end();
-                console.log(err1);
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "error with database." }));
-                res.end();
-                return;
-            }
 
-            var tableId = result[0].id;
+        await connection.query('delete from storage_entry where id not in (' + ids.join(",") + ') and table_id = ?', [tableId]);
+        await connection.query('delete from storage_value where row_id not in (select id from storage_entry)', []);
 
-            connection.query('select id from storage_entry where table_id = ? order by id desc limit 0, ?', [tableId, parseInt(req.body.keep)], function (err2, res2)
-            {
-                if (err2 != null)
-                {
-                    connection.end();
-                    console.log(err2);
-                    res.writeHead(500, { 'Content-Type': 'text/json' });
-                    res.write(JSON.stringify({ error: "error with database." }));
-                    res.end();
-                    return;
-                }
-
-                var ids: number[] = [];
-                for (var i = 0; i < res2.length; i++)
-                    ids.push(res2[i].id);
-                if (ids.length == 0)
-                {
-                    res.writeHead(200, { 'Content-Type': 'text/json' });
-                    res.write(JSON.stringify(true));
-                    res.end();
-                    return;
-                }
-
-                connection.query('delete from storage_entry where id not in (' + ids.join(",") + ') and table_id = ?', [tableId], function (err3, res3)
-                {
-                    if (err3 != null)
-                    {
-                        connection.end();
-                        console.log(err3);
-                        res.writeHead(500, { 'Content-Type': 'text/json' });
-                        res.write(JSON.stringify({ error: "error with database." }));
-                        res.end();
-                        return;
-                    }
-
-                    connection.query('delete from storage_value where row_id not in (select id from storage_entry)', [], function (err4, res4)
-                    {
-                        connection.end();
-                        if (err4 != null)
-                        {
-                            console.log(err4);
-                            res.writeHead(500, { 'Content-Type': 'text/json' });
-                            res.write(JSON.stringify({ error: "error with database." }));
-                            res.end();
-                            return;
-                        }
-
-                        res.writeHead(200, { 'Content-Type': 'text/json' });
-                        res.write(JSON.stringify(true));
-                        res.end();
-                    });
-                });
-            });
-        });
-    });
+        connection.end();
+        res.writeHead(200, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify(true));
+        res.end();
+    }
+    catch (ex)
+    {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "error with database." }));
+        res.end();
+        return;
+    }
 });
 
-app.post('/backend/DeleteRowStorage', function (req, res, next)
+app.post('/backend/DeleteRowStorage', async function (req, res, next)
 {
     if (!req.body.game)
     {
@@ -654,66 +527,34 @@ app.post('/backend/DeleteRowStorage', function (req, res, next)
         return;
     }
 
-    connection.connect(function (err)
+    try
     {
-        if (err != null)
-        {
-            connection.end();
-            console.log(err);
-            res.writeHead(500, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ error: "error with database." }));
-            res.end();
-            return;
-        }
-        connection.query('select id from storage_table where game_id = ? and table_name = ?', [req.body.game, req.body.table], function (err1, result)
-        {
-            if (err1 != null)
-            {
-                connection.end();
-                console.log(err1);
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "error with database." }));
-                res.end();
-                return;
-            }
+        await connection.connect();
 
-            var tableId = result[0].id;
+        var result = await connection.query('select id from storage_table where game_id = ? and table_name = ?', [req.body.game, req.body.table]);
+        var tableId = result[0].id;
 
 
-            connection.query('delete from storage_entry where id = ? and table_id = ?', [req.body.row, tableId], function (err3, res3)
-            {
-                if (err3 != null)
-                {
-                    connection.end();
-                    console.log(err3);
-                    res.writeHead(500, { 'Content-Type': 'text/json' });
-                    res.write(JSON.stringify({ error: "error with database." }));
-                    res.end();
-                    return;
-                }
+        await connection.query('delete from storage_entry where id = ? and table_id = ?', [req.body.row, tableId]);
+        await connection.query('delete from storage_value where row_id not in (select id from storage_entry)', []);
 
-                connection.query('delete from storage_value where row_id not in (select id from storage_entry)', [], function (err4, res4)
-                {
-                    connection.end();
-                    if (err4 != null)
-                    {
-                        console.log(err4);
-                        res.writeHead(500, { 'Content-Type': 'text/json' });
-                        res.write(JSON.stringify({ error: "error with database." }));
-                        res.end();
-                        return;
-                    }
-
-                    res.writeHead(200, { 'Content-Type': 'text/json' });
-                    res.write(JSON.stringify(true));
-                    res.end();
-                });
-            });
-        });
-    });
+        connection.end();
+        res.writeHead(200, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify(true));
+        res.end();
+    }
+    catch (ex)
+    {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "error with database." }));
+        res.end();
+        return;
+    }
 });
 
-app.post('/backend/UpdateStorage', function (req, res, next)
+app.post('/backend/UpdateStorage', async function (req, res, next)
 {
     if (!req.body.game)
     {
@@ -773,98 +614,77 @@ app.post('/backend/UpdateStorage', function (req, res, next)
         return;
     }
 
-    connection.connect(function (err)
+    try
     {
-        if (err != null)
+        await connection.connect();
+
+        var result = await connection.query('select id from storage_table where game_id = ? and table_name = ?', [req.body.game, req.body.table]);
+        if (result.length == 0)
         {
             connection.end();
-            console.log(err);
-            res.writeHead(500, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ error: "error with database." }));
+            res.writeHead(200, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify(0));
             res.end();
             return;
         }
 
-        connection.query('select id from storage_table where game_id = ? and table_name = ?', [req.body.game, req.body.table], function (err1, result)
+        var output = await SelectColumnEngineStorage(res, connection, (0 + result[0].id), null, req.body.condition, null);
+        if (!output || output.Rows.length == 0)
         {
-            if (err1 != null)
+            connection.end();
+            res.writeHead(200, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify(0));
+            res.end();
+            return;
+        }
+
+        var rows = output.Rows;
+        var storageColumns = output.Storage;
+
+        var ids = [];
+        for (var i = 0; i < rows.length; i++)
+            ids.push(rows[i][0]);
+        var c = -1;
+        for (var i = 0; i < storageColumns.length; i++)
+        {
+            if (storageColumns[i].name.toLowerCase() == req.body.column.toLowerCase())
             {
-                connection.end();
-                console.log(err1);
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "error with database." }));
-                res.end();
-                return;
+                c = storageColumns[i].id;
+                break;
             }
-            if (result.length == 0)
-            {
-                res.writeHead(200, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify(0));
-                res.end();
-                return;
-            }
-            else
-            {
-                SelectColumnEngineStorage(res, connection, (0 + result[0].id), null, req.body.condition, null, (cols: string[], rows: string[][], storageColumns: StorageColumn[]) =>
-                {
-                    if (rows.length == 0)
-                    {
-                        connection.end();
-                        res.writeHead(200, { 'Content-Type': 'text/json' });
-                        res.write(JSON.stringify(0));
-                        res.end();
-                        return;
-                    }
+        }
 
-                    var ids = [];
-                    for (var i = 0; i < rows.length; i++)
-                        ids.push(rows[i][0]);
-                    var c = -1;
-                    for (var i = 0; i < storageColumns.length; i++)
-                    {
-                        if (storageColumns[i].name.toLowerCase() == req.body.column.toLowerCase())
-                        {
-                            c = storageColumns[i].id;
-                            break;
-                        }
-                    }
+        if (c == -1)
+        {
+            connection.end();
+            res.writeHead(500, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify({ error: "column '" + req.body.column + "' unknown." }));
+            res.end();
+            return;
+        }
 
-                    if (c == -1)
-                    {
-                        connection.end();
-                        res.writeHead(500, { 'Content-Type': 'text/json' });
-                        res.write(JSON.stringify({ error: "column '" + req.body.column + "' unknown." }));
-                        res.end();
-                        return;
-                    }
+        var sql = "update storage_value set value = ? where row_id in (" + ids.join(",") + ") and column_id = " + c;
+        //console.log(sql);
+        var result2 = await connection.query(sql, [req.body.value]);
+        connection.end();
 
-                    var sql = "update storage_value set value = ? where row_id in (" + ids.join(",") + ") and column_id = " + c;
-                    //console.log(sql);
-                    connection.query(sql, [req.body.value], function (err2, result2)
-                    {
-                        connection.end();
-                        if (err2 != null)
-                        {
-                            console.log(err2);
-                            res.writeHead(500, { 'Content-Type': 'text/json' });
-                            res.write(JSON.stringify({ error: "error with database." }));
-                            res.end();
-                            return;
-                        }
-
-                        res.writeHead(200, { 'Content-Type': 'text/json' });
-                        res.write(JSON.stringify(result2.changedRows));
-                        res.end();
-                        return;
-                    });
-                });
-                return;
-            }
-        });
-    });
+        res.writeHead(200, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify(result2.changedRows));
+        res.end();
+        return;
+    }
+    catch (ex)
+    {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "error with database." }));
+        res.end();
+        return;
+    }
 });
 
-app.post('/backend/DeleteStorage', function (req, res, next)
+app.post('/backend/DeleteStorage', async function (req, res, next)
 {
     if (!req.body.game)
     {
@@ -908,92 +728,59 @@ app.post('/backend/DeleteStorage', function (req, res, next)
         return;
     }
 
-    connection.connect(function (err)
+    try
     {
-        if (err != null)
+        await connection.connect();
+
+        var result = connection.query('select id from storage_table where game_id = ? and table_name = ?', [req.body.game, req.body.table]);
+        if (result.length == 0)
         {
-            connection.end();
-            console.log(err);
-            res.writeHead(500, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ error: "error with database." }));
+            res.writeHead(200, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify(0));
             res.end();
             return;
         }
-
-        connection.query('select id from storage_table where game_id = ? and table_name = ?', [req.body.game, req.body.table], function (err1, result)
+        else
         {
-            if (err1 != null)
+            var output = await SelectColumnEngineStorage(res, connection, (0 + result[0].id), null, req.body.condition, null);
+            var rows = output.Rows;
+
+            if (rows.length == 0)
             {
                 connection.end();
-                console.log(err1);
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "error with database." }));
-                res.end();
-                return;
-            }
-            if (result.length == 0)
-            {
                 res.writeHead(200, { 'Content-Type': 'text/json' });
                 res.write(JSON.stringify(0));
                 res.end();
                 return;
             }
-            else
-            {
-                SelectColumnEngineStorage(res, connection, (0 + result[0].id), null, req.body.condition, null, (cols: string[], rows: string[][], storageColumns: StorageColumn[]) =>
-                {
-                    if (rows.length == 0)
-                    {
-                        connection.end();
-                        res.writeHead(200, { 'Content-Type': 'text/json' });
-                        res.write(JSON.stringify(0));
-                        res.end();
-                        return;
-                    }
 
-                    var ids = [];
-                    for (var i = 0; i < rows.length; i++)
-                        ids.push(rows[i][0]);
+            var ids = [];
+            for (var i = 0; i < rows.length; i++)
+                ids.push(rows[i][0]);
 
-                    var sql = "delete from storage_value where row_id in (" + ids.join(",") + ")";
-                    console.log(sql);
-                    connection.query(sql, [req.body.value], function (err2, result2)
-                    {
-                        if (err2 != null)
-                        {
-                            connection.end();
-                            console.log(err2);
-                            res.writeHead(500, { 'Content-Type': 'text/json' });
-                            res.write(JSON.stringify({ error: "error with database." }));
-                            res.end();
-                            return;
-                        }
+            var sql = "delete from storage_value where row_id in (" + ids.join(",") + ")";
+            console.log(sql);
+            await connection.query(sql, [req.body.value]);
 
-                        var sql = "delete from storage_entry where id in (" + ids.join(",") + ")";
-                        //console.log(sql);
-                        connection.query(sql, [req.body.value], function (err3, result3)
-                        {
-                            connection.end();
-                            if (err3 != null)
-                            {
-                                console.log(err3);
-                                res.writeHead(500, { 'Content-Type': 'text/json' });
-                                res.write(JSON.stringify({ error: "error with database." }));
-                                res.end();
-                                return;
-                            }
-
-                            res.writeHead(200, { 'Content-Type': 'text/json' });
-                            res.write(JSON.stringify(result3.changedRows));
-                            res.end();
-                            return;
-                        });
-                    });
-                });
-                return;
-            }
-        });
-    });
+            var sql = "delete from storage_entry where id in (" + ids.join(",") + ")";
+            //console.log(sql);
+            var result3 = await connection.query(sql, [req.body.value]);
+            connection.end();
+            res.writeHead(200, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify(result3.changedRows));
+            res.end();
+            return;
+        }
+    }
+    catch (ex)
+    {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "error with database." }));
+        res.end();
+        return;
+    }
 });
 
 app.post('/backend/DropTable', function (req, res, next)

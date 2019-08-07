@@ -1,5 +1,4 @@
-﻿///<reference path="../../typings/node.d.ts" />
-///<reference path="../app.ts" />
+﻿///<reference path="../app.ts" />
 
 app.post('/backend/GetMap', function (req, res, next)
 {

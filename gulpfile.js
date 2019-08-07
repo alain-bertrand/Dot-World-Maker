@@ -93,7 +93,7 @@ function compileServer(cb)
         .pipe(typescript({
             out: "app.js",
             module: "system",
-            target: "es5",
+            target: "es2017",
             experimentalDecorators: true,
             sourceMap: true,
         }))

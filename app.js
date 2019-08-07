@@ -1,11 +1,9 @@
-///<reference path="../typings/node.d.ts" />
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var fs = require('fs');
-var mysql = require('mysql');
 var hash = require('crypto');
 var compression = require('compression');
 var multer = require('multer');
@@ -66,6 +64,7 @@ function base64decode(source) {
     // Node 5.10+
     if (typeof Buffer.from === "function")
         return Buffer.from(source, 'base64');
+    // older Node versions
     else
         return new Buffer(source, 'base64');
 }
@@ -117,23 +116,6 @@ function staticInclude(req, res, next) {
         next();
     }
 }
-function getConnection() {
-    try {
-        var conn = mysql.createConnection({
-            host: packageJson.config.dbhost,
-            user: packageJson.config.dbuser,
-            password: packageJson.config.dbpass,
-            database: packageJson.config.dbname,
-            insecureAuth: true
-        });
-        conn.on("error", function (err) {
-        });
-        return conn;
-    }
-    catch (ex) {
-        return null;
-    }
-}
 module.exports = { app: app, http: server };
 function CreateGameDir(gameId) {
     if (!fs.existsSync(__dirname + '/public/user_art/' + GameDir(gameId)))
@@ -162,7 +144,7 @@ app.post('/upload/AndGet', upload.single('fileUpload'), function (req, res) {
     res.write("<script>window.parent." + req.body.returnClass + ".Result('" + JSON.stringify({ file: req.file.originalname, data: data }) + "');</script>");
     res.end();
 });
-app.post('/upload/Art', upload.single('fileUpload'), function (req, res) {
+app.post('/upload/Art', upload.single('fileUpload'), async function (req, res) {
     if (!req.body.returnClass) {
         res.writeHead(500, { 'Content-Type': 'text/html' });
         res.write("Missing parameter function");
@@ -198,27 +180,26 @@ app.post('/upload/Art', upload.single('fileUpload'), function (req, res) {
         return;
     }
     req.file.originalname = req.file.originalname.match(/[^\\\/]*$/)[0];
-    CanStoreSize(tokenInfo.id, req.body.game, fs.statSync(req.file.path).size, function (canUpload) {
-        if (canUpload) {
-            CreateGameDir(parseInt(req.body.game));
-            var finalName = __dirname + '/public/user_art/' + GameDir(parseInt(req.body.game)) + '/' + req.file.originalname;
-            if (fs.existsSync(finalName))
-                fs.unlinkSync(finalName);
-            fs.renameSync(req.file.path, finalName);
-            res.writeHead(200, { 'Content-Type': 'text/html' });
-            res.write("<script>window.parent." + req.body.returnClass + ".Result('" + JSON.stringify({ new_file: '/user_art/' + GameDir(parseInt(req.body.game)) + '/' + req.file.originalname }) + "');</script>");
-            res.end();
-        }
-        else {
-            if (fs.existsSync(req.file.path))
-                fs.unlinkSync(req.file.path);
-            res.writeHead(200, { 'Content-Type': 'text/html' });
-            res.write("<script>window.parent." + req.body.returnClass + ".Result('" + JSON.stringify({ error: "you do not have enough space left." }) + "');</script>");
-            res.end();
-        }
-    });
+    var canUpload = await CanStoreSize(tokenInfo.id, req.body.game, fs.statSync(req.file.path).size);
+    if (canUpload) {
+        CreateGameDir(parseInt(req.body.game));
+        var finalName = __dirname + '/public/user_art/' + GameDir(parseInt(req.body.game)) + '/' + req.file.originalname;
+        if (fs.existsSync(finalName))
+            fs.unlinkSync(finalName);
+        fs.renameSync(req.file.path, finalName);
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.write("<script>window.parent." + req.body.returnClass + ".Result('" + JSON.stringify({ new_file: '/user_art/' + GameDir(parseInt(req.body.game)) + '/' + req.file.originalname }) + "');</script>");
+        res.end();
+    }
+    else {
+        if (fs.existsSync(req.file.path))
+            fs.unlinkSync(req.file.path);
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.write("<script>window.parent." + req.body.returnClass + ".Result('" + JSON.stringify({ error: "you do not have enough space left." }) + "');</script>");
+        res.end();
+    }
 });
-app.post('/upload/Sounds', upload.fields([{ name: 'mp3Upload', maxCount: 1 }, { name: 'oggUpload', maxCount: 1 }]), function (req, res) {
+app.post('/upload/Sounds', upload.fields([{ name: 'mp3Upload', maxCount: 1 }, { name: 'oggUpload', maxCount: 1 }]), async function (req, res) {
     if (!req.body.token) {
         res.writeHead(500, { 'Content-Type': 'text/json' });
         res.write(JSON.stringify({ error: "parameter 'token' is missing." }));
@@ -276,35 +257,34 @@ app.post('/upload/Sounds', upload.fields([{ name: 'mp3Upload', maxCount: 1 }, { 
         res.end();
         return;
     }
-    CanStoreSize(tokenInfo.id, req.body.game, fs.statSync(req.files['mp3Upload'][0].path).size, function (canUpload) {
-        if (canUpload) {
-            CreateGameDir(parseInt(req.body.game));
-            var finalMP3Name = __dirname + '/public/user_art/' + GameDir(parseInt(req.body.game)) + '/' + req.files['mp3Upload'][0].originalname;
-            //var finalOGGName = __dirname + '/public/user_art/' + GameDir(parseInt(req.body.game)) + '/' + req.files['oggUpload'][0].originalname;
-            if (fs.existsSync(finalMP3Name))
-                fs.unlinkSync(finalMP3Name);
-            /*if (fs.existsSync(finalOGGName))
-                fs.unlinkSync(finalOGGName);*/
-            fs.renameSync(req.files['mp3Upload'][0].path, finalMP3Name);
-            //fs.renameSync(req.files['oggUpload'][0].path, finalOGGName);
-            res.writeHead(200, { 'Content-Type': 'text/html' });
-            res.write("<script>window.parent.ArtSoundEditor.Result('" + JSON.stringify({
-                mp3: '/user_art/' + GameDir(parseInt(req.body.game)) + '/' + req.files['mp3Upload'][0].originalname /*,
-        ogg: '/user_art/' + GameDir(parseInt(req.body.game)) + '/' + req.files['oggUpload'][0].originalname*/
-            }) + "');</script>");
-            res.end();
-        }
-        else {
-            if (fs.existsSync(req.files['mp3Upload'][0].path))
-                fs.unlinkSync(req.files['mp3Upload'][0].path);
-            res.writeHead(200, { 'Content-Type': 'text/html' });
-            res.write("<script>window.parent.ArtSoundEditor.Result('" + JSON.stringify({ error: "you do not have enough space left." }) + "');</script>");
-            res.end();
-            return;
-        }
-    });
+    var canUpload = await CanStoreSize(tokenInfo.id, req.body.game, fs.statSync(req.files['mp3Upload'][0].path).size);
+    if (canUpload) {
+        CreateGameDir(parseInt(req.body.game));
+        var finalMP3Name = __dirname + '/public/user_art/' + GameDir(parseInt(req.body.game)) + '/' + req.files['mp3Upload'][0].originalname;
+        //var finalOGGName = __dirname + '/public/user_art/' + GameDir(parseInt(req.body.game)) + '/' + req.files['oggUpload'][0].originalname;
+        if (fs.existsSync(finalMP3Name))
+            fs.unlinkSync(finalMP3Name);
+        /*if (fs.existsSync(finalOGGName))
+            fs.unlinkSync(finalOGGName);*/
+        fs.renameSync(req.files['mp3Upload'][0].path, finalMP3Name);
+        //fs.renameSync(req.files['oggUpload'][0].path, finalOGGName);
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.write("<script>window.parent.ArtSoundEditor.Result('" + JSON.stringify({
+            mp3: '/user_art/' + GameDir(parseInt(req.body.game)) + '/' + req.files['mp3Upload'][0].originalname /*,
+    ogg: '/user_art/' + GameDir(parseInt(req.body.game)) + '/' + req.files['oggUpload'][0].originalname*/
+        }) + "');</script>");
+        res.end();
+    }
+    else {
+        if (fs.existsSync(req.files['mp3Upload'][0].path))
+            fs.unlinkSync(req.files['mp3Upload'][0].path);
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.write("<script>window.parent.ArtSoundEditor.Result('" + JSON.stringify({ error: "you do not have enough space left." }) + "');</script>");
+        res.end();
+        return;
+    }
 });
-app.post('/backend/GetPixelPaint', function (req, res) {
+app.post('/backend/GetPixelPaint', async function (req, res) {
     if (!req.body.file) {
         res.writeHead(500, { 'Content-Type': 'text/json' });
         res.write(JSON.stringify({ error: "parameter 'file' is missing." }));
@@ -331,26 +311,25 @@ app.post('/backend/GetPixelPaint', function (req, res) {
         return;
     }
     var file = __dirname + '/public/user_art/' + GameDir(parseInt(req.body.game)) + '/' + req.body.file.match(/[^\\\/]*$/)[0].split('?')[0];
-    CanStoreSize(tokenInfo.id, req.body.game, 0, function (canUpload) {
-        if (canUpload) {
-            if (fs.existsSync(file + ".work")) {
-                res.writeHead(200, { 'Content-Type': 'text/json' });
-                res.write(fs.readFileSync(file + ".work"));
-            }
-            else {
-                res.writeHead(200, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify(null));
-            }
-            res.end();
+    var canUpload = await CanStoreSize(tokenInfo.id, req.body.game, 0);
+    if (canUpload) {
+        if (fs.existsSync(file + ".work")) {
+            res.writeHead(200, { 'Content-Type': 'text/json' });
+            res.write(fs.readFileSync(file + ".work"));
         }
         else {
-            res.writeHead(500, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ error: "Invalid token." }));
-            res.end();
+            res.writeHead(200, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify(null));
         }
-    });
+        res.end();
+    }
+    else {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "Invalid token." }));
+        res.end();
+    }
 });
-app.post('/upload/SavePixelArt', function (req, res) {
+app.post('/upload/SavePixelArt', async function (req, res) {
     if (!req.body.file) {
         res.writeHead(500, { 'Content-Type': 'text/json' });
         res.write(JSON.stringify({ error: "parameter 'file' is missing." }));
@@ -390,28 +369,27 @@ app.post('/upload/SavePixelArt', function (req, res) {
     }
     var file = req.body.file.match(/[^\\\/]*$/)[0];
     var data = base64decode(req.body.data.split(',')[1]);
-    CanStoreSize(tokenInfo.id, req.body.game, data.length + req.body.workData.length, function (canUpload) {
-        if (canUpload) {
-            CreateGameDir(parseInt(req.body.game));
-            var finalName = __dirname + '/public/user_art/' + GameDir(parseInt(req.body.game)) + '/' + file;
-            if (fs.existsSync(finalName))
-                fs.unlinkSync(finalName);
-            fs.writeFileSync(finalName, data);
-            if (fs.existsSync(finalName + ".work"))
-                fs.unlinkSync(finalName + ".work");
-            fs.writeFileSync(finalName + ".work", req.body.workData);
-            res.writeHead(200, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ file: '/user_art/' + GameDir(parseInt(req.body.game)) + '/' + file }));
-            res.end();
-        }
-        else {
-            res.writeHead(500, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ error: "You do not have enough space left." }));
-            res.end();
-        }
-    });
+    var canUpload = await CanStoreSize(tokenInfo.id, req.body.game, data.length + req.body.workData.length);
+    if (canUpload) {
+        CreateGameDir(parseInt(req.body.game));
+        var finalName = __dirname + '/public/user_art/' + GameDir(parseInt(req.body.game)) + '/' + file;
+        if (fs.existsSync(finalName))
+            fs.unlinkSync(finalName);
+        fs.writeFileSync(finalName, data);
+        if (fs.existsSync(finalName + ".work"))
+            fs.unlinkSync(finalName + ".work");
+        fs.writeFileSync(finalName + ".work", req.body.workData);
+        res.writeHead(200, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ file: '/user_art/' + GameDir(parseInt(req.body.game)) + '/' + file }));
+        res.end();
+    }
+    else {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "You do not have enough space left." }));
+        res.end();
+    }
 });
-app.post('/upload/SaveBase64Art', function (req, res) {
+app.post('/upload/SaveBase64Art', async function (req, res) {
     if (!req.body.file) {
         res.writeHead(500, { 'Content-Type': 'text/json' });
         res.write(JSON.stringify({ error: "parameter 'file' is missing." }));
@@ -445,25 +423,45 @@ app.post('/upload/SaveBase64Art', function (req, res) {
     }
     var file = req.body.file.match(/[^\\\/]*$/)[0];
     var data = base64decode(req.body.data.split(',')[1]);
-    CanStoreSize(tokenInfo.id, req.body.game, data.length, function (canUpload) {
-        if (canUpload) {
-            CreateGameDir(parseInt(req.body.game));
-            var finalName = __dirname + '/public/user_art/' + GameDir(parseInt(req.body.game)) + '/' + file;
-            if (fs.existsSync(finalName))
-                fs.unlinkSync(finalName);
-            fs.writeFileSync(finalName, data);
-            res.writeHead(200, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ file: '/user_art/' + GameDir(parseInt(req.body.game)) + '/' + file }));
-            res.end();
-        }
-        else {
-            res.writeHead(500, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ error: "You do not have enough space left." }));
-            res.end();
-        }
-    });
+    var canUpload = await CanStoreSize(tokenInfo.id, req.body.game, data.length);
+    if (canUpload) {
+        CreateGameDir(parseInt(req.body.game));
+        var finalName = __dirname + '/public/user_art/' + GameDir(parseInt(req.body.game)) + '/' + file;
+        if (fs.existsSync(finalName))
+            fs.unlinkSync(finalName);
+        fs.writeFileSync(finalName, data);
+        res.writeHead(200, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ file: '/user_art/' + GameDir(parseInt(req.body.game)) + '/' + file }));
+        res.end();
+    }
+    else {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "You do not have enough space left." }));
+        res.end();
+    }
 });
-app.post('/backend/SaveGameStorage', function (req, res, next) {
+// Based on https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/types/mysql/index.d.ts
+// As it wasn't compiling correctly it has been re-imported and modified here as static code.
+var mysql = require('mysql');
+function getConnection() {
+    try {
+        var conn = mysql.createConnection({
+            host: packageJson.config.dbhost,
+            user: packageJson.config.dbuser,
+            password: packageJson.config.dbpass,
+            database: packageJson.config.dbname,
+            insecureAuth: true
+        });
+        conn.on("error", function (err) {
+        });
+        return conn;
+    }
+    catch (ex) {
+        return null;
+    }
+}
+/// <reference path="Database.ts" />
+app.post('/backend/SaveGameStorage', async function (req, res, next) {
     if (!req.body.game) {
         res.writeHead(500, { 'Content-Type': 'text/json' });
         res.write(JSON.stringify({ error: "parameter 'game' is missing." }));
@@ -508,151 +506,108 @@ app.post('/backend/SaveGameStorage', function (req, res, next) {
         res.end();
         return;
     }
-    connection.connect(function (err) {
-        if (err != null) {
-            connection.end();
-            console.log(err);
-            res.writeHead(500, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ error: "error with database." }));
-            res.end();
-            return;
-        }
-        connection.query('select id from storage_table where game_id = ? and table_name = ?', [req.body.game, req.body.table], function (err1, result) {
-            if (err1 != null) {
-                connection.end();
-                console.log(err1);
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "error with database." }));
-                res.end();
-                return;
-            }
-            // First time writing data to this storage
-            if (result.length == 0)
-                CreateEngineStorage(res, connection, req.body.game, req.body.table, JSON.parse(req.body.headers), JSON.parse(req.body.values));
-            else
-                CheckInsertRowEngineStorage(res, connection, result[0].id, JSON.parse(req.body.headers), JSON.parse(req.body.values));
-        });
-    });
+    try {
+        await connection.connect();
+    }
+    catch (ex) {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "error with database." }));
+        res.end();
+        return;
+    }
+    try {
+        var result = await connection.query('select id from storage_table where game_id = ? and table_name = ?', [req.body.game, req.body.table]);
+        // First time writing data to this storage
+        if (result.length == 0)
+            CreateEngineStorage(res, connection, req.body.game, req.body.table, JSON.parse(req.body.headers), JSON.parse(req.body.values));
+        else
+            CheckInsertRowEngineStorage(res, connection, result[0].id, JSON.parse(req.body.headers), JSON.parse(req.body.values));
+    }
+    catch (ex) {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "error with database." }));
+        res.end();
+        return;
+    }
 });
-function CreateEngineStorage(res, connection, gameId, table, headers, values) {
-    connection.query('insert into storage_table(game_id, table_name) values(?, ?)', [gameId, table], function (err1, result) {
-        if (err1 != null) {
-            connection.end();
-            console.log(err1);
-            res.writeHead(500, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ error: "error with database." }));
-            res.end();
-            return;
-        }
-        CheckInsertRowEngineStorage(res, connection, result.insertId, headers, values);
-    });
+async function CreateEngineStorage(res, connection, gameId, table, headers, values) {
+    var result = await connection.query('insert into storage_table(game_id, table_name) values(?, ?)', [gameId, table]);
+    CheckInsertRowEngineStorage(res, connection, result.insertId, headers, values);
 }
-function CheckInsertRowEngineStorage(res, connection, tableId, headers, values) {
-    connection.query('select id, column_name from storage_table_column where table_id = ?', [tableId], function (err1, result) {
-        if (err1 != null) {
-            connection.end();
-            console.log(err1);
-            res.writeHead(500, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ error: "error with database." }));
-            res.end();
-            return;
+async function CheckInsertRowEngineStorage(res, connection, tableId, headers, values) {
+    var result = await connection.query('select id, column_name from storage_table_column where table_id = ?', [tableId]);
+    var missingNames = headers.slice();
+    var missingValues = values.slice();
+    var names = [];
+    var todo = [];
+    for (var i = 0; i < result.length; i++) {
+        var n = result[i].column_name.toLowerCase();
+        for (var j = 0; j < headers.length; j++) {
+            if (missingNames[j].toLowerCase() == n) {
+                names.push({
+                    name: missingNames[j],
+                    id: result[i].id,
+                    value: missingValues[j]
+                });
+                missingNames.splice(j, 1);
+                missingValues.splice(j, 1);
+                break;
+            }
         }
-        var missingNames = headers.slice();
-        var missingValues = values.slice();
-        var names = [];
-        var todo = [];
-        for (var i = 0; i < result.length; i++) {
-            var n = result[i].column_name.toLowerCase();
-            for (var j = 0; j < headers.length; j++) {
-                if (missingNames[j].toLowerCase() == n) {
-                    names.push({
-                        name: missingNames[j],
-                        id: result[i].id,
-                        value: missingValues[j]
-                    });
-                    missingNames.splice(j, 1);
-                    missingValues.splice(j, 1);
+    }
+    for (var i = 0; i < missingNames.length; i++)
+        names.push({
+            name: missingNames[i],
+            id: -1,
+            value: missingValues[i]
+        });
+    if (missingNames.length == 0)
+        await InsertRowEngineStorage(res, connection, tableId, names);
+    else {
+        var sql = 'insert into storage_table_column(table_id, column_name) values';
+        var sqlValues = [];
+        for (var i = 0; i < missingNames.length; i++) {
+            if (i != 0)
+                sql += ", ";
+            sql += "(?,?)";
+            sqlValues.push(tableId, missingNames[i]);
+        }
+        //console.log(sql);
+        var res2 = await connection.query(sql, sqlValues);
+        for (var i = 0; i < missingNames.length; i++) {
+            for (var j = 0; j < names.length; j++) {
+                if (names[j].name == missingNames[i]) {
+                    names[j].id = res2.insertId + i;
                     break;
                 }
             }
         }
-        for (var i = 0; i < missingNames.length; i++)
-            names.push({
-                name: missingNames[i],
-                id: -1,
-                value: missingValues[i]
-            });
-        if (missingNames.length == 0)
-            InsertRowEngineStorage(res, connection, tableId, names);
-        else {
-            var sql = 'insert into storage_table_column(table_id, column_name) values';
-            var sqlValues = [];
-            for (var i = 0; i < missingNames.length; i++) {
-                if (i != 0)
-                    sql += ", ";
-                sql += "(?,?)";
-                sqlValues.push(tableId, missingNames[i]);
-            }
-            //console.log(sql);
-            connection.query(sql, sqlValues, function (err2, res2) {
-                if (err2 != null) {
-                    connection.end();
-                    console.log(err2);
-                    res.writeHead(500, { 'Content-Type': 'text/json' });
-                    res.write(JSON.stringify({ error: "error with database." }));
-                    res.end();
-                    return;
-                }
-                for (var i = 0; i < missingNames.length; i++) {
-                    for (var j = 0; j < names.length; j++) {
-                        if (names[j].name == missingNames[i]) {
-                            names[j].id = res2.insertId + i;
-                            break;
-                        }
-                    }
-                }
-                InsertRowEngineStorage(res, connection, tableId, names);
-            });
-        }
-    });
+        await InsertRowEngineStorage(res, connection, tableId, names);
+    }
 }
-function InsertRowEngineStorage(res, connection, tableId, headers) {
-    connection.query('insert into storage_entry(table_id) values(?)', [tableId], function (err1, result) {
-        if (err1 != null) {
-            connection.end();
-            console.log(err1);
-            res.writeHead(500, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ error: "error with database." }));
-            res.end();
-            return;
-        }
-        var rowId = result.insertId;
-        var sqlValues = [];
-        var sql = 'insert into storage_value(row_id, column_id, value) value';
-        for (var i = 0; i < headers.length; i++) {
-            if (i != 0)
-                sql += ", ";
-            sql += "(?,?,?)";
-            sqlValues.push(rowId);
-            sqlValues.push(headers[i].id);
-            sqlValues.push(headers[i].value);
-        }
-        connection.query(sql, sqlValues, function (err2, res2) {
-            if (err2 != null) {
-                connection.end();
-                console.log(err2);
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "error with database." }));
-                res.end();
-                return;
-            }
-            res.writeHead(200, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify(rowId));
-            res.end();
-        });
-    });
+async function InsertRowEngineStorage(res, connection, tableId, headers) {
+    var result = await connection.query('insert into storage_entry(table_id) values(?)', [tableId]);
+    var rowId = result.insertId;
+    var sqlValues = [];
+    var sql = 'insert into storage_value(row_id, column_id, value) value';
+    for (var i = 0; i < headers.length; i++) {
+        if (i != 0)
+            sql += ", ";
+        sql += "(?,?,?)";
+        sqlValues.push(rowId);
+        sqlValues.push(headers[i].id);
+        sqlValues.push(headers[i].value);
+    }
+    var res2 = await connection.query(sql, sqlValues);
+    res.writeHead(200, { 'Content-Type': 'text/json' });
+    res.write(JSON.stringify(rowId));
+    res.end();
 }
-app.post('/backend/GetGameStorage', function (req, res, next) {
+app.post('/backend/GetGameStorage', async function (req, res, next) {
     if (!req.body.game) {
         res.writeHead(500, { 'Content-Type': 'text/json' });
         res.write(JSON.stringify({ error: "parameter 'game' is missing." }));
@@ -689,97 +644,75 @@ app.post('/backend/GetGameStorage', function (req, res, next) {
         res.end();
         return;
     }
-    connection.connect(function (err) {
-        if (err != null) {
-            connection.end();
-            console.log(err);
-            res.writeHead(500, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ error: "error with database." }));
+    try {
+        await connection.connect();
+    }
+    catch (ex) {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "error with database." }));
+        res.end();
+        return;
+    }
+    try {
+        var result = await connection.query('select id from storage_table where game_id = ? and table_name = ?', [req.body.game, req.body.table]);
+        if (result.length == 0) {
+            res.writeHead(200, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify({ headers: [], rows: [] }));
             res.end();
             return;
         }
-        connection.query('select id from storage_table where game_id = ? and table_name = ?', [req.body.game, req.body.table], function (err1, result) {
-            if (err1 != null) {
-                connection.end();
-                console.log(err1);
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "error with database." }));
-                res.end();
-                return;
-            }
-            if (result.length == 0) {
-                res.writeHead(200, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ headers: [], rows: [] }));
-                res.end();
-                return;
-            }
-            else {
-                SelectColumnEngineStorage(res, connection, (0 + result[0].id), JSON.parse(req.body.headers), req.body.condition, req.body.orderBy, function (cols, rows, storageColumns) {
-                    connection.end();
-                    res.writeHead(200, { 'Content-Type': 'text/json' });
-                    res.write(JSON.stringify({ headers: cols, rows: rows }));
-                    res.end();
-                });
-                return;
-            }
-        });
-    });
+        else {
+            var output = await SelectColumnEngineStorage(res, connection, (0 + result[0].id), JSON.parse(req.body.headers), req.body.condition, req.body.orderBy);
+            connection.end();
+            res.writeHead(200, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify({ headers: output.Columns, rows: output.Rows }));
+            res.end();
+            return;
+        }
+    }
+    catch (ex) {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "error with database." }));
+        res.end();
+        return;
+    }
 });
-function SelectColumnEngineStorage(res, connection, tableId, headers, condition, orderBy, callBack) {
+async function SelectColumnEngineStorage(res, connection, tableId, headers, condition, orderBy) {
     var names = [];
     if (!headers || headers.length == 0) {
-        connection.query('select id, column_name from storage_table_column where table_id = ?', [tableId], function (err1, result) {
-            if (err1 != null) {
-                connection.end();
-                console.log(err1);
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "error with database." }));
-                res.end();
-                return;
-            }
-            names.push({ id: 0, name: "rowId" });
-            for (var i = 0; i < result.length; i++)
-                names.push({ id: result[i].id, name: result[i].column_name });
-            SelectEngineStorage(res, connection, tableId, names, condition, orderBy, callBack);
-        });
+        var result = await connection.query('select id, column_name from storage_table_column where table_id = ?', [tableId]);
+        names.push({ id: 0, name: "rowId" });
+        for (var i = 0; i < result.length; i++)
+            names.push({ id: result[i].id, name: result[i].column_name });
+        return SelectEngineStorage(res, connection, tableId, names, condition, orderBy);
     }
     else {
         for (var i = 0; i < headers.length; i++) {
-            if (!headers[i].match(/^[a-z][a-z_0-9]*$/i)) {
-                connection.end();
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "Column '" + headers[i] + "' is not a valid column name." }));
-                res.end();
-                return;
-            }
+            if (!headers[i].match(/^[a-z][a-z_0-9]*$/i))
+                throw new Error("Column '" + headers[i] + "' is not a valid column name.");
         }
         var columnsNames = "('" + headers.join("','") + "')";
-        connection.query('select id, column_name from storage_table_column where table_id = ? and column_name in ' + columnsNames, [tableId], function (err1, result) {
-            if (err1 != null) {
-                connection.end();
-                console.log(err1);
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "error with database." }));
-                res.end();
-                return;
-            }
-            for (var j = 0; j < headers.length; j++) {
-                var found = false;
-                for (var i = 0; i < result.length; i++) {
-                    if (headers[j].toLowerCase() == result[i].column_name.toLowerCase()) {
-                        names.push({ id: result[i].id, name: result[i].column_name });
-                        found = true;
-                        break;
-                    }
+        var result = await connection.query('select id, column_name from storage_table_column where table_id = ? and column_name in ' + columnsNames, [tableId]);
+        for (var j = 0; j < headers.length; j++) {
+            var found = false;
+            for (var i = 0; i < result.length; i++) {
+                if (headers[j].toLowerCase() == result[i].column_name.toLowerCase()) {
+                    names.push({ id: result[i].id, name: result[i].column_name });
+                    found = true;
+                    break;
                 }
-                if (!found)
-                    names.push({ id: -1, name: headers[j] });
             }
-            SelectEngineStorage(res, connection, tableId, names, condition, orderBy, callBack);
-        });
+            if (!found)
+                names.push({ id: -1, name: headers[j] });
+        }
+        return SelectEngineStorage(res, connection, tableId, names, condition, orderBy);
     }
 }
-function SelectEngineStorage(res, connection, tableId, columns, condition, orderBy, callBack) {
+async function SelectEngineStorage(res, connection, tableId, columns, condition, orderBy) {
     var select = "";
     var join = "";
     var cols = [];
@@ -803,32 +736,23 @@ function SelectEngineStorage(res, connection, tableId, columns, condition, order
             sql += " order by id";
     }
     sql += " limit 30";
-    //console.log(sql);
-    connection.query(sql, [tableId], function (err1, result) {
-        if (err1 != null) {
-            console.log(err1);
-            res.writeHead(500, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ error: "error with database." }));
-            res.end();
-            return;
+    var result = await connection.query(sql, [tableId]);
+    var rows = [];
+    for (var i = 0; i < result.length; i++) {
+        var row = [];
+        for (var j = 0; j < columns.length; j++) {
+            if (columns[j].id == 0)
+                row.push(result[i].id);
+            else if (columns[j].id > 0)
+                row.push(result[i]["c" + j]);
+            else
+                row.push(null);
         }
-        var rows = [];
-        for (var i = 0; i < result.length; i++) {
-            var row = [];
-            for (var j = 0; j < columns.length; j++) {
-                if (columns[j].id == 0)
-                    row.push(result[i].id);
-                else if (columns[j].id > 0)
-                    row.push(result[i]["c" + j]);
-                else
-                    row.push(null);
-            }
-            rows.push(row);
-        }
-        callBack(cols, rows, columns);
-    });
+        rows.push(row);
+    }
+    return { Columns: cols, Rows: rows, Storage: columns };
 }
-app.post('/backend/DeleteOlderStorage', function (req, res, next) {
+app.post('/backend/DeleteOlderStorage', async function (req, res, next) {
     if (!req.body.game) {
         res.writeHead(500, { 'Content-Type': 'text/json' });
         res.write(JSON.stringify({ error: "parameter 'game' is missing." }));
@@ -861,71 +785,37 @@ app.post('/backend/DeleteOlderStorage', function (req, res, next) {
         res.end();
         return;
     }
-    connection.connect(function (err) {
-        if (err != null) {
-            connection.end();
-            console.log(err);
-            res.writeHead(500, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ error: "error with database." }));
+    try {
+        await connection.connect();
+        var result = await connection.query('select id from storage_table where game_id = ? and table_name = ?', [req.body.game, req.body.table]);
+        var tableId = result[0].id;
+        var res2 = await connection.query('select id from storage_entry where table_id = ? order by id desc limit 0, ?', [tableId, parseInt(req.body.keep)]);
+        var ids = [];
+        for (var i = 0; i < res2.length; i++)
+            ids.push(res2[i].id);
+        if (ids.length == 0) {
+            res.writeHead(200, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify(true));
             res.end();
             return;
         }
-        connection.query('select id from storage_table where game_id = ? and table_name = ?', [req.body.game, req.body.table], function (err1, result) {
-            if (err1 != null) {
-                connection.end();
-                console.log(err1);
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "error with database." }));
-                res.end();
-                return;
-            }
-            var tableId = result[0].id;
-            connection.query('select id from storage_entry where table_id = ? order by id desc limit 0, ?', [tableId, parseInt(req.body.keep)], function (err2, res2) {
-                if (err2 != null) {
-                    connection.end();
-                    console.log(err2);
-                    res.writeHead(500, { 'Content-Type': 'text/json' });
-                    res.write(JSON.stringify({ error: "error with database." }));
-                    res.end();
-                    return;
-                }
-                var ids = [];
-                for (var i = 0; i < res2.length; i++)
-                    ids.push(res2[i].id);
-                if (ids.length == 0) {
-                    res.writeHead(200, { 'Content-Type': 'text/json' });
-                    res.write(JSON.stringify(true));
-                    res.end();
-                    return;
-                }
-                connection.query('delete from storage_entry where id not in (' + ids.join(",") + ') and table_id = ?', [tableId], function (err3, res3) {
-                    if (err3 != null) {
-                        connection.end();
-                        console.log(err3);
-                        res.writeHead(500, { 'Content-Type': 'text/json' });
-                        res.write(JSON.stringify({ error: "error with database." }));
-                        res.end();
-                        return;
-                    }
-                    connection.query('delete from storage_value where row_id not in (select id from storage_entry)', [], function (err4, res4) {
-                        connection.end();
-                        if (err4 != null) {
-                            console.log(err4);
-                            res.writeHead(500, { 'Content-Type': 'text/json' });
-                            res.write(JSON.stringify({ error: "error with database." }));
-                            res.end();
-                            return;
-                        }
-                        res.writeHead(200, { 'Content-Type': 'text/json' });
-                        res.write(JSON.stringify(true));
-                        res.end();
-                    });
-                });
-            });
-        });
-    });
+        await connection.query('delete from storage_entry where id not in (' + ids.join(",") + ') and table_id = ?', [tableId]);
+        await connection.query('delete from storage_value where row_id not in (select id from storage_entry)', []);
+        connection.end();
+        res.writeHead(200, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify(true));
+        res.end();
+    }
+    catch (ex) {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "error with database." }));
+        res.end();
+        return;
+    }
 });
-app.post('/backend/DeleteRowStorage', function (req, res, next) {
+app.post('/backend/DeleteRowStorage', async function (req, res, next) {
     if (!req.body.game) {
         res.writeHead(500, { 'Content-Type': 'text/json' });
         res.write(JSON.stringify({ error: "parameter 'game' is missing." }));
@@ -958,52 +848,27 @@ app.post('/backend/DeleteRowStorage', function (req, res, next) {
         res.end();
         return;
     }
-    connection.connect(function (err) {
-        if (err != null) {
-            connection.end();
-            console.log(err);
-            res.writeHead(500, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ error: "error with database." }));
-            res.end();
-            return;
-        }
-        connection.query('select id from storage_table where game_id = ? and table_name = ?', [req.body.game, req.body.table], function (err1, result) {
-            if (err1 != null) {
-                connection.end();
-                console.log(err1);
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "error with database." }));
-                res.end();
-                return;
-            }
-            var tableId = result[0].id;
-            connection.query('delete from storage_entry where id = ? and table_id = ?', [req.body.row, tableId], function (err3, res3) {
-                if (err3 != null) {
-                    connection.end();
-                    console.log(err3);
-                    res.writeHead(500, { 'Content-Type': 'text/json' });
-                    res.write(JSON.stringify({ error: "error with database." }));
-                    res.end();
-                    return;
-                }
-                connection.query('delete from storage_value where row_id not in (select id from storage_entry)', [], function (err4, res4) {
-                    connection.end();
-                    if (err4 != null) {
-                        console.log(err4);
-                        res.writeHead(500, { 'Content-Type': 'text/json' });
-                        res.write(JSON.stringify({ error: "error with database." }));
-                        res.end();
-                        return;
-                    }
-                    res.writeHead(200, { 'Content-Type': 'text/json' });
-                    res.write(JSON.stringify(true));
-                    res.end();
-                });
-            });
-        });
-    });
+    try {
+        await connection.connect();
+        var result = await connection.query('select id from storage_table where game_id = ? and table_name = ?', [req.body.game, req.body.table]);
+        var tableId = result[0].id;
+        await connection.query('delete from storage_entry where id = ? and table_id = ?', [req.body.row, tableId]);
+        await connection.query('delete from storage_value where row_id not in (select id from storage_entry)', []);
+        connection.end();
+        res.writeHead(200, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify(true));
+        res.end();
+    }
+    catch (ex) {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "error with database." }));
+        res.end();
+        return;
+    }
 });
-app.post('/backend/UpdateStorage', function (req, res, next) {
+app.post('/backend/UpdateStorage', async function (req, res, next) {
     if (!req.body.game) {
         res.writeHead(500, { 'Content-Type': 'text/json' });
         res.write(JSON.stringify({ error: "parameter 'game' is missing." }));
@@ -1048,79 +913,62 @@ app.post('/backend/UpdateStorage', function (req, res, next) {
         res.end();
         return;
     }
-    connection.connect(function (err) {
-        if (err != null) {
+    try {
+        await connection.connect();
+        var result = await connection.query('select id from storage_table where game_id = ? and table_name = ?', [req.body.game, req.body.table]);
+        if (result.length == 0) {
             connection.end();
-            console.log(err);
-            res.writeHead(500, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ error: "error with database." }));
+            res.writeHead(200, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify(0));
             res.end();
             return;
         }
-        connection.query('select id from storage_table where game_id = ? and table_name = ?', [req.body.game, req.body.table], function (err1, result) {
-            if (err1 != null) {
-                connection.end();
-                console.log(err1);
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "error with database." }));
-                res.end();
-                return;
+        var output = await SelectColumnEngineStorage(res, connection, (0 + result[0].id), null, req.body.condition, null);
+        if (!output || output.Rows.length == 0) {
+            connection.end();
+            res.writeHead(200, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify(0));
+            res.end();
+            return;
+        }
+        var rows = output.Rows;
+        var storageColumns = output.Storage;
+        var ids = [];
+        for (var i = 0; i < rows.length; i++)
+            ids.push(rows[i][0]);
+        var c = -1;
+        for (var i = 0; i < storageColumns.length; i++) {
+            if (storageColumns[i].name.toLowerCase() == req.body.column.toLowerCase()) {
+                c = storageColumns[i].id;
+                break;
             }
-            if (result.length == 0) {
-                res.writeHead(200, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify(0));
-                res.end();
-                return;
-            }
-            else {
-                SelectColumnEngineStorage(res, connection, (0 + result[0].id), null, req.body.condition, null, function (cols, rows, storageColumns) {
-                    if (rows.length == 0) {
-                        connection.end();
-                        res.writeHead(200, { 'Content-Type': 'text/json' });
-                        res.write(JSON.stringify(0));
-                        res.end();
-                        return;
-                    }
-                    var ids = [];
-                    for (var i = 0; i < rows.length; i++)
-                        ids.push(rows[i][0]);
-                    var c = -1;
-                    for (var i = 0; i < storageColumns.length; i++) {
-                        if (storageColumns[i].name.toLowerCase() == req.body.column.toLowerCase()) {
-                            c = storageColumns[i].id;
-                            break;
-                        }
-                    }
-                    if (c == -1) {
-                        connection.end();
-                        res.writeHead(500, { 'Content-Type': 'text/json' });
-                        res.write(JSON.stringify({ error: "column '" + req.body.column + "' unknown." }));
-                        res.end();
-                        return;
-                    }
-                    var sql = "update storage_value set value = ? where row_id in (" + ids.join(",") + ") and column_id = " + c;
-                    //console.log(sql);
-                    connection.query(sql, [req.body.value], function (err2, result2) {
-                        connection.end();
-                        if (err2 != null) {
-                            console.log(err2);
-                            res.writeHead(500, { 'Content-Type': 'text/json' });
-                            res.write(JSON.stringify({ error: "error with database." }));
-                            res.end();
-                            return;
-                        }
-                        res.writeHead(200, { 'Content-Type': 'text/json' });
-                        res.write(JSON.stringify(result2.changedRows));
-                        res.end();
-                        return;
-                    });
-                });
-                return;
-            }
-        });
-    });
+        }
+        if (c == -1) {
+            connection.end();
+            res.writeHead(500, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify({ error: "column '" + req.body.column + "' unknown." }));
+            res.end();
+            return;
+        }
+        var sql = "update storage_value set value = ? where row_id in (" + ids.join(",") + ") and column_id = " + c;
+        //console.log(sql);
+        var result2 = await connection.query(sql, [req.body.value]);
+        connection.end();
+        res.writeHead(200, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify(result2.changedRows));
+        res.end();
+        return;
+    }
+    catch (ex) {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "error with database." }));
+        res.end();
+        return;
+    }
 });
-app.post('/backend/DeleteStorage', function (req, res, next) {
+app.post('/backend/DeleteStorage', async function (req, res, next) {
     if (!req.body.game) {
         res.writeHead(500, { 'Content-Type': 'text/json' });
         res.write(JSON.stringify({ error: "parameter 'game' is missing." }));
@@ -1153,75 +1001,49 @@ app.post('/backend/DeleteStorage', function (req, res, next) {
         res.end();
         return;
     }
-    connection.connect(function (err) {
-        if (err != null) {
-            connection.end();
-            console.log(err);
-            res.writeHead(500, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ error: "error with database." }));
+    try {
+        await connection.connect();
+        var result = connection.query('select id from storage_table where game_id = ? and table_name = ?', [req.body.game, req.body.table]);
+        if (result.length == 0) {
+            res.writeHead(200, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify(0));
             res.end();
             return;
         }
-        connection.query('select id from storage_table where game_id = ? and table_name = ?', [req.body.game, req.body.table], function (err1, result) {
-            if (err1 != null) {
+        else {
+            var output = await SelectColumnEngineStorage(res, connection, (0 + result[0].id), null, req.body.condition, null);
+            var rows = output.Rows;
+            if (rows.length == 0) {
                 connection.end();
-                console.log(err1);
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "error with database." }));
-                res.end();
-                return;
-            }
-            if (result.length == 0) {
                 res.writeHead(200, { 'Content-Type': 'text/json' });
                 res.write(JSON.stringify(0));
                 res.end();
                 return;
             }
-            else {
-                SelectColumnEngineStorage(res, connection, (0 + result[0].id), null, req.body.condition, null, function (cols, rows, storageColumns) {
-                    if (rows.length == 0) {
-                        connection.end();
-                        res.writeHead(200, { 'Content-Type': 'text/json' });
-                        res.write(JSON.stringify(0));
-                        res.end();
-                        return;
-                    }
-                    var ids = [];
-                    for (var i = 0; i < rows.length; i++)
-                        ids.push(rows[i][0]);
-                    var sql = "delete from storage_value where row_id in (" + ids.join(",") + ")";
-                    console.log(sql);
-                    connection.query(sql, [req.body.value], function (err2, result2) {
-                        if (err2 != null) {
-                            connection.end();
-                            console.log(err2);
-                            res.writeHead(500, { 'Content-Type': 'text/json' });
-                            res.write(JSON.stringify({ error: "error with database." }));
-                            res.end();
-                            return;
-                        }
-                        var sql = "delete from storage_entry where id in (" + ids.join(",") + ")";
-                        //console.log(sql);
-                        connection.query(sql, [req.body.value], function (err3, result3) {
-                            connection.end();
-                            if (err3 != null) {
-                                console.log(err3);
-                                res.writeHead(500, { 'Content-Type': 'text/json' });
-                                res.write(JSON.stringify({ error: "error with database." }));
-                                res.end();
-                                return;
-                            }
-                            res.writeHead(200, { 'Content-Type': 'text/json' });
-                            res.write(JSON.stringify(result3.changedRows));
-                            res.end();
-                            return;
-                        });
-                    });
-                });
-                return;
-            }
-        });
-    });
+            var ids = [];
+            for (var i = 0; i < rows.length; i++)
+                ids.push(rows[i][0]);
+            var sql = "delete from storage_value where row_id in (" + ids.join(",") + ")";
+            console.log(sql);
+            await connection.query(sql, [req.body.value]);
+            var sql = "delete from storage_entry where id in (" + ids.join(",") + ")";
+            //console.log(sql);
+            var result3 = await connection.query(sql, [req.body.value]);
+            connection.end();
+            res.writeHead(200, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify(result3.changedRows));
+            res.end();
+            return;
+        }
+    }
+    catch (ex) {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "error with database." }));
+        res.end();
+        return;
+    }
 });
 app.post('/backend/DropTable', function (req, res, next) {
     if (!req.body.game) {
@@ -1607,60 +1429,54 @@ function DirectoryCheck(gameId) {
     }
     return tot;
 }
-function OwnerMaxSize(userId, gameId, callbackSize) {
+async function OwnerMaxSize(userId, gameId) {
     var connection = getConnection();
-    if (!connection || gameId == -1) {
-        callbackSize(0);
-        return;
+    if (!connection || gameId == -1)
+        return 0;
+    try {
+        await connection.connect();
     }
-    connection.connect(function (err) {
-        if (err != null) {
-            connection.end();
-            callbackSize(0);
+    catch (ex) {
+        connection.end();
+        return 0;
+    }
+    try {
+        var r1 = await connection.query('select access_right_id from game_access_rights where (game_id = ? and user_id = ?) or (user_id = ? and access_right_id=1000)', [gameId, userId, userId]);
+    }
+    catch (ex) {
+        console.log(ex);
+        connection.end();
+        return 0;
+    }
+    if (!r1 || !r1.length) {
+        connection.end();
+        console.log('No access right');
+        return 0;
+    }
+    try {
+        var r2 = await connection.query('select editor_version, rented_space, rented_space_till from users where id = (select main_owner from games where id = ?)', [gameId]);
+        connection.end();
+        if (!r2 || r2.length == 0)
+            return 0;
+        var size = r2[0].editor_version == 's' ? 10 * 1024 * 1024 : 5 * 1024 * 1024;
+        if (r2[0].rented_space_till) {
+            var tillWhen = new Date(r2[0].rented_space_till);
+            if (tillWhen.getTime() > new Date().getTime())
+                size = r2[0].rented_space * 1024 * 1024;
         }
-        connection.query('select access_right_id from game_access_rights where (game_id = ? and user_id = ?) or (user_id = ? and access_right_id=1000)', [gameId, userId, userId], function (err1, r1) {
-            if (err1 != null) {
-                connection.end();
-                console.log(err1);
-                callbackSize(0);
-            }
-            if (!r1 || !r1.length) {
-                connection.end();
-                console.log('No access right');
-                callbackSize(0);
-                return;
-            }
-            connection.query('select editor_version, rented_space, rented_space_till from users where id = (select main_owner from games where id = ?)', [gameId], function (err2, r2) {
-                if (err2 != null) {
-                    console.log(err2);
-                    callbackSize(0);
-                    return;
-                }
-                connection.end();
-                if (!r2 || r2.length == 0)
-                    callbackSize(0);
-                else {
-                    var size = r2[0].editor_version == 's' ? 10 * 1024 * 1024 : 5 * 1024 * 1024;
-                    if (r2[0].rented_space_till) {
-                        var tillWhen = new Date(r2[0].rented_space_till);
-                        if (tillWhen.getTime() > new Date().getTime())
-                            size = r2[0].rented_space * 1024 * 1024;
-                    }
-                    callbackSize(size);
-                }
-            });
-        });
-    });
+        return size;
+    }
+    catch (ex) {
+        console.log(ex);
+        connection.end();
+        return 0;
+    }
 }
-function CanStoreSize(userId, gameId, sizeToPlace, checkResult) {
-    OwnerMaxSize(userId, gameId, function (maxSize) {
-        if (DirectoryCheck(gameId) + sizeToPlace < maxSize) {
-            checkResult(true);
-        }
-        else {
-            checkResult(false);
-        }
-    });
+async function CanStoreSize(userId, gameId, sizeToPlace) {
+    var maxSize = await OwnerMaxSize(userId, gameId);
+    if (DirectoryCheck(gameId) + sizeToPlace < maxSize)
+        return true;
+    return false;
 }
 app.post('/backend/DirectoryList', function (req, res) {
     if (!req.body.game) {
@@ -2120,13 +1936,12 @@ app.post('/backend/GameNews', function (req, res, next) {
                 return;
             }
             res.writeHead(200, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify(results.map(function (c) { return { id: c.id, username: c.name, postedOn: c.posted_on, news: c.news }; })));
+            res.write(JSON.stringify(results.map((c) => { return { id: c.id, username: c.name, postedOn: c.posted_on, news: c.news }; })));
             res.end();
             return;
         });
     });
 });
-///<reference path="../../typings/node.d.ts" />
 ///<reference path="../app.ts" />
 app.post('/backend/CanEdit', function (req, res, next) {
     if (!req.body.game) {
@@ -2238,7 +2053,7 @@ and (game_player.game_id in (select game_id from game_access_rights where user_i
             }
             connection.end();
             res.writeHead(200, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify(results.map(function (c) { return c.name; })));
+            res.write(JSON.stringify(results.map(c => c.name)));
             res.end();
             return;
         });
@@ -3341,7 +3156,7 @@ app.get('/backend/ExportGame', function (req, res, next) {
             connection.query('select data from games where id = ?', [req.query.game], function (err2, result) {
                 exportResult.gameData = JSON.parse(result[0].data);
                 var zip = new (require('node-zip'))();
-                ChangeGameUrls(exportResult.gameData, "", function (origName, newName) {
+                ChangeGameUrls(exportResult.gameData, "", (origName, newName) => {
                     zip.file(newName, fs.readFileSync(__dirname + '/public' + origName));
                 });
                 connection.query('select area_x, area_y, zone, data from game_maps where game_id = ?', [req.query.game], function (err2, r2) {
@@ -3380,9 +3195,7 @@ function CleanupFileCodeVariable(code, prefix, changeCallback) {
     /// Icon: /art/tileset1/fast_attack.png,image_upload
     return code.replace(/(\/\/\/ [a-z]+:\s+)\/[^\/]+\/[^\/]+\/([^,]+,image_upload)/gi, "$1$2");
 }
-function ChangeGameUrls(world, urlPrefix, changeCallback) {
-    if (urlPrefix === void 0) { urlPrefix = ""; }
-    if (changeCallback === void 0) { changeCallback = null; }
+function ChangeGameUrls(world, urlPrefix = "", changeCallback = null) {
     if (world.Tileset.background.file)
         world.Tileset.background.file = CleanupUrl(world.Tileset.background.file, urlPrefix, changeCallback);
     if (world.Tileset.splashImage)
@@ -3657,7 +3470,7 @@ app.post('/backend/IpnVerify', function (req, res, next) {
             if (req.body.payment_status == 'Completed' && req.body.mc_currency == "USD" && ((req.body.receiver_email == "bertrand@nodalideas.com" && ipnSandbox == false) || (req.body.receiver_email == "hazard3d-facilitator@yahoo.com" && ipnSandbox == true))) {
                 //console.log('Transaction received as completed');
                 if (VerifyPayment(req.body.custom) && req.body.mc_gross == JSON.parse(req.body.custom).price) {
-                    CheckTransaction(req.body.txn_id, req.body.payer_email, req.body.custom, req.body.mc_gross, req.body.mc_fee, function () {
+                    CheckTransaction(req.body.txn_id, req.body.payer_email, req.body.custom, req.body.mc_gross, req.body.mc_fee, () => {
                         //console.log("Got IPN verification");
                         // Payment has been confirmed as completed
                         switch (req.body.item_name) {
@@ -3683,10 +3496,10 @@ app.post('/backend/IpnVerify', function (req, res, next) {
     //You can also pass a settings object to the verify function:
     if (ipnSandbox)
         ipn.verify(req.body, { 'allow_sandbox': true }, callback);
+    // Full one
     else
         ipn.verify(req.body, callback);
 });
-///<reference path="../../typings/node.d.ts" />
 ///<reference path="../app.ts" />
 app.post('/backend/GetMap', function (req, res, next) {
     if (!req.body.game) {
@@ -4175,18 +3988,16 @@ app.post('/backend/RemoveZoneMap', function (req, res, next) {
     });
 });
 var numberCompressionPossibleChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-var NumberCompression = (function () {
-    function NumberCompression() {
-    }
-    NumberCompression.StringToNumber = function (source, position, nbChar) {
+class NumberCompression {
+    static StringToNumber(source, position, nbChar) {
         var result = 0;
         for (var i = 0; i < nbChar; i++) {
             var c = source.charAt(i + position);
             result += numberCompressionPossibleChars.indexOf(c) * Math.pow(numberCompressionPossibleChars.length, i);
         }
         return result;
-    };
-    NumberCompression.StringToArray = function (source) {
+    }
+    static StringToArray(source) {
         var result = [];
         var strNb = "";
         var i = 0;
@@ -4217,9 +4028,9 @@ var NumberCompression = (function () {
             }
         }
         return result;
-    };
+    }
     // Numbers must be positive!
-    NumberCompression.NumberToString = function (source, nbChar) {
+    static NumberToString(source, nbChar) {
         var result = "";
         var rest = source;
         for (var i = 0; i < nbChar; i++) {
@@ -4227,9 +4038,9 @@ var NumberCompression = (function () {
             rest = Math.floor(rest / numberCompressionPossibleChars.length);
         }
         return result;
-    };
+    }
     // Numbers must be positive!
-    NumberCompression.ArrayToString = function (source) {
+    static ArrayToString(source) {
         var result = "";
         var m = Math.max.apply(null, source);
         // Calculate how many characters we need to encode the numbers
@@ -4257,14 +4068,11 @@ var NumberCompression = (function () {
         else
             result += last;
         return result;
-    };
-    return NumberCompression;
-}());
-/// <reference path="../../public/Engine/Libs/NumberCompression.ts" />
-var MapSerializer = (function () {
-    function MapSerializer() {
     }
-    MapSerializer.Parse = function (data) {
+}
+/// <reference path="../../public/Engine/Libs/NumberCompression.ts" />
+class MapSerializer {
+    static Parse(data) {
         var result = JSON.parse(data);
         result.Background = NumberCompression.StringToArray(result.Background);
         var objects = result.Objects;
@@ -4273,8 +4081,8 @@ var MapSerializer = (function () {
             for (var j = 0, s = objects[i]; j < s.length; j += 6)
                 result.Objects.push({ Name: i, X: NumberCompression.StringToNumber(s, j, 3), Y: NumberCompression.StringToNumber(s, j + 3, 3) });
         return result;
-    };
-    MapSerializer.Stringify = function (data) {
+    }
+    static Stringify(data) {
         var objects = {};
         for (var i = 0; i < data.Objects.length; i++) {
             if (!objects[data.Objects[i].Name])
@@ -4284,9 +4092,8 @@ var MapSerializer = (function () {
         data.Background = NumberCompression.ArrayToString(data.Background);
         data.Objects = objects;
         return JSON.stringify(data);
-    };
-    return MapSerializer;
-}());
+    }
+}
 app.post('/backend/AddGameMessage', function (req, res, next) {
     if (!req.body.token) {
         res.writeHead(500, { 'Content-Type': 'text/json' });
@@ -4722,18 +4529,18 @@ var charsMap = {
     '\'': '\\\'',
     '\\': '\\\\'
 };
-var QueryParser = (function () {
-    function QueryParser(query) {
+class QueryParser {
+    constructor(query) {
         this.inSeparator = "(),";
         this.query = query;
         this.position = 0;
         this.length = this.query.length;
     }
-    QueryParser.BuildSQL = function (queryString, columns) {
+    static BuildSQL(queryString, columns) {
         var query = new QueryParser(queryString);
         return QueryParser.ToSql(query.Parse(), columns);
-    };
-    QueryParser.ToSql = function (queryElement, columns) {
+    }
+    static ToSql(queryElement, columns) {
         if (queryElement.first)
             return "(" + QueryParser.ToSql(queryElement.first, columns) + (queryElement.or ? " OR " + QueryParser.ToSql(queryElement.or, columns) : " AND " + QueryParser.ToSql(queryElement.and, columns)) + ")";
         //console.log(queryElement);
@@ -4794,16 +4601,16 @@ var QueryParser = (function () {
                 throw "Operation " + queryElement.check + " not yet supported.";
         }
         return result;
-    };
-    QueryParser.FindColumn = function (name, columns) {
+    }
+    static FindColumn(name, columns) {
         for (var i = 0; i < columns.length; i++) {
             //console.log("? " + columns[i].name + " == " + name);
             if (columns[i].name.toLowerCase() == name.toLowerCase())
                 return i;
         }
         throw "Column '" + name + "' not known";
-    };
-    QueryParser.EscapeString = function (toEscape) {
+    }
+    static EscapeString(toEscape) {
         var chunkIndex = charsRegex.lastIndex = 0;
         var result = '';
         var match;
@@ -4828,11 +4635,11 @@ var QueryParser = (function () {
                 result += "''";
         }
         return result;*/
-    };
-    QueryParser.prototype.Parse = function () {
+    }
+    Parse() {
         return this.ParseCondition();
-    };
-    QueryParser.prototype.ParseCondition = function () {
+    }
+    ParseCondition() {
         this.SkipWhiteSpaces();
         var first = null;
         if (this.PeekChar() == "(") {
@@ -4891,24 +4698,24 @@ var QueryParser = (function () {
             case "or":
                 return { first: first, or: second };
         }
-    };
-    QueryParser.prototype.HasChar = function () {
+    }
+    HasChar() {
         return this.position < this.length;
-    };
-    QueryParser.prototype.PeekChar = function () {
+    }
+    PeekChar() {
         if (this.position >= this.length)
             return null;
         return this.query.charAt(this.position);
-    };
-    QueryParser.prototype.RollbackChar = function () {
+    }
+    RollbackChar() {
         this.position--;
-    };
-    QueryParser.prototype.NextChar = function () {
+    }
+    NextChar() {
         if (this.position >= this.length)
             throw "End reached while expecting a character.";
         return this.query.charAt(this.position++);
-    };
-    QueryParser.prototype.PeekWord = function () {
+    }
+    PeekWord() {
         var storedPosition = this.position;
         this.SkipWhiteSpaces();
         var result = "";
@@ -4924,8 +4731,8 @@ var QueryParser = (function () {
         }
         this.position = storedPosition;
         return result;
-    };
-    QueryParser.prototype.NextWord = function () {
+    }
+    NextWord() {
         this.SkipWhiteSpaces();
         var result = "";
         while (this.HasChar()) {
@@ -4939,13 +4746,13 @@ var QueryParser = (function () {
                 break;
         }
         return result;
-    };
-    QueryParser.prototype.SkipWhiteSpaces = function () {
+    }
+    SkipWhiteSpaces() {
         while (this.PeekChar() == " " || this.PeekChar() == "\t" || this.PeekChar() == "\n") {
             this.NextChar();
         }
-    };
-    QueryParser.prototype.NextCondition = function () {
+    }
+    NextCondition() {
         switch (this.PeekWord().toLowerCase()) {
             case "contains":
             case "contain":
@@ -5038,8 +4845,8 @@ var QueryParser = (function () {
             default:
                 throw "Unknown condition (position: " + this.position + ").";
         }
-    };
-    QueryParser.prototype.NextValue = function () {
+    }
+    NextValue() {
         this.SkipWhiteSpaces();
         var init = this.PeekChar();
         if (init == "'" || init == "\"" || init == "[")
@@ -5067,9 +4874,8 @@ var QueryParser = (function () {
             result += c;
         }
         return result;
-    };
-    return QueryParser;
-}());
+    }
+}
 app.get('/backend/RSS', function (req, res) {
     var data = fs.readFileSync(__dirname + "/public/todo.html", "utf-8");
     var m = data.match(/<h2>Completed<\/h2>[\s\n\r]*(<h3>[\w\W\s\S\n\r]*<\/ul>)/i);
@@ -5111,7 +4917,6 @@ app.get('/backend/RSS', function (req, res) {
     res.write(rss);
     res.end();
 });
-///<reference path="../../typings/node.d.ts" />
 ///<reference path="../app.ts" />
 var currentTokens = {};
 function BuildToken(id, username, ip) {
@@ -5210,7 +5015,7 @@ app.post('/backend/RecoverPassword', function (req, res, next) {
                     from: "no-reply@dotworldmaker.com",
                     to: r1[0].email,
                     subject: "Dot World Maker - Password recovery"
-                }, function (err3, message) {
+                }, (err3, message) => {
                     if (err3)
                         console.log(err3);
                 });
@@ -6049,6 +5854,7 @@ app.post('/backend/SavePlayer', function (req, res, next) {
                 // We don't have yet a saveId, then all fine...
                 if (!savedData.saveId)
                     isOk = true;
+                // Saved info and new data are the same
                 else if (newData.saveId == savedData.saveId)
                     isOk = true;
             }
@@ -6379,7 +6185,6 @@ app.post('/backend/PremiumPurchase', function (req, res, next) {
         });
     });
 });
-///<reference path="../../typings/node.d.ts" />
 ///<reference path="../app.ts" />
 app.post('/backend/GetWorld', function (req, res, next) {
     if (!req.body.game) {
@@ -6538,6 +6343,7 @@ app.post('/backend/SaveWorld', function (req, res, next) {
                     // We don't have yet a SaveId, then all fine...
                     if (!savedData || !savedData.SaveId)
                         isOk = true;
+                    // Saved info and new data are the same
                     else if (newData.SaveId == savedData.SaveId)
                         isOk = true;
                 }
@@ -6572,4 +6378,4 @@ function HashPassword(user, password) {
     return md5(packageJson.config.fixedHashSalt + "-" + user.toLowerCase() + "-" + password.toLowerCase());
 }
 
-//# sourceMappingURL=self_hosted_app.js.map
+//# sourceMappingURL=app.js.map

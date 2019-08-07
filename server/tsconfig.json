@@ -5,9 +5,12 @@
     "noEmitOnError": false,
     "removeComments": false,
     "sourceMap": false,
-    "target": "es5",
+    "target": "es2015",
     "outFile": "ignore.js",
-    "experimentalDecorators": true
+    "module": "system",
+    "experimentalDecorators": true,
+    "typeRoots": ["../node_modules/@types"],
+    "types": [ "node", "mysql" ]
   },
   "exclude": [
     "node_modules",

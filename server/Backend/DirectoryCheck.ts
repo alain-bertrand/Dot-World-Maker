@@ -16,78 +16,69 @@
     return tot;
 }
 
-function OwnerMaxSize(userId: number, gameId: number, callbackSize: (maxSize) => void): number
+async function OwnerMaxSize(userId: number, gameId: number): Promise<number>
 {
     var connection = getConnection();
     if (!connection || gameId == -1)
+        return 0;
+
+    try
     {
-        callbackSize(0);
-        return;
+        await connection.connect();
+    }
+    catch (ex)
+    {
+        connection.end();
+        return 0;
     }
 
-    connection.connect(function (err)
+    try
     {
-        if (err != null)
+        var r1 = await connection.query('select access_right_id from game_access_rights where (game_id = ? and user_id = ?) or (user_id = ? and access_right_id=1000)', [gameId, userId, userId]);
+    }
+    catch (ex)
+    {
+        console.log(ex);
+        connection.end();
+        return 0;
+    }
+
+    if (!r1 || !r1.length)
+    {
+        connection.end();
+        console.log('No access right');
+        return 0;
+    }
+
+    try
+    {
+        var r2 = await connection.query('select editor_version, rented_space, rented_space_till from users where id = (select main_owner from games where id = ?)', [gameId])
+
+        connection.end();
+        if (!r2 || r2.length == 0)
+            return 0;
+
+        var size = r2[0].editor_version == 's' ? 10 * 1024 * 1024 : 5 * 1024 * 1024;
+        if (r2[0].rented_space_till)
         {
-            connection.end();
-            callbackSize(0);
+            var tillWhen = new Date(r2[0].rented_space_till);
+            if (tillWhen.getTime() > new Date().getTime())
+                size = r2[0].rented_space * 1024 * 1024;
         }
-
-        connection.query('select access_right_id from game_access_rights where (game_id = ? and user_id = ?) or (user_id = ? and access_right_id=1000)', [gameId, userId, userId], function (err1, r1)
-        {
-            if (err1 != null)
-            {
-                connection.end();
-                console.log(err1);
-                callbackSize(0);
-            }
-            if (!r1 || !r1.length)
-            {
-                connection.end();
-                console.log('No access right');
-                callbackSize(0);
-                return;
-            }
-
-            connection.query('select editor_version, rented_space, rented_space_till from users where id = (select main_owner from games where id = ?)', [gameId], function (err2, r2)
-            {
-                if (err2 != null)
-                {
-                    console.log(err2);
-                    callbackSize(0);
-                    return;
-                }
-
-                connection.end();
-                if (!r2 || r2.length == 0)
-                    callbackSize(0);
-                else
-                {
-                    var size = r2[0].editor_version == 's' ? 10 * 1024 * 1024 : 5 * 1024 * 1024;
-                    if (r2[0].rented_space_till)
-                    {
-                        var tillWhen = new Date(r2[0].rented_space_till);
-                        if (tillWhen.getTime() > new Date().getTime())
-                            size = r2[0].rented_space * 1024 * 1024;
-                    }
-                    callbackSize(size);
-                }
-            });
-        });
-    });
+        return size;
+    }
+    catch (ex)
+    {
+        console.log(ex);
+        connection.end();
+        return 0;
+    }
 }
 
-function CanStoreSize(userId: number, gameId: number, sizeToPlace: number, checkResult: (result: boolean) => void)
+async function CanStoreSize(userId: number, gameId: number, sizeToPlace: number)
 {
-    OwnerMaxSize(userId, gameId, (maxSize: number) =>
-    {
-        if (DirectoryCheck(gameId) + sizeToPlace < maxSize)
-        {
-            checkResult(true);
-        }
-        else
-        {
-            checkResult(false);
-        }
-    });
+    var maxSize = await OwnerMaxSize(userId, gameId);
+    if (DirectoryCheck(gameId) + sizeToPlace < maxSize)
+        return true;
+    return false;
 }

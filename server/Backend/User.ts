@@ -1,5 +1,4 @@
-﻿///<reference path="../../typings/node.d.ts" />
-///<reference path="../app.ts" />
+﻿///<reference path="../app.ts" />
 
 var currentTokens: TokenEntry = {};
 
