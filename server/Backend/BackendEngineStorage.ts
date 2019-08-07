@@ -783,7 +783,7 @@ app.post('/backend/DeleteStorage', async function (req, res, next)
     }
 });
 
-app.post('/backend/DropTable', function (req, res, next)
+app.post('/backend/DropTable', async function (req, res, next)
 {
     if (!req.body.game)
     {

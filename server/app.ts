@@ -1,16 +1,16 @@
-﻿var express = require('express');
-var path = require('path');
+﻿var path = require('path');
 var favicon = require('serve-favicon');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var fs = require('fs');
-var hash = require('crypto');
 var compression = require('compression');
 var multer = require('multer');
+var express = require('express');
 
 var packageJson = require(__dirname + '/package.json');
 
-var app = express();
+const app: IExpress.Application = express();
+
 app.disable('x-powered-by');
 app.use(staticInclude);
 app.use(compression({ threshold: 9000 }));
@@ -44,64 +44,6 @@ function shouldCompress(req, res)
 
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
-
-interface String
-{
-    htmlEntities(): string;
-    trim(): string;
-    endsWith(suffix): boolean;
-    startsWith(prefix): boolean;
-    contains(toSearch): boolean;
-}
-
-String.prototype.htmlEntities = function ()
-{
-    return this.replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;").replace(/'/g, "&#39;").replace(/"/g, "&quot;");
-}
-
-String.prototype.trim = function ()
-{
-    return this.replace(/^\s+|\s+$/g, '');
-}
-
-String.prototype.endsWith = function (suffix)
-{
-    return (this.indexOf(suffix, this.length - suffix.length) !== -1);
-}
-
-String.prototype.startsWith = function (prefix)
-{
-    return (this.substr(0, prefix.length) == prefix);
-}
-
-String.prototype.contains = function (toSearch)
-{
-    return (this.indexOf(toSearch) != -1);
-}
-
-function md5(source)
-{
-    return hash.createHash('md5').update(source).digest('hex');
-}
-
-function sha256(source, secret)
-{
-    if (!secret)
-        secret = "aBcD3FgH1";
-    return hash.createHmac('sha256', secret)
-        .update(source)
-        .digest('hex');
-}
-
-function base64decode(source: string): Buffer
-{
-    // Node 5.10+
-    if (typeof (<any>Buffer).from === "function")
-        return (<any>Buffer).from(source, 'base64');
-    // older Node versions
-    else
-        return new Buffer(source, 'base64');
-}
 
 function staticInclude(req, res, next)
 {

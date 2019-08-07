@@ -1,4 +1,11 @@
-﻿function CreateGameDir(gameId: number)
+﻿interface FileRequest
+{
+    originalname: string;
+    path: string;
+}
+
+
+function CreateGameDir(gameId: number)
 {
     if (!fs.existsSync(__dirname + '/public/user_art/' + GameDir(gameId)))
         fs.mkdirSync(__dirname + '/public/user_art/' + GameDir(gameId));
@@ -18,7 +25,6 @@ app.post('/upload/AndGet', upload.single('fileUpload'), function (req, res)
         res.end();
         return;
     }
-
 
     if (!req.file)
     {

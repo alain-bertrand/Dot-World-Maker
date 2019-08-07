@@ -1,0 +1,1 @@
+# Modified Type Definitions to work with the project
