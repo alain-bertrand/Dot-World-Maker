@@ -45,9 +45,10 @@ gulp.task("default", function ()
     console.log("Hi there Dot World Maker Developer!");
     console.log("I will watch for you all the TS and LESS files and compile them as needed.");
     console.log(" ");
-    gulp.watch(["public/Engine/**/*.ts", "!public/Engine/**/version.ts"], ["compile:client"]);
-    gulp.watch("server/**/*.ts", ["compile:server"]);
-    gulp.watch("public/**/*.less", ["compile:less"]);
+
+    gulp.watch(["public/Engine/**/*.ts", "!public/Engine/**/version.ts"], gulp.series(compileMaker, compileRuntime));
+    gulp.watch("server/**/*.ts", compileServer);
+    gulp.watch("public/**/*.less", compileLess);
     cb();
 });
 
