@@ -59,3 +59,8 @@ function base64decode(source: string): Buffer
     else
         return new Buffer(source, 'base64');
 }
+
+function timeout(ms): Promise<unknown>
+{
+    return new Promise(resolve => setTimeout(resolve, ms));
+}

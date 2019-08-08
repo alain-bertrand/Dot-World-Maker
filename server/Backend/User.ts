@@ -48,7 +48,7 @@ function GetTokenInformation(token: string, ip: string)
     return null;
 }
 
-app.post('/backend/RecoverPassword', function (req, res, next)
+app.post('/backend/RecoverPassword', async function (req, res, next)
 {
     if (!req.body.user)
     {
@@ -58,7 +58,7 @@ app.post('/backend/RecoverPassword', function (req, res, next)
         return;
     }
 
-    var connection = getConnection();
+    var connection = getDb();
     if (!connection)
     {
         res.writeHead(500, { 'Content-Type': 'text/plain' });
@@ -67,75 +67,63 @@ app.post('/backend/RecoverPassword', function (req, res, next)
         return;
     }
 
-    connection.connect(function (err)
+    try
     {
-        if (err != null)
+        await connection.connect();
+        var r1 = await connection.query('select id,email from users where name = ?', [req.body.user]);
+        // Not yet registered
+        if (r1.length == 0 || !r1[0].email)
         {
             connection.end();
-            console.log(err);
             res.writeHead(500, { 'Content-Type': 'text/plain' });
-            res.write("Error with database.");
+            res.write("User not found or it doesn't have an email.");
             res.end();
             return;
         }
-        connection.query('select id,email from users where name = ?', [req.body.user], function (err1, r1)
-        {
-            if (err1 != null)
-            {
-                connection.end();
-                console.log(err1);
-                res.writeHead(500, { 'Content-Type': 'text/plain' });
-                res.write("Error with database.");
-                res.end();
-                return;
-            }
-            // Not yet registered
-            if (r1.length == 0 || !r1[0].email)
-            {
-                connection.end();
-                res.writeHead(500, { 'Content-Type': 'text/plain' });
-                res.write("User not found or it doesn't have an email.");
-                res.end();
-                return;
-            }
 
-            var email = r1[0].email;
-            var id = r1[0].id;
-            var key = md5(email + "SomethingPrr1vat3T0mak3ItH@rd" + r1[0].id + ((new Date()).toLocaleTimeString()) + Math.round(Math.random() * Number.MAX_VALUE));
+        var email = r1[0].email;
+        var id = r1[0].id;
+        var key = md5(email + "SomethingPrr1vat3T0mak3ItH@rd" + r1[0].id + ((new Date()).toLocaleTimeString()) + Math.round(Math.random() * Number.MAX_VALUE));
 
-            connection.query('update users set random_reset_key=?, reset_valid_till=? where id = ?', [key, new Date(new Date().getTime() + 3600000), id], function (err2, r2)
-            {
-                connection.end();
+        await connection.query('update users set random_reset_key=?, reset_valid_till=? where id = ?', [key, new Date(new Date().getTime() + 3600000), id]);
+        connection.end();
 
-                res.writeHead(200, { 'Content-Type': 'text/plain' });
-                res.write("EMail sent.");
-                res.end();
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.write("EMail sent.");
+        res.end();
 
-                var email = require("emailjs");
-                var server = email.server.connect({
-                    user: packageJson.config.email_user,
-                    password: packageJson.config.email_pass,
-                    host: packageJson.config.email_server,
-                    ssl: true
-                });
-
-                process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-                server.send({
-                    text: "Dot World Maker - Password recovery\nTo recover your account please open this link:\nhttps://www.dotworldmaker.com/Home/recover_password.html?key=" + key + "&id=" + id,
-                    from: "no-reply@dotworldmaker.com",
-                    to: r1[0].email,
-                    subject: "Dot World Maker - Password recovery"
-                }, (err3, message) =>
-                    {
-                        if (err3)
-                            console.log(err3);
-                    });
-            });
+        var email = require("emailjs");
+        var server = email.server.connect({
+            user: packageJson.config.email_user,
+            password: packageJson.config.email_pass,
+            host: packageJson.config.email_server,
+            ssl: true
         });
-    });
+
+        process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+        server.send({
+            text: "Dot World Maker - Password recovery\nTo recover your account please open this link:\nhttps://www.dotworldmaker.com/Home/recover_password.html?key=" + key + "&id=" + id,
+            from: "no-reply@dotworldmaker.com",
+            to: r1[0].email,
+            subject: "Dot World Maker - Password recovery"
+        }, (err3, message) =>
+            {
+                if (err3)
+                    console.log(err3);
+            });
+    }
+    catch (ex)
+    {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write("Error with database.");
+        res.end();
+        return;
+    }
 });
 
-app.post('/backend/GetRoles', function (req, res, next)
+app.post('/backend/GetRoles', async function (req, res, next)
 {
 
     if (!req.body.token)
@@ -155,7 +143,7 @@ app.post('/backend/GetRoles', function (req, res, next)
         return;
     }
 
-    var connection = getConnection();
+    var connection = getDb();
     if (!connection)
     {
         res.writeHead(500, { 'Content-Type': 'text/plain' });
@@ -164,42 +152,31 @@ app.post('/backend/GetRoles', function (req, res, next)
         return;
     }
 
-    connection.connect(function (err)
+    try
     {
-        if (err != null)
-        {
-            connection.end();
-            console.log(err);
-            res.writeHead(500, { 'Content-Type': 'text/plain' });
-            res.write("Error with database.");
-            res.end();
-            return;
-        }
+        await connection.connect();
 
-        connection.query('select access_right_id from game_access_rights where (game_id = ? and user_id = ?) or (user_id = ? and access_right_id=1000)', [req.body.game, tokenInfo.id, tokenInfo.id], function (err1, r1)
-        {
-            if (err1 != null)
-            {
-                connection.end();
-                console.log(err1);
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "error with database." }));
-                res.end();
-                return;
-            }
-            connection.end();
-            res.writeHead(200, { 'Content-Type': 'text/json' });
-            var result: number[] = [];
-            if (r1 && r1.length > 0) for (var i = 0; i < r1.length; i++)
-                    result.push(r1[i].access_right_id);
-            res.write(JSON.stringify(result));
-            res.end();
-        });
-    });
+        var r1 = await connection.query('select access_right_id from game_access_rights where (game_id = ? and user_id = ?) or (user_id = ? and access_right_id=1000)', [req.body.game, tokenInfo.id, tokenInfo.id]);
+        connection.end();
+        res.writeHead(200, { 'Content-Type': 'text/json' });
+        var result: number[] = [];
+        if (r1 && r1.length > 0) for (var i = 0; i < r1.length; i++)
+            result.push(r1[i].access_right_id);
+        res.write(JSON.stringify(result));
+        res.end();
+    }
+    catch (ex)
+    {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write("Error with database.");
+        res.end();
+        return;
+    }
 });
 
-
-app.post('/backend/HasRole', function (req, res, next)
+app.post('/backend/HasRole', async function (req, res, next)
 {
 
     if (!req.body.token)
@@ -227,7 +204,7 @@ app.post('/backend/HasRole', function (req, res, next)
         return;
     }
 
-    var connection = getConnection();
+    var connection = getDb();
     if (!connection)
     {
         res.writeHead(500, { 'Content-Type': 'text/plain' });
@@ -236,17 +213,9 @@ app.post('/backend/HasRole', function (req, res, next)
         return;
     }
 
-    connection.connect(function (err)
+    try
     {
-        if (err != null)
-        {
-            connection.end();
-            console.log(err);
-            res.writeHead(500, { 'Content-Type': 'text/plain' });
-            res.write("Error with database.");
-            res.end();
-            return;
-        }
+        await connection.connect();
         var access: number = 0;
         switch (("" + req.body.role).toLowerCase())
         {
@@ -260,29 +229,27 @@ app.post('/backend/HasRole', function (req, res, next)
                 break;
         }
 
-        connection.query('select access_right_id from game_access_rights where (game_id = ? and user_id = ? and access_right_id = ?) or (user_id = ? and access_right_id=1000)', [req.body.game, tokenInfo.id, access, tokenInfo.id], function (err1, r1)
-        {
-            if (err1 != null)
-            {
-                connection.end();
-                console.log(err1);
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "error with database." }));
-                res.end();
-                return;
-            }
-            connection.end();
-            res.writeHead(200, { 'Content-Type': 'text/json' });
-            if (!r1 || !r1.length)
-                res.write(JSON.stringify(false));
-            else
-                res.write(JSON.stringify(true));
-            res.end();
-        });
-    });
+        var r1 = await connection.query('select access_right_id from game_access_rights where (game_id = ? and user_id = ? and access_right_id = ?) or (user_id = ? and access_right_id=1000)', [req.body.game, tokenInfo.id, access, tokenInfo.id]);
+        connection.end();
+        res.writeHead(200, { 'Content-Type': 'text/json' });
+        if (!r1 || !r1.length)
+            res.write(JSON.stringify(false));
+        else
+            res.write(JSON.stringify(true));
+        res.end();
+    }
+    catch (ex)
+    {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write("Error with database.");
+        res.end();
+        return;
+    }
 });
 
-app.post('/backend/ChatBan', function (req, res, next)
+app.post('/backend/ChatBan', async function (req, res, next)
 {
 
     if (!req.body.token)
@@ -318,7 +285,7 @@ app.post('/backend/ChatBan', function (req, res, next)
         return;
     }
 
-    var connection = getConnection();
+    var connection = getDb();
     if (!connection)
     {
         res.writeHead(500, { 'Content-Type': 'text/plain' });
@@ -327,84 +294,53 @@ app.post('/backend/ChatBan', function (req, res, next)
         return;
     }
 
-    connection.connect(function (err)
+    try
     {
-        if (err != null)
+        await connection.connect();
+        var r1 = await connection.query('select access_right_id from game_access_rights where (game_id = ? and user_id = ?) or (user_id = ? and access_right_id=1000)', [req.body.game, tokenInfo.id, tokenInfo.id]);
+        if (!r1 || !r1.length)
         {
             connection.end();
-            console.log(err);
-            res.writeHead(500, { 'Content-Type': 'text/plain' });
-            res.write("Error with database.");
+            res.writeHead(500, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify({ error: "no write access." }));
             res.end();
             return;
         }
 
-        connection.query('select access_right_id from game_access_rights where (game_id = ? and user_id = ?) or (user_id = ? and access_right_id=1000)', [req.body.game, tokenInfo.id, tokenInfo.id,], function (err1, r1)
+        var r2 = await connection.query('select data from game_player where game_id = ? and user_id in (select id from users where name = ?)', [req.body.game, req.body.username]);
+        // Not yet registered
+        if (r2.length != 1)
         {
-            if (err1 != null)
-            {
-                connection.end();
-                console.log(err1);
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "error with database." }));
-                res.end();
-                return;
-            }
-            if (!r1 || !r1.length)
-            {
-                connection.end();
-                console.log(err1);
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "no write access." }));
-                res.end();
-                return;
-            }
+            connection.end();
+            res.writeHead(500, { 'Content-Type': 'text/plain' });
+            res.write(JSON.stringify({ error: "User not found." }));
+            res.end();
+            return;
+        }
 
-            connection.query('select data from game_player where game_id = ? and user_id in (select id from users where name = ?)', [req.body.game, req.body.username], function (err2, r2)
-            {
-                if (err2 != null)
-                {
-                    connection.end();
-                    console.log(err2);
-                    res.writeHead(50, { 'Content-Type': 'text/plain' });
-                    res.write(JSON.stringify({ error: "Error with database." }));
-                    res.end();
-                    return;
-                }
-                // Not yet registered
-                if (r2.length != 1)
-                {
-                    connection.end();
-                    res.writeHead(500, { 'Content-Type': 'text/plain' });
-                    res.write(JSON.stringify({ error: "User not found." }));
-                    res.end();
-                    return;
-                }
+        var data: PlayerSerialization = JSON.parse(r2[0].data);
+        data.chatBannedTill = new Date((new Date()).getTime() + parseInt(req.body.days) * 24 * 3600 * 1000);
+        ChatSendTo(parseInt(req.body.game), req.body.username, "ban", data.chatBannedTill);
 
-                var data: PlayerSerialization = JSON.parse(r2[0].data);
-                data.chatBannedTill = new Date((new Date()).getTime() + parseInt(req.body.days) * 24 * 3600 * 1000);
-                ChatSendTo(parseInt(req.body.game), req.body.username, "ban", data.chatBannedTill);
-
-                connection.query('update game_player set data = ? where  game_id = ? and user_id in (select id from users where name = ?)', [JSON.stringify(data), req.body.game, req.body.username], function (err3, r3)
-                {
-                    connection.end();
-                    if (err3)
-                    {
-                        console.log(err3);
-                        res.writeHead(500, { 'Content-Type': 'text/plain' });
-                        res.write(JSON.stringify({ error: "Error with database." }));
-                    }
-                    res.writeHead(200, { 'Content-Type': 'text/plain' });
-                    res.write(JSON.stringify(true));
-                    res.end();
-                    return;
-                });
-            });
-        });
-    });
+        var r3 = await connection.query('update game_player set data = ? where  game_id = ? and user_id in (select id from users where name = ?)', [JSON.stringify(data), req.body.game, req.body.username]);
+        connection.end();
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.write(JSON.stringify(true));
+        res.end();
+        return;
+    }
+    catch (ex)
+    {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write("Error with database.");
+        res.end();
+        return;
+    }
 });
 
-app.post('/backend/ChatMute', function (req, res, next)
+app.post('/backend/ChatMute', async function (req, res, next)
 {
 
     if (!req.body.token)
@@ -448,7 +384,7 @@ app.post('/backend/ChatMute', function (req, res, next)
         return;
     }
 
-    var connection = getConnection();
+    var connection = getDb();
     if (!connection)
     {
         res.writeHead(500, { 'Content-Type': 'text/plain' });
@@ -457,86 +393,55 @@ app.post('/backend/ChatMute', function (req, res, next)
         return;
     }
 
-    connection.connect(function (err)
+    try
     {
-        if (err != null)
+        await connection.connect();
+
+        var r1 = await connection.query('select access_right_id from game_access_rights where (game_id = ? and user_id = ?) or (user_id = ? and access_right_id=1000)', [req.body.game, tokenInfo.id, tokenInfo.id,]);
+        if (!r1 || !r1.length)
         {
             connection.end();
-            console.log(err);
-            res.writeHead(500, { 'Content-Type': 'text/plain' });
-            res.write("Error with database.");
+            res.writeHead(500, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify({ error: "no write access." }));
             res.end();
             return;
         }
 
-        connection.query('select access_right_id from game_access_rights where (game_id = ? and user_id = ?) or (user_id = ? and access_right_id=1000)', [req.body.game, tokenInfo.id, tokenInfo.id,], function (err1, r1)
+        var r2 = await connection.query('select data from game_player where game_id = ? and user_id in (select id from users where name = ?)', [req.body.game, req.body.username]);
+
+        // Not yet registered
+        if (r2.length != 1)
         {
-            if (err1 != null)
-            {
-                connection.end();
-                console.log(err1);
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "error with database." }));
-                res.end();
-                return;
-            }
-            if (!r1 || !r1.length)
-            {
-                connection.end();
-                console.log(err1);
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "no write access." }));
-                res.end();
-                return;
-            }
+            connection.end();
+            res.writeHead(500, { 'Content-Type': 'text/plain' });
+            res.write(JSON.stringify({ error: "User not found." }));
+            res.end();
+            return;
+        }
 
+        var data: PlayerSerialization = JSON.parse(r2[0].data);
+        data.chatMutedTill = new Date((new Date()).getTime() + parseInt(req.body.minutes) * 60 * 1000);
+        ChatSendTo(parseInt(req.body.game), req.body.username, "mute", data.chatMutedTill);
 
-            connection.query('select data from game_player where game_id = ? and user_id in (select id from users where name = ?)', [req.body.game, req.body.username], function (err2, r2)
-            {
-                if (err2 != null)
-                {
-                    connection.end();
-                    console.log(err2);
-                    res.writeHead(50, { 'Content-Type': 'text/plain' });
-                    res.write(JSON.stringify({ error: "Error with database." }));
-                    res.end();
-                    return;
-                }
-
-                // Not yet registered
-                if (r2.length != 1)
-                {
-                    connection.end();
-                    res.writeHead(500, { 'Content-Type': 'text/plain' });
-                    res.write(JSON.stringify({ error: "User not found." }));
-                    res.end();
-                    return;
-                }
-
-                var data: PlayerSerialization = JSON.parse(r2[0].data);
-                data.chatMutedTill = new Date((new Date()).getTime() + parseInt(req.body.minutes) * 60 * 1000);
-                ChatSendTo(parseInt(req.body.game), req.body.username, "mute", data.chatMutedTill);
-
-                connection.query('update game_player set data = ? where  game_id = ? and user_id in (select id from users where name = ?)', [JSON.stringify(data), req.body.game, req.body.username], function (err3, r3)
-                {
-                    connection.end();
-                    if (err3)
-                    {
-                        console.log(err3);
-                        res.writeHead(500, { 'Content-Type': 'text/plain' });
-                        res.write(JSON.stringify({ error: "Error with database." }));
-                    }
-                    res.writeHead(200, { 'Content-Type': 'text/plain' });
-                    res.write(JSON.stringify(true));
-                    res.end();
-                    return;
-                });
-            });
-        });
-    });
+        var r3 = await connection.query('update game_player set data = ? where  game_id = ? and user_id in (select id from users where name = ?)', [JSON.stringify(data), req.body.game, req.body.username]);
+        connection.end();
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.write(JSON.stringify(true));
+        res.end();
+        return;
+    }
+    catch (ex)
+    {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write("Error with database.");
+        res.end();
+        return;
+    }
 });
 
-app.post('/backend/ResetPassword', function (req, res, next)
+app.post('/backend/ResetPassword', async function (req, res, next)
 {
     if (!req.body.key)
     {
@@ -562,7 +467,7 @@ app.post('/backend/ResetPassword', function (req, res, next)
         return;
     }
 
-    var connection = getConnection();
+    var connection = getDb();
     if (!connection)
     {
         res.writeHead(500, { 'Content-Type': 'text/plain' });
@@ -571,58 +476,46 @@ app.post('/backend/ResetPassword', function (req, res, next)
         return;
     }
 
-    connection.connect(function (err)
+    try
     {
-        if (err != null)
+        connection.connect();
+
+        var r1 = await connection.query('select random_reset_key,reset_valid_till from users where id = ?', [req.body.id]);
+        // Not yet registered
+        if (r1.length == 0 || !r1[0].random_reset_key)
         {
             connection.end();
-            console.log(err);
             res.writeHead(500, { 'Content-Type': 'text/plain' });
-            res.write("Error with database.");
+            res.write("Operation is not allowed sorry.");
             res.end();
             return;
         }
 
-        connection.query('select random_reset_key,reset_valid_till from users where id = ?', [req.body.id], function (err1, r1)
+        if (r1[0].random_reset_key != req.body.key || new Date(r1[0].reset_valid_till).getTime() < new Date().getTime())
         {
-            if (err1 != null)
-            {
-                connection.end();
-                console.log(err1);
-                res.writeHead(500, { 'Content-Type': 'text/plain' });
-                res.write("Error with database.");
-                res.end();
-                return;
-            }
-            // Not yet registered
-            if (r1.length == 0 || !r1[0].random_reset_key)
-            {
-                connection.end();
-                res.writeHead(500, { 'Content-Type': 'text/plain' });
-                res.write("Operation is not allowed sorry.");
-                res.end();
-                return;
-            }
+            connection.end();
+            res.writeHead(500, { 'Content-Type': 'text/plain' });
+            res.write("Operation is not allowed sorry.");
+            res.end();
+            return;
+        }
 
-            if (r1[0].random_reset_key != req.body.key || new Date(r1[0].reset_valid_till).getTime() < new Date().getTime())
-            {
-                connection.end();
-                res.writeHead(500, { 'Content-Type': 'text/plain' });
-                res.write("Operation is not allowed sorry.");
-                res.end();
-                return;
-            }
-
-            connection.query('update users set random_reset_key = null, reset_valid_till = null, password = ? where id = ? and random_reset_key = ?', ["*" + req.body.password, req.body.id, req.body.key], function (err2, r2)
-            {
-                connection.end();
-                res.writeHead(200, { 'Content-Type': 'text/plain' });
-                res.write("Password has been reset. You can now log-in.");
-                res.end();
-                return;
-            });
-        });
-    });
+        await connection.query('update users set random_reset_key = null, reset_valid_till = null, password = ? where id = ? and random_reset_key = ?', ["*" + req.body.password, req.body.id, req.body.key]);
+        connection.end();
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.write("Password has been reset. You can now log-in.");
+        res.end();
+        return;
+    }
+    catch (ex)
+    {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write("Error with database.");
+        res.end();
+        return;
+    }
 });
 
 app.post('/backend/ChangePassword', function (req, res, next)
@@ -896,7 +789,7 @@ app.post('/backend/RegisterUser', function (req, res, next)
     });
 });
 
-app.post('/backend/Login', function (req, res, next)
+app.post('/backend/Login', async function (req, res, next)
 {
     if (!req.body.user)
     {
@@ -913,7 +806,7 @@ app.post('/backend/Login', function (req, res, next)
         return;
     }
 
-    var connection = getConnection();
+    var connection = getDb();
     if (!connection)
     {
         res.writeHead(500, { 'Content-Type': 'text/json' });
@@ -922,59 +815,42 @@ app.post('/backend/Login', function (req, res, next)
         return;
     }
 
+    await timeout(2000);
     // Introduce a sleep, to avoid DoS or password brute force attacks.
-    setTimeout(function ()
+    try
     {
-        connection.connect(function (err)
+        await connection.connect();
+        var results = await connection.query('select id,password from users where name = ?', [req.body.user]);
+        // Not yet registered
+        if (results.length == 0 || (results[0].password != HashPassword(req.body.user, req.body.password) && results[0].password != "*" + req.body.password))
         {
-            if (err != null)
-            {
-                connection.end();
-                console.log(err);
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "error with database." }));
-                res.end();
-                return;
-            }
-            connection.query('select id,password from users where name = ?', [req.body.user], function (err1, results)
-            {
-                if (err1 != null)
-                {
-                    connection.end();
-                    console.log(err1);
-                    res.writeHead(500, { 'Content-Type': 'text/json' });
-                    res.write(JSON.stringify({ error: "error with database." }));
-                    res.end();
-                    return;
-                }
-                // Not yet registered
-                if (results.length == 0 || (results[0].password != HashPassword(req.body.user, req.body.password) && results[0].password != "*" + req.body.password))
-                {
-                    connection.end();
-                    res.writeHead(500, { 'Content-Type': 'text/json' });
-                    res.write(JSON.stringify({ error: "wrong username or password" }));
-                    res.end();
-                    return;
-                }
-                else
-                {
-                    if (results[0].password == "*" + req.body.password)
-                    {
-                        connection.query('update users set password = ? where name = ?', [HashPassword(req.body.user, req.body.password), req.body.user], function (err2)
-                        {
-                            connection.end();
-                        });
-                    }
-                    else
-                        connection.end();
-                    res.writeHead(200, { 'Content-Type': 'text/json' });
-                    res.write(JSON.stringify(BuildToken(results[0].id, req.body.user, req.headers['x-forwarded-for'] || req.connection.remoteAddress)));
-                    res.end();
-                    return;
-                }
-            });
-        });
-    }, 2000);
+            connection.end();
+            res.writeHead(500, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify({ error: "wrong username or password" }));
+            res.end();
+            return;
+        }
+        else
+        {
+            if (results[0].password == "*" + req.body.password)
+                await connection.query('update users set password = ? where name = ?', [HashPassword(req.body.user, req.body.password), req.body.user]);
+
+            connection.end();
+            res.writeHead(200, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify(BuildToken(results[0].id, req.body.user, req.headers['x-forwarded-for'] || req.connection.remoteAddress)));
+            res.end();
+            return;
+        }
+    }
+    catch (ex)
+    {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "error with database." }));
+        res.end();
+        return;
+    }
 });
 
 app.post('/backend/LoadPlayer', function (req, res, next)
