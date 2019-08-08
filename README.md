@@ -5,20 +5,20 @@ This is also the same base engine used on https://www.dotworldmaker.com
 
 ## Requirements
 * Your server must have MySQL or MariaDB installed.
-* Node.JS installed (we tested it with v6.11).
+* Node.JS installed (we tested it with v6.11). To download it: https://nodejs.org/en/download/
 
 ## Installation
 * Clone or download the repository
 * Create a database on your MySQL or MariaDB and create a DB user for the engine
 * Import the SQL statements from tables.txt into your database
 * Edit the package.json file (config section)
-* install the needed packages: "npm install ." (this must be run within the directory where the package.json is)
+* Using a command prompt install the needed packages: "npm install ." (this must be run within the directory where the package.json is)
 
 ## Running it
-* Start the server: node server.js
+* Using a command prompt start the server: "node server.js"
 * Using your browser connect to http://127.0.0.1:1337 or the port specified in the package.json
 
-Default user: admin password: admin
+**Default user: admin password: admin**
 
 ## To edit the client or the server Code
 * Edit the *.ts* files never the resulting *.js* as they will be overwitten when you compile the engine
