@@ -88,7 +88,7 @@ function cleanJS(cb)
 function compileServer(cb)
 {
     process.chdir(__dirname);
-    return gulp.src(['server/**/*.ts'])
+    return gulp.src(['server/**/*.ts','typings/node.d.ts'])
         .pipe(sourcemaps.init())
         .pipe(sourcemaps.identityMap())
         .pipe(typescript({

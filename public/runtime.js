@@ -17855,129 +17855,6 @@ var InventoryMenu = /** @class */ (function () {
     };
     return InventoryMenu;
 }());
-var journalMenu = new (/** @class */ (function () {
-    function class_21() {
-        this.journalDisplayed = false;
-    }
-    return class_21;
-}()));
-var JournalMenu = /** @class */ (function () {
-    function JournalMenu() {
-    }
-    JournalMenu.AdditionalCSS = function () {
-        return "#journalIcon\n\
-{\n\
-    position: absolute;\n\
-    left: -" + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
-    top: 245px;\n\
-}\n\
-#journalIcon .gamePanelContentNoHeader\n\
-{\n\
-    width: 74px;\n\
-}\n\
-";
-    };
-    JournalMenu.Init = function (position) {
-        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowJournal === false))) {
-            $("#journalIcon").hide();
-            return position;
-        }
-        $("#journalIcon").css("top", position + "px");
-        if (game)
-            $("#journalIcon .gamePanelContentNoHeader").html("<img src='art/tileset2/journal_icon.png'>");
-        else
-            $("#journalIcon .gamePanelContentNoHeader").html("<img src='/art/tileset2/journal_icon.png'>");
-        return position + 64 + world.art.panelStyle.topBorder;
-    };
-    JournalMenu.Toggle = function () {
-        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowJournal === false)))
-            return;
-        inventoryMenu.inventoryDisplayed = false;
-        $("#inventoryIcon").removeClass("openPanelIcon");
-        messageMenu.messageDisplayed = false;
-        $("#messageIcon").removeClass("openPanelIcon");
-        profileMenu.profileDisplayed = false;
-        $("#profileIcon").removeClass("openPanelIcon");
-        if (journalMenu.journalDisplayed) {
-            $("#gameMenuPanel").hide();
-            $("#journalIcon").removeClass("openPanelIcon");
-            journalMenu.journalDisplayed = false;
-        }
-        else {
-            journalMenu.journalDisplayed = true;
-            $("#gameMenuPanel").show();
-            $("#journalIcon").addClass("openPanelIcon");
-            JournalMenu.Update();
-        }
-    };
-    JournalMenu.Update = function () {
-        if (!journalMenu.journalDisplayed)
-            return;
-        world.Player.Quests.sort(JournalMenu.SortQuests);
-        world.Player.StoredCompare = world.Player.JSON();
-        world.Player.Save();
-        var html = "<h1>Quest Journal</h1>";
-        if (world.Player.Quests.length > 0) {
-            var showCompleted = false;
-            if (!world.Player.Quests[0].Completed)
-                html += "<h2>Open quests</h2>";
-            for (var i = 0; i < world.Player.Quests.length; i++) {
-                var quest = world.GetQuest(world.Player.Quests[i].Name);
-                if (!quest)
-                    continue;
-                if (!showCompleted && world.Player.Quests[i].Completed) {
-                    showCompleted = true;
-                    html += "<h2>Completed quests</h2>";
-                }
-                html += "<b>" + quest.Name.htmlEntities() + "</b><br>";
-                html += Main.TextTransform(quest.Description, true) + "<br>";
-                for (var j = 0; j < world.Player.Quests[i].JournalEntries.length; j++) {
-                    var entry = JournalMenu.GetJournal(quest, world.Player.Quests[i].JournalEntries[j].EntryId);
-                    if (!entry)
-                        continue;
-                    html += Main.TextTransform(entry) + "<br>";
-                }
-            }
-        }
-        $("#gameMenuPanelContent").html(html);
-    };
-    JournalMenu.GetJournal = function (quest, id) {
-        for (var i = 0; i < quest.JournalEntries.length; i++)
-            if (quest.JournalEntries[i].Id == id)
-                return quest.JournalEntries[i].Entry;
-        return null;
-    };
-    JournalMenu.SortQuests = function (a, b) {
-        if (a.Completed && b.Completed) {
-            if (a.Completed > b.Completed)
-                return -1;
-            if (a.Completed < b.Completed)
-                return 1;
-            return 0;
-        }
-        if (a.Completed && !b.Completed)
-            return 1;
-        if (!a.Completed && b.Completed)
-            return -1;
-        if (a.JournalEntries && a.JournalEntries.length > 0 && b.JournalEntries && b.JournalEntries.length > 0) {
-            if (a.JournalEntries[a.JournalEntries.length - 1] > b.JournalEntries[b.JournalEntries.length - 1])
-                return 1;
-            if (a.JournalEntries[a.JournalEntries.length - 1] < b.JournalEntries[b.JournalEntries.length - 1])
-                return -1;
-            return 0;
-        }
-        if (a.JournalEntries && a.JournalEntries.length > 0 && (!b.JournalEntries || b.JournalEntries.length == 0))
-            return 1;
-        if ((!a.JournalEntries || a.JournalEntries.length == 0) && b.JournalEntries && b.JournalEntries.length > 0)
-            return -1;
-        if (a.Started > b.Started)
-            return 1;
-        if (a.Started < b.Started)
-            return -1;
-        return 0;
-    };
-    return JournalMenu;
-}());
 /**
 A small replacement for JQuery
 */
@@ -18422,7 +18299,7 @@ function IfIsNull(value, defaultValue) {
  *
  */
 var framework = new (/** @class */ (function () {
-    function class_22() {
+    function class_21() {
         this.DefaultModule = "Play";
         this.Routing = [];
         this.HandleUrl = true;
@@ -18441,7 +18318,7 @@ var framework = new (/** @class */ (function () {
         this.isPrompt = false;
         this.RoutePrefix = "/Engine/Module/";
     }
-    return class_22;
+    return class_21;
 }()));
 /**
  * Base framework class
@@ -18957,10 +18834,10 @@ var Framework = /** @class */ (function () {
 }());
 /// <reference path="../../../Common/Libs/Framework.ts" />
 var listSelector = new (/** @class */ (function () {
-    function class_23() {
+    function class_22() {
         this.CurrentSelectors = {};
     }
-    return class_23;
+    return class_22;
 }()));
 var ListSelector = /** @class */ (function () {
     /**
@@ -19077,186 +18954,138 @@ var ListSelector = /** @class */ (function () {
     };
     return ListSelector;
 }());
-/// <reference path="../../../Common/Libs/MiniQuery.ts"/>
-/// <reference path="../../../Common/Libs/Framework.ts"/>
-var MenuItem = /** @class */ (function () {
-    function MenuItem(label, link) {
-        this.Label = label;
-        this.Link = link;
+var journalMenu = new (/** @class */ (function () {
+    function class_23() {
+        this.journalDisplayed = false;
     }
-    return MenuItem;
-}());
-var menubarStatic = new (/** @class */ (function () {
-    function class_24() {
-        this.previousItem = null;
-        this.KnownItems = [];
-        this.hoverHideTimer = null;
-    }
-    return class_24;
+    return class_23;
 }()));
-var Menubar = /** @class */ (function () {
-    function Menubar() {
+var JournalMenu = /** @class */ (function () {
+    function JournalMenu() {
     }
-    Menubar.InitFunction = function () {
-        var menu = document.getElementById("menubar");
-        if (!menu)
+    JournalMenu.AdditionalCSS = function () {
+        return "#journalIcon\n\
+{\n\
+    position: absolute;\n\
+    left: -" + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
+    top: 245px;\n\
+}\n\
+#journalIcon .gamePanelContentNoHeader\n\
+{\n\
+    width: 74px;\n\
+}\n\
+";
+    };
+    JournalMenu.Init = function (position) {
+        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowJournal === false))) {
+            $("#journalIcon").hide();
+            return position;
+        }
+        $("#journalIcon").css("top", position + "px");
+        if (game)
+            $("#journalIcon .gamePanelContentNoHeader").html("<img src='art/tileset2/journal_icon.png'>");
+        else
+            $("#journalIcon .gamePanelContentNoHeader").html("<img src='/art/tileset2/journal_icon.png'>");
+        return position + 64 + world.art.panelStyle.topBorder;
+    };
+    JournalMenu.Toggle = function () {
+        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowJournal === false)))
             return;
-        /*var pos = 5;
-        for (var i = 0; i < menu.children.length; i++)
-        {
-            var item: HTMLElement = <HTMLElement>menu.children[i];
-            item.style.left = pos + "px";
-            pos += $(item).width();
-        }*/
-        $("#menubar a").bind("dragstart", function () { return false; }).bind("drop", function () { return false; });
-        $("#hideMenu").mouseover(Menubar.HoverHideMenus).mouseout(Menubar.StopHoverHideMenus);
-        $("#searchPanel").mouseover(Menubar.HoverHideMenus);
-        for (var i = 0; i < menu.children.length; i++) {
-            var item = menu.children[i];
-            if (item.children.length > 0) {
-                item.onmouseover = function () {
-                    var currentSubmenu = item.children[0];
-                    return function () {
-                        if (menubarStatic.previousItem == currentSubmenu.textContent)
-                            return;
-                        Menubar.HideMenus();
-                        menubarStatic.previousItem = currentSubmenu.textContent;
-                        $("#hideMenu").show();
-                        $(currentSubmenu).show();
-                    };
-                }();
-                Menubar.HookSubmenu(item.children[0]);
-            }
-            else
-                item.onmouseover = Menubar.HideMenus;
+        inventoryMenu.inventoryDisplayed = false;
+        $("#inventoryIcon").removeClass("openPanelIcon");
+        messageMenu.messageDisplayed = false;
+        $("#messageIcon").removeClass("openPanelIcon");
+        profileMenu.profileDisplayed = false;
+        $("#profileIcon").removeClass("openPanelIcon");
+        if (journalMenu.journalDisplayed) {
+            $("#gameMenuPanel").hide();
+            $("#journalIcon").removeClass("openPanelIcon");
+            journalMenu.journalDisplayed = false;
         }
-        Menubar.ExtractItems();
-    };
-    Menubar.ExtractItems = function (menuItem) {
-        if (menuItem === void 0) { menuItem = null; }
-        if (!menuItem) {
-            menubarStatic.KnownItems = [];
-            menuItem = document.getElementById("menubar");
-        }
-        for (var i = 0; i < menuItem.children.length; i++) {
-            var item = menuItem.children[i];
-            if (item.children.length > 0) {
-                //if($(item).is(":visible"))
-                if (item.style.display !== "none")
-                    Menubar.ExtractItems(item.children[0]);
-            }
-            else if (item.style.display !== "none") {
-                var n = new MenuItem((item.attributes["label"] ? item.attributes["label"].textContent : item.textContent), (item.attributes["href"] ? item.attributes["href"].textContent : ""));
-                if (item.onclick && (!n.Link || n.Link == "" || n.Link == "#"))
-                    n.Link = item.onclick;
-                menubarStatic.KnownItems.push(n);
-            }
-            if (item.tagName.toLowerCase() == "a") {
-                $(item).bind("click", function () {
-                    $("#hideMenu").hide();
-                    Menubar.HideMenus();
-                });
-            }
+        else {
+            journalMenu.journalDisplayed = true;
+            $("#gameMenuPanel").show();
+            $("#journalIcon").addClass("openPanelIcon");
+            JournalMenu.Update();
         }
     };
-    Menubar.HookSubmenu = function (menuItem) {
-        for (var i = 0; i < menuItem.children.length; i++) {
-            var item = menuItem.children[i];
-            if (item.children.length > 0) {
-                item.onmouseover = function () {
-                    var child = item.children[0];
-                    $(child).addClass("childMenuBar");
-                    return function (e) {
-                        $("#menubar .childMenuBar").hide();
-                        $(child).show();
-                        e.stopPropagation();
-                    };
-                }();
-            }
-            else
-                item.onmouseover = function () {
-                    $("#menubar .childMenuBar").hide();
-                };
-        }
-    };
-    Menubar.HideMenus = function () {
-        menubarStatic.previousItem = null;
-        menubarStatic.hoverHideTimer = null;
-        $("#hideMenu").hide();
-        $("#menubar > div > div").hide();
-        $("#menubar .childMenuBar").hide();
-    };
-    Menubar.HoverHideMenus = function () {
-        if (menubarStatic.hoverHideTimer)
-            clearTimeout(menubarStatic.hoverHideTimer);
-        menubarStatic.hoverHideTimer = setTimeout(Menubar.HideMenus, 500);
-    };
-    Menubar.StopHoverHideMenus = function () {
-        if (menubarStatic.hoverHideTimer)
-            clearTimeout(menubarStatic.hoverHideTimer);
-        menubarStatic.hoverHideTimer = null;
-    };
-    /**
-     * Allows to disable a menu entry
-     * @param menuPath searched path in the form Main>Child>SubChild
-     */
-    Menubar.DisableMenu = function (menuPath, menuSection, currentPath) {
-        if (menuSection === void 0) { menuSection = null; }
-        if (currentPath === void 0) { currentPath = ""; }
-        if (!menuSection)
-            menuSection = document.getElementById("menubar");
-        for (var i = 0; i < menuSection.children.length; i++) {
-            var t = menuSection.children[i].textContent.trim();
-            var p = currentPath + t.split('\n')[0];
-            if (p == menuPath) {
-                $(menuSection.children[i]).hide();
-                Menubar.ExtractItems();
-                return true;
-            }
-            else if (menuSection.children[i].children.length > 0) {
-                var r = Menubar.DisableMenu(menuPath, menuSection.children[i].children[0], p + ">");
-                if (r == true)
-                    return true;
+    JournalMenu.Update = function () {
+        if (!journalMenu.journalDisplayed)
+            return;
+        world.Player.Quests.sort(JournalMenu.SortQuests);
+        world.Player.StoredCompare = world.Player.JSON();
+        world.Player.Save();
+        var html = "<h1>Quest Journal</h1>";
+        if (world.Player.Quests.length > 0) {
+            var showCompleted = false;
+            if (!world.Player.Quests[0].Completed)
+                html += "<h2>Open quests</h2>";
+            for (var i = 0; i < world.Player.Quests.length; i++) {
+                var quest = world.GetQuest(world.Player.Quests[i].Name);
+                if (!quest)
+                    continue;
+                if (!showCompleted && world.Player.Quests[i].Completed) {
+                    showCompleted = true;
+                    html += "<h2>Completed quests</h2>";
+                }
+                html += "<b>" + quest.Name.htmlEntities() + "</b><br>";
+                html += Main.TextTransform(quest.Description, true) + "<br>";
+                for (var j = 0; j < world.Player.Quests[i].JournalEntries.length; j++) {
+                    var entry = JournalMenu.GetJournal(quest, world.Player.Quests[i].JournalEntries[j].EntryId);
+                    if (!entry)
+                        continue;
+                    html += Main.TextTransform(entry) + "<br>";
+                }
             }
         }
-        return false;
+        $("#gameMenuPanelContent").html(html);
     };
-    /**
-     * Allows to enable a menu entry
-     * @param menuPath searched path in the form Main>Child>SubChild
-     */
-    Menubar.EnableMenu = function (menuPath, menuSection, currentPath) {
-        if (menuSection === void 0) { menuSection = null; }
-        if (currentPath === void 0) { currentPath = ""; }
-        if (!menuSection)
-            menuSection = document.getElementById("menubar");
-        for (var i = 0; i < menuSection.children.length; i++) {
-            var t = menuSection.children[i].textContent.trim();
-            var p = currentPath + t.split('\n')[0];
-            if (p == menuPath) {
-                $(menuSection.children[i]).show();
-                Menubar.ExtractItems();
-                return true;
-            }
-            else if (menuSection.children[i].children.length > 0) {
-                var r = Menubar.EnableMenu(menuPath, menuSection.children[i].children[0], p + ">");
-                if (r == true)
-                    return true;
-            }
+    JournalMenu.GetJournal = function (quest, id) {
+        for (var i = 0; i < quest.JournalEntries.length; i++)
+            if (quest.JournalEntries[i].Id == id)
+                return quest.JournalEntries[i].Entry;
+        return null;
+    };
+    JournalMenu.SortQuests = function (a, b) {
+        if (a.Completed && b.Completed) {
+            if (a.Completed > b.Completed)
+                return -1;
+            if (a.Completed < b.Completed)
+                return 1;
+            return 0;
         }
-        return false;
+        if (a.Completed && !b.Completed)
+            return 1;
+        if (!a.Completed && b.Completed)
+            return -1;
+        if (a.JournalEntries && a.JournalEntries.length > 0 && b.JournalEntries && b.JournalEntries.length > 0) {
+            if (a.JournalEntries[a.JournalEntries.length - 1] > b.JournalEntries[b.JournalEntries.length - 1])
+                return 1;
+            if (a.JournalEntries[a.JournalEntries.length - 1] < b.JournalEntries[b.JournalEntries.length - 1])
+                return -1;
+            return 0;
+        }
+        if (a.JournalEntries && a.JournalEntries.length > 0 && (!b.JournalEntries || b.JournalEntries.length == 0))
+            return 1;
+        if ((!a.JournalEntries || a.JournalEntries.length == 0) && b.JournalEntries && b.JournalEntries.length > 0)
+            return -1;
+        if (a.Started > b.Started)
+            return 1;
+        if (a.Started < b.Started)
+            return -1;
+        return 0;
     };
-    return Menubar;
+    return JournalMenu;
 }());
 var messageMenu = new (/** @class */ (function () {
-    function class_25() {
+    function class_24() {
         this.messageDisplayed = false;
         this.firstInit = true;
         this.selectedMessage = null;
         this.nonRead = 0;
         this.attachments = null;
     }
-    return class_25;
+    return class_24;
 }()));
 var MessageMenu = /** @class */ (function () {
     function MessageMenu() {
@@ -19659,6 +19488,177 @@ var MessageMenu = /** @class */ (function () {
         });
     };
     return MessageMenu;
+}());
+/// <reference path="../../../Common/Libs/MiniQuery.ts"/>
+/// <reference path="../../../Common/Libs/Framework.ts"/>
+var MenuItem = /** @class */ (function () {
+    function MenuItem(label, link) {
+        this.Label = label;
+        this.Link = link;
+    }
+    return MenuItem;
+}());
+var menubarStatic = new (/** @class */ (function () {
+    function class_25() {
+        this.previousItem = null;
+        this.KnownItems = [];
+        this.hoverHideTimer = null;
+    }
+    return class_25;
+}()));
+var Menubar = /** @class */ (function () {
+    function Menubar() {
+    }
+    Menubar.InitFunction = function () {
+        var menu = document.getElementById("menubar");
+        if (!menu)
+            return;
+        /*var pos = 5;
+        for (var i = 0; i < menu.children.length; i++)
+        {
+            var item: HTMLElement = <HTMLElement>menu.children[i];
+            item.style.left = pos + "px";
+            pos += $(item).width();
+        }*/
+        $("#menubar a").bind("dragstart", function () { return false; }).bind("drop", function () { return false; });
+        $("#hideMenu").mouseover(Menubar.HoverHideMenus).mouseout(Menubar.StopHoverHideMenus);
+        $("#searchPanel").mouseover(Menubar.HoverHideMenus);
+        for (var i = 0; i < menu.children.length; i++) {
+            var item = menu.children[i];
+            if (item.children.length > 0) {
+                item.onmouseover = function () {
+                    var currentSubmenu = item.children[0];
+                    return function () {
+                        if (menubarStatic.previousItem == currentSubmenu.textContent)
+                            return;
+                        Menubar.HideMenus();
+                        menubarStatic.previousItem = currentSubmenu.textContent;
+                        $("#hideMenu").show();
+                        $(currentSubmenu).show();
+                    };
+                }();
+                Menubar.HookSubmenu(item.children[0]);
+            }
+            else
+                item.onmouseover = Menubar.HideMenus;
+        }
+        Menubar.ExtractItems();
+    };
+    Menubar.ExtractItems = function (menuItem) {
+        if (menuItem === void 0) { menuItem = null; }
+        if (!menuItem) {
+            menubarStatic.KnownItems = [];
+            menuItem = document.getElementById("menubar");
+        }
+        for (var i = 0; i < menuItem.children.length; i++) {
+            var item = menuItem.children[i];
+            if (item.children.length > 0) {
+                //if($(item).is(":visible"))
+                if (item.style.display !== "none")
+                    Menubar.ExtractItems(item.children[0]);
+            }
+            else if (item.style.display !== "none") {
+                var n = new MenuItem((item.attributes["label"] ? item.attributes["label"].textContent : item.textContent), (item.attributes["href"] ? item.attributes["href"].textContent : ""));
+                if (item.onclick && (!n.Link || n.Link == "" || n.Link == "#"))
+                    n.Link = item.onclick;
+                menubarStatic.KnownItems.push(n);
+            }
+            if (item.tagName.toLowerCase() == "a") {
+                $(item).bind("click", function () {
+                    $("#hideMenu").hide();
+                    Menubar.HideMenus();
+                });
+            }
+        }
+    };
+    Menubar.HookSubmenu = function (menuItem) {
+        for (var i = 0; i < menuItem.children.length; i++) {
+            var item = menuItem.children[i];
+            if (item.children.length > 0) {
+                item.onmouseover = function () {
+                    var child = item.children[0];
+                    $(child).addClass("childMenuBar");
+                    return function (e) {
+                        $("#menubar .childMenuBar").hide();
+                        $(child).show();
+                        e.stopPropagation();
+                    };
+                }();
+            }
+            else
+                item.onmouseover = function () {
+                    $("#menubar .childMenuBar").hide();
+                };
+        }
+    };
+    Menubar.HideMenus = function () {
+        menubarStatic.previousItem = null;
+        menubarStatic.hoverHideTimer = null;
+        $("#hideMenu").hide();
+        $("#menubar > div > div").hide();
+        $("#menubar .childMenuBar").hide();
+    };
+    Menubar.HoverHideMenus = function () {
+        if (menubarStatic.hoverHideTimer)
+            clearTimeout(menubarStatic.hoverHideTimer);
+        menubarStatic.hoverHideTimer = setTimeout(Menubar.HideMenus, 500);
+    };
+    Menubar.StopHoverHideMenus = function () {
+        if (menubarStatic.hoverHideTimer)
+            clearTimeout(menubarStatic.hoverHideTimer);
+        menubarStatic.hoverHideTimer = null;
+    };
+    /**
+     * Allows to disable a menu entry
+     * @param menuPath searched path in the form Main>Child>SubChild
+     */
+    Menubar.DisableMenu = function (menuPath, menuSection, currentPath) {
+        if (menuSection === void 0) { menuSection = null; }
+        if (currentPath === void 0) { currentPath = ""; }
+        if (!menuSection)
+            menuSection = document.getElementById("menubar");
+        for (var i = 0; i < menuSection.children.length; i++) {
+            var t = menuSection.children[i].textContent.trim();
+            var p = currentPath + t.split('\n')[0];
+            if (p == menuPath) {
+                $(menuSection.children[i]).hide();
+                Menubar.ExtractItems();
+                return true;
+            }
+            else if (menuSection.children[i].children.length > 0) {
+                var r = Menubar.DisableMenu(menuPath, menuSection.children[i].children[0], p + ">");
+                if (r == true)
+                    return true;
+            }
+        }
+        return false;
+    };
+    /**
+     * Allows to enable a menu entry
+     * @param menuPath searched path in the form Main>Child>SubChild
+     */
+    Menubar.EnableMenu = function (menuPath, menuSection, currentPath) {
+        if (menuSection === void 0) { menuSection = null; }
+        if (currentPath === void 0) { currentPath = ""; }
+        if (!menuSection)
+            menuSection = document.getElementById("menubar");
+        for (var i = 0; i < menuSection.children.length; i++) {
+            var t = menuSection.children[i].textContent.trim();
+            var p = currentPath + t.split('\n')[0];
+            if (p == menuPath) {
+                $(menuSection.children[i]).show();
+                Menubar.ExtractItems();
+                return true;
+            }
+            else if (menuSection.children[i].children.length > 0) {
+                var r = Menubar.EnableMenu(menuPath, menuSection.children[i].children[0], p + ">");
+                if (r == true)
+                    return true;
+            }
+        }
+        return false;
+    };
+    return Menubar;
 }());
 var profileMenu = new (/** @class */ (function () {
     function class_26() {
