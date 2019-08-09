@@ -4,6 +4,48 @@ class Database
 {
     private connection: Connection;
 
+    public beginTransaction()
+    {
+        return new Promise((ok, err) =>
+        {
+            this.connection.beginTransaction((resError) =>
+            {
+                if (resError)
+                    err(resError);
+                else
+                    ok();
+            });
+        });
+    }
+
+    public commit()
+    {
+        return new Promise((ok, err) =>
+        {
+            this.connection.commit((resError) =>
+            {
+                if (resError)
+                    err(resError);
+                else
+                    ok();
+            });
+        });
+    }
+
+    public rollback()
+    {
+        return new Promise((ok, err) =>
+        {
+            this.connection.rollback((resError) =>
+            {
+                if (resError)
+                    err(resError);
+                else
+                    ok();
+            });
+        });
+    }
+
     public constructor(connection: Connection)
     {
         this.connection = connection;
@@ -39,11 +81,6 @@ class Database
 
 function getDb(): Database
 {
-    return new Database(getConnection());
-}
-
-function getConnection(): Connection
-{
     try
     {
         var conn = mysql.createConnection({
@@ -57,7 +94,7 @@ function getConnection(): Connection
         {
 
         });
-        return conn;
+        return new Database(conn);
     }
     catch (ex)
     {

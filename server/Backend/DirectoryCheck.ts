@@ -18,7 +18,7 @@
 
 async function OwnerMaxSize(userId: number, gameId: number): Promise<number>
 {
-    var connection = getConnection();
+    var connection = getDb();
     if (!connection || gameId == -1)
         return 0;
 

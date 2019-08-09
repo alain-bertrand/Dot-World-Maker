@@ -1,6 +1,6 @@
 ﻿/// <reference path="../../public/Engine/Logic/World/SerializedWorld.ts" />
 
-app.get('/backend/ExportJson', function (req, res, next)
+app.get('/backend/ExportJson', async function (req, res, next)
 {
     if (!req.query.game)
     {
@@ -27,7 +27,7 @@ app.get('/backend/ExportJson', function (req, res, next)
         return;
     }
 
-    var connection = getConnection();
+    var connection = getDb();
     if (!connection)
     {
         res.writeHead(500, { 'Content-Type': 'text/json' });
@@ -36,68 +36,43 @@ app.get('/backend/ExportJson', function (req, res, next)
         return;
     }
 
-    connection.connect(function (err)
+    try
     {
-        if (err != null)
+        await connection.connect();
+        var r1 = await connection.query('select access_right_id from game_access_rights where (game_id = ? and user_id = ?) or (user_id = ? and access_right_id=1000)', [req.query.game, tokenInfo.id, tokenInfo.id,]);
+        if (!r1 || !r1.length)
         {
             connection.end();
-            console.log(err);
             res.writeHead(500, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ error: "error with database." }));
+            res.write(JSON.stringify({ error: "no write access." }));
             res.end();
             return;
         }
-        connection.query('select access_right_id from game_access_rights where (game_id = ? and user_id = ?) or (user_id = ? and access_right_id=1000)', [req.query.game, tokenInfo.id, tokenInfo.id,], function (err1, r1)
-        {
-            if (err1 != null)
-            {
-                connection.end();
-                console.log(err1);
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "error with database." }));
-                res.end();
-                return;
-            }
-            if (!r1 || !r1.length)
-            {
-                connection.end();
-                console.log(err1);
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "no write access." }));
-                res.end();
-                return;
-            }
 
-            var exportResult = { gameData: null, maps: [] };
-            connection.query('select data from games where id = ?', [req.query.game], function (err2, result)
-            {
+        var exportResult = { gameData: null, maps: [] };
+        var result = await connection.query('select data from games where id = ?', [req.query.game]);
 
-                exportResult.gameData = result[0].data;
-                connection.query('select area_x, area_y, zone, data from game_maps where game_id = ?', [req.query.game], function (err2, r2)
-                {
-                    connection.end();
-                    if (err2 != null)
-                    {
-                        console.log(err2);
-                        res.writeHead(500, { 'Content-Type': 'text/json' });
-                        res.write(JSON.stringify({ error: "error with database." }));
-                        res.end();
-                        return;
-                    }
+        exportResult.gameData = result[0].data;
+        var r2 = await connection.query('select area_x, area_y, zone, data from game_maps where game_id = ?', [req.query.game]);
+        connection.end();
 
-                    for (var i = 0; i < r2.length; i++)
-                    {
-                        exportResult.maps[i] = { x: r2[i].area_x, y: r2[i].area_y, zone: r2[i].zone, data: r2[i].data };
-                    }
+        for (var i = 0; i < r2.length; i++)
+            exportResult.maps[i] = { x: r2[i].area_x, y: r2[i].area_y, zone: r2[i].zone, data: r2[i].data };
 
-                    res.writeHead(200, { 'Content-Type': 'binary/json', 'Content-Disposition': 'attachment; filename=game_export.json' });
-                    res.write(JSON.stringify(exportResult));
-                    res.end();
-                    return;
-                });
-            });
-        });
-    });
+        res.writeHead(200, { 'Content-Type': 'binary/json', 'Content-Disposition': 'attachment; filename=game_export.json' });
+        res.write(JSON.stringify(exportResult));
+        res.end();
+        return;
+    }
+    catch (ex)
+    {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "error with database." }));
+        res.end();
+        return;
+    }
 });
 
 app.post('/upload/ImportJson', upload.single('fileUpload'), function (req, res)
@@ -165,7 +140,7 @@ app.post('/backend/DirectImportJson', function (req, res)
 });
 
 
-function ImportData(importData, req, res)
+async function ImportData(importData, req, res)
 {
     if (!importData.gameData || !importData.maps)
     {
@@ -195,7 +170,7 @@ function ImportData(importData, req, res)
         return;
     }
 
-    var connection = getConnection();
+    var connection = getDb();
     if (!connection)
     {
         res.writeHead(200, { 'Content-Type': 'text/json' });
@@ -204,105 +179,50 @@ function ImportData(importData, req, res)
         return;
     }
 
-    connection.connect(function (err)
-    {
-        if (err != null)
-        {
-            connection.end();
-            res.writeHead(200, { 'Content-Type': 'text/html' });
-            res.write("<script>window.parent.ImportExport.Result('" + JSON.stringify({ error: "Error with the database (1)." }) + "');</script>");
-            res.end();
-            return;
-        }
-        connection.query('select access_right_id from game_access_rights where (game_id = ? and user_id = ?) or (user_id = ? and access_right_id=1000)', [req.body.game, tokenInfo.id, tokenInfo.id,], function (err1, r1)
-        {
-            if (err1 != null)
-            {
-                connection.end();
-                console.log(err1);
-                res.writeHead(200, { 'Content-Type': 'text/html' });
-                res.write("<script>window.parent.ImportExport.Result('" + JSON.stringify({ error: "Error with the database (2)." }) + "');</script>");
-                res.end();
-                return;
-            }
-            if (!r1 || !r1.length)
-            {
-                connection.end();
-                res.writeHead(200, { 'Content-Type': 'text/html' });
-                res.write("<script>window.parent.ImportExport.Result('" + JSON.stringify({ error: "No write access." }) + "');</script>");
-                res.end();
-                return;
-            }
-
-            connection.query('update games set data = ? where id = ?', [importData.gameData, req.body.game], function (err1)
-            {
-                if (err1 != null)
-                {
-                    connection.end();
-                    console.log(err1);
-                    res.writeHead(200, { 'Content-Type': 'text/html' });
-                    res.write("<script>window.parent.ImportExport.Result('" + JSON.stringify({ error: "Error with the database (3)." }) + "');</script>");
-                    res.end();
-                    return;
-                }
-
-
-                connection.query('delete from game_maps where game_id = ?', [req.body.game], function (err2)
-                {
-                    if (err2 != null)
-                    {
-                        connection.end();
-                        console.log(err1);
-                        res.writeHead(200, { 'Content-Type': 'text/html' });
-                        res.write("<script>window.parent.ImportExport.Result('" + JSON.stringify({ error: "Error with the database (4)." }) + "');</script>");
-                        res.end();
-                        return;
-                    }
-
-                    ImportMap(res, connection, req.body.game, importData.maps);
-                });
-            });
-        });
-    });
-}
-
-function ImportMap(res, connection, gameId, maps: any[])
-{
     try
     {
-        if (maps.length == 0)
+        await connection.connect();
+        var r1 = await connection.query('select access_right_id from game_access_rights where (game_id = ? and user_id = ?) or (user_id = ? and access_right_id=1000)', [req.body.game, tokenInfo.id, tokenInfo.id,]);
+        if (!r1 || !r1.length)
         {
             connection.end();
-            //console.log("Import done.");
             res.writeHead(200, { 'Content-Type': 'text/html' });
-            res.write("<script>window.parent.ImportExport.Result('" + JSON.stringify({ result: "Done." }) + "');</script>");
+            res.write("<script>window.parent.ImportExport.Result('" + JSON.stringify({ error: "No write access." }) + "');</script>");
             res.end();
             return;
         }
 
-        var m = maps.shift();
-        //console.log("Importing " + m.x + "," + m.y + "," + m.zone);
-        connection.query('replace game_maps(game_id,area_x,area_y,zone,data) values(?,?,?,?,?)', [gameId, m.x, m.y, m.zone, m.data], function (err1, result)
-        {
-            if (err1 != null)
-            {
-                connection.end();
-                console.log(err1);
-                res.writeHead(200, { 'Content-Type': 'text/html' });
-                res.write("<script>window.parent.ImportExport.Result('" + JSON.stringify({ error: "Error with the database (5)." }) + "');</script>");
-                res.end();
-                return;
-            }
-
-            ImportMap(res, connection, gameId, maps);
-        });
+        await connection.query('update games set data = ? where id = ?', [importData.gameData, req.body.game]);
+        await connection.query('delete from game_maps where game_id = ?', [req.body.game]);
+        await ImportMap(res, connection, req.body.game, importData.maps);
     }
     catch (ex)
     {
+        connection.end();
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.write("<script>window.parent.ImportExport.Result('" + JSON.stringify({ error: "Error with the database (1)." }) + "');</script>");
+        res.end();
+        return;
     }
 }
 
-app.get('/backend/ExportGame', function (req, res, next)
+async function ImportMap(res, connection: Database, gameId, maps: any[])
+{
+    while (maps.length > 0)
+    {
+
+        var m = maps.shift();
+        await connection.query('replace game_maps(game_id,area_x,area_y,zone,data) values(?,?,?,?,?)', [gameId, m.x, m.y, m.zone, m.data]);
+    }
+    connection.end();
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.write("<script>window.parent.ImportExport.Result('" + JSON.stringify({ result: "Done." }) + "');</script>");
+    res.end();
+
+    ImportMap(res, connection, gameId, maps);
+}
+
+app.get('/backend/ExportGame', async function (req, res, next)
 {
     if (!req.query.game)
     {
@@ -329,7 +249,7 @@ app.get('/backend/ExportGame', function (req, res, next)
         return;
     }
 
-    var connection = getConnection();
+    var connection = getDb();
     if (!connection)
     {
         res.writeHead(500, { 'Content-Type': 'text/json' });
@@ -338,78 +258,52 @@ app.get('/backend/ExportGame', function (req, res, next)
         return;
     }
 
-    connection.connect(function (err)
+    try
     {
-        if (err != null)
+        await connection.connect();
+        var r1 = await connection.query('select access_right_id from game_access_rights where (game_id = ? and user_id = ?) or (user_id = ? and access_right_id=1000)', [req.query.game, tokenInfo.id, tokenInfo.id,]);
+        if (!r1 || !r1.length)
         {
             connection.end();
-            console.log(err);
             res.writeHead(500, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ error: "error with database." }));
+            res.write(JSON.stringify({ error: "no write access." }));
             res.end();
             return;
         }
-        connection.query('select access_right_id from game_access_rights where (game_id = ? and user_id = ?) or (user_id = ? and access_right_id=1000)', [req.query.game, tokenInfo.id, tokenInfo.id,], function (err1, r1)
+
+        var exportResult: SerializedGame = { gameData: null, maps: [] };
+        var result = await connection.query('select data from games where id = ?', [req.query.game]);
+        exportResult.gameData = JSON.parse(result[0].data);
+
+        var zip = new (<any>require('node-zip'))();
+        ChangeGameUrls(exportResult.gameData, "", (origName: string, newName: string) =>
         {
-            if (err1 != null)
-            {
-                connection.end();
-                console.log(err1);
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "error with database." }));
-                res.end();
-                return;
-            }
-            if (!r1 || !r1.length)
-            {
-                connection.end();
-                console.log(err1);
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "no write access." }));
-                res.end();
-                return;
-            }
-
-            var exportResult: SerializedGame = { gameData: null, maps: [] };
-            connection.query('select data from games where id = ?', [req.query.game], function (err2, result)
-            {
-
-                exportResult.gameData = JSON.parse(result[0].data);
-
-                var zip = new (<any>require('node-zip'))();
-                ChangeGameUrls(exportResult.gameData, "", (origName: string, newName: string) =>
-                {
-                    zip.file(newName, fs.readFileSync(__dirname + '/public' + origName));
-                });
-
-                connection.query('select area_x, area_y, zone, data from game_maps where game_id = ?', [req.query.game], function (err2, r2)
-                {
-                    connection.end();
-                    if (err2 != null)
-                    {
-                        console.log(err2);
-                        res.writeHead(500, { 'Content-Type': 'text/json' });
-                        res.write(JSON.stringify({ error: "error with database." }));
-                        res.end();
-                        return;
-                    }
-
-                    for (var i = 0; i < r2.length; i++)
-                    {
-                        exportResult.maps[i] = { x: r2[i].area_x, y: r2[i].area_y, zone: r2[i].zone, data: JSON.parse(r2[i].data) };
-                    }
-
-                    //res.writeHead(200, { 'Content-Type': 'binary/json', 'Content-Disposition': 'attachment; filename=game_export.json' });
-                    //res.write(JSON.stringify(exportResult));
-                    zip.file('game.json', JSON.stringify(exportResult));
-                    res.writeHead(200, { 'Content-Type': 'application/zip, application/octet-stream', 'Content-Disposition': 'attachment; filename=game.zip' });
-                    res.write(zip.generate({ base64: false, compression: 'DEFLATE' }), 'binary');
-                    res.end();
-                    return;
-                });
-            });
+            zip.file(newName, fs.readFileSync(__dirname + '/public' + origName));
         });
-    });
+
+        var r2 = await connection.query('select area_x, area_y, zone, data from game_maps where game_id = ?', [req.query.game]);
+        connection.end();
+
+        for (var i = 0; i < r2.length; i++)
+        {
+            exportResult.maps[i] = { x: r2[i].area_x, y: r2[i].area_y, zone: r2[i].zone, data: JSON.parse(r2[i].data) };
+        }
+
+        zip.file('game.json', JSON.stringify(exportResult));
+        res.writeHead(200, { 'Content-Type': 'application/zip, application/octet-stream', 'Content-Disposition': 'attachment; filename=game.zip' });
+        res.write(zip.generate({ base64: false, compression: 'DEFLATE' }), 'binary');
+        res.end();
+        return;
+    }
+    catch (ex)
+    {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "error with database." }));
+        res.end();
+        return;
+    }
 });
 
 function CleanupUrl(url: string, prefix, changeCallback: (origName: string, newName: string) => void): string

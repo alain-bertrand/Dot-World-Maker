@@ -86,7 +86,7 @@ app.post('/backend/GetCreditButton', function (req, res, next)
     return;
 });
 
-app.post('/backend/GetTotalCredits', function (req, res, next)
+app.post('/backend/GetTotalCredits', async function (req, res, next)
 {
     if (!req.body.token)
     {
@@ -105,7 +105,7 @@ app.post('/backend/GetTotalCredits', function (req, res, next)
         return;
     }
 
-    var connection = getConnection();
+    var connection = getDb();
     if (!connection)
     {
         res.writeHead(500, { 'Content-Type': 'text/json' });
@@ -114,41 +114,30 @@ app.post('/backend/GetTotalCredits', function (req, res, next)
         return;
     }
 
-    connection.connect(function (err)
+    try
     {
-        if (err != null)
-        {
-            connection.end();
-            console.log(err);
-            res.writeHead(500, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ error: "error with database." }));
-            res.end();
-            return;
-        }
-        connection.query("select credits from users where id = ? limit 1", [tokenInfo.id], function (err1, results)
-        {
-            if (err1 != null)
-            {
-                connection.end();
-                console.log(err1);
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "error with database." }));
-                res.end();
-                return;
-            }
+        await connection.connect();
+        var results = await connection.query("select credits from users where id = ? limit 1", [tokenInfo.id]);
 
-            connection.end();
+        connection.end();
 
-            res.writeHead(200, { 'Content-Type': 'text/json' });
-            res.write("" + results[0].credits);
-            res.end();
-        });
-    });
-    return;
+        res.writeHead(200, { 'Content-Type': 'text/json' });
+        res.write("" + results[0].credits);
+        res.end();
+    }
+    catch (ex)
+    {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "error with database." }));
+        res.end();
+        return;
+    }
 });
 
 
-app.post('/backend/GetIpnLicenseButton', function (req, res, next)
+app.post('/backend/GetIpnLicenseButton', async function (req, res, next)
 {
     if (!req.body.token)
     {
@@ -167,7 +156,7 @@ app.post('/backend/GetIpnLicenseButton', function (req, res, next)
         return;
     }
 
-    var connection = getConnection();
+    var connection = getDb();
     if (!connection)
     {
         res.writeHead(500, { 'Content-Type': 'text/json' });
@@ -176,141 +165,108 @@ app.post('/backend/GetIpnLicenseButton', function (req, res, next)
         return;
     }
 
-    connection.connect(function (err)
+    try
     {
-        if (err != null)
+        await connection.connect();
+        var results = await connection.query("select editor_version from users where id = ? limit 1", [tokenInfo.id]);
+
+        connection.end();
+        if (results && results.length && results.length == 1 && results[0].editor_version == 'f')
         {
-            connection.end();
-            console.log(err);
-            res.writeHead(500, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ error: "error with database." }));
+            res.writeHead(200, { 'Content-Type': 'text/json' });
+            res.write(CreateLicensePayment(tokenInfo.id, 30));
+            //res.write(CreateLicensePayment(tokenInfo.id, 24));
             res.end();
             return;
         }
-        connection.query("select editor_version from users where id = ? limit 1", [tokenInfo.id], function (err1, results)
-        {
-            if (err1 != null)
-            {
-                connection.end();
-                console.log(err1);
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "error with database." }));
-                res.end();
-                return;
-            }
-
-            connection.end();
-            if (results && results.length && results.length == 1 && results[0].editor_version == 'f')
-            {
-                res.writeHead(200, { 'Content-Type': 'text/json' });
-                res.write(CreateLicensePayment(tokenInfo.id, 30));
-                //res.write(CreateLicensePayment(tokenInfo.id, 24));
-                res.end();
-                return;
-            }
-            res.writeHead(200, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ "license": results[0].editor_version }));
-            res.end();
-        });
-    });
-    return;
+        res.writeHead(200, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ "license": results[0].editor_version }));
+        res.end();
+    }
+    catch (ex)
+    {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "error with database." }));
+        res.end();
+        return;
+    }
 });
 
-function UpgradeToStandardLicense(userId: number)
+async function UpgradeToStandardLicense(userId: number)
 {
-    var connection = getConnection();
+    var connection = getDb();
     if (!connection)
     {
         console.log("Error while connecting to the db");
         return;
     }
 
-    connection.connect(function (err)
+    try
     {
-        if (err != null)
-        {
-            connection.end();
-            console.log(err);
-            return;
-        }
-        connection.query("update users set editor_version = 's' where id = ?", [userId], function (err1, r1)
-        {
-            connection.end();
-        });
-    });
+        await connection.connect();
+        await connection.query("update users set editor_version = 's' where id = ?", [userId]);
+        connection.end();
+    }
+    catch (ex)
+    {
+        connection.end();
+        console.log(ex);
+        return;
+    }
 }
 
-function AddCredits(userId: number, credits: number)
+async function AddCredits(userId: number, credits: number)
 {
-    var connection = getConnection();
+    var connection = getDb();
     if (!connection)
     {
         console.log("Error while connecting to the db");
         return;
     }
 
-    connection.connect(function (err)
+    try
     {
-        if (err != null)
-        {
-            connection.end();
-            console.log(err);
-            return;
-        }
-        connection.query("update users set credits = credits + ? where id = ?", [credits, userId], function (err1, r1)
-        {
-            connection.query("insert into credits_log(from_user, to_user, quantity, reason) values(null, ?, ?, 'Purchase credits.')", [userId, credits], function (err2, r2)
-            {
-                connection.end();
-            });
-        });
-    });
+        await connection.connect();
+        await connection.query("update users set credits = credits + ? where id = ?", [credits, userId]);
+        await connection.query("insert into credits_log(from_user, to_user, quantity, reason) values(null, ?, ?, 'Purchase credits.')", [userId, credits]);
+        connection.end();
+    }
+    catch (ex)
+    {
+        connection.end();
+        console.log(ex);
+        return;
+    }
 }
 
-function CheckTransaction(trx: string, email: string, data: string, gross: number, fee: number, callbackOk: () => void)
+async function CheckTransaction(trx: string, email: string, data: string, gross: number, fee: number): Promise<boolean>
 {
-    var connection = getConnection();
+    var connection = getDb();
     if (!connection)
     {
         console.log("Error while connecting to the db");
-        return;
+        return false;
     }
 
-    connection.connect(function (err)
+    try
     {
-        if (err != null)
+        await connection.connect();
+        var r1 = await connection.query("select count(id) \"nb\" from paypal_transactions where id = ?", [trx]);
+        if (r1 && r1.length && r1[0].nb == 0)
         {
-            connection.end();
-            console.log(err);
-            return;
+            await connection.query("insert into paypal_transactions(id, data, payer_email, mc_gross, mc_fee) values(?,?,?,?,?)", [trx, data, email, gross, fee]);
+            return true;
         }
-        connection.query("select count(id) \"nb\" from paypal_transactions where id = ?", [trx], function (err1, r1)
-        {
-            if (err1)
-            {
-                connection.end();
-                console.log("Error while checking transactions: " + err1);
-            }
-            else if (r1 && r1.length && r1[0].nb == 0)
-            {
-                connection.query("insert into paypal_transactions(id, data, payer_email, mc_gross, mc_fee) values(?,?,?,?,?)", [trx, data, email, gross, fee], function (err2, r2)
-                {
-                    connection.end();
-                    if (err2)
-                        console.log("Error while inserting transaction: " + err2);
-                    else
-                        callbackOk();
-                    return;
-                });
-                return;
-            }
-            else
-            {
-                //console.log("Transaction already received.");
-                connection.end();
-            }
-        });
-    });
+        return false;
+    }
+    catch (ex)
+    {
+        connection.end();
+        console.log(ex);
+        return false;
+    }
 }
 
 app.post('/backend/IpnVerify', function (req, res, next)
@@ -321,7 +277,7 @@ app.post('/backend/IpnVerify', function (req, res, next)
 
     var ipnSandbox = false;
 
-    var callback = function (err, msg)
+    var callback = async function(err, msg)
     {
         if (err)
         {
@@ -339,25 +295,25 @@ app.post('/backend/IpnVerify', function (req, res, next)
                 //console.log('Transaction received as completed');
                 if (VerifyPayment(req.body.custom) && req.body.mc_gross == JSON.parse(req.body.custom).price)
                 {
-                    CheckTransaction(req.body.txn_id, req.body.payer_email, req.body.custom, req.body.mc_gross, req.body.mc_fee, () =>
-                    {
-                        //console.log("Got IPN verification");
-                        // Payment has been confirmed as completed
+                    var isOk = await CheckTransaction(req.body.txn_id, req.body.payer_email, req.body.custom, req.body.mc_gross, req.body.mc_fee);
+                    if (!isOk)
+                        return;
+                    //console.log("Got IPN verification");
+                    // Payment has been confirmed as completed
 
-                        switch (req.body.item_name)
-                        {
-                            case "license_standard":
-                                console.log("Verification succeed");
-                                var data = JSON.parse(req.body.custom);
-                                UpgradeToStandardLicense(data.id);
-                                break;
-                            case "credits":
-                                console.log("Verification succeed");
-                                var data = JSON.parse(req.body.custom);
-                                AddCredits(data.id, data.credits);
-                                break;
-                        }
-                    });
+                    switch (req.body.item_name)
+                    {
+                        case "license_standard":
+                            console.log("Verification succeed");
+                            var data = JSON.parse(req.body.custom);
+                            UpgradeToStandardLicense(data.id);
+                            break;
+                        case "credits":
+                            console.log("Verification succeed");
+                            var data = JSON.parse(req.body.custom);
+                            AddCredits(data.id, data.credits);
+                            break;
+                    }
                 }
                 else
                     console.log("Verification failed...");

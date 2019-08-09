@@ -1,4 +1,4 @@
-﻿app.post('/backend/DirectoryList', function (req, res)
+﻿app.post('/backend/DirectoryList', async function (req, res)
 {
     if (!req.body.game)
     {
@@ -26,7 +26,7 @@
         return;
     }
 
-    var connection = getConnection();
+    var connection = getDb();
     if (!connection)
     {
         res.writeHead(500, { 'Content-Type': 'text/json' });
@@ -35,111 +35,89 @@
         return;
     }
 
-    connection.connect(function (err)
+    try
     {
-        if (err != null)
+        await connection.connect();
+        var r1 = await connection.query('select access_right_id from game_access_rights where (game_id = ? and user_id = ?) or (user_id = ? and access_right_id=1000)', [req.body.game, tokenInfo.id, tokenInfo.id,]);
+        if (!r1 || !r1.length)
         {
             connection.end();
-            console.log(err);
             res.writeHead(500, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ error: "error with database." }));
+            res.write(JSON.stringify({ error: "no write access." }));
             res.end();
             return;
         }
-        connection.query('select access_right_id from game_access_rights where (game_id = ? and user_id = ?) or (user_id = ? and access_right_id=1000)', [req.body.game, tokenInfo.id, tokenInfo.id,], function (err1, r1)
+
+        var r2 = await connection.query('select editor_version, rented_space, rented_space_till from users where id = (select main_owner from games where id = ?)', [req.body.game]);
+
+        connection.end();
+
+        var size = r2[0].editor_version == 's' ? 10 * 1024 * 1024 : 5 * 1024 * 1024;
+        var baseSize = size;
+        var tillWhen: Date = null;
+        if (r2[0].rented_space_till)
         {
-            if (err1 != null)
-            {
-                connection.end();
-                console.log(err1);
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "error with database." }));
-                res.end();
-                return;
-            }
-            if (!r1 || !r1.length)
-            {
-                connection.end();
-                console.log(err1);
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "no write access." }));
-                res.end();
-                return;
-            }
+            //console.log('have rented till ' + r2[0].rented_space_till);
+            tillWhen = new Date(r2[0].rented_space_till);
+            //console.log('parsed to ' + tillWhen.toString());
+            if (tillWhen.getTime() > new Date().getTime())
+                size = r2[0].rented_space * 1024 * 1024;
+            else
+                tillWhen = null;
+        }
 
-            connection.query('select editor_version, rented_space, rented_space_till from users where id = (select main_owner from games where id = ?)', [req.body.game], function (err2, r2)
-            {
-                if (err2 != null)
-                {
-                    connection.end();
-                    console.log(err2);
-                    res.writeHead(500, { 'Content-Type': 'text/json' });
-                    res.write(JSON.stringify({ error: "error with database." }));
-                    res.end();
-                    return;
-                }
+        var dir = __dirname + '/public/user_art/' + GameDir(req.body.game);
 
-                connection.end();
+        if (!fs.existsSync(dir))
+        {
+            res.writeHead(200, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify({
+                userDirectory: '/user_art/' + GameDir(req.body.game),
+                totalSize: 0,
+                usableSize: size,
+                tillWhen: tillWhen,
+                baseSize: baseSize,
+                files: []
+            }));
+            res.end();
+            return;
+        }
 
-                var size = r2[0].editor_version == 's' ? 10 * 1024 * 1024 : 5 * 1024 * 1024;
-                var baseSize = size;
-                var tillWhen: Date = null;
-                if (r2[0].rented_space_till)
-                {
-                    //console.log('have rented till ' + r2[0].rented_space_till);
-                    tillWhen = new Date(r2[0].rented_space_till);
-                    //console.log('parsed to ' + tillWhen.toString());
-                    if (tillWhen.getTime() > new Date().getTime())
-                        size = r2[0].rented_space * 1024 * 1024;
-                    else
-                        tillWhen = null;
-                }
-
-                var dir = __dirname + '/public/user_art/' + GameDir(req.body.game);
-
-                if (!fs.existsSync(dir))
-                {
-                    res.writeHead(200, { 'Content-Type': 'text/json' });
-                    res.write(JSON.stringify({
-                        userDirectory: '/user_art/' + GameDir(req.body.game),
-                        totalSize: 0,
-                        usableSize: size,
-                        tillWhen: tillWhen,
-                        baseSize: baseSize,
-                        files: []
-                    }));
-                    res.end();
-                    return;
-                }
-
-                var info = [];
-                var files = fs.readdirSync(dir);
-                var tot = 0;
-                for (var i = 0; i < files.length; i++)
-                {
-                    var stat = fs.statSync(dir + "/" + files[i]);
-                    info.push({
-                        name: files[i], size: stat.size
-                    });
-                }
-
-                res.writeHead(200, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({
-                    userDirectory: '/user_art/' + GameDir(req.body.game),
-                    totalSize: DirectoryCheck(req.body.game),
-                    usableSize: size,
-                    tillWhen: tillWhen,
-                    baseSize: baseSize,
-                    files: info
-                }));
-                res.end();
-                return;
+        var info = [];
+        var files = fs.readdirSync(dir);
+        var tot = 0;
+        for (var i = 0; i < files.length; i++)
+        {
+            var stat = fs.statSync(dir + "/" + files[i]);
+            info.push({
+                name: files[i], size: stat.size
             });
-        });
-    });
+        }
+
+        res.writeHead(200, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({
+            userDirectory: '/user_art/' + GameDir(req.body.game),
+            totalSize: DirectoryCheck(req.body.game),
+            usableSize: size,
+            tillWhen: tillWhen,
+            baseSize: baseSize,
+            files: info
+        }));
+        res.end();
+        return;
+    }
+    catch (ex)
+    {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "error with database." }));
+        res.end();
+        return;
+    }
 });
 
-app.post('/backend/DeleteFile', function (req, res)
+app.post('/backend/DeleteFile', async function (req, res)
 {
     if (!req.body.game)
     {
@@ -183,7 +161,7 @@ app.post('/backend/DeleteFile', function (req, res)
         return;
     }
 
-    var connection = getConnection();
+    var connection = getDb();
     if (!connection)
     {
         res.writeHead(500, { 'Content-Type': 'text/json' });
@@ -192,48 +170,37 @@ app.post('/backend/DeleteFile', function (req, res)
         return;
     }
 
-    connection.connect(function (err)
+    try
     {
-        if (err != null)
+        await connection.connect();
+        var r1 = await connection.query('select access_right_id from game_access_rights where (game_id = ? and user_id = ?) or (user_id = ? and access_right_id=1000)', [req.body.game, tokenInfo.id, tokenInfo.id,]);
+        if (!r1 || !r1.length)
         {
             connection.end();
-            console.log(err);
             res.writeHead(500, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ error: "error with database." }));
+            res.write(JSON.stringify({ error: "no write access." }));
             res.end();
             return;
         }
-        connection.query('select access_right_id from game_access_rights where (game_id = ? and user_id = ?) or (user_id = ? and access_right_id=1000)', [req.body.game, tokenInfo.id, tokenInfo.id,], function (err1, r1)
-        {
-            if (err1 != null)
-            {
-                connection.end();
-                console.log(err1);
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "error with database." }));
-                res.end();
-                return;
-            }
-            if (!r1 || !r1.length)
-            {
-                connection.end();
-                console.log(err1);
-                res.writeHead(500, { 'Content-Type': 'text/json' });
-                res.write(JSON.stringify({ error: "no write access." }));
-                res.end();
-                return;
-            }
 
-            connection.end();
+        connection.end();
 
-            var dir = __dirname + '/public/user_art/' + GameDir(req.body.game);
-            if (fs.existsSync(dir + "/" + req.body.filename))
-                fs.unlinkSync(dir + "/" + req.body.filename);
+        var dir = __dirname + '/public/user_art/' + GameDir(req.body.game);
+        if (fs.existsSync(dir + "/" + req.body.filename))
+            fs.unlinkSync(dir + "/" + req.body.filename);
 
-            res.writeHead(200, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify(true));
-            res.end();
-            return;
-        });
-    });
+        res.writeHead(200, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify(true));
+        res.end();
+        return;
+    }
+    catch (ex)
+    {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "error with database." }));
+        res.end();
+        return;
+    }
 });
