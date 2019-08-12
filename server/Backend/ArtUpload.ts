@@ -1,4 +1,9 @@
-﻿interface FileRequest
+﻿/// <reference path="User.ts" />
+/// <reference path="../app.ts" />
+/// <reference path="DirectoryCheck.ts" />
+/// <reference path="Extensions.ts" />
+
+interface FileRequest
 {
     originalname: string;
     path: string;

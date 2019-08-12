@@ -4,8 +4,11 @@ Online web role playing game (RPG) engine let you build your own game directly f
 This is also the same base engine used on https://www.dotworldmaker.com
 
 ## Requirements
-* Your server must have MySQL or MariaDB installed.
+* Your server must have MySQL or MariaDB installed. Tp download it: https://downloads.mariadb.org/
 * Node.JS installed (we tested it with v6.11). To download it: https://nodejs.org/en/download/
+
+## Quick start for Windows:
+Run the "start_server.cmd" file and your engine should start (make sure you fulfill the requirements).
 
 ## Installation
 * Clone or download the repository

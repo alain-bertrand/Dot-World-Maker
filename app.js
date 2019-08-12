@@ -1,3 +1,6 @@
+// based on https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/express
+/// <reference path="../typings/node.d.ts" />
+/// <reference path="Backend/Definitions/express.ts" />
 var path = require('path');
 var favicon = require('serve-favicon');
 var cookieParser = require('cookie-parser');
@@ -83,6 +86,1171 @@ function staticInclude(req, res, next) {
     }
 }
 module.exports = { app: app, http: server };
+///<reference path="../app.ts" />
+var currentTokens = {};
+function BuildToken(id, username, ip) {
+    if (!ip)
+        ip = '127.0.0.1';
+    if (ip && ip.endsWith('127.0.0.1'))
+        ip = '::1';
+    var dt = new Date();
+    var token = md5("" + id + "-" + username.toLowerCase() + "-" + dt.toString());
+    currentTokens[token] = { id: id, lastUsage: new Date(), user: username, ip: ip };
+    return { token: token };
+}
+function GetTokenInformation(token, ip) {
+    var now = (new Date());
+    if (ip.endsWith('127.0.0.1'))
+        ip = '::1';
+    // Check all the tokens
+    var toDelete = [];
+    for (var i in currentTokens) {
+        if ((now.getTime() - currentTokens[i].lastUsage.getTime()) > 60000 * 5)
+            toDelete.push(i);
+    }
+    // Removes the one which are too old
+    for (var j = 0; j < toDelete.length; j++)
+        delete currentTokens[toDelete[j]];
+    if (currentTokens[token] && currentTokens[token].ip == ip && (now.getTime() - currentTokens[token].lastUsage.getTime()) < 60000 * 5) {
+        currentTokens[token].lastUsage = now;
+        return currentTokens[token];
+    }
+    else if (currentTokens[token] && currentTokens[token].ip != ip)
+        console.log("Wrong ip: " + currentTokens[token].ip + ", " + ip);
+    else if (currentTokens[token] && (now.getTime() - currentTokens[token].lastUsage.getTime()) < 60000 * 5)
+        console.log("Timeout...");
+    else
+        console.log("Token not found");
+    return null;
+}
+app.post('/backend/RecoverPassword', async function (req, res, next) {
+    if (!req.body.user) {
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write("User is missing.");
+        res.end();
+        return;
+    }
+    var connection = getDb();
+    if (!connection) {
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write("Connection failed.");
+        res.end();
+        return;
+    }
+    try {
+        await connection.connect();
+        var r1 = await connection.query('select id,email from users where name = ?', [req.body.user]);
+        // Not yet registered
+        if (r1.length == 0 || !r1[0].email) {
+            connection.end();
+            res.writeHead(500, { 'Content-Type': 'text/plain' });
+            res.write("User not found or it doesn't have an email.");
+            res.end();
+            return;
+        }
+        var email = r1[0].email;
+        var id = r1[0].id;
+        var key = md5(email + "SomethingPrr1vat3T0mak3ItH@rd" + r1[0].id + ((new Date()).toLocaleTimeString()) + Math.round(Math.random() * Number.MAX_VALUE));
+        await connection.query('update users set random_reset_key=?, reset_valid_till=? where id = ?', [key, new Date(new Date().getTime() + 3600000), id]);
+        connection.end();
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.write("EMail sent.");
+        res.end();
+        var email = require("emailjs");
+        var server = email.server.connect({
+            user: packageJson.config.email_user,
+            password: packageJson.config.email_pass,
+            host: packageJson.config.email_server,
+            ssl: true
+        });
+        process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+        server.send({
+            text: "Dot World Maker - Password recovery\nTo recover your account please open this link:\nhttps://www.dotworldmaker.com/Home/recover_password.html?key=" + key + "&id=" + id,
+            from: "no-reply@dotworldmaker.com",
+            to: r1[0].email,
+            subject: "Dot World Maker - Password recovery"
+        }, (err3, message) => {
+            if (err3)
+                console.log(err3);
+        });
+    }
+    catch (ex) {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write("Error with database.");
+        res.end();
+        return;
+    }
+});
+app.post('/backend/GetRoles', async function (req, res, next) {
+    if (!req.body.token) {
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write("Token is missing.");
+        res.end();
+        return;
+    }
+    var tokenInfo = GetTokenInformation(req.body.token, req.headers['x-forwarded-for'] || req.connection.remoteAddress);
+    if (!tokenInfo) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write("Token not valid.");
+        res.end();
+        return;
+    }
+    var connection = getDb();
+    if (!connection) {
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write("Connection failed.");
+        res.end();
+        return;
+    }
+    try {
+        await connection.connect();
+        var r1 = await connection.query('select access_right_id from game_access_rights where (game_id = ? and user_id = ?) or (user_id = ? and access_right_id=1000)', [req.body.game, tokenInfo.id, tokenInfo.id]);
+        connection.end();
+        res.writeHead(200, { 'Content-Type': 'text/json' });
+        var result = [];
+        if (r1 && r1.length > 0)
+            for (var i = 0; i < r1.length; i++)
+                result.push(r1[i].access_right_id);
+        res.write(JSON.stringify(result));
+        res.end();
+    }
+    catch (ex) {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write("Error with database.");
+        res.end();
+        return;
+    }
+});
+app.post('/backend/HasRole', async function (req, res, next) {
+    if (!req.body.token) {
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write("Token is missing.");
+        res.end();
+        return;
+    }
+    var tokenInfo = GetTokenInformation(req.body.token, req.headers['x-forwarded-for'] || req.connection.remoteAddress);
+    if (!tokenInfo) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write("Token not valid.");
+        res.end();
+        return;
+    }
+    if (!req.body.role) {
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write("role is missing.");
+        res.end();
+        return;
+    }
+    var connection = getDb();
+    if (!connection) {
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write("Connection failed.");
+        res.end();
+        return;
+    }
+    try {
+        await connection.connect();
+        var access = 0;
+        switch (("" + req.body.role).toLowerCase()) {
+            case "admin":
+            case "game admin":
+                access = 100;
+                break;
+            case "moderator":
+            case "chat moderator":
+                access = 10;
+                break;
+        }
+        var r1 = await connection.query('select access_right_id from game_access_rights where (game_id = ? and user_id = ? and access_right_id = ?) or (user_id = ? and access_right_id=1000)', [req.body.game, tokenInfo.id, access, tokenInfo.id]);
+        connection.end();
+        res.writeHead(200, { 'Content-Type': 'text/json' });
+        if (!r1 || !r1.length)
+            res.write(JSON.stringify(false));
+        else
+            res.write(JSON.stringify(true));
+        res.end();
+    }
+    catch (ex) {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write("Error with database.");
+        res.end();
+        return;
+    }
+});
+app.post('/backend/ChatBan', async function (req, res, next) {
+    if (!req.body.token) {
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write("Token is missing.");
+        res.end();
+        return;
+    }
+    var tokenInfo = GetTokenInformation(req.body.token, req.headers['x-forwarded-for'] || req.connection.remoteAddress);
+    if (!tokenInfo) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write("Token not valid.");
+        res.end();
+        return;
+    }
+    if (!req.body.username) {
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write("username is missing.");
+        res.end();
+        return;
+    }
+    if (!req.body.days) {
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write("days is missing.");
+        res.end();
+        return;
+    }
+    var connection = getDb();
+    if (!connection) {
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write("Connection failed.");
+        res.end();
+        return;
+    }
+    try {
+        await connection.connect();
+        var r1 = await connection.query('select access_right_id from game_access_rights where (game_id = ? and user_id = ?) or (user_id = ? and access_right_id=1000)', [req.body.game, tokenInfo.id, tokenInfo.id]);
+        if (!r1 || !r1.length) {
+            connection.end();
+            res.writeHead(500, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify({ error: "no write access." }));
+            res.end();
+            return;
+        }
+        var r2 = await connection.query('select data from game_player where game_id = ? and user_id in (select id from users where name = ?)', [req.body.game, req.body.username]);
+        // Not yet registered
+        if (r2.length != 1) {
+            connection.end();
+            res.writeHead(500, { 'Content-Type': 'text/plain' });
+            res.write(JSON.stringify({ error: "User not found." }));
+            res.end();
+            return;
+        }
+        var data = JSON.parse(r2[0].data);
+        data.chatBannedTill = new Date((new Date()).getTime() + parseInt(req.body.days) * 24 * 3600 * 1000);
+        ChatSendTo(parseInt(req.body.game), req.body.username, "ban", data.chatBannedTill);
+        var r3 = await connection.query('update game_player set data = ? where  game_id = ? and user_id in (select id from users where name = ?)', [JSON.stringify(data), req.body.game, req.body.username]);
+        connection.end();
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.write(JSON.stringify(true));
+        res.end();
+        return;
+    }
+    catch (ex) {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write("Error with database.");
+        res.end();
+        return;
+    }
+});
+app.post('/backend/ChatMute', async function (req, res, next) {
+    if (!req.body.token) {
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write("Token is missing.");
+        res.end();
+        return;
+    }
+    var tokenInfo = GetTokenInformation(req.body.token, req.headers['x-forwarded-for'] || req.connection.remoteAddress);
+    if (!tokenInfo) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write("Token not valid.");
+        res.end();
+        return;
+    }
+    if (!req.body.game) {
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write("game is missing.");
+        res.end();
+        return;
+    }
+    if (!req.body.username) {
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write("username is missing.");
+        res.end();
+        return;
+    }
+    if (!req.body.minutes) {
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write("minutes is missing.");
+        res.end();
+        return;
+    }
+    var connection = getDb();
+    if (!connection) {
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write("Connection failed.");
+        res.end();
+        return;
+    }
+    try {
+        await connection.connect();
+        var r1 = await connection.query('select access_right_id from game_access_rights where (game_id = ? and user_id = ?) or (user_id = ? and access_right_id=1000)', [req.body.game, tokenInfo.id, tokenInfo.id,]);
+        if (!r1 || !r1.length) {
+            connection.end();
+            res.writeHead(500, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify({ error: "no write access." }));
+            res.end();
+            return;
+        }
+        var r2 = await connection.query('select data from game_player where game_id = ? and user_id in (select id from users where name = ?)', [req.body.game, req.body.username]);
+        // Not yet registered
+        if (r2.length != 1) {
+            connection.end();
+            res.writeHead(500, { 'Content-Type': 'text/plain' });
+            res.write(JSON.stringify({ error: "User not found." }));
+            res.end();
+            return;
+        }
+        var data = JSON.parse(r2[0].data);
+        data.chatMutedTill = new Date((new Date()).getTime() + parseInt(req.body.minutes) * 60 * 1000);
+        ChatSendTo(parseInt(req.body.game), req.body.username, "mute", data.chatMutedTill);
+        var r3 = await connection.query('update game_player set data = ? where  game_id = ? and user_id in (select id from users where name = ?)', [JSON.stringify(data), req.body.game, req.body.username]);
+        connection.end();
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.write(JSON.stringify(true));
+        res.end();
+        return;
+    }
+    catch (ex) {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write("Error with database.");
+        res.end();
+        return;
+    }
+});
+app.post('/backend/ResetPassword', async function (req, res, next) {
+    if (!req.body.key) {
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write("Key is missing.");
+        res.end();
+        return;
+    }
+    if (!req.body.id) {
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write("Id is missing.");
+        res.end();
+        return;
+    }
+    if (!req.body.password) {
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write("password is missing.");
+        res.end();
+        return;
+    }
+    var connection = getDb();
+    if (!connection) {
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write("Connection failed.");
+        res.end();
+        return;
+    }
+    try {
+        connection.connect();
+        var r1 = await connection.query('select random_reset_key,reset_valid_till from users where id = ?', [req.body.id]);
+        // Not yet registered
+        if (r1.length == 0 || !r1[0].random_reset_key) {
+            connection.end();
+            res.writeHead(500, { 'Content-Type': 'text/plain' });
+            res.write("Operation is not allowed sorry.");
+            res.end();
+            return;
+        }
+        if (r1[0].random_reset_key != req.body.key || new Date(r1[0].reset_valid_till).getTime() < new Date().getTime()) {
+            connection.end();
+            res.writeHead(500, { 'Content-Type': 'text/plain' });
+            res.write("Operation is not allowed sorry.");
+            res.end();
+            return;
+        }
+        await connection.query('update users set random_reset_key = null, reset_valid_till = null, password = ? where id = ? and random_reset_key = ?', ["*" + req.body.password, req.body.id, req.body.key]);
+        connection.end();
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.write("Password has been reset. You can now log-in.");
+        res.end();
+        return;
+    }
+    catch (ex) {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write("Error with database.");
+        res.end();
+        return;
+    }
+});
+app.post('/backend/ChangePassword', async function (req, res, next) {
+    if (!req.body.token) {
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write("Token is missing.");
+        res.end();
+        return;
+    }
+    var tokenInfo = GetTokenInformation(req.body.token, req.headers['x-forwarded-for'] || req.connection.remoteAddress);
+    if (!tokenInfo) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write("Token not valid.");
+        res.end();
+        return;
+    }
+    if (!req.body.password) {
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write("password is missing.");
+        res.end();
+        return;
+    }
+    var connection = getDb();
+    if (!connection) {
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write("Connection failed.");
+        res.end();
+        return;
+    }
+    try {
+        await connection.connect();
+        await connection.query('update users set password = ? where id = ?', ["*" + req.body.password, tokenInfo.id]);
+        connection.end();
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.write("Password has been changed.");
+        res.end();
+        return;
+    }
+    catch (ex) {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write("Error with database.");
+        res.end();
+        return;
+    }
+});
+app.post('/backend/UserInfo', async function (req, res, next) {
+    if (!req.body.token) {
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write(JSON.stringify({ error: "Token is missing." }));
+        res.end();
+        return;
+    }
+    var tokenInfo = GetTokenInformation(req.body.token, req.headers['x-forwarded-for'] || req.connection.remoteAddress);
+    if (!tokenInfo) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "Token not valid." }));
+        res.end();
+        return;
+    }
+    var connection = getDb();
+    if (!connection) {
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write(JSON.stringify({ error: "Connection failed." }));
+        res.end();
+        return;
+    }
+    try {
+        await connection.connect();
+        var r2 = await connection.query('select users.name, users.email, editor_version, (select count(id) from games where main_owner = ?) "nb", credits from users where id = ?', [tokenInfo.id, tokenInfo.id]);
+        connection.end();
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        if (r2 && r2.length)
+            res.write(JSON.stringify(r2[0]));
+        else
+            res.write(JSON.stringify(null));
+        res.end();
+        return;
+    }
+    catch (ex) {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.write(JSON.stringify({ error: "Error with database." }));
+        res.end();
+        return;
+    }
+});
+app.post('/backend/VerifyToken', function (req, res, next) {
+    if (!req.body.token) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "parameter 'token' is missing." }));
+        res.end();
+        return;
+    }
+    var t = GetTokenInformation(req.body.token, req.headers['x-forwarded-for'] || req.connection.remoteAddress);
+    res.writeHead(200, { 'Content-Type': 'text/json' });
+    res.write(JSON.stringify({ valid: (t ? true : false), username: (t ? t.user : null) }));
+    res.end();
+});
+app.post('/backend/UserExists', async function (req, res, next) {
+    if (!req.body.user) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "parameter 'user' is missing." }));
+        res.end();
+        return;
+    }
+    var connection = getDb();
+    if (!connection) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "connection failed." }));
+        res.end();
+        return;
+    }
+    try {
+        await connection.connect();
+        var r1 = await connection.query('select id from users where name = ?', [req.body.user]);
+        connection.end();
+        // Not yet registered
+        if (r1.length == 0) {
+            res.writeHead(200, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify({ result: false }));
+            res.end();
+            return;
+        }
+        else {
+            res.writeHead(200, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify({ result: true }));
+            res.end();
+            return;
+        }
+    }
+    catch (ex) {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "error with database." }));
+        res.end();
+        return;
+    }
+});
+app.post('/backend/RegisterUser', async function (req, res, next) {
+    var reserved = ["root", "admin", "administrator", "boss", "master", "moderator", "helper"];
+    if (!req.body.user) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "parameter 'user' is missing." }));
+        res.end();
+        return;
+    }
+    if (!req.body.password) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "parameter 'password' is missing." }));
+        res.end();
+        return;
+    }
+    var connection = getDb();
+    if (!connection) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "connection failed." }));
+        res.end();
+        return;
+    }
+    var username = req.body.user.trim();
+    if (username.replace(/[a-z0-9]+/gi, "").length > 0 || reserved.indexOf(username.trim().toLowerCase()) != -1) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "Invalid username." }));
+        res.end();
+        return;
+    }
+    try {
+        await connection.connect();
+        var r1 = await connection.query('select id from users where name = ?', [username]);
+        // Not yet registered
+        if (r1.length == 0) {
+            var results = await connection.query('insert users(name,password,email) values(?,?,?)', [username, HashPassword(req.body.user, req.body.password), req.body.email]);
+            connection.end();
+            res.writeHead(200, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify(BuildToken(results.insertId, req.body.user, req.headers['x-forwarded-for'] || req.connection.remoteAddress)));
+            res.end();
+            return;
+        }
+        connection.end();
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "user already exists." }));
+        res.end();
+        return;
+    }
+    catch (ex) {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "error with database." }));
+        res.end();
+        return;
+    }
+});
+app.post('/backend/Login', async function (req, res, next) {
+    if (!req.body.user) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "parameter 'user' is missing." }));
+        res.end();
+        return;
+    }
+    if (!req.body.password) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "parameter 'password' is missing." }));
+        res.end();
+        return;
+    }
+    var connection = getDb();
+    if (!connection) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "connection failed." }));
+        res.end();
+        return;
+    }
+    await timeout(2000);
+    // Introduce a sleep, to avoid DoS or password brute force attacks.
+    try {
+        await connection.connect();
+        var results = await connection.query('select id,password from users where name = ?', [req.body.user]);
+        // Not yet registered
+        if (results.length == 0 || (results[0].password != HashPassword(req.body.user, req.body.password) && results[0].password != "*" + req.body.password)) {
+            connection.end();
+            res.writeHead(500, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify({ error: "wrong username or password" }));
+            res.end();
+            return;
+        }
+        else {
+            if (results[0].password == "*" + req.body.password)
+                await connection.query('update users set password = ? where name = ?', [HashPassword(req.body.user, req.body.password), req.body.user]);
+            connection.end();
+            res.writeHead(200, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify(BuildToken(results[0].id, req.body.user, req.headers['x-forwarded-for'] || req.connection.remoteAddress)));
+            res.end();
+            return;
+        }
+    }
+    catch (ex) {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "error with database." }));
+        res.end();
+        return;
+    }
+});
+app.post('/backend/LoadPlayer', async function (req, res, next) {
+    if (!req.body.game) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "parameter 'game' is missing." }));
+        res.end();
+        return;
+    }
+    if (!req.body.token) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "parameter 'token' is missing." }));
+        res.end();
+        return;
+    }
+    var tokenInfo = GetTokenInformation(req.body.token, req.headers['x-forwarded-for'] || req.connection.remoteAddress);
+    if (!tokenInfo) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "token not valid." }));
+        res.end();
+        return;
+    }
+    var connection = getDb();
+    if (!connection) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "connection failed." }));
+        res.end();
+        return;
+    }
+    try {
+        await connection.connect();
+        var r1 = await connection.query('select x, y, zone, data from game_player where user_id = ? and game_id = ?', [tokenInfo.id, req.body.game]);
+        connection.end();
+        // Not yet registered
+        if (r1.length == 0) {
+            await GameIncreaseStat(req.body.game, StatType.Player_Join);
+            res.writeHead(200, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify(null));
+            res.end();
+            return;
+        }
+        else {
+            await GameIncreaseStat(req.body.game, StatType.Player_Login);
+            res.writeHead(200, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify({ x: r1[0].x, y: r1[0].y, zone: r1[0].zone, data: r1[0].data }));
+            res.end();
+            return;
+        }
+    }
+    catch (ex) {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "error with database." }));
+        res.end();
+        return;
+    }
+});
+async function UpdatePosition(userId, gameId, x, y, zone) {
+    var connection = getDb();
+    if (!connection) {
+        return;
+    }
+    try {
+        await connection.connect();
+        await connection.query('update game_player x=?,y=?,zone=? where game_id=? and user_id=?', [x, y, zone, gameId, userId]);
+    }
+    catch (ex) {
+    }
+}
+app.post('/backend/SavePlayer', async function (req, res, next) {
+    if (!req.body.game) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "parameter 'game' is missing." }));
+        res.end();
+        return;
+    }
+    if (!req.body.token) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "parameter 'token' is missing." }));
+        res.end();
+        return;
+    }
+    if (!req.body.x) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "parameter 'x' is missing." }));
+        res.end();
+        return;
+    }
+    if (!req.body.y) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "parameter 'y' is missing." }));
+        res.end();
+        return;
+    }
+    if (!req.body.zone) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "parameter 'zone' is missing." }));
+        res.end();
+        return;
+    }
+    if (!req.body.data) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "parameter 'data' is missing." }));
+        res.end();
+        return;
+    }
+    var tokenInfo = GetTokenInformation(req.body.token, req.headers['x-forwarded-for'] || req.connection.remoteAddress);
+    if (!tokenInfo) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "token not valid." }));
+        res.end();
+        return;
+    }
+    var connection = getDb();
+    if (!connection) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "connection failed." }));
+        res.end();
+        return;
+    }
+    try {
+        await connection.connect();
+        var r0 = await connection.query('select data from game_player where game_id = ? and user_id = ?', [req.body.game, tokenInfo.id]);
+        var newData = null;
+        try {
+            newData = JSON.parse(req.body.data);
+        }
+        catch (ex) {
+            connection.end();
+            res.writeHead(500, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify({ error: "The save doesn't seems to be in a valid format." }));
+            res.end();
+            return;
+        }
+        var isOk = false;
+        // First save, nothing to control
+        if (!r0 || r0.length == 0)
+            isOk = true;
+        else {
+            try {
+                var savedData = JSON.parse(r0[0].data);
+            }
+            catch (ex) {
+            }
+            // We don't have yet a saveId, then all fine...
+            if (!savedData.saveId)
+                isOk = true;
+            // Saved info and new data are the same
+            else if (newData.saveId == savedData.saveId)
+                isOk = true;
+        }
+        if (!isOk) {
+            connection.end();
+            res.writeHead(500, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify({ error: "Save doesn't match. Be sure you have only one browser open." }));
+            res.end();
+            return;
+        }
+        newData.saveId = md5("D0tW0rldMak3r2016" + req.body.game + "_" + tokenInfo.id + "_" + (new Date()).toString() + "_" + (Math.random() * 100000));
+        await connection.query('replace game_player(game_id,user_id,x,y,zone,data) values(?,?,?,?,?,?)', [req.body.game, tokenInfo.id, req.body.x, req.body.y, req.body.zone, JSON.stringify(newData)]);
+        connection.end();
+        res.writeHead(200, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify(newData.saveId));
+        res.end();
+        return;
+    }
+    catch (ex) {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "error with database." }));
+        res.end();
+        return;
+    }
+});
+app.post('/backend/ResetPlayer', async function (req, res, next) {
+    if (!req.body.game) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "parameter 'game' is missing." }));
+        res.end();
+        return;
+    }
+    if (!req.body.token) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "parameter 'token' is missing." }));
+        res.end();
+        return;
+    }
+    var tokenInfo = GetTokenInformation(req.body.token, req.headers['x-forwarded-for'] || req.connection.remoteAddress);
+    if (!tokenInfo) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "token not valid." }));
+        res.end();
+        return;
+    }
+    var connection = getDb();
+    if (!connection) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "connection failed." }));
+        res.end();
+        return;
+    }
+    try {
+        connection.connect();
+        await connection.query('delete from game_player where game_id = ? and user_id = ?', [req.body.game, tokenInfo.id]);
+        connection.end();
+        res.writeHead(200, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify(true));
+        res.end();
+        return;
+    }
+    catch (ex) {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "error with database." }));
+        res.end();
+        return;
+    }
+});
+app.post('/backend/ResetAllPlayers', async function (req, res, next) {
+    if (!req.body.game) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "parameter 'game' is missing." }));
+        res.end();
+        return;
+    }
+    if (!req.body.token) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "parameter 'token' is missing." }));
+        res.end();
+        return;
+    }
+    var tokenInfo = GetTokenInformation(req.body.token, req.headers['x-forwarded-for'] || req.connection.remoteAddress);
+    if (!tokenInfo) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "token not valid." }));
+        res.end();
+        return;
+    }
+    var connection = getDb();
+    if (!connection) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "connection failed." }));
+        res.end();
+        return;
+    }
+    try {
+        await connection.connect();
+        var r1 = await connection.query('select access_right_id from game_access_rights where (game_id = ? and user_id = ?) or (user_id = ? and access_right_id=1000)', [req.body.game, tokenInfo.id, tokenInfo.id,]);
+        if (!r1 || !r1.length) {
+            connection.end();
+            res.writeHead(500, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify({ error: "no write access." }));
+            res.end();
+            return;
+        }
+        await connection.query('delete from game_player where game_id = ?', [req.body.game]);
+        connection.end();
+        res.writeHead(200, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify(true));
+        res.end();
+        io.to("" + req.body.game + "@#global").emit('reset');
+        return;
+    }
+    catch (ex) {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "error with database." }));
+        res.end();
+        return;
+    }
+});
+app.post('/backend/PublicViewPlayer', async function (req, res, next) {
+    if (!req.body.game) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "parameter 'game' is missing." }));
+        res.end();
+        return;
+    }
+    if (!req.body.name) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "parameter 'name' is missing." }));
+        res.end();
+        return;
+    }
+    var connection = getDb();
+    if (!connection) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "connection failed." }));
+        res.end();
+        return;
+    }
+    try {
+        await connection.connect();
+        var r1 = await connection.query('select x, y, zone, data from game_player where user_id in (select id from users where name = ?) and game_id = ?', [req.body.name, req.body.game]);
+        connection.end();
+        // Not yet registered
+        if (r1.length == 0) {
+            await GameIncreaseStat(req.body.game, StatType.Player_Join);
+            res.writeHead(200, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify(null));
+            res.end();
+            return;
+        }
+        await GameIncreaseStat(req.body.game, StatType.Player_Login);
+        res.writeHead(200, { 'Content-Type': 'text/json' });
+        var rawData = null;
+        try {
+            rawData = JSON.parse(r1[0].data);
+        }
+        catch (ex) {
+        }
+        var resData = {
+            name: rawData.name,
+            x: r1[0].x,
+            y: r1[0].y,
+            zone: r1[0].zone,
+            equipedObjects: rawData.equipedObjects,
+            stats: rawData.stats,
+            skills: rawData.skills
+        };
+        res.write(JSON.stringify(resData));
+        res.end();
+        return;
+    }
+    catch (ex) {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "error with database." }));
+        res.end();
+        return;
+    }
+});
+app.post('/backend/PremiumPurchase', async function (req, res, next) {
+    if (!req.body.game) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "parameter 'game' is missing." }));
+        res.end();
+        return;
+    }
+    if (!req.body.item) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "parameter 'item' is missing." }));
+        res.end();
+        return;
+    }
+    if (!req.body.credits) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "parameter 'credits' is missing." }));
+        res.end();
+        return;
+    }
+    if (!req.body.token) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "parameter 'token' is missing." }));
+        res.end();
+        return;
+    }
+    var tokenInfo = GetTokenInformation(req.body.token, req.headers['x-forwarded-for'] || req.connection.remoteAddress);
+    if (!tokenInfo) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "token not valid." }));
+        res.end();
+        return;
+    }
+    var connection = getDb();
+    if (!connection) {
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "connection failed." }));
+        res.end();
+        return;
+    }
+    try {
+        await connection.connect();
+        var r1 = await connection.query('select main_owner,name from games where id = ?', [req.body.game]);
+        if (!r1 || !r1.length) {
+            connection.end();
+            res.writeHead(500, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify({ error: "game doesn't exists." }));
+            res.end();
+            return;
+        }
+        var destCreditUser = r1[0].main_owner;
+        var gameName = r1[0].name;
+        var r2 = await connection.query('update users set credits = credits - ? where id = ? and credits >= ?', [req.body.credits, tokenInfo.id, req.body.credits]);
+        if (r2.affectedRows < 1) {
+            res.writeHead(200, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify(true));
+            res.end();
+        }
+        else {
+            await connection.query('update users set credits = credits + ? where id = ?', [req.body.credits, destCreditUser]);
+            await connection.query("insert into credits_log(from_user, to_user, quantity, reason) values(?, ?, ?, ?)", [tokenInfo.id, destCreditUser, req.body.credits, "Premium purchase of " + req.body.item + " for game " + gameName]);
+            connection.end();
+            res.writeHead(200, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify(true));
+            res.end();
+        }
+    }
+    catch (ex) {
+        connection.end();
+        console.log(ex);
+        res.writeHead(500, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify({ error: "error with database." }));
+        res.end();
+        return;
+    }
+});
+function DirectoryCheck(gameId) {
+    var dir = __dirname + '/public/user_art/' + GameDir(gameId);
+    if (!fs.existsSync(dir))
+        return 0;
+    var files = fs.readdirSync(dir);
+    var tot = 0;
+    for (var i = 0; i < files.length; i++) {
+        var stat = fs.statSync(dir + "/" + files[i]);
+        tot += stat.size;
+    }
+    return tot;
+}
+async function OwnerMaxSize(userId, gameId) {
+    var connection = getDb();
+    if (!connection || gameId == -1)
+        return 0;
+    try {
+        await connection.connect();
+    }
+    catch (ex) {
+        connection.end();
+        return 0;
+    }
+    try {
+        var r1 = await connection.query('select access_right_id from game_access_rights where (game_id = ? and user_id = ?) or (user_id = ? and access_right_id=1000)', [gameId, userId, userId]);
+    }
+    catch (ex) {
+        console.log(ex);
+        connection.end();
+        return 0;
+    }
+    if (!r1 || !r1.length) {
+        connection.end();
+        console.log('No access right');
+        return 0;
+    }
+    try {
+        var r2 = await connection.query('select editor_version, rented_space, rented_space_till from users where id = (select main_owner from games where id = ?)', [gameId]);
+        connection.end();
+        if (!r2 || r2.length == 0)
+            return 0;
+        var size = r2[0].editor_version == 's' ? 10 * 1024 * 1024 : 5 * 1024 * 1024;
+        if (r2[0].rented_space_till) {
+            var tillWhen = new Date(r2[0].rented_space_till);
+            if (tillWhen.getTime() > new Date().getTime())
+                size = r2[0].rented_space * 1024 * 1024;
+        }
+        return size;
+    }
+    catch (ex) {
+        console.log(ex);
+        connection.end();
+        return 0;
+    }
+}
+async function CanStoreSize(userId, gameId, sizeToPlace) {
+    var maxSize = await OwnerMaxSize(userId, gameId);
+    if (DirectoryCheck(gameId) + sizeToPlace < maxSize)
+        return true;
+    return false;
+}
+String.prototype.htmlEntities = function () {
+    return this.replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;").replace(/'/g, "&#39;").replace(/"/g, "&quot;");
+};
+String.prototype.trim = function () {
+    return this.replace(/^\s+|\s+$/g, '');
+};
+String.prototype.endsWith = function (suffix) {
+    return (this.indexOf(suffix, this.length - suffix.length) !== -1);
+};
+String.prototype.startsWith = function (prefix) {
+    return (this.substr(0, prefix.length) == prefix);
+};
+String.prototype.contains = function (toSearch) {
+    return (this.indexOf(toSearch) != -1);
+};
+function md5(source) {
+    var hash = require('crypto');
+    return hash.createHash('md5').update(source).digest('hex');
+}
+function sha256(source, secret) {
+    var hash = require('crypto');
+    if (!secret)
+        secret = "aBcD3FgH1";
+    return hash.createHmac('sha256', secret)
+        .update(source)
+        .digest('hex');
+}
+function base64decode(source) {
+    // Node 5.10+
+    if (typeof Buffer.from === "function")
+        return Buffer.from(source, 'base64');
+    // older Node versions
+    else
+        return new Buffer(source, 'base64');
+}
+function timeout(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+/// <reference path="User.ts" />
+/// <reference path="../app.ts" />
+/// <reference path="DirectoryCheck.ts" />
+/// <reference path="Extensions.ts" />
 function CreateGameDir(gameId) {
     if (!fs.existsSync(__dirname + '/public/user_art/' + GameDir(gameId)))
         fs.mkdirSync(__dirname + '/public/user_art/' + GameDir(gameId));
@@ -455,7 +1623,7 @@ class Database {
     }
     connect() {
         return new Promise((ok, err) => {
-            this.connection.connect(err);
+            this.connection.connect({}, err);
             ok();
         });
     }
@@ -464,12 +1632,32 @@ function getDb() {
     try {
         var conn = mysql.createConnection({
             host: packageJson.config.dbhost,
+            port: packageJson.config.dbport ? packageJson.config.dbport : 3306,
             user: packageJson.config.dbuser,
             password: packageJson.config.dbpass,
             database: packageJson.config.dbname,
             insecureAuth: true
         });
         conn.on("error", function (err) {
+        });
+        return new Database(conn);
+    }
+    catch (ex) {
+        return null;
+    }
+}
+function getDbConfig(host, port, user, password, dbname = null) {
+    try {
+        var conn = mysql.createConnection({
+            host: host,
+            port: port,
+            user: user,
+            password: password,
+            insecureAuth: true,
+            database: dbname
+        });
+        conn.on("error", function (err) {
+            console.log(err);
         });
         return new Database(conn);
     }
@@ -1379,105 +2567,6 @@ io.on('connection', function (socket) {
         io.to("" + socket.game_id + "@#global").emit('position', zone, x, y, socket.username, look, emote, emoteTimer, direction);
     });
 });
-function DirectoryCheck(gameId) {
-    var dir = __dirname + '/public/user_art/' + GameDir(gameId);
-    if (!fs.existsSync(dir))
-        return 0;
-    var files = fs.readdirSync(dir);
-    var tot = 0;
-    for (var i = 0; i < files.length; i++) {
-        var stat = fs.statSync(dir + "/" + files[i]);
-        tot += stat.size;
-    }
-    return tot;
-}
-async function OwnerMaxSize(userId, gameId) {
-    var connection = getDb();
-    if (!connection || gameId == -1)
-        return 0;
-    try {
-        await connection.connect();
-    }
-    catch (ex) {
-        connection.end();
-        return 0;
-    }
-    try {
-        var r1 = await connection.query('select access_right_id from game_access_rights where (game_id = ? and user_id = ?) or (user_id = ? and access_right_id=1000)', [gameId, userId, userId]);
-    }
-    catch (ex) {
-        console.log(ex);
-        connection.end();
-        return 0;
-    }
-    if (!r1 || !r1.length) {
-        connection.end();
-        console.log('No access right');
-        return 0;
-    }
-    try {
-        var r2 = await connection.query('select editor_version, rented_space, rented_space_till from users where id = (select main_owner from games where id = ?)', [gameId]);
-        connection.end();
-        if (!r2 || r2.length == 0)
-            return 0;
-        var size = r2[0].editor_version == 's' ? 10 * 1024 * 1024 : 5 * 1024 * 1024;
-        if (r2[0].rented_space_till) {
-            var tillWhen = new Date(r2[0].rented_space_till);
-            if (tillWhen.getTime() > new Date().getTime())
-                size = r2[0].rented_space * 1024 * 1024;
-        }
-        return size;
-    }
-    catch (ex) {
-        console.log(ex);
-        connection.end();
-        return 0;
-    }
-}
-async function CanStoreSize(userId, gameId, sizeToPlace) {
-    var maxSize = await OwnerMaxSize(userId, gameId);
-    if (DirectoryCheck(gameId) + sizeToPlace < maxSize)
-        return true;
-    return false;
-}
-String.prototype.htmlEntities = function () {
-    return this.replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;").replace(/'/g, "&#39;").replace(/"/g, "&quot;");
-};
-String.prototype.trim = function () {
-    return this.replace(/^\s+|\s+$/g, '');
-};
-String.prototype.endsWith = function (suffix) {
-    return (this.indexOf(suffix, this.length - suffix.length) !== -1);
-};
-String.prototype.startsWith = function (prefix) {
-    return (this.substr(0, prefix.length) == prefix);
-};
-String.prototype.contains = function (toSearch) {
-    return (this.indexOf(toSearch) != -1);
-};
-function md5(source) {
-    var hash = require('crypto');
-    return hash.createHash('md5').update(source).digest('hex');
-}
-function sha256(source, secret) {
-    var hash = require('crypto');
-    if (!secret)
-        secret = "aBcD3FgH1";
-    return hash.createHmac('sha256', secret)
-        .update(source)
-        .digest('hex');
-}
-function base64decode(source) {
-    // Node 5.10+
-    if (typeof Buffer.from === "function")
-        return Buffer.from(source, 'base64');
-    // older Node versions
-    else
-        return new Buffer(source, 'base64');
-}
-function timeout(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
 app.post('/backend/DirectoryList', async function (req, res) {
     if (!req.body.game) {
         res.writeHead(500, { 'Content-Type': 'text/json' });
@@ -2878,6 +3967,201 @@ function ChangeGameUrls(world, urlPrefix = "", changeCallback = null) {
     for (var i = 0; i < world.Skills.length; i++)
         world.Skills[i].Source = CleanupFileCodeVariable(world.Skills[i].Source, urlPrefix, changeCallback);
 }
+/// <reference path="../app.ts" />
+/// <reference path="Database.ts" />
+app.post('/backend/MustInstall', async function (req, res, next) {
+    res.writeHead(200, { 'Content-Type': 'text/json' });
+    if (fs.existsSync(__dirname + "/must_install.txt"))
+        res.write(JSON.stringify("must"));
+    else
+        res.write(JSON.stringify("noneed"));
+    res.end();
+});
+app.post('/backend/CheckConfigJson', async function (req, res, next) {
+    if (!fs.existsSync(__dirname + "/must_install.txt")) {
+        res.writeHead(200, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify("error: installer already run"));
+        res.end();
+    }
+    try {
+        fs.writeFileSync(__dirname + "/touch_test.txt", "works");
+        fs.unlinkSync(__dirname + "/touch_test.txt");
+        res.writeHead(200, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify("allfine"));
+        res.end();
+    }
+    catch (ex) {
+        res.writeHead(200, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify("norights"));
+        res.end();
+    }
+});
+app.post('/backend/CheckMysql', async function (req, res, next) {
+    if (!fs.existsSync(__dirname + "/must_install.txt")) {
+        res.writeHead(200, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify("error: installer already run"));
+        res.end();
+    }
+    var host = req.body.host;
+    var port = parseInt(req.body.port);
+    var user = req.body.user;
+    var password = req.body.password;
+    var dbname = req.body.dbname;
+    var connection = getDbConfig(host, (isNaN(port) || !port) ? 3306 : port, user, password);
+    try {
+        await connection.connect();
+        await connection.query("SHOW DATABASES");
+        await connection.query("CREATE DATABASE dwm812712912");
+        await connection.query("DROP DATABASE dwm812712912");
+    }
+    catch (ex) {
+        connection.end();
+        if (ex.code == 'ECONNREFUSED') {
+            res.writeHead(200, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify("nodb"));
+            res.end();
+        }
+        else if (ex.code == 'ER_ACCESS_DENIED_ERROR') {
+            res.writeHead(200, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify("wrongpass"));
+            res.end();
+        }
+        else if (ex.code == 'ER_DBACCESS_DENIED_ERROR') {
+            res.writeHead(200, { 'Content-Type': 'text/json' });
+            res.write(JSON.stringify("norights"));
+            res.end();
+        }
+        else
+            console.log(ex);
+    }
+    try {
+        await connection.query("USE " + dbname.replace(/[' `]/g, ""));
+        var result = await connection.query("SHOW TABLES");
+        connection.end();
+        res.writeHead(200, { 'Content-Type': 'text/json' });
+        if (result.length)
+            res.write(JSON.stringify("dbnotempty"));
+        else
+            res.write(JSON.stringify("allok"));
+        res.end();
+    }
+    catch (ex) {
+        connection.end();
+        res.writeHead(200, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify("allok"));
+        res.end();
+    }
+});
+app.post('/backend/SetupMysql', async function (req, res, next) {
+    if (!fs.existsSync(__dirname + "/must_install.txt")) {
+        res.writeHead(200, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify("error: installer already run"));
+        res.end();
+    }
+    var host = req.body.host;
+    var port = parseInt(req.body.port);
+    var user = req.body.user;
+    var password = req.body.password;
+    var dbname = req.body.dbname;
+    var dbuser = req.body.dbuser;
+    var dbpassword = req.body.dbpassword;
+    //CREATE USER 'newuser'@'localhost' IDENTIFIED BY 'password';
+    //GRANT ALL PRIVILEGES ON DWM.* TO 'newuser'@'localhost';
+    var connection = getDbConfig(host, (isNaN(port) || !port) ? 3306 : port, user, password);
+    try {
+        await connection.connect();
+        try {
+            await connection.query("CREATE DATABASE " + dbname.replace(/[' `]/g, ""));
+        }
+        catch (ex2) {
+            if (ex2.code != "ER_DB_CREATE_EXISTS")
+                throw ex2;
+        }
+        if (dbuser != user) {
+            try {
+                if (dbpassword.trim() == "")
+                    await connection.query("CREATE USER ?@'localhost'", [dbuser]);
+                else
+                    await connection.query("CREATE USER ?@'localhost' IDENTIFIED BY ?", [dbuser, dbpassword]);
+            }
+            catch (ex2) {
+            }
+            try {
+                await connection.query("GRANT ALL PRIVILEGES ON " + dbname.replace(/[' `]/g, "") + ".* TO ?@'localhost'", [dbuser]);
+            }
+            catch (ex2) {
+            }
+        }
+        await connection.query("USE " + dbname.replace(/[' `]/g, ""));
+        var sql = fs.readFileSync(__dirname + "/server/tables.txt", "ascii");
+        var lines = sql.replace(/\r/g, "").split(";\n");
+        for (var i = 0; i < lines.length; i++) {
+            if (lines[i].trim() == "") // skip empty lines
+                continue;
+            await connection.query(lines[i]);
+        }
+        connection.end();
+        res.writeHead(200, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify("allok"));
+        res.end();
+    }
+    catch (ex) {
+        console.log(ex);
+        connection.end();
+        res.writeHead(200, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify("error: " + ex));
+        res.end();
+    }
+});
+app.post('/backend/SetupJson', async function (req, res, next) {
+    if (!fs.existsSync(__dirname + "/must_install.txt")) {
+        res.writeHead(200, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify("error: installer already run"));
+        res.end();
+    }
+    var host = req.body.host;
+    var port = parseInt(req.body.port);
+    var dbname = req.body.dbname;
+    var dbuser = req.body.dbuser;
+    var dbpassword = req.body.dbpassword;
+    try {
+        var possibleChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+*%&()=${}[]!<>,;.:-_";
+        packageJson.config.dbhost = host;
+        packageJson.config.dbport = isNaN(port) ? 3306 : port;
+        ;
+        packageJson.config.dbuser = dbuser;
+        packageJson.config.dbpass = dbpassword;
+        packageJson.config.dbname = dbname;
+        packageJson.config.email_user = req.body.email_user;
+        packageJson.config.email_pass = req.body.email_pass;
+        packageJson.config.email_server = req.body.email_server;
+        var randomString = "";
+        for (var i = 0; i < 30; i++)
+            randomString += possibleChars.charAt(Math.ceil(Math.random() * possibleChars.length));
+        packageJson.config.fixedHashSalt = randomString;
+        fs.writeFileSync(__dirname + "/pseudo.package.json", JSON.stringify(packageJson, null, 2));
+        var connection = getDbConfig(host, (isNaN(port) || !port) ? 3306 : port, dbuser, dbpassword, dbname);
+        await connection.connect();
+        await connection.query("update users set name = ?, password = ? where id=1", [req.body.admin_user, "*" + req.body.admin_password]);
+        try {
+            fs.unlink(__dirname + "/must_install.txt");
+        }
+        catch (ex2) {
+        }
+        connection.end();
+        res.writeHead(200, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify("allok"));
+        res.end();
+    }
+    catch (ex) {
+        if (connection)
+            connection.end();
+        console.log(ex);
+        res.writeHead(200, { 'Content-Type': 'text/json' });
+        res.write(JSON.stringify("error: " + ex));
+        res.end();
+    }
+});
 var key = "ThisIsMyS3Cr3!K3Y";
 function CreateLicensePayment(userId, price) {
     var data = { id: userId, price: price, buy: "license" };
@@ -4410,1068 +5694,6 @@ app.get('/backend/RSS', function (req, res) {
     res.end();
 });
 ///<reference path="../app.ts" />
-var currentTokens = {};
-function BuildToken(id, username, ip) {
-    if (!ip)
-        ip = '127.0.0.1';
-    if (ip && ip.endsWith('127.0.0.1'))
-        ip = '::1';
-    var dt = new Date();
-    var token = md5("" + id + "-" + username.toLowerCase() + "-" + dt.toString());
-    currentTokens[token] = { id: id, lastUsage: new Date(), user: username, ip: ip };
-    return { token: token };
-}
-function GetTokenInformation(token, ip) {
-    var now = (new Date());
-    if (ip.endsWith('127.0.0.1'))
-        ip = '::1';
-    // Check all the tokens
-    var toDelete = [];
-    for (var i in currentTokens) {
-        if ((now.getTime() - currentTokens[i].lastUsage.getTime()) > 60000 * 5)
-            toDelete.push(i);
-    }
-    // Removes the one which are too old
-    for (var j = 0; j < toDelete.length; j++)
-        delete currentTokens[toDelete[j]];
-    if (currentTokens[token] && currentTokens[token].ip == ip && (now.getTime() - currentTokens[token].lastUsage.getTime()) < 60000 * 5) {
-        currentTokens[token].lastUsage = now;
-        return currentTokens[token];
-    }
-    else if (currentTokens[token] && currentTokens[token].ip != ip)
-        console.log("Wrong ip: " + currentTokens[token].ip + ", " + ip);
-    else if (currentTokens[token] && (now.getTime() - currentTokens[token].lastUsage.getTime()) < 60000 * 5)
-        console.log("Timeout...");
-    else
-        console.log("Token not found");
-    return null;
-}
-app.post('/backend/RecoverPassword', async function (req, res, next) {
-    if (!req.body.user) {
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.write("User is missing.");
-        res.end();
-        return;
-    }
-    var connection = getDb();
-    if (!connection) {
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.write("Connection failed.");
-        res.end();
-        return;
-    }
-    try {
-        await connection.connect();
-        var r1 = await connection.query('select id,email from users where name = ?', [req.body.user]);
-        // Not yet registered
-        if (r1.length == 0 || !r1[0].email) {
-            connection.end();
-            res.writeHead(500, { 'Content-Type': 'text/plain' });
-            res.write("User not found or it doesn't have an email.");
-            res.end();
-            return;
-        }
-        var email = r1[0].email;
-        var id = r1[0].id;
-        var key = md5(email + "SomethingPrr1vat3T0mak3ItH@rd" + r1[0].id + ((new Date()).toLocaleTimeString()) + Math.round(Math.random() * Number.MAX_VALUE));
-        await connection.query('update users set random_reset_key=?, reset_valid_till=? where id = ?', [key, new Date(new Date().getTime() + 3600000), id]);
-        connection.end();
-        res.writeHead(200, { 'Content-Type': 'text/plain' });
-        res.write("EMail sent.");
-        res.end();
-        var email = require("emailjs");
-        var server = email.server.connect({
-            user: packageJson.config.email_user,
-            password: packageJson.config.email_pass,
-            host: packageJson.config.email_server,
-            ssl: true
-        });
-        process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-        server.send({
-            text: "Dot World Maker - Password recovery\nTo recover your account please open this link:\nhttps://www.dotworldmaker.com/Home/recover_password.html?key=" + key + "&id=" + id,
-            from: "no-reply@dotworldmaker.com",
-            to: r1[0].email,
-            subject: "Dot World Maker - Password recovery"
-        }, (err3, message) => {
-            if (err3)
-                console.log(err3);
-        });
-    }
-    catch (ex) {
-        connection.end();
-        console.log(ex);
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.write("Error with database.");
-        res.end();
-        return;
-    }
-});
-app.post('/backend/GetRoles', async function (req, res, next) {
-    if (!req.body.token) {
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.write("Token is missing.");
-        res.end();
-        return;
-    }
-    var tokenInfo = GetTokenInformation(req.body.token, req.headers['x-forwarded-for'] || req.connection.remoteAddress);
-    if (!tokenInfo) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write("Token not valid.");
-        res.end();
-        return;
-    }
-    var connection = getDb();
-    if (!connection) {
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.write("Connection failed.");
-        res.end();
-        return;
-    }
-    try {
-        await connection.connect();
-        var r1 = await connection.query('select access_right_id from game_access_rights where (game_id = ? and user_id = ?) or (user_id = ? and access_right_id=1000)', [req.body.game, tokenInfo.id, tokenInfo.id]);
-        connection.end();
-        res.writeHead(200, { 'Content-Type': 'text/json' });
-        var result = [];
-        if (r1 && r1.length > 0)
-            for (var i = 0; i < r1.length; i++)
-                result.push(r1[i].access_right_id);
-        res.write(JSON.stringify(result));
-        res.end();
-    }
-    catch (ex) {
-        connection.end();
-        console.log(ex);
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.write("Error with database.");
-        res.end();
-        return;
-    }
-});
-app.post('/backend/HasRole', async function (req, res, next) {
-    if (!req.body.token) {
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.write("Token is missing.");
-        res.end();
-        return;
-    }
-    var tokenInfo = GetTokenInformation(req.body.token, req.headers['x-forwarded-for'] || req.connection.remoteAddress);
-    if (!tokenInfo) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write("Token not valid.");
-        res.end();
-        return;
-    }
-    if (!req.body.role) {
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.write("role is missing.");
-        res.end();
-        return;
-    }
-    var connection = getDb();
-    if (!connection) {
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.write("Connection failed.");
-        res.end();
-        return;
-    }
-    try {
-        await connection.connect();
-        var access = 0;
-        switch (("" + req.body.role).toLowerCase()) {
-            case "admin":
-            case "game admin":
-                access = 100;
-                break;
-            case "moderator":
-            case "chat moderator":
-                access = 10;
-                break;
-        }
-        var r1 = await connection.query('select access_right_id from game_access_rights where (game_id = ? and user_id = ? and access_right_id = ?) or (user_id = ? and access_right_id=1000)', [req.body.game, tokenInfo.id, access, tokenInfo.id]);
-        connection.end();
-        res.writeHead(200, { 'Content-Type': 'text/json' });
-        if (!r1 || !r1.length)
-            res.write(JSON.stringify(false));
-        else
-            res.write(JSON.stringify(true));
-        res.end();
-    }
-    catch (ex) {
-        connection.end();
-        console.log(ex);
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.write("Error with database.");
-        res.end();
-        return;
-    }
-});
-app.post('/backend/ChatBan', async function (req, res, next) {
-    if (!req.body.token) {
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.write("Token is missing.");
-        res.end();
-        return;
-    }
-    var tokenInfo = GetTokenInformation(req.body.token, req.headers['x-forwarded-for'] || req.connection.remoteAddress);
-    if (!tokenInfo) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write("Token not valid.");
-        res.end();
-        return;
-    }
-    if (!req.body.username) {
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.write("username is missing.");
-        res.end();
-        return;
-    }
-    if (!req.body.days) {
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.write("days is missing.");
-        res.end();
-        return;
-    }
-    var connection = getDb();
-    if (!connection) {
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.write("Connection failed.");
-        res.end();
-        return;
-    }
-    try {
-        await connection.connect();
-        var r1 = await connection.query('select access_right_id from game_access_rights where (game_id = ? and user_id = ?) or (user_id = ? and access_right_id=1000)', [req.body.game, tokenInfo.id, tokenInfo.id]);
-        if (!r1 || !r1.length) {
-            connection.end();
-            res.writeHead(500, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ error: "no write access." }));
-            res.end();
-            return;
-        }
-        var r2 = await connection.query('select data from game_player where game_id = ? and user_id in (select id from users where name = ?)', [req.body.game, req.body.username]);
-        // Not yet registered
-        if (r2.length != 1) {
-            connection.end();
-            res.writeHead(500, { 'Content-Type': 'text/plain' });
-            res.write(JSON.stringify({ error: "User not found." }));
-            res.end();
-            return;
-        }
-        var data = JSON.parse(r2[0].data);
-        data.chatBannedTill = new Date((new Date()).getTime() + parseInt(req.body.days) * 24 * 3600 * 1000);
-        ChatSendTo(parseInt(req.body.game), req.body.username, "ban", data.chatBannedTill);
-        var r3 = await connection.query('update game_player set data = ? where  game_id = ? and user_id in (select id from users where name = ?)', [JSON.stringify(data), req.body.game, req.body.username]);
-        connection.end();
-        res.writeHead(200, { 'Content-Type': 'text/plain' });
-        res.write(JSON.stringify(true));
-        res.end();
-        return;
-    }
-    catch (ex) {
-        connection.end();
-        console.log(ex);
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.write("Error with database.");
-        res.end();
-        return;
-    }
-});
-app.post('/backend/ChatMute', async function (req, res, next) {
-    if (!req.body.token) {
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.write("Token is missing.");
-        res.end();
-        return;
-    }
-    var tokenInfo = GetTokenInformation(req.body.token, req.headers['x-forwarded-for'] || req.connection.remoteAddress);
-    if (!tokenInfo) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write("Token not valid.");
-        res.end();
-        return;
-    }
-    if (!req.body.game) {
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.write("game is missing.");
-        res.end();
-        return;
-    }
-    if (!req.body.username) {
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.write("username is missing.");
-        res.end();
-        return;
-    }
-    if (!req.body.minutes) {
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.write("minutes is missing.");
-        res.end();
-        return;
-    }
-    var connection = getDb();
-    if (!connection) {
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.write("Connection failed.");
-        res.end();
-        return;
-    }
-    try {
-        await connection.connect();
-        var r1 = await connection.query('select access_right_id from game_access_rights where (game_id = ? and user_id = ?) or (user_id = ? and access_right_id=1000)', [req.body.game, tokenInfo.id, tokenInfo.id,]);
-        if (!r1 || !r1.length) {
-            connection.end();
-            res.writeHead(500, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ error: "no write access." }));
-            res.end();
-            return;
-        }
-        var r2 = await connection.query('select data from game_player where game_id = ? and user_id in (select id from users where name = ?)', [req.body.game, req.body.username]);
-        // Not yet registered
-        if (r2.length != 1) {
-            connection.end();
-            res.writeHead(500, { 'Content-Type': 'text/plain' });
-            res.write(JSON.stringify({ error: "User not found." }));
-            res.end();
-            return;
-        }
-        var data = JSON.parse(r2[0].data);
-        data.chatMutedTill = new Date((new Date()).getTime() + parseInt(req.body.minutes) * 60 * 1000);
-        ChatSendTo(parseInt(req.body.game), req.body.username, "mute", data.chatMutedTill);
-        var r3 = await connection.query('update game_player set data = ? where  game_id = ? and user_id in (select id from users where name = ?)', [JSON.stringify(data), req.body.game, req.body.username]);
-        connection.end();
-        res.writeHead(200, { 'Content-Type': 'text/plain' });
-        res.write(JSON.stringify(true));
-        res.end();
-        return;
-    }
-    catch (ex) {
-        connection.end();
-        console.log(ex);
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.write("Error with database.");
-        res.end();
-        return;
-    }
-});
-app.post('/backend/ResetPassword', async function (req, res, next) {
-    if (!req.body.key) {
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.write("Key is missing.");
-        res.end();
-        return;
-    }
-    if (!req.body.id) {
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.write("Id is missing.");
-        res.end();
-        return;
-    }
-    if (!req.body.password) {
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.write("password is missing.");
-        res.end();
-        return;
-    }
-    var connection = getDb();
-    if (!connection) {
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.write("Connection failed.");
-        res.end();
-        return;
-    }
-    try {
-        connection.connect();
-        var r1 = await connection.query('select random_reset_key,reset_valid_till from users where id = ?', [req.body.id]);
-        // Not yet registered
-        if (r1.length == 0 || !r1[0].random_reset_key) {
-            connection.end();
-            res.writeHead(500, { 'Content-Type': 'text/plain' });
-            res.write("Operation is not allowed sorry.");
-            res.end();
-            return;
-        }
-        if (r1[0].random_reset_key != req.body.key || new Date(r1[0].reset_valid_till).getTime() < new Date().getTime()) {
-            connection.end();
-            res.writeHead(500, { 'Content-Type': 'text/plain' });
-            res.write("Operation is not allowed sorry.");
-            res.end();
-            return;
-        }
-        await connection.query('update users set random_reset_key = null, reset_valid_till = null, password = ? where id = ? and random_reset_key = ?', ["*" + req.body.password, req.body.id, req.body.key]);
-        connection.end();
-        res.writeHead(200, { 'Content-Type': 'text/plain' });
-        res.write("Password has been reset. You can now log-in.");
-        res.end();
-        return;
-    }
-    catch (ex) {
-        connection.end();
-        console.log(ex);
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.write("Error with database.");
-        res.end();
-        return;
-    }
-});
-app.post('/backend/ChangePassword', async function (req, res, next) {
-    if (!req.body.token) {
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.write("Token is missing.");
-        res.end();
-        return;
-    }
-    var tokenInfo = GetTokenInformation(req.body.token, req.headers['x-forwarded-for'] || req.connection.remoteAddress);
-    if (!tokenInfo) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write("Token not valid.");
-        res.end();
-        return;
-    }
-    if (!req.body.password) {
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.write("password is missing.");
-        res.end();
-        return;
-    }
-    var connection = getDb();
-    if (!connection) {
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.write("Connection failed.");
-        res.end();
-        return;
-    }
-    try {
-        await connection.connect();
-        await connection.query('update users set password = ? where id = ?', ["*" + req.body.password, tokenInfo.id]);
-        connection.end();
-        res.writeHead(200, { 'Content-Type': 'text/plain' });
-        res.write("Password has been changed.");
-        res.end();
-        return;
-    }
-    catch (ex) {
-        connection.end();
-        console.log(ex);
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.write("Error with database.");
-        res.end();
-        return;
-    }
-});
-app.post('/backend/UserInfo', async function (req, res, next) {
-    if (!req.body.token) {
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.write(JSON.stringify({ error: "Token is missing." }));
-        res.end();
-        return;
-    }
-    var tokenInfo = GetTokenInformation(req.body.token, req.headers['x-forwarded-for'] || req.connection.remoteAddress);
-    if (!tokenInfo) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "Token not valid." }));
-        res.end();
-        return;
-    }
-    var connection = getDb();
-    if (!connection) {
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.write(JSON.stringify({ error: "Connection failed." }));
-        res.end();
-        return;
-    }
-    try {
-        await connection.connect();
-        var r2 = await connection.query('select users.name, users.email, editor_version, (select count(id) from games where main_owner = ?) "nb", credits from users where id = ?', [tokenInfo.id, tokenInfo.id]);
-        connection.end();
-        res.writeHead(200, { 'Content-Type': 'text/plain' });
-        if (r2 && r2.length)
-            res.write(JSON.stringify(r2[0]));
-        else
-            res.write(JSON.stringify(null));
-        res.end();
-        return;
-    }
-    catch (ex) {
-        connection.end();
-        console.log(ex);
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.write(JSON.stringify({ error: "Error with database." }));
-        res.end();
-        return;
-    }
-});
-app.post('/backend/VerifyToken', function (req, res, next) {
-    if (!req.body.token) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "parameter 'token' is missing." }));
-        res.end();
-        return;
-    }
-    var t = GetTokenInformation(req.body.token, req.headers['x-forwarded-for'] || req.connection.remoteAddress);
-    res.writeHead(200, { 'Content-Type': 'text/json' });
-    res.write(JSON.stringify({ valid: (t ? true : false), username: (t ? t.user : null) }));
-    res.end();
-});
-app.post('/backend/UserExists', async function (req, res, next) {
-    if (!req.body.user) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "parameter 'user' is missing." }));
-        res.end();
-        return;
-    }
-    var connection = getDb();
-    if (!connection) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "connection failed." }));
-        res.end();
-        return;
-    }
-    try {
-        await connection.connect();
-        var r1 = await connection.query('select id from users where name = ?', [req.body.user]);
-        connection.end();
-        // Not yet registered
-        if (r1.length == 0) {
-            res.writeHead(200, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ result: false }));
-            res.end();
-            return;
-        }
-        else {
-            res.writeHead(200, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ result: true }));
-            res.end();
-            return;
-        }
-    }
-    catch (ex) {
-        connection.end();
-        console.log(ex);
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "error with database." }));
-        res.end();
-        return;
-    }
-});
-app.post('/backend/RegisterUser', async function (req, res, next) {
-    var reserved = ["root", "admin", "administrator", "boss", "master", "moderator", "helper"];
-    if (!req.body.user) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "parameter 'user' is missing." }));
-        res.end();
-        return;
-    }
-    if (!req.body.password) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "parameter 'password' is missing." }));
-        res.end();
-        return;
-    }
-    var connection = getDb();
-    if (!connection) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "connection failed." }));
-        res.end();
-        return;
-    }
-    var username = req.body.user.trim();
-    if (username.replace(/[a-z0-9]+/gi, "").length > 0 || reserved.indexOf(username.trim().toLowerCase()) != -1) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "Invalid username." }));
-        res.end();
-        return;
-    }
-    try {
-        await connection.connect();
-        var r1 = await connection.query('select id from users where name = ?', [username]);
-        // Not yet registered
-        if (r1.length == 0) {
-            var results = await connection.query('insert users(name,password,email) values(?,?,?)', [username, HashPassword(req.body.user, req.body.password), req.body.email]);
-            connection.end();
-            res.writeHead(200, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify(BuildToken(results.insertId, req.body.user, req.headers['x-forwarded-for'] || req.connection.remoteAddress)));
-            res.end();
-            return;
-        }
-        connection.end();
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "user already exists." }));
-        res.end();
-        return;
-    }
-    catch (ex) {
-        connection.end();
-        console.log(ex);
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "error with database." }));
-        res.end();
-        return;
-    }
-});
-app.post('/backend/Login', async function (req, res, next) {
-    if (!req.body.user) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "parameter 'user' is missing." }));
-        res.end();
-        return;
-    }
-    if (!req.body.password) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "parameter 'password' is missing." }));
-        res.end();
-        return;
-    }
-    var connection = getDb();
-    if (!connection) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "connection failed." }));
-        res.end();
-        return;
-    }
-    await timeout(2000);
-    // Introduce a sleep, to avoid DoS or password brute force attacks.
-    try {
-        await connection.connect();
-        var results = await connection.query('select id,password from users where name = ?', [req.body.user]);
-        // Not yet registered
-        if (results.length == 0 || (results[0].password != HashPassword(req.body.user, req.body.password) && results[0].password != "*" + req.body.password)) {
-            connection.end();
-            res.writeHead(500, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ error: "wrong username or password" }));
-            res.end();
-            return;
-        }
-        else {
-            if (results[0].password == "*" + req.body.password)
-                await connection.query('update users set password = ? where name = ?', [HashPassword(req.body.user, req.body.password), req.body.user]);
-            connection.end();
-            res.writeHead(200, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify(BuildToken(results[0].id, req.body.user, req.headers['x-forwarded-for'] || req.connection.remoteAddress)));
-            res.end();
-            return;
-        }
-    }
-    catch (ex) {
-        connection.end();
-        console.log(ex);
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "error with database." }));
-        res.end();
-        return;
-    }
-});
-app.post('/backend/LoadPlayer', async function (req, res, next) {
-    if (!req.body.game) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "parameter 'game' is missing." }));
-        res.end();
-        return;
-    }
-    if (!req.body.token) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "parameter 'token' is missing." }));
-        res.end();
-        return;
-    }
-    var tokenInfo = GetTokenInformation(req.body.token, req.headers['x-forwarded-for'] || req.connection.remoteAddress);
-    if (!tokenInfo) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "token not valid." }));
-        res.end();
-        return;
-    }
-    var connection = getDb();
-    if (!connection) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "connection failed." }));
-        res.end();
-        return;
-    }
-    try {
-        await connection.connect();
-        var r1 = await connection.query('select x, y, zone, data from game_player where user_id = ? and game_id = ?', [tokenInfo.id, req.body.game]);
-        connection.end();
-        // Not yet registered
-        if (r1.length == 0) {
-            await GameIncreaseStat(req.body.game, StatType.Player_Join);
-            res.writeHead(200, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify(null));
-            res.end();
-            return;
-        }
-        else {
-            await GameIncreaseStat(req.body.game, StatType.Player_Login);
-            res.writeHead(200, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ x: r1[0].x, y: r1[0].y, zone: r1[0].zone, data: r1[0].data }));
-            res.end();
-            return;
-        }
-    }
-    catch (ex) {
-        connection.end();
-        console.log(ex);
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "error with database." }));
-        res.end();
-        return;
-    }
-});
-async function UpdatePosition(userId, gameId, x, y, zone) {
-    var connection = getDb();
-    if (!connection) {
-        return;
-    }
-    try {
-        await connection.connect();
-        await connection.query('update game_player x=?,y=?,zone=? where game_id=? and user_id=?', [x, y, zone, gameId, userId]);
-    }
-    catch (ex) {
-    }
-}
-app.post('/backend/SavePlayer', async function (req, res, next) {
-    if (!req.body.game) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "parameter 'game' is missing." }));
-        res.end();
-        return;
-    }
-    if (!req.body.token) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "parameter 'token' is missing." }));
-        res.end();
-        return;
-    }
-    if (!req.body.x) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "parameter 'x' is missing." }));
-        res.end();
-        return;
-    }
-    if (!req.body.y) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "parameter 'y' is missing." }));
-        res.end();
-        return;
-    }
-    if (!req.body.zone) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "parameter 'zone' is missing." }));
-        res.end();
-        return;
-    }
-    if (!req.body.data) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "parameter 'data' is missing." }));
-        res.end();
-        return;
-    }
-    var tokenInfo = GetTokenInformation(req.body.token, req.headers['x-forwarded-for'] || req.connection.remoteAddress);
-    if (!tokenInfo) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "token not valid." }));
-        res.end();
-        return;
-    }
-    var connection = getDb();
-    if (!connection) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "connection failed." }));
-        res.end();
-        return;
-    }
-    try {
-        await connection.connect();
-        var r0 = await connection.query('select data from game_player where game_id = ? and user_id = ?', [req.body.game, tokenInfo.id]);
-        var newData = null;
-        try {
-            newData = JSON.parse(req.body.data);
-        }
-        catch (ex) {
-            connection.end();
-            res.writeHead(500, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ error: "The save doesn't seems to be in a valid format." }));
-            res.end();
-            return;
-        }
-        var isOk = false;
-        // First save, nothing to control
-        if (!r0 || r0.length == 0)
-            isOk = true;
-        else {
-            try {
-                var savedData = JSON.parse(r0[0].data);
-            }
-            catch (ex) {
-            }
-            // We don't have yet a saveId, then all fine...
-            if (!savedData.saveId)
-                isOk = true;
-            // Saved info and new data are the same
-            else if (newData.saveId == savedData.saveId)
-                isOk = true;
-        }
-        if (!isOk) {
-            connection.end();
-            res.writeHead(500, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ error: "Save doesn't match. Be sure you have only one browser open." }));
-            res.end();
-            return;
-        }
-        newData.saveId = md5("D0tW0rldMak3r2016" + req.body.game + "_" + tokenInfo.id + "_" + (new Date()).toString() + "_" + (Math.random() * 100000));
-        await connection.query('replace game_player(game_id,user_id,x,y,zone,data) values(?,?,?,?,?,?)', [req.body.game, tokenInfo.id, req.body.x, req.body.y, req.body.zone, JSON.stringify(newData)]);
-        connection.end();
-        res.writeHead(200, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify(newData.saveId));
-        res.end();
-        return;
-    }
-    catch (ex) {
-        connection.end();
-        console.log(ex);
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "error with database." }));
-        res.end();
-        return;
-    }
-});
-app.post('/backend/ResetPlayer', async function (req, res, next) {
-    if (!req.body.game) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "parameter 'game' is missing." }));
-        res.end();
-        return;
-    }
-    if (!req.body.token) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "parameter 'token' is missing." }));
-        res.end();
-        return;
-    }
-    var tokenInfo = GetTokenInformation(req.body.token, req.headers['x-forwarded-for'] || req.connection.remoteAddress);
-    if (!tokenInfo) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "token not valid." }));
-        res.end();
-        return;
-    }
-    var connection = getDb();
-    if (!connection) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "connection failed." }));
-        res.end();
-        return;
-    }
-    try {
-        connection.connect();
-        await connection.query('delete from game_player where game_id = ? and user_id = ?', [req.body.game, tokenInfo.id]);
-        connection.end();
-        res.writeHead(200, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify(true));
-        res.end();
-        return;
-    }
-    catch (ex) {
-        connection.end();
-        console.log(ex);
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "error with database." }));
-        res.end();
-        return;
-    }
-});
-app.post('/backend/ResetAllPlayers', async function (req, res, next) {
-    if (!req.body.game) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "parameter 'game' is missing." }));
-        res.end();
-        return;
-    }
-    if (!req.body.token) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "parameter 'token' is missing." }));
-        res.end();
-        return;
-    }
-    var tokenInfo = GetTokenInformation(req.body.token, req.headers['x-forwarded-for'] || req.connection.remoteAddress);
-    if (!tokenInfo) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "token not valid." }));
-        res.end();
-        return;
-    }
-    var connection = getDb();
-    if (!connection) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "connection failed." }));
-        res.end();
-        return;
-    }
-    try {
-        await connection.connect();
-        var r1 = await connection.query('select access_right_id from game_access_rights where (game_id = ? and user_id = ?) or (user_id = ? and access_right_id=1000)', [req.body.game, tokenInfo.id, tokenInfo.id,]);
-        if (!r1 || !r1.length) {
-            connection.end();
-            res.writeHead(500, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ error: "no write access." }));
-            res.end();
-            return;
-        }
-        await connection.query('delete from game_player where game_id = ?', [req.body.game]);
-        connection.end();
-        res.writeHead(200, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify(true));
-        res.end();
-        io.to("" + req.body.game + "@#global").emit('reset');
-        return;
-    }
-    catch (ex) {
-        connection.end();
-        console.log(ex);
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "error with database." }));
-        res.end();
-        return;
-    }
-});
-app.post('/backend/PublicViewPlayer', async function (req, res, next) {
-    if (!req.body.game) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "parameter 'game' is missing." }));
-        res.end();
-        return;
-    }
-    if (!req.body.name) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "parameter 'name' is missing." }));
-        res.end();
-        return;
-    }
-    var connection = getDb();
-    if (!connection) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "connection failed." }));
-        res.end();
-        return;
-    }
-    try {
-        await connection.connect();
-        var r1 = await connection.query('select x, y, zone, data from game_player where user_id in (select id from users where name = ?) and game_id = ?', [req.body.name, req.body.game]);
-        connection.end();
-        // Not yet registered
-        if (r1.length == 0) {
-            await GameIncreaseStat(req.body.game, StatType.Player_Join);
-            res.writeHead(200, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify(null));
-            res.end();
-            return;
-        }
-        await GameIncreaseStat(req.body.game, StatType.Player_Login);
-        res.writeHead(200, { 'Content-Type': 'text/json' });
-        var rawData = null;
-        try {
-            rawData = JSON.parse(r1[0].data);
-        }
-        catch (ex) {
-        }
-        var resData = {
-            name: rawData.name,
-            x: r1[0].x,
-            y: r1[0].y,
-            zone: r1[0].zone,
-            equipedObjects: rawData.equipedObjects,
-            stats: rawData.stats,
-            skills: rawData.skills
-        };
-        res.write(JSON.stringify(resData));
-        res.end();
-        return;
-    }
-    catch (ex) {
-        connection.end();
-        console.log(ex);
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "error with database." }));
-        res.end();
-        return;
-    }
-});
-app.post('/backend/PremiumPurchase', async function (req, res, next) {
-    if (!req.body.game) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "parameter 'game' is missing." }));
-        res.end();
-        return;
-    }
-    if (!req.body.item) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "parameter 'item' is missing." }));
-        res.end();
-        return;
-    }
-    if (!req.body.credits) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "parameter 'credits' is missing." }));
-        res.end();
-        return;
-    }
-    if (!req.body.token) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "parameter 'token' is missing." }));
-        res.end();
-        return;
-    }
-    var tokenInfo = GetTokenInformation(req.body.token, req.headers['x-forwarded-for'] || req.connection.remoteAddress);
-    if (!tokenInfo) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "token not valid." }));
-        res.end();
-        return;
-    }
-    var connection = getDb();
-    if (!connection) {
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "connection failed." }));
-        res.end();
-        return;
-    }
-    try {
-        await connection.connect();
-        var r1 = await connection.query('select main_owner,name from games where id = ?', [req.body.game]);
-        if (!r1 || !r1.length) {
-            connection.end();
-            res.writeHead(500, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify({ error: "game doesn't exists." }));
-            res.end();
-            return;
-        }
-        var destCreditUser = r1[0].main_owner;
-        var gameName = r1[0].name;
-        var r2 = await connection.query('update users set credits = credits - ? where id = ? and credits >= ?', [req.body.credits, tokenInfo.id, req.body.credits]);
-        if (r2.affectedRows < 1) {
-            res.writeHead(200, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify(true));
-            res.end();
-        }
-        else {
-            await connection.query('update users set credits = credits + ? where id = ?', [req.body.credits, destCreditUser]);
-            await connection.query("insert into credits_log(from_user, to_user, quantity, reason) values(?, ?, ?, ?)", [tokenInfo.id, destCreditUser, req.body.credits, "Premium purchase of " + req.body.item + " for game " + gameName]);
-            connection.end();
-            res.writeHead(200, { 'Content-Type': 'text/json' });
-            res.write(JSON.stringify(true));
-            res.end();
-        }
-    }
-    catch (ex) {
-        connection.end();
-        console.log(ex);
-        res.writeHead(500, { 'Content-Type': 'text/json' });
-        res.write(JSON.stringify({ error: "error with database." }));
-        res.end();
-        return;
-    }
-});
-///<reference path="../app.ts" />
 app.post('/backend/GetWorld', async function (req, res, next) {
     if (!req.body.game) {
         res.writeHead(500, { 'Content-Type': 'text/json' });
@@ -5630,7 +5852,6 @@ app.post('/backend/SaveWorld', async function (req, res, next) {
 function HashPassword(user, password) {
     return md5(packageJson.config.fixedHashSalt + "-" + user.toLowerCase() + "-" + password.toLowerCase());
 }
-// based on https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/express
 // Based on https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/types/mysql/index.d.ts
 // As it wasn't compiling correctly it has been re-imported and modified here as static code.
 

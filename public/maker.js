@@ -295,6 +295,12 @@ var MiniQuery = /** @class */ (function () {
     MiniQuery.prototype.animate = function (properties, time, callback) {
         return this;
     };
+    MiniQuery.prototype.clearClass = function () {
+        this.elements.forEach(function (c) {
+            c.className = "";
+        });
+        return this;
+    };
     MiniQuery.prototype.toggleClass = function (className) {
         this.elements.forEach(function (c) {
             if ((c.className ? c.className : "").indexOf(className) == -1)
@@ -652,6 +658,25 @@ var Main = /** @class */ (function () {
             Main.GenerateGameStyle();
             return;
         }
+        else {
+            $.ajax({
+                type: 'POST',
+                url: '/backend/MustInstall',
+                data: {},
+                success: function (msg) {
+                    msg = TryParse(msg);
+                    if (msg == "must") {
+                        Framework.Init();
+                        Framework.SetLocation({ action: "Installer" }, false, true);
+                    }
+                    else {
+                        Main.ContinueInit();
+                    }
+                }
+            });
+        }
+    };
+    Main.ContinueInit = function () {
         if (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW()) {
             $(document).bind('keydown', function (e) {
                 if (e.ctrlKey && ((e.which || e.keyCode) == 83)) {
@@ -4929,15 +4954,293 @@ var Menubar = /** @class */ (function () {
     };
     return Menubar;
 }());
-var messageMenu = new (/** @class */ (function () {
+var profileMenu = new (/** @class */ (function () {
     function class_9() {
+        this.profileDisplayed = false;
+    }
+    return class_9;
+}()));
+var ProfileMenu = /** @class */ (function () {
+    function ProfileMenu() {
+    }
+    ProfileMenu.AdditionalCSS = function () {
+        return "#profileIcon\n\
+{\n\
+    position: absolute;\n\
+    left: -" + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
+    top: 165px;\n\
+}\n\
+#profileIcon .gamePanelContentNoHeader\n\
+{\n\
+    width: 74px;\n\
+}\n\
+";
+    };
+    ProfileMenu.Init = function (position) {
+        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowStats === false))) {
+            $("#profileIcon").hide();
+            return position;
+        }
+        $("#profileIcon").css("top", position + "px");
+        if (game)
+            $("#profileIcon .gamePanelContentNoHeader").html("<img src='art/tileset2/profile_icon.png'><div>+</div>");
+        else
+            $("#profileIcon .gamePanelContentNoHeader").html("<img src='/art/tileset2/profile_icon.png'><div>+</div>");
+        if (!ProfileMenu.HasToUpgrade())
+            $("#profileIcon div.gamePanelContentNoHeader > div").hide();
+        return position + 64 + world.art.panelStyle.topBorder;
+    };
+    ProfileMenu.Toggle = function () {
+        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowStats === false)))
+            return;
+        inventoryMenu.inventoryDisplayed = false;
+        $("#inventoryIcon").removeClass("openPanelIcon");
+        messageMenu.messageDisplayed = false;
+        $("#messageIcon").removeClass("openPanelIcon");
+        $("#journalIcon").removeClass("openPanelIcon");
+        journalMenu.journalDisplayed = false;
+        if (profileMenu.profileDisplayed) {
+            $("#gameMenuPanel").hide();
+            $("#profileIcon").removeClass("openPanelIcon");
+            profileMenu.profileDisplayed = false;
+        }
+        else {
+            profileMenu.profileDisplayed = true;
+            $("#gameMenuPanel").show();
+            $("#profileIcon").addClass("openPanelIcon");
+            ProfileMenu.Update();
+        }
+    };
+    ProfileMenu.HasToUpgrade = function () {
+        for (var i = 0; i < world.Player.Stats.length; i++) {
+            if (world.Player.Stats[i].BaseStat.CodeVariable('PlayerVisible') === "false")
+                continue;
+            var res = world.Player.Stats[i].BaseStat.InvokeFunction("CanUpgrade", []);
+            if (res && res.GetBoolean() == true)
+                return true;
+        }
+        return false;
+    };
+    ProfileMenu.Update = function () {
+        if (ProfileMenu.HasToUpgrade())
+            $("#profileIcon div.gamePanelContentNoHeader > div").show();
+        else
+            $("#profileIcon div.gamePanelContentNoHeader > div").hide();
+        if (!profileMenu.profileDisplayed)
+            return;
+        var html = "";
+        html = "<h1>Profile<h1>";
+        html += "<h2>Stats</h2>";
+        html += "<table class='profileList'>";
+        html += "<thead><tr><td>Name:</td><td>Value:</td><td>Max:</td><td>&nbsp;</td></tr></thead>";
+        html += "<tbody>";
+        for (var i = 0; i < world.Player.Stats.length; i++) {
+            if (world.Player.Stats[i].BaseStat.CodeVariable('PlayerVisible') === "false")
+                continue;
+            html += "<tr>";
+            html += "<td>" + (world.Player.Stats[i].BaseStat.CodeVariable('DisplayName') ? world.Player.Stats[i].BaseStat.CodeVariable('DisplayName') : world.Player.Stats[i].Name).htmlEntities() + "</td>";
+            html += "<td>" + world.Player.Stats[i].Value + "</td>";
+            html += "<td>" + (world.Player.GetStatMaxValue(world.Player.Stats[i].Name) ? world.Player.GetStatMaxValue(world.Player.Stats[i].Name) : "&nbsp;") + "</td>";
+            var res = world.Player.Stats[i].BaseStat.InvokeFunction("CanUpgrade", []);
+            if (res && res.GetBoolean() == true)
+                html += "<td><div class='gameButton' onclick='ProfileMenu.UpgradeStat(\"" + world.Player.Stats[i].Name + "\")')>+</div></td>";
+            else
+                html += "<td>&nbsp;</td>";
+            html += "</tr>";
+        }
+        html += "</tbody>";
+        html += "</table>";
+        html += "<h2>Skills</h2>";
+        html += "<table class='profileList'>";
+        html += "<thead><tr><td>Name:</td><td>Level:</td><td>&nbsp;</td></tr></thead>";
+        html += "<tbody>";
+        for (var i = 0; i < world.Player.Skills.length; i++) {
+            html += "<tr>";
+            html += "<td>" + (world.Player.Skills[i].BaseSkill.CodeVariable('DisplayName') ? world.Player.Skills[i].BaseSkill.CodeVariable('DisplayName') : world.Player.Skills[i].Name).htmlEntities() + "</td><td>" + (world.Player.Skills[i].Level ? ("" + world.Player.Skills[i].Level).htmlEntities() : "&nbsp;") + "</td>";
+            html += "<td>";
+            if (world.Player.Skills[i].BaseSkill.CodeVariable("Quickslot") == "true" && world.Player.Skills[i].BaseSkill.CodeVariable("QuickslotEditable") !== "false")
+                html += "<div class='gameButton' onclick='ProfileMenu.Quickslot(\"" + world.Player.Skills[i].Name.htmlEntities() + "\");'>Quickslot</div>";
+            else
+                html += "&nbsp;";
+            html += "</td>";
+            html += "</tr>";
+        }
+        html += "</tbody>";
+        html += "</table>";
+        html += "<br><br>";
+        html += "<center><div class='gameButton' onclick=\"document.location='#action=Logout';\">Logout</div> <div class='gameButton' onclick='ProfileMenu.ResetPlayer();'>Reset your player</div></center>";
+        $("#gameMenuPanelContent").html(html);
+    };
+    ProfileMenu.DoResetPlayer = function () {
+        if (Main.CheckNW()) {
+            var saves = {};
+            if (framework.Preferences['gameSaves'])
+                saves = JSON.parse(framework.Preferences['gameSaves']);
+            delete saves["S" + world.Id];
+            framework.Preferences['gameSaves'] = JSON.stringify(saves);
+            Framework.SavePreferences();
+            world.Init();
+            Main.GenerateGameStyle();
+            world.ResetAreas();
+            world.ResetGenerator();
+            Framework.Rerun();
+            return;
+        }
+        if (!framework.Preferences['token'] || framework.Preferences['token'] == "demo") {
+            document.location.reload();
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url: '/backend/ResetPlayer',
+            data: {
+                game: world.Id,
+                token: framework.Preferences['token']
+            },
+            success: function (msg) {
+                document.location.reload();
+            },
+            error: function (msg, textStatus) {
+                if (msg.d && msg.d.error)
+                    Framework.ShowMessage(msg.d.error);
+                else
+                    Framework.ShowMessage(msg);
+            }
+        });
+    };
+    ProfileMenu.ResetPlayer = function () {
+        Framework.Confirm("Are you sure you want to reset your player? You lose all the stats, items, and quests and start as a fresh new player.", ProfileMenu.DoResetPlayer);
+    };
+    ProfileMenu.UpgradeStat = function (statName) {
+        var res = world.Player.FindStat(statName).BaseStat.InvokeFunction("CanUpgrade", []);
+        if (!res || res.GetBoolean() !== true)
+            return;
+        world.Player.SetStat(statName, world.Player.GetStat(statName) + 1);
+        //world.Player.FindStat(statName).Value++;
+        ProfileMenu.Update();
+    };
+    ProfileMenu.Quickslot = function (skillName) {
+        profileMenu.profileDisplayed = false;
+        var html = "<h1>Quickslot</h1>";
+        for (var i = 0; i < 10; i++) {
+            var q = world.Player.QuickSlot[i];
+            var skill = null;
+            if (!q)
+                q = "-- Empty --";
+            else if (q.substring(0, 2) == "S/") {
+                var skill = world.GetSkill(q.substring(2));
+                q = "Skill " + q.substring(2).title().htmlEntities();
+            }
+            else
+                q = "Item " + q.substring(2).title().htmlEntities();
+            if (skill && skill.CodeVariable("QuickslotEditable") === "false") {
+                html += "Slot " + (i + 1) + " " + q + "<br>";
+            }
+            else
+                html += "<div class='gameButton' onclick='ProfileMenu.SetQuickslot(\"" + skillName.htmlEntities() + "\"," + i + ");'>Slot " + (i + 1) + "</div>" + q + "<br>";
+        }
+        html += "<center><div class='gameButton' onclick='ProfileMenu.Show();'>Cancel</div></center>";
+        $("#gameMenuPanelContent").html(html);
+    };
+    ProfileMenu.Show = function () {
+        profileMenu.profileDisplayed = true;
+        ProfileMenu.Update();
+    };
+    ProfileMenu.SetQuickslot = function (skillName, slotId) {
+        for (var i = 0; i < 10; i++)
+            if (world.Player.QuickSlot[i] == "S/" + skillName)
+                world.Player.QuickSlot[i] = null;
+        world.Player.QuickSlot[slotId] = "S/" + skillName;
+        world.Player.StoredCompare = world.Player.JSON();
+        world.Player.Save();
+        ProfileMenu.Show();
+    };
+    return ProfileMenu;
+}());
+var PublicViewPlayer = /** @class */ (function () {
+    function PublicViewPlayer() {
+    }
+    PublicViewPlayer.Show = function (name) {
+        $.ajax({
+            type: 'POST',
+            url: '/backend/PublicViewPlayer',
+            data: {
+                game: world.Id,
+                name: name
+            },
+            success: function (msg) {
+                var data = TryParse(msg);
+                if (!data)
+                    return;
+                $("#npcDialog").show();
+                $("#npcDialog .gamePanelHeader").html("View: " + name.htmlEntities());
+                var html = "";
+                html += "<table>";
+                html += "<tr><td>Name:</td><td>" + ("" + data.name).htmlEntities() + "</td></tr>";
+                html += "<tr><td>X:</td><td>" + ("" + data.x).htmlEntities() + "</td></tr>";
+                html += "<tr><td>Y:</td><td>" + ("" + data.x).htmlEntities() + "</td></tr>";
+                html += "<tr><td>Zone:</td><td>" + ("" + data.zone).htmlEntities() + "</td></tr>";
+                html += "</table>";
+                html += "<h3>Equiped with</h3>";
+                var items = [];
+                for (var item in data.equipedObjects)
+                    items.push(data.equipedObjects[item]);
+                items.sort();
+                for (var i = 0; i < items.length; i++)
+                    html += ("" + items[i].Name).htmlEntities() + "<br>";
+                html += "<h3>Stats</h3>";
+                html += "<table>";
+                data.stats.sort(function (a, b) {
+                    if (a.Name > b.Name)
+                        return 1;
+                    if (a.Name < b.Name)
+                        return -1;
+                    return 0;
+                });
+                for (var i = 0; i < data.stats.length; i++) {
+                    var stat = world.GetStat(data.stats[i].Name);
+                    if (!stat)
+                        continue;
+                    if (stat.CodeVariable("PlayerVisible") === "false")
+                        continue;
+                    html += "<tr><td>" + ("" + (stat.CodeVariable("DisplayName") ? stat.CodeVariable("DisplayName") : stat.Name)).htmlEntities() + "</td><td>" + ("" + data.stats[i].Value).htmlEntities() + "</td></tr>";
+                }
+                html += "<h3>Skills</h3>";
+                data.skills.sort(function (a, b) {
+                    if (a.Name > b.Name)
+                        return 1;
+                    if (a.Name < b.Name)
+                        return -1;
+                    return 0;
+                });
+                for (var i = 0; i < data.skills.length; i++) {
+                    var skill = world.GetSkill(data.skills[i].Name);
+                    if (!skill)
+                        continue;
+                    html += ("" + (skill.CodeVariable("DisplayName") ? skill.CodeVariable("DisplayName") : skill.Name)).htmlEntities() + "<br>";
+                }
+                $("#dialogSentence").html(html);
+                play.onDialogPaint = [];
+                $("#dialogAnswers").html("<div onclick='PublicViewPlayer.Close();' class='gameButton'>Close</div>");
+            },
+            error: function (msg, textStatus) {
+            }
+        });
+    };
+    PublicViewPlayer.Close = function () {
+        $("#npcDialog").hide();
+    };
+    return PublicViewPlayer;
+}());
+var messageMenu = new (/** @class */ (function () {
+    function class_10() {
         this.messageDisplayed = false;
         this.firstInit = true;
         this.selectedMessage = null;
         this.nonRead = 0;
         this.attachments = null;
     }
-    return class_9;
+    return class_10;
 }()));
 var MessageMenu = /** @class */ (function () {
     function MessageMenu() {
@@ -5340,284 +5643,6 @@ var MessageMenu = /** @class */ (function () {
         });
     };
     return MessageMenu;
-}());
-var profileMenu = new (/** @class */ (function () {
-    function class_10() {
-        this.profileDisplayed = false;
-    }
-    return class_10;
-}()));
-var ProfileMenu = /** @class */ (function () {
-    function ProfileMenu() {
-    }
-    ProfileMenu.AdditionalCSS = function () {
-        return "#profileIcon\n\
-{\n\
-    position: absolute;\n\
-    left: -" + parseInt("" + world.art.panelStyle.leftBorder) + "px;\n\
-    top: 165px;\n\
-}\n\
-#profileIcon .gamePanelContentNoHeader\n\
-{\n\
-    width: 74px;\n\
-}\n\
-";
-    };
-    ProfileMenu.Init = function (position) {
-        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowStats === false))) {
-            $("#profileIcon").hide();
-            return position;
-        }
-        $("#profileIcon").css("top", position + "px");
-        if (game)
-            $("#profileIcon .gamePanelContentNoHeader").html("<img src='art/tileset2/profile_icon.png'><div>+</div>");
-        else
-            $("#profileIcon .gamePanelContentNoHeader").html("<img src='/art/tileset2/profile_icon.png'><div>+</div>");
-        if (!ProfileMenu.HasToUpgrade())
-            $("#profileIcon div.gamePanelContentNoHeader > div").hide();
-        return position + 64 + world.art.panelStyle.topBorder;
-    };
-    ProfileMenu.Toggle = function () {
-        if (!game && ((!framework.Preferences['token'] && !Main.CheckNW()) || (world && world.ShowStats === false)))
-            return;
-        inventoryMenu.inventoryDisplayed = false;
-        $("#inventoryIcon").removeClass("openPanelIcon");
-        messageMenu.messageDisplayed = false;
-        $("#messageIcon").removeClass("openPanelIcon");
-        $("#journalIcon").removeClass("openPanelIcon");
-        journalMenu.journalDisplayed = false;
-        if (profileMenu.profileDisplayed) {
-            $("#gameMenuPanel").hide();
-            $("#profileIcon").removeClass("openPanelIcon");
-            profileMenu.profileDisplayed = false;
-        }
-        else {
-            profileMenu.profileDisplayed = true;
-            $("#gameMenuPanel").show();
-            $("#profileIcon").addClass("openPanelIcon");
-            ProfileMenu.Update();
-        }
-    };
-    ProfileMenu.HasToUpgrade = function () {
-        for (var i = 0; i < world.Player.Stats.length; i++) {
-            if (world.Player.Stats[i].BaseStat.CodeVariable('PlayerVisible') === "false")
-                continue;
-            var res = world.Player.Stats[i].BaseStat.InvokeFunction("CanUpgrade", []);
-            if (res && res.GetBoolean() == true)
-                return true;
-        }
-        return false;
-    };
-    ProfileMenu.Update = function () {
-        if (ProfileMenu.HasToUpgrade())
-            $("#profileIcon div.gamePanelContentNoHeader > div").show();
-        else
-            $("#profileIcon div.gamePanelContentNoHeader > div").hide();
-        if (!profileMenu.profileDisplayed)
-            return;
-        var html = "";
-        html = "<h1>Profile<h1>";
-        html += "<h2>Stats</h2>";
-        html += "<table class='profileList'>";
-        html += "<thead><tr><td>Name:</td><td>Value:</td><td>Max:</td><td>&nbsp;</td></tr></thead>";
-        html += "<tbody>";
-        for (var i = 0; i < world.Player.Stats.length; i++) {
-            if (world.Player.Stats[i].BaseStat.CodeVariable('PlayerVisible') === "false")
-                continue;
-            html += "<tr>";
-            html += "<td>" + (world.Player.Stats[i].BaseStat.CodeVariable('DisplayName') ? world.Player.Stats[i].BaseStat.CodeVariable('DisplayName') : world.Player.Stats[i].Name).htmlEntities() + "</td>";
-            html += "<td>" + world.Player.Stats[i].Value + "</td>";
-            html += "<td>" + (world.Player.GetStatMaxValue(world.Player.Stats[i].Name) ? world.Player.GetStatMaxValue(world.Player.Stats[i].Name) : "&nbsp;") + "</td>";
-            var res = world.Player.Stats[i].BaseStat.InvokeFunction("CanUpgrade", []);
-            if (res && res.GetBoolean() == true)
-                html += "<td><div class='gameButton' onclick='ProfileMenu.UpgradeStat(\"" + world.Player.Stats[i].Name + "\")')>+</div></td>";
-            else
-                html += "<td>&nbsp;</td>";
-            html += "</tr>";
-        }
-        html += "</tbody>";
-        html += "</table>";
-        html += "<h2>Skills</h2>";
-        html += "<table class='profileList'>";
-        html += "<thead><tr><td>Name:</td><td>Level:</td><td>&nbsp;</td></tr></thead>";
-        html += "<tbody>";
-        for (var i = 0; i < world.Player.Skills.length; i++) {
-            html += "<tr>";
-            html += "<td>" + (world.Player.Skills[i].BaseSkill.CodeVariable('DisplayName') ? world.Player.Skills[i].BaseSkill.CodeVariable('DisplayName') : world.Player.Skills[i].Name).htmlEntities() + "</td><td>" + (world.Player.Skills[i].Level ? ("" + world.Player.Skills[i].Level).htmlEntities() : "&nbsp;") + "</td>";
-            html += "<td>";
-            if (world.Player.Skills[i].BaseSkill.CodeVariable("Quickslot") == "true" && world.Player.Skills[i].BaseSkill.CodeVariable("QuickslotEditable") !== "false")
-                html += "<div class='gameButton' onclick='ProfileMenu.Quickslot(\"" + world.Player.Skills[i].Name.htmlEntities() + "\");'>Quickslot</div>";
-            else
-                html += "&nbsp;";
-            html += "</td>";
-            html += "</tr>";
-        }
-        html += "</tbody>";
-        html += "</table>";
-        html += "<br><br>";
-        html += "<center><div class='gameButton' onclick=\"document.location='#action=Logout';\">Logout</div> <div class='gameButton' onclick='ProfileMenu.ResetPlayer();'>Reset your player</div></center>";
-        $("#gameMenuPanelContent").html(html);
-    };
-    ProfileMenu.DoResetPlayer = function () {
-        if (Main.CheckNW()) {
-            var saves = {};
-            if (framework.Preferences['gameSaves'])
-                saves = JSON.parse(framework.Preferences['gameSaves']);
-            delete saves["S" + world.Id];
-            framework.Preferences['gameSaves'] = JSON.stringify(saves);
-            Framework.SavePreferences();
-            world.Init();
-            Main.GenerateGameStyle();
-            world.ResetAreas();
-            world.ResetGenerator();
-            Framework.Rerun();
-            return;
-        }
-        if (!framework.Preferences['token'] || framework.Preferences['token'] == "demo") {
-            document.location.reload();
-            return;
-        }
-        $.ajax({
-            type: 'POST',
-            url: '/backend/ResetPlayer',
-            data: {
-                game: world.Id,
-                token: framework.Preferences['token']
-            },
-            success: function (msg) {
-                document.location.reload();
-            },
-            error: function (msg, textStatus) {
-                if (msg.d && msg.d.error)
-                    Framework.ShowMessage(msg.d.error);
-                else
-                    Framework.ShowMessage(msg);
-            }
-        });
-    };
-    ProfileMenu.ResetPlayer = function () {
-        Framework.Confirm("Are you sure you want to reset your player? You lose all the stats, items, and quests and start as a fresh new player.", ProfileMenu.DoResetPlayer);
-    };
-    ProfileMenu.UpgradeStat = function (statName) {
-        var res = world.Player.FindStat(statName).BaseStat.InvokeFunction("CanUpgrade", []);
-        if (!res || res.GetBoolean() !== true)
-            return;
-        world.Player.SetStat(statName, world.Player.GetStat(statName) + 1);
-        //world.Player.FindStat(statName).Value++;
-        ProfileMenu.Update();
-    };
-    ProfileMenu.Quickslot = function (skillName) {
-        profileMenu.profileDisplayed = false;
-        var html = "<h1>Quickslot</h1>";
-        for (var i = 0; i < 10; i++) {
-            var q = world.Player.QuickSlot[i];
-            var skill = null;
-            if (!q)
-                q = "-- Empty --";
-            else if (q.substring(0, 2) == "S/") {
-                var skill = world.GetSkill(q.substring(2));
-                q = "Skill " + q.substring(2).title().htmlEntities();
-            }
-            else
-                q = "Item " + q.substring(2).title().htmlEntities();
-            if (skill && skill.CodeVariable("QuickslotEditable") === "false") {
-                html += "Slot " + (i + 1) + " " + q + "<br>";
-            }
-            else
-                html += "<div class='gameButton' onclick='ProfileMenu.SetQuickslot(\"" + skillName.htmlEntities() + "\"," + i + ");'>Slot " + (i + 1) + "</div>" + q + "<br>";
-        }
-        html += "<center><div class='gameButton' onclick='ProfileMenu.Show();'>Cancel</div></center>";
-        $("#gameMenuPanelContent").html(html);
-    };
-    ProfileMenu.Show = function () {
-        profileMenu.profileDisplayed = true;
-        ProfileMenu.Update();
-    };
-    ProfileMenu.SetQuickslot = function (skillName, slotId) {
-        for (var i = 0; i < 10; i++)
-            if (world.Player.QuickSlot[i] == "S/" + skillName)
-                world.Player.QuickSlot[i] = null;
-        world.Player.QuickSlot[slotId] = "S/" + skillName;
-        world.Player.StoredCompare = world.Player.JSON();
-        world.Player.Save();
-        ProfileMenu.Show();
-    };
-    return ProfileMenu;
-}());
-var PublicViewPlayer = /** @class */ (function () {
-    function PublicViewPlayer() {
-    }
-    PublicViewPlayer.Show = function (name) {
-        $.ajax({
-            type: 'POST',
-            url: '/backend/PublicViewPlayer',
-            data: {
-                game: world.Id,
-                name: name
-            },
-            success: function (msg) {
-                var data = TryParse(msg);
-                if (!data)
-                    return;
-                $("#npcDialog").show();
-                $("#npcDialog .gamePanelHeader").html("View: " + name.htmlEntities());
-                var html = "";
-                html += "<table>";
-                html += "<tr><td>Name:</td><td>" + ("" + data.name).htmlEntities() + "</td></tr>";
-                html += "<tr><td>X:</td><td>" + ("" + data.x).htmlEntities() + "</td></tr>";
-                html += "<tr><td>Y:</td><td>" + ("" + data.x).htmlEntities() + "</td></tr>";
-                html += "<tr><td>Zone:</td><td>" + ("" + data.zone).htmlEntities() + "</td></tr>";
-                html += "</table>";
-                html += "<h3>Equiped with</h3>";
-                var items = [];
-                for (var item in data.equipedObjects)
-                    items.push(data.equipedObjects[item]);
-                items.sort();
-                for (var i = 0; i < items.length; i++)
-                    html += ("" + items[i].Name).htmlEntities() + "<br>";
-                html += "<h3>Stats</h3>";
-                html += "<table>";
-                data.stats.sort(function (a, b) {
-                    if (a.Name > b.Name)
-                        return 1;
-                    if (a.Name < b.Name)
-                        return -1;
-                    return 0;
-                });
-                for (var i = 0; i < data.stats.length; i++) {
-                    var stat = world.GetStat(data.stats[i].Name);
-                    if (!stat)
-                        continue;
-                    if (stat.CodeVariable("PlayerVisible") === "false")
-                        continue;
-                    html += "<tr><td>" + ("" + (stat.CodeVariable("DisplayName") ? stat.CodeVariable("DisplayName") : stat.Name)).htmlEntities() + "</td><td>" + ("" + data.stats[i].Value).htmlEntities() + "</td></tr>";
-                }
-                html += "<h3>Skills</h3>";
-                data.skills.sort(function (a, b) {
-                    if (a.Name > b.Name)
-                        return 1;
-                    if (a.Name < b.Name)
-                        return -1;
-                    return 0;
-                });
-                for (var i = 0; i < data.skills.length; i++) {
-                    var skill = world.GetSkill(data.skills[i].Name);
-                    if (!skill)
-                        continue;
-                    html += ("" + (skill.CodeVariable("DisplayName") ? skill.CodeVariable("DisplayName") : skill.Name)).htmlEntities() + "<br>";
-                }
-                $("#dialogSentence").html(html);
-                play.onDialogPaint = [];
-                $("#dialogAnswers").html("<div onclick='PublicViewPlayer.Close();' class='gameButton'>Close</div>");
-            },
-            error: function (msg, textStatus) {
-            }
-        });
-    };
-    PublicViewPlayer.Close = function () {
-        $("#npcDialog").hide();
-    };
-    return PublicViewPlayer;
 }());
 var searchPanel = new (/** @class */ (function () {
     function class_11() {
@@ -7700,84 +7725,6 @@ var Dialog = /** @class */ (function () {
     }
     return Dialog;
 }());
-var knownEffects = [];
-// Class decorator which will put all the API inside the api variable.
-function MapEffectClass(target) {
-    var tName = "" + target;
-    var className = tName.match(/function ([^\(]+)\(/)[1];
-    knownEffects.push(className.substr(0, className.length - 6));
-    knownEffects.sort();
-}
-var MapEffect = /** @class */ (function () {
-    function MapEffect() {
-    }
-    return MapEffect;
-}());
-/// <reference path="MapEffect.ts" />
-var FogEffect = /** @class */ (function (_super) {
-    __extends(FogEffect, _super);
-    function FogEffect() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.gofImage = null;
-        return _this;
-    }
-    FogEffect.prototype.Render = function (ctx, width, height) {
-        if (!this.gofImage) {
-            this.gofImage = new Image();
-            this.gofImage.src = "/Effects/fog.png";
-        }
-        ctx.fillStyle = "#dcdbeb";
-        ctx.globalAlpha = 0.85;
-        ctx.fillRect(0, 0, Math.floor(width / 2) - 256, height);
-        ctx.fillRect(Math.floor(width / 2) + 256, 0, width, height);
-        ctx.fillRect(Math.floor(width / 2) - 256, 0, 512, Math.floor(height / 2) - 256);
-        ctx.fillRect(Math.floor(width / 2) - 256, Math.floor(height / 2) + 256, 512, height);
-        ctx.drawImage(this.gofImage, Math.floor(width / 2) - 256, Math.floor(height / 2) - 256);
-        ctx.globalAlpha = 1;
-    };
-    FogEffect = __decorate([
-        MapEffectClass
-    ], FogEffect);
-    return FogEffect;
-}(MapEffect));
-/// <reference path="MapEffect.ts" />
-var NoneEffect = /** @class */ (function (_super) {
-    __extends(NoneEffect, _super);
-    function NoneEffect() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    NoneEffect.prototype.Render = function (ctx, width, height) {
-    };
-    NoneEffect = __decorate([
-        MapEffectClass
-    ], NoneEffect);
-    return NoneEffect;
-}(MapEffect));
-/// <reference path="MapEffect.ts" />
-var SightEffect = /** @class */ (function (_super) {
-    __extends(SightEffect, _super);
-    function SightEffect() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.sightImage = null;
-        return _this;
-    }
-    SightEffect.prototype.Render = function (ctx, width, height) {
-        if (!this.sightImage) {
-            this.sightImage = new Image();
-            this.sightImage.src = "/Effects/sight_1.png";
-        }
-        ctx.fillStyle = "#000000";
-        ctx.fillRect(0, 0, Math.floor(width / 2) - 256, height);
-        ctx.fillRect(Math.floor(width / 2) + 256, 0, width, height);
-        ctx.fillRect(0, 0, width, Math.floor(height / 2) - 256);
-        ctx.fillRect(0, Math.floor(height / 2) + 256, width, height);
-        ctx.drawImage(this.sightImage, Math.floor(width / 2) - 256, Math.floor(height / 2) - 256);
-    };
-    SightEffect = __decorate([
-        MapEffectClass
-    ], SightEffect);
-    return SightEffect;
-}(MapEffect));
 var InventoryObject = /** @class */ (function () {
     function InventoryObject(name, count, usage) {
         if (count === void 0) { count = 1; }
@@ -8030,6 +7977,84 @@ var ObjectType = /** @class */ (function () {
     };
     return ObjectType;
 }());
+var knownEffects = [];
+// Class decorator which will put all the API inside the api variable.
+function MapEffectClass(target) {
+    var tName = "" + target;
+    var className = tName.match(/function ([^\(]+)\(/)[1];
+    knownEffects.push(className.substr(0, className.length - 6));
+    knownEffects.sort();
+}
+var MapEffect = /** @class */ (function () {
+    function MapEffect() {
+    }
+    return MapEffect;
+}());
+/// <reference path="MapEffect.ts" />
+var FogEffect = /** @class */ (function (_super) {
+    __extends(FogEffect, _super);
+    function FogEffect() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.gofImage = null;
+        return _this;
+    }
+    FogEffect.prototype.Render = function (ctx, width, height) {
+        if (!this.gofImage) {
+            this.gofImage = new Image();
+            this.gofImage.src = "/Effects/fog.png";
+        }
+        ctx.fillStyle = "#dcdbeb";
+        ctx.globalAlpha = 0.85;
+        ctx.fillRect(0, 0, Math.floor(width / 2) - 256, height);
+        ctx.fillRect(Math.floor(width / 2) + 256, 0, width, height);
+        ctx.fillRect(Math.floor(width / 2) - 256, 0, 512, Math.floor(height / 2) - 256);
+        ctx.fillRect(Math.floor(width / 2) - 256, Math.floor(height / 2) + 256, 512, height);
+        ctx.drawImage(this.gofImage, Math.floor(width / 2) - 256, Math.floor(height / 2) - 256);
+        ctx.globalAlpha = 1;
+    };
+    FogEffect = __decorate([
+        MapEffectClass
+    ], FogEffect);
+    return FogEffect;
+}(MapEffect));
+/// <reference path="MapEffect.ts" />
+var NoneEffect = /** @class */ (function (_super) {
+    __extends(NoneEffect, _super);
+    function NoneEffect() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    NoneEffect.prototype.Render = function (ctx, width, height) {
+    };
+    NoneEffect = __decorate([
+        MapEffectClass
+    ], NoneEffect);
+    return NoneEffect;
+}(MapEffect));
+/// <reference path="MapEffect.ts" />
+var SightEffect = /** @class */ (function (_super) {
+    __extends(SightEffect, _super);
+    function SightEffect() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.sightImage = null;
+        return _this;
+    }
+    SightEffect.prototype.Render = function (ctx, width, height) {
+        if (!this.sightImage) {
+            this.sightImage = new Image();
+            this.sightImage.src = "/Effects/sight_1.png";
+        }
+        ctx.fillStyle = "#000000";
+        ctx.fillRect(0, 0, Math.floor(width / 2) - 256, height);
+        ctx.fillRect(Math.floor(width / 2) + 256, 0, width, height);
+        ctx.fillRect(0, 0, width, Math.floor(height / 2) - 256);
+        ctx.fillRect(0, Math.floor(height / 2) + 256, width, height);
+        ctx.drawImage(this.sightImage, Math.floor(width / 2) - 256, Math.floor(height / 2) - 256);
+    };
+    SightEffect = __decorate([
+        MapEffectClass
+    ], SightEffect);
+    return SightEffect;
+}(MapEffect));
 var mapBag = new (/** @class */ (function () {
     function class_15() {
     }
@@ -14888,8 +14913,8 @@ var About = /** @class */ (function () {
     };
     return About;
 }());
-var engineVersion = "1.2.249";
-var engineBuild = "Fri, 09 Aug 2019 08:31:16 GMT";
+var engineVersion = "1.2.307";
+var engineBuild = "Mon, 12 Aug 2019 08:14:03 GMT";
 var artCharacterEditor = new (/** @class */ (function () {
     function class_22() {
         this.selector = null;
@@ -20114,6 +20139,163 @@ var ImportExport = /** @class */ (function () {
         $("#importExportFrame").prop("src", "/backend/ExportHtml5?game=" + world.Id + "&token=" + framework.Preferences['token']);
     };
     return ImportExport;
+}());
+var Installer = /** @class */ (function () {
+    function Installer() {
+    }
+    Installer.Dispose = function () {
+    };
+    Installer.IsAccessible = function () {
+        //return (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW());
+        return true;
+    };
+    Installer.Recover = function () {
+        $.ajax({
+            type: 'POST',
+            url: '/backend/MustInstall',
+            data: {},
+            success: function (msg) {
+                msg = TryParse(msg);
+                if (msg == "must") {
+                    $("#menubar").hide();
+                    $("#loginBackground, #loginForm").hide();
+                    Installer.DoCheckDb();
+                    Installer.CheckFileRights();
+                }
+                else {
+                    Framework.SetLocation({ action: "Play" }, false, true);
+                }
+            }
+        });
+    };
+    Installer.CheckFileRights = function () {
+        Installer.fsCanBeUsed = false;
+        $.ajax({
+            type: 'POST',
+            url: '/backend/CheckConfigJson',
+            data: {},
+            success: function (msg) {
+                switch (TryParse(msg)) {
+                    case "allfine":
+                        $("#installFileStatus").html("Ok").clearClass().addClass("statusOk");
+                        Installer.fsCanBeUsed = true;
+                        break;
+                    case "norights":
+                        $("#installFileStatus").html("No write permissions").clearClass().addClass("statusError");
+                        break;
+                    default:
+                        Main.AddErrorMessage(msg);
+                }
+            }
+        });
+    };
+    Installer.CheckDb = function () {
+        Installer.dbCanBeUsed = false;
+        if (Installer.checkDbTimer)
+            clearTimeout(Installer.checkDbTimer);
+        Installer.checkDbTimer = setTimeout(Installer.DoCheckDb, 500);
+        $("#installDbStatus").html("Checking...").clearClass().addClass("statusError");
+    };
+    Installer.DoCheckDb = function () {
+        Installer.dbCanBeUsed = false;
+        Installer.checkDbTimer = null;
+        $.ajax({
+            type: 'POST',
+            url: '/backend/CheckMysql',
+            data: {
+                host: $("#installDbHost").val(),
+                port: $("#installDbPort").val(),
+                user: $("#installDbAdmin").val(),
+                password: $("#installDbAdminPass").val(),
+                dbname: $("#installDbName").val()
+            },
+            success: function (msg) {
+                switch (TryParse(msg)) {
+                    case "allok":
+                        $("#installDbStatus").html("Ok").clearClass().addClass("statusOk");
+                        Installer.dbCanBeUsed = true;
+                        break;
+                    case "dbnotempty":
+                        $("#installDbStatus").html("Ok, but database is not empty!").clearClass().addClass("statusWarning");
+                        Installer.dbCanBeUsed = true;
+                        break;
+                    case "nodb":
+                        $("#installDbStatus").html("No database found: download &amp; MySQL").clearClass().addClass("statusError");
+                        break;
+                    case "wrongpass":
+                        $("#installDbStatus").html("Wrong admin username / password").clearClass().addClass("statusError");
+                        break;
+                    case "norights":
+                        $("#installDbStatus").html("Provided admin user doesn't have admin rights").clearClass().addClass("statusError");
+                        break;
+                    default:
+                        Main.AddErrorMessage(msg);
+                }
+            }
+        });
+    };
+    Installer.SetupDb = function () {
+        if (!Installer.dbCanBeUsed || !Installer.fsCanBeUsed) {
+            Main.AddErrorMessage("Check the requirements...");
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url: '/backend/SetupMysql',
+            data: {
+                host: $("#installDbHost").val(),
+                port: $("#installDbPort").val(),
+                user: $("#installDbAdmin").val(),
+                password: $("#installDbAdminPass").val(),
+                dbname: $("#installDbName").val(),
+                dbuser: $("#installDbUser").val(),
+                dbpassword: $("#installDbPass").val(),
+            },
+            success: function (msg) {
+                $("#installStep1").hide();
+                $("#installStep2").show();
+                $("#installStep3").hide();
+            }
+        });
+    };
+    Installer.Step2 = function () {
+        if (!Installer.dbCanBeUsed)
+            return;
+        $("#installStep1").hide();
+        $("#installStep2").show();
+        $("#installStep3").hide();
+    };
+    Installer.SetupJson = function () {
+        $.ajax({
+            type: 'POST',
+            url: '/backend/SetupJson',
+            data: {
+                host: $("#installDbHost").val(),
+                port: $("#installDbPort").val(),
+                dbname: $("#installDbName").val(),
+                dbuser: $("#installDbUser").val(),
+                dbpassword: $("#installDbPass").val(),
+                email_user: $("#installEmailUser").val(),
+                email_pass: $("#installEmailPassword").val(),
+                email_server: $("#installEmailServer").val(),
+                admin_user: $("#installAdminUser").val(),
+                admin_password: $("#installAdminPassword").val()
+            },
+            success: function (msg) {
+                $("#installStep1").hide();
+                $("#installStep2").hide();
+                $("#installStep3").show();
+            }
+        });
+    };
+    Installer.Finish = function () {
+        Framework.SetLocation({ action: "Play" }, false, true);
+        document.location.reload();
+    };
+    Installer.dbCanBeUsed = false;
+    Installer.fsCanBeUsed = false;
+    Installer.checkDbTimer = null;
+    return Installer;
 }());
 var inventorySlotEditor = new (/** @class */ (function () {
     function class_36() {

@@ -437,6 +437,15 @@ class MiniQuery
         return this;
     }
 
+    public clearClass(): MiniQuery
+    {
+        this.elements.forEach((c) =>
+        {
+            c.className = "";
+        });
+        return this;
+    }
+
     public toggleClass(className: string): MiniQuery
     {
         this.elements.forEach((c) =>

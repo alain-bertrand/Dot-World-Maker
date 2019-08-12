@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div id="installStep1" class="installStep">
+        <h1>Welcome to Dot World Maker</h1>
+        <h2>Requirements</h2>
+        <table>
+            <tr><td>Node.JS:</td><td class="statusOk">Ok</td></tr>
+            <tr><td>MySQL:</td><td id="installDbStatus" class="statusError">Checking...</td></tr>
+            <tr><td>File Rights:</td><td id="installFileStatus" class="statusError">Checking...</td></tr>
+        </table>
+        <h2>Database Configuration</h2>
+        <div class='fieldRow'><label>Host:</label><input type="text" id="installDbHost" value="localhost" onkeyup="Installer.CheckDb()" /></div>
+        <div class='fieldRow'><label>Port:</label><input type="text" id="installDbPort" value="3306" onkeyup="Installer.CheckDb()" /></div>
+        <div class='fieldRow'><label>Admin user:</label><input type="text" id="installDbAdmin" value="root" onkeyup="Installer.CheckDb()" /></div>
+        <div class='fieldRow'><label>Admin password:</label><input type="password" id="installDbAdminPass" value="" onkeyup="Installer.CheckDb()" /></div>
+        <div class='fieldRow'><label>Game database:</label><input type="text" id="installDbName" value="dwm" onkeyup="Installer.CheckDb()" /></div>
+        <div class='fieldRow'><label>Game user:</label><input type="text" id="installDbUser" value="dwm" /></div>
+        <div class='fieldRow'><label>Game password:</label><input type="password" id="installDbPass" value="" /></div>
+        <div style="width: 100%; text-align: center;">
+            <div class="button" onclick="Installer.SetupDb();">Setup Database</div>
+            <div class="button" onclick="Installer.Step2();">Save configuration but skip DB Setup</div>
+        </div>
+    </div>
+    <div id="installStep2" class="installStep">
+        <h1>Dot World Maker - Admin Accounts</h1>
+        <h2>EMail settings</h2>
+        <div class='fieldRow'><label>Email User (for sending):</label><input type="text" id="installEmailUser" value="your@email.com" /></div>
+        <div class='fieldRow'><label>Email server password:</label><input type="password" id="installEmailPassword" value="" /></div>
+        <div class='fieldRow'><label>Email server:</label><input type="text" id="installEmailServer" value="mail.com" /></div>
+        <br />
+        <h2>Admin game account</h2>
+        <div class='fieldRow'><label>Admin user:</label><input type="text" id="installAdminUser" value="admin" /></div>
+        <div class='fieldRow'><label>Admin password:</label><input type="password" id="installAdminPassword" value="admin" /></div>
+        <div style="width: 100%; text-align: center;">
+            <div class="button" onclick="Installer.SetupJson();">Setup Configuration</div>
+        </div>
+    </div>
+    <div id="installStep3" class="installStep">
+        <h1>Dot World Maker</h1>
+        The engine is ready to be used, press the "Go !" button to start working on your game!
+        <div style="width: 100%; text-align: center;">
+            <div class="button" onclick="Installer.Finish()">Go !</a>
+        </div>
+    </div>
+</body>
+</html>

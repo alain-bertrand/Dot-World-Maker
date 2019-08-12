@@ -1,4 +1,7 @@
-﻿var path = require('path');
+﻿/// <reference path="../typings/node.d.ts" />
+/// <reference path="Backend/Definitions/express.ts" />
+
+var path = require('path');
 var favicon = require('serve-favicon');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');

@@ -54,6 +54,7 @@ gulp.task("default", function ()
 
 gulp.task("clean", gulp.series(cleanJS, cleanCSS));
 gulp.task("compile", gulp.series(compileLess, compileServer, compileMaker, compileRuntime));
+gulp.task("increase-version", updateVersion);
 
 gulp.task("compile:less", compileLess);
 
@@ -107,20 +108,44 @@ function compileServer(cb)
         });
 }
 
+function updateVersion()
+{
+    return new Promise(function (ok, err)
+    {
+        process.chdir(__dirname + "/public");
+
+        var fs = require("fs");
+        fs.readFile("./Engine/Module/About/version.ts", "utf8", function (err2, data)
+        {
+            var lastBuild = data;
+            if (err2)
+            {
+                err(err2)
+                return;
+            }
+            var m = lastBuild.match(/engineVersion\s*=\s*"([^"]+)"/i);
+            var version = m[1].split('.');
+            version[version.length - 1] = "" + (parseInt(version[version.length - 1]) + 1);
+            var newVersion = "var engineVersion = \"" + version.join(".") + "\";\n";
+            newVersion += "var engineBuild = \"" + (new Date).toUTCString() + "\";\n";
+
+            fs.writeFile("./Engine/Module/About/version.ts", newVersion, "utf8", function (err3)
+            {
+                if (err3)
+                {
+                    err(err3);
+                    return;
+                }
+                console.log("end");
+                ok();
+            });
+        });
+    });
+}
+
 function compileMaker(cb)
 {
     process.chdir(__dirname + "/public");
-
-    // Reads the current version number and increment the right most one.
-    // Writes back the version and build the version file.
-    var fs = require("fs");
-    var lastBuild = fs.readFileSync("./Engine/Module/About/version.ts", "utf8");
-    var m = lastBuild.match(/engineVersion\s*=\s*"([^"]+)"/i);
-    var version = m[1].split('.');
-    version[version.length - 1] = "" + (parseInt(version[version.length - 1]) + 1);
-    var newVersion = "var engineVersion = \"" + version.join(".") + "\";\n";
-    newVersion += "var engineBuild = \"" + (new Date).toUTCString() + "\";\n";
-    fs.writeFileSync("./Engine/Module/About/version.ts", newVersion, "utf8");
 
     return gulp.src(['./Engine/**/*.ts'])
         .pipe(sourcemaps.init())

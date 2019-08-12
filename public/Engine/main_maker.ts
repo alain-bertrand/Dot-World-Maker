@@ -301,6 +301,7 @@ class Main
     public static InitGameMaker()
     {
         $("#loadingScreen").hide();
+
         $(window).bind("error", (error: ErrorEvent, url, lineNumber) =>
         {
             if (("" + error.message).indexOf("__gCrWeb") != -1)
@@ -326,7 +327,32 @@ class Main
             Main.GenerateGameStyle();
             return;
         }
+        else
+        {
+            $.ajax({
+                type: 'POST',
+                url: '/backend/MustInstall',
+                data: {
+                },
+                success: (msg) =>
+                {
+                    msg = TryParse(msg);
+                    if (msg == "must")
+                    {
+                        Framework.Init();
+                        Framework.SetLocation({ action: "Installer" }, false, true);
+                    }
+                    else
+                    {
+                        Main.ContinueInit();
+                    }
+                }
+            });
+        }
+    }
 
+    static ContinueInit()
+    {
         if (("" + document.location).indexOf("/maker.html") != -1 || Main.CheckNW())
         {
             $(document).bind('keydown', function (e)

@@ -73,7 +73,7 @@ class Database
     {
         return new Promise((ok, err) =>
         {
-            this.connection.connect(err);
+            this.connection.connect({}, err);
             ok();
         });
     }
@@ -85,6 +85,7 @@ function getDb(): Database
     {
         var conn = mysql.createConnection({
             host: packageJson.config.dbhost,
+            port: packageJson.config.dbport ? packageJson.config.dbport : 3306,
             user: packageJson.config.dbuser,
             password: packageJson.config.dbpass,
             database: packageJson.config.dbname,
@@ -101,3 +102,28 @@ function getDb(): Database
         return null;
     }
 }
+
+function getDbConfig(host: string, port: number, user: string, password: string, dbname: string = null): Database
+{
+    try
+    {
+        var conn = mysql.createConnection({
+            host: host,
+            port: port,
+            user: user,
+            password: password,
+            insecureAuth: true,
+            database: dbname
+        });
+        conn.on("error", function (err)
+        {
+            console.log(err);
+        });
+        return new Database(conn);
+    }
+    catch (ex)
+    {
+        return null;
+    }
+}
+

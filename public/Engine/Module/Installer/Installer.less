@@ -1,0 +1,51 @@
+﻿@import (reference) "../../../Less/engine.less";
+
+#installStep2, #installStep3
+{
+    display: none;
+}
+
+.installStep
+{
+    overflow: auto;
+    position: absolute;
+    top: @menubarHeight;
+    left: 10px;
+    right: 10px;
+    bottom: 0px;
+
+    .fieldRow
+    {
+        display: block;
+        margin-bottom: 5px;
+
+        label
+        {
+            width: 200px;
+            display: inline-block;
+        }
+
+        input
+        {
+            width: calc(100vw - 250px);
+        }
+    }
+
+    .statusError
+    {
+        font-weight: bold;
+        color: red;
+    }
+
+    .statusOk
+    {
+        font-weight: bold;
+        color: forestgreen;
+    }
+
+    .statusWarning
+    {
+        font-weight: bold;
+        color: orange;
+    }
+}

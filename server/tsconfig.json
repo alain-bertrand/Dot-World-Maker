@@ -9,11 +9,8 @@
     "outFile": "ignore.js",
     "module": "none",
     "experimentalDecorators": true,
-    "typeRoots": ["../node_modules/@types"],
-    "types": [ "node" ]
   },
   "exclude": [
-    "node_modules",
-    "typings"
+    "node_modules"
   ]
 }

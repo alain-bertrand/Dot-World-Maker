@@ -2358,6 +2358,41 @@ h1 {
 #importExportFrame {
   display: none;
 }
+#installStep2,
+#installStep3 {
+  display: none;
+}
+.installStep {
+  overflow: auto;
+  position: absolute;
+  top: 35px;
+  left: 10px;
+  right: 10px;
+  bottom: 0px;
+}
+.installStep .fieldRow {
+  display: block;
+  margin-bottom: 5px;
+}
+.installStep .fieldRow label {
+  width: 200px;
+  display: inline-block;
+}
+.installStep .fieldRow input {
+  width: calc(100vw - 250px);
+}
+.installStep .statusError {
+  font-weight: bold;
+  color: red;
+}
+.installStep .statusOk {
+  font-weight: bold;
+  color: forestgreen;
+}
+.installStep .statusWarning {
+  font-weight: bold;
+  color: orange;
+}
 #listSlots {
   position: absolute;
   left: 5px;
