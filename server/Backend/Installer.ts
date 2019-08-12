@@ -226,7 +226,7 @@ app.post('/backend/SetupJson', async function (req, res, next)
 
         packageJson.config.fixedHashSalt = randomString;
 
-        fs.writeFileSync(__dirname + "/pseudo.package.json", JSON.stringify(packageJson, null, 2));
+        fs.writeFileSync(__dirname + "/package.json", JSON.stringify(packageJson, null, 2));
 
 
         var connection = getDbConfig(host, (isNaN(port) || !port) ? 3306 : port, dbuser, dbpassword, dbname);
