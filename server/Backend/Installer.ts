@@ -246,6 +246,7 @@ app.post('/backend/SetupJson', async function (req, res, next)
         }
         catch (ex2)
         {
+            console.log(ex2);
         }
 
         connection.end();
