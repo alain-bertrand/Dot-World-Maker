@@ -170,7 +170,10 @@ app.post('/backend/SetupMysql', async function (req, res, next)
         }
         await connection.query("USE " + dbname.replace(/[' `]/g, ""));
 
-        var sql: string = fs.readFileSync(__dirname + "/server/tables.txt", "ascii");
+        if (fs.existsSync(__dirname + "/tables.txt"))
+            var sql: string = fs.readFileSync(__dirname + "/tables.txt", "ascii");
+        else
+            var sql: string = fs.readFileSync(__dirname + "/server/tables.txt", "ascii");
         var lines = sql.replace(/\r/g, "").split(";\n");
         for (var i = 0; i < lines.length; i++)
         {
