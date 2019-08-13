@@ -4020,16 +4020,19 @@ app.post('/backend/CheckMysql', async function (req, res, next) {
             res.writeHead(200, { 'Content-Type': 'text/json' });
             res.write(JSON.stringify("nodb"));
             res.end();
+            return;
         }
         else if (ex.code == 'ER_ACCESS_DENIED_ERROR') {
             res.writeHead(200, { 'Content-Type': 'text/json' });
             res.write(JSON.stringify("wrongpass"));
             res.end();
+            return;
         }
         else if (ex.code == 'ER_DBACCESS_DENIED_ERROR') {
             res.writeHead(200, { 'Content-Type': 'text/json' });
             res.write(JSON.stringify("norights"));
             res.end();
+            return;
         }
         else
             console.log(ex);
@@ -4093,7 +4096,10 @@ app.post('/backend/SetupMysql', async function (req, res, next) {
             }
         }
         await connection.query("USE " + dbname.replace(/[' `]/g, ""));
-        var sql = fs.readFileSync(__dirname + "/server/tables.txt", "ascii");
+        if (fs.existsSync(__dirname + "/tables.txt"))
+            var sql = fs.readFileSync(__dirname + "/tables.txt", "ascii");
+        else
+            var sql = fs.readFileSync(__dirname + "/server/tables.txt", "ascii");
         var lines = sql.replace(/\r/g, "").split(";\n");
         for (var i = 0; i < lines.length; i++) {
             if (lines[i].trim() == "") // skip empty lines
@@ -4139,7 +4145,7 @@ app.post('/backend/SetupJson', async function (req, res, next) {
         for (var i = 0; i < 30; i++)
             randomString += possibleChars.charAt(Math.ceil(Math.random() * possibleChars.length));
         packageJson.config.fixedHashSalt = randomString;
-        fs.writeFileSync(__dirname + "/pseudo.package.json", JSON.stringify(packageJson, null, 2));
+        fs.writeFileSync(__dirname + "/package.json", JSON.stringify(packageJson, null, 2));
         var connection = getDbConfig(host, (isNaN(port) || !port) ? 3306 : port, dbuser, dbpassword, dbname);
         await connection.connect();
         await connection.query("update users set name = ?, password = ? where id=1", [req.body.admin_user, "*" + req.body.admin_password]);
