@@ -242,7 +242,7 @@ app.post('/backend/SetupJson', async function (req, res, next)
 
         try
         {
-            fs.unlink(__dirname + "/must_install.txt");
+            fs.unlinkSync(__dirname + "/must_install.txt");
         }
         catch (ex2)
         {

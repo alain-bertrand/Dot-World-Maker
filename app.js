@@ -87,10 +87,6 @@ function staticInclude(req, res, next) {
 }
 module.exports = { app: app, http: server };
 ///<reference path="../app.ts" />
-function HashPassword(user, password) {
-    return md5(packageJson.config.fixedHashSalt + "-" + user.toLowerCase() + "-" + password.toLowerCase());
-}
-///<reference path="../app.ts" />
 var currentTokens = {};
 function BuildToken(id, username, ip) {
     if (!ip)
@@ -4154,7 +4150,7 @@ app.post('/backend/SetupJson', async function (req, res, next) {
         await connection.connect();
         await connection.query("update users set name = ?, password = ? where id=1", [req.body.admin_user, "*" + req.body.admin_password]);
         try {
-            fs.unlink(__dirname + "/must_install.txt");
+            fs.unlinkSync(__dirname + "/must_install.txt");
         }
         catch (ex2) {
             console.log(ex2);
@@ -5859,6 +5855,10 @@ app.post('/backend/SaveWorld', async function (req, res, next) {
         return;
     }
 });
+///<reference path="../app.ts" />
+function HashPassword(user, password) {
+    return md5(packageJson.config.fixedHashSalt + "-" + user.toLowerCase() + "-" + password.toLowerCase());
+}
 // Based on https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/types/mysql/index.d.ts
 // As it wasn't compiling correctly it has been re-imported and modified here as static code.
 
