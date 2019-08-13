@@ -68,18 +68,21 @@ app.post('/backend/CheckMysql', async function (req, res, next)
             res.writeHead(200, { 'Content-Type': 'text/json' });
             res.write(JSON.stringify("nodb"));
             res.end();
+            return;
         }
         else if (ex.code == 'ER_ACCESS_DENIED_ERROR')
         {
             res.writeHead(200, { 'Content-Type': 'text/json' });
             res.write(JSON.stringify("wrongpass"));
             res.end();
+            return;
         }
         else if (ex.code == 'ER_DBACCESS_DENIED_ERROR')
         {
             res.writeHead(200, { 'Content-Type': 'text/json' });
             res.write(JSON.stringify("norights"));
             res.end();
+            return;
         }
         else
             console.log(ex);
