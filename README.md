@@ -7,21 +7,32 @@ This is also the same base engine used on https://www.dotworldmaker.com
 * Your server must have MySQL or MariaDB installed. Tp download it: https://downloads.mariadb.org/
 * Node.JS installed (we tested it with v6.11). To download it: https://nodejs.org/en/download/
 
-## Quick start for Windows:
-Run the "start_server.cmd" file and your engine should start (make sure you fulfill the requirements).
+# Installation
 
-## Installation
+## Quick start for Windows:
+* Install node and MariaDb on your computer
+* Clone or download the repository
+* Run the "start_server.cmd" file and your engine should start (make sure you fulfill the requirements).
+
+Later on you may still use "start_server.cmd" to run the engine
+
+## Installation (manual installation)
+
+### Setup
 * Clone or download the repository
 * Create a database on your MySQL or MariaDB and create a DB user for the engine
+* delete the file must_install.txt
 * Import the SQL statements from tables.txt into your database
 * Edit the package.json file (config section)
 * Using a command prompt install the needed packages: "npm install ." (this must be run within the directory where the package.json is)
 
-## Running it
+### Running it
 * Using a command prompt start the server: "node server.js"
 * Using your browser connect to http://127.0.0.1:1337 or the port specified in the package.json
 
 **Default user: admin password: admin**
+
+# Changing the source code
 
 ## To edit the client or the server Code
 * Edit the *.ts* files never the resulting *.js* as they will be overwitten when you compile the engine
@@ -32,7 +43,9 @@ Run the "start_server.cmd" file and your engine should start (make sure you fulf
  * Edit the needed TS files
  * Compile to JS: gulp compile:client compile:server
 
-You may keep gulp monitoring the changes and compile as needed by just running gulp
+You may keep gulp monitoring the changes and compile as needed by just running "gulp default"
+
+# Start working on your game
 
 ## How to create your grame
 [Online documentation](https://www.dotworldmaker.com/Help/welcome.html)
